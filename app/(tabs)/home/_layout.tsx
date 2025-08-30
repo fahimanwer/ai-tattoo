@@ -1,0 +1,19 @@
+import { ContextMenuProfile } from "@/components/ContextMenu";
+import { useLargeHeaderOptions } from "@/constants/navigation-options";
+import { Stack } from "expo-router";
+
+export default function HomeLayout() {
+  const largeHeaderOptions = useLargeHeaderOptions();
+
+  return (
+    <Stack
+      screenOptions={{
+        ...largeHeaderOptions,
+        title: "Home",
+        headerLeft: () => <ContextMenuProfile />,
+      }}
+    >
+      <Stack.Screen name="index" />
+    </Stack>
+  );
+}
