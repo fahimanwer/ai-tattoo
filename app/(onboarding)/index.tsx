@@ -1,7 +1,6 @@
 import LinearGradientImageBlur from "@/components/LinearGradientImageBlur";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
-import { Colors } from "@/constants/Colors";
 
 import { AuthContext } from "@/context/AuthContext";
 
@@ -18,18 +17,6 @@ export default function Home() {
         imageUrl={require("../../assets/images/model.png")}
         showBlur={false}
         showGradient={true}
-        gradientColors={{
-          light: [
-            "transparent",
-            Colors.light.background + "50",
-            Colors.light.background,
-          ],
-          dark: [
-            "transparent",
-            Colors.dark.background + "50",
-            Colors.dark.background,
-          ],
-        }}
       />
       <View style={styles.contentContainer}>
         <View
