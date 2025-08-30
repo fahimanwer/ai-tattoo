@@ -1,3 +1,5 @@
+import * as React from "react";
+import { View } from "react-native";
 import {
   Button,
   ContextMenu,
@@ -5,9 +7,7 @@ import {
   Image,
   Submenu,
   Switch,
-} from "@expo/ui/swift-ui";
-import * as React from "react";
-import { View } from "react-native";
+} from "../lib/expo-ui-web";
 
 const options = [
   {
