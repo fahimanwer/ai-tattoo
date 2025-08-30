@@ -1,16 +1,17 @@
 {
   "expo": {
-    "name": "starter-kit",
-    "slug": "starter-kit",
+    "name": "ai-tattoo",
+    "slug": "ai-tattoo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "starterkit",
+    "scheme": "aitattoo",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cesswhite.starterkit"
+      "bundleIdentifier": "dev.codewithbeto.aitattoo",
+      "icon": "./assets/icon.icon"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +19,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.cesswhite.starterkit"
+      "package": "dev.codewithbeto.aitattoo"
     },
     "web": {
       "bundler": "metro",
@@ -33,7 +34,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#000000"
         }
       ],
       "expo-font",
