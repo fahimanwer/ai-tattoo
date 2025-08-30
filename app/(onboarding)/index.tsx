@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 
 import { AuthContext } from "@/context/AuthContext";
+import { authClient } from "@/lib/auth-client";
 
 import { use } from "react";
 import { StyleSheet, View } from "react-native";
@@ -46,6 +47,21 @@ export default function Home() {
           >
             Preview virtual tattoos on your body with AI - arm, leg, face & more
           </Text>
+          <Button
+            title="Sign Up"
+            color="neutral"
+            variant="solid"
+            radius="full"
+            size="lg"
+            style={{ marginTop: 32 } as any}
+            onPress={() => {
+              authClient.signUp.email({
+                email: "test@test.com",
+                password: "abcd1234",
+                name: "Beto",
+              });
+            }}
+          />
           <Button
             title="Get started"
             color="neutral"
