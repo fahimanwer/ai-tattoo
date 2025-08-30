@@ -140,7 +140,7 @@ export default function PrivacyPolicyScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>8. Children's Privacy</Text>
+          <Text style={styles.sectionTitle}>8. Children&apos;s Privacy</Text>
           <Text style={styles.paragraph}>
             Our service is not intended for children under 13. We do not
             knowingly collect personal information from children under 13. If
@@ -165,7 +165,7 @@ export default function PrivacyPolicyScreen() {
           <Text style={styles.paragraph}>
             We may update this Privacy Policy from time to time. We will notify
             you of any changes by posting the new Privacy Policy on this page
-            and updating the "Last updated" date.
+            and updating the &quot;Last updated&quot; date.
           </Text>
         </View>
 

@@ -18,10 +18,10 @@ export default function TermsOfServiceScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>1. Acceptance of Terms</Text>
           <Text style={styles.paragraph}>
-            By accessing and using AI Tattoo Try On ("the Service"), you accept
-            and agree to be bound by the terms and provision of this agreement.
-            If you do not agree to abide by the above, please do not use this
-            service.
+            By accessing and using AI Tattoo Try On (&quot;the Service&quot;),
+            you accept and agree to be bound by the terms and provision of this
+            agreement. If you do not agree to abide by the above, please do not
+            use this service.
           </Text>
         </View>
 
@@ -108,7 +108,8 @@ export default function TermsOfServiceScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>6. Disclaimer of Warranties</Text>
           <Text style={styles.paragraph}>
-            The service is provided "as is" without warranties of any kind:
+            The service is provided &quot;as is&quot; without warranties of any
+            kind:
           </Text>
           <Text style={styles.bulletPoint}>
             • We do not guarantee the accuracy of tattoo previews

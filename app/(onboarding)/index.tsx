@@ -1,6 +1,5 @@
 import LinearGradientImageBlur from "@/components/LinearGradientImageBlur";
 import { AppleSignInButton } from "@/components/ui/AppleSignInButton";
-import { Button } from "@/components/ui/Button";
 import SignInWithGoogleButton from "@/components/ui/SignInWithGoogleButton";
 import { Text } from "@/components/ui/Text";
 
@@ -47,19 +46,6 @@ export default function Home() {
           </Text>
 
           <View style={{ gap: 16, marginTop: 32, width: "100%" }}>
-            <Button
-              title="Continue with Google"
-              color="neutral"
-              variant="solid"
-              radius="full"
-              size="lg"
-              onPress={() => {
-                authClient.signIn.social({
-                  provider: "google",
-                  callbackURL: "/(tabs)/home",
-                });
-              }}
-            />
             <SignInWithGoogleButton
               onPress={() => {
                 authClient.signIn.social({

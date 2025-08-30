@@ -29,11 +29,11 @@ export default function HomeScreen() {
             />
             <Text style={styles.title}>AI Tattoo Try On</Text>
             <Text style={styles.subtitle}>
-              Preview virtual tattoos on your body with AI – arm, leg, face &
+              Preview virtual tattoos on your body with AI - arm, leg, face &
               more
             </Text>
             <TouchableOpacity style={styles.ctaButton}>
-              <Text style={styles.ctaButtonText}>Try Now - It's Free!</Text>
+              <Text style={styles.ctaButtonText}>Try Now - Its free!</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.heroImage}>

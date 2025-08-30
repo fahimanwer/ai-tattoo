@@ -138,7 +138,7 @@ export function SwitchTheme({
         </Animated.View>
       );
     },
-    [onChange, setAccentHex, size, accentHex, scheme]
+    [onChange, setAccentHex, size, scheme]
   );
 
   return (
