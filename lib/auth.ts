@@ -17,14 +17,20 @@ export const auth = betterAuth({
   },
   plugins: [expo()],
   socialProviders: {
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    },
     google: {
       clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      prompt: "select_account",
+    },
+    apple: {
+      clientId: "dev.codewithbeto.aitattoo",
     },
   },
-  trustedOrigins: ["exp://", "aitattoo://**", "aitattoo:///(tabs)/home"],
+  trustedOrigins: [
+    "exp://",
+    "aitattoo://**",
+    "aitattoo:///(tabs)/home",
+    "https://tattoaiapp.com",
+    "https://appleid.apple.com",
+  ],
 });

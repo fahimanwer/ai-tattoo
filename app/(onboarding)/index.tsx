@@ -1,16 +1,14 @@
 import LinearGradientImageBlur from "@/components/LinearGradientImageBlur";
+import { AppleSignInButton } from "@/components/ui/AppleSignInButton";
 import { Button } from "@/components/ui/Button";
+import SignInWithGoogleButton from "@/components/ui/SignInWithGoogleButton";
 import { Text } from "@/components/ui/Text";
 
-import { AuthContext } from "@/context/AuthContext";
 import { authClient } from "@/lib/auth-client";
 
-import { use } from "react";
 import { StyleSheet, View } from "react-native";
 
 export default function Home() {
-  const { setIsAuthenticated } = use(AuthContext);
-
   return (
     <View style={styles.container}>
       <LinearGradientImageBlur
@@ -47,46 +45,41 @@ export default function Home() {
           >
             Preview virtual tattoos on your body with AI - arm, leg, face & more
           </Text>
-          <Button
-            title="Sign In with Google"
-            color="neutral"
-            variant="solid"
-            radius="full"
-            size="lg"
-            style={{ marginTop: 32 } as any}
-            onPress={() => {
-              authClient.signIn.social({
-                provider: "google",
-                callbackURL: "/(tabs)/home",
-              });
-            }}
-          />
-          <Button
-            title="Sign Up"
-            color="neutral"
-            variant="solid"
-            radius="full"
-            size="lg"
-            style={{ marginTop: 32 } as any}
-            onPress={() => {
-              authClient.signUp.email({
-                email: "test@test.com",
-                password: "abcd1234",
-                name: "Beto",
-              });
-            }}
-          />
-          <Button
-            title="Get started"
-            color="neutral"
-            variant="solid"
-            radius="full"
-            size="lg"
-            style={{ marginTop: 32 } as any}
-            onPress={() => {
-              setIsAuthenticated(true);
-            }}
-          />
+
+          <View style={{ gap: 16, marginTop: 32, width: "100%" }}>
+            <Button
+              title="Continue with Google"
+              color="neutral"
+              variant="solid"
+              radius="full"
+              size="lg"
+              onPress={() => {
+                authClient.signIn.social({
+                  provider: "google",
+                  callbackURL: "/(tabs)/home",
+                });
+              }}
+            />
+            <SignInWithGoogleButton
+              onPress={() => {
+                authClient.signIn.social({
+                  provider: "google",
+                  callbackURL: "/(tabs)/home",
+                });
+              }}
+            />
+            <AppleSignInButton />
+            {/* <Button
+              title="Get started"
+              color="neutral"
+              variant="solid"
+              radius="full"
+              size="lg"
+              onPress={() => {
+                setIsAuthenticated(true);
+              }}
+            /> */}
+          </View>
         </View>
       </View>
     </View>

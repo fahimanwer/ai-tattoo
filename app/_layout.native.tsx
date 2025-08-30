@@ -61,7 +61,7 @@ const importedFonts = {
 };
 
 SplashScreen.setOptions({
-  duration: 4000,
+  duration: 1000,
   fade: true,
 });
 SplashScreen.preventAutoHideAsync();

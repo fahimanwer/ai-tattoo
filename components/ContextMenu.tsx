@@ -1,3 +1,4 @@
+import { authClient } from "@/lib/auth-client";
 import * as React from "react";
 import { View } from "react-native";
 import {
@@ -94,10 +95,10 @@ const options = [
     type: "button",
   },
   {
-    title: "Delete List",
-    systemImage: "trash",
+    title: "Logout",
+    systemImage: "power",
     type: "button",
-    destructive: true,
+    action: authClient.signOut,
   },
 ];
 
@@ -119,7 +120,11 @@ export function ContextMenuProfile() {
             key={index}
             systemImage={option.systemImage}
             role={option.destructive ? "destructive" : undefined}
-            onPress={() => console.log(`Pressed: ${option.title}`)}
+            onPress={() => {
+              if (option.action) {
+                option.action();
+              }
+            }}
           >
             {option.title}
           </Button>
@@ -132,7 +137,7 @@ export function ContextMenuProfile() {
             value={switchStates[option.title] || false}
             label={option.title}
             variant="checkbox"
-            onValueChange={(value) =>
+            onValueChange={(value: boolean) =>
               setSwitchStates((prev) => ({ ...prev, [option.title]: value }))
             }
           />
