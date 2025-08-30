@@ -12,7 +12,6 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <LinearGradientImageBlur
-        // imageUrl="https://res.cloudinary.com/dkr1hluva/image/upload/v1756162154/code-with-beto-assets/starket-kit-bg-1.png"
         imageUrl={require("../../assets/images/model.png")}
         showBlur={false}
         showGradient={true}
@@ -56,16 +55,6 @@ export default function Home() {
               }}
             />
             <AppleSignInButton />
-            {/* <Button
-              title="Get started"
-              color="neutral"
-              variant="solid"
-              radius="full"
-              size="lg"
-              onPress={() => {
-                setIsAuthenticated(true);
-              }}
-            /> */}
           </View>
 
           <View style={styles.termsContainer}>

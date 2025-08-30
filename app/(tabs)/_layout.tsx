@@ -16,9 +16,9 @@ export default function TabLayout() {
         <Label>Inputs</Label>
         <Icon sf="ellipsis.rectangle" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="typography">
-        <Label>Typography</Label>
-        <Icon sf="character.cursor.ibeam" />
+      <NativeTabs.Trigger name="profile">
+        <Label>Profile</Label>
+        <Icon sf="person" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
