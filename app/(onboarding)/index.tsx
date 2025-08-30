@@ -48,6 +48,20 @@ export default function Home() {
             Preview virtual tattoos on your body with AI - arm, leg, face & more
           </Text>
           <Button
+            title="Sign In with Google"
+            color="neutral"
+            variant="solid"
+            radius="full"
+            size="lg"
+            style={{ marginTop: 32 } as any}
+            onPress={() => {
+              authClient.signIn.social({
+                provider: "google",
+                callbackURL: "/(tabs)/home",
+              });
+            }}
+          />
+          <Button
             title="Sign Up"
             color="neutral"
             variant="solid"

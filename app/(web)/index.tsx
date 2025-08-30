@@ -23,7 +23,7 @@ export default function HomeScreen() {
         <View style={styles.heroContent}>
           <View style={styles.heroText}>
             <Image
-              source={require("../assets/images/ios-tinted.png")}
+              source={require("../../assets/images/ios-tinted.png")}
               style={styles.appIcon}
               resizeMode="contain"
             />
@@ -38,7 +38,7 @@ export default function HomeScreen() {
           </View>
           <View style={styles.heroImage}>
             <Image
-              source={require("../assets/images/model.png")}
+              source={require("../../assets/images/model.png")}
               style={styles.modelImage}
               resizeMode="contain"
             />
@@ -128,12 +128,12 @@ export default function HomeScreen() {
       {/* Footer */}
       <View style={styles.footer}>
         <View style={styles.footerLinks}>
-          <Link href="/privacy-policy" asChild>
+          <Link href="/(web)/privacy-policy" asChild>
             <TouchableOpacity style={styles.footerLink}>
               <Text style={styles.footerLinkText}>Privacy Policy</Text>
             </TouchableOpacity>
           </Link>
-          <Link href="/terms-of-service" asChild>
+          <Link href="/(web)/terms-of-service" asChild>
             <TouchableOpacity style={styles.footerLink}>
               <Text style={styles.footerLinkText}>Terms of Service</Text>
             </TouchableOpacity>

@@ -31,11 +31,12 @@ import {
 import { Stack, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { use, useCallback, useEffect, useState } from "react";
-import { View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { AuthContext, AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { authClient } from "@/lib/auth-client";
 import "react-native-reanimated";
 
 const importedFonts = {
@@ -72,7 +73,9 @@ function AppContent() {
   const [backgroundColor, setBackgroundColor] = useState<string>(() =>
     getBackgroundColor()
   );
-  const { isAuthenticated } = use(AuthContext);
+  const { data: session, isPending } = authClient.useSession();
+
+  const isAuthenticated = !!session;
   const pathname = usePathname();
 
   const getDynamicTitle = () => {
@@ -93,8 +96,12 @@ function AppContent() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
+  if (!loaded || isPending) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
   }
 
   return (

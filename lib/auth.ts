@@ -26,5 +26,5 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
   },
-  trustedOrigins: ["exp://", "withbetterauth://"],
+  trustedOrigins: ["exp://", "aitattoo://**", "aitattoo:///(tabs)/home"],
 });
