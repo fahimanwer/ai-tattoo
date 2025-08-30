@@ -4,6 +4,7 @@ import SignInWithGoogleButton from "@/components/ui/SignInWithGoogleButton";
 import { Text } from "@/components/ui/Text";
 
 import { authClient } from "@/lib/auth-client";
+import { Link } from "expo-router";
 
 import { StyleSheet, View } from "react-native";
 
@@ -66,6 +67,17 @@ export default function Home() {
               }}
             /> */}
           </View>
+
+          <View style={styles.termsContainer}>
+            <Text type="sm" style={styles.termsText}>
+              By continuing you agree to our{" "}
+              <Link href="/terms-of-service" asChild>
+                <Text type="sm" style={styles.linkText}>
+                  Terms of Service
+                </Text>
+              </Link>
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -90,5 +102,26 @@ const styles = StyleSheet.create({
     zIndex: 3,
     paddingBottom: 32,
     paddingHorizontal: 16,
+  },
+
+  termsContainer: {
+    marginTop: 24,
+    alignItems: "center",
+    width: "100%",
+  },
+
+  termsText: {
+    textAlign: "center",
+    opacity: 0.7,
+    lineHeight: 20,
+  },
+
+  termsLink: {
+    // Empty style for inline TouchableOpacity
+  },
+
+  linkText: {
+    textDecorationLine: "underline",
+    opacity: 0.9,
   },
 });

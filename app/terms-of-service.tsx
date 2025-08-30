@@ -8,6 +8,7 @@ export default function TermsOfServiceScreen() {
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
+      contentInsetAdjustmentBehavior="automatic"
     >
       <View style={styles.content}>
         <Text style={styles.title}>Terms of Service</Text>
@@ -236,10 +237,7 @@ export default function TermsOfServiceScreen() {
             If you have any questions about these Terms of Service, please
             contact us at:
           </Text>
-          <Text style={styles.contactInfo}>Email: legal@aitattootry.com</Text>
-          <Text style={styles.contactInfo}>
-            Address: [Your Business Address]
-          </Text>
+          <Text style={styles.contactInfo}>Email: beto@codewithbeto.dev</Text>
         </View>
       </View>
     </ScrollView>

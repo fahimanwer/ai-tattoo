@@ -7,6 +7,7 @@ export default function PrivacyPolicyScreen() {
   return (
     <ScrollView
       style={styles.container}
+      contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.contentContainer}
     >
       <View style={styles.content}>
@@ -175,10 +176,7 @@ export default function PrivacyPolicyScreen() {
             If you have any questions about this Privacy Policy or our data
             practices, please contact us at:
           </Text>
-          <Text style={styles.contactInfo}>Email: privacy@aitattootry.com</Text>
-          <Text style={styles.contactInfo}>
-            Address: [Your Business Address]
-          </Text>
+          <Text style={styles.contactInfo}>Email: beto@codewithbeto.dev</Text>
         </View>
       </View>
     </ScrollView>

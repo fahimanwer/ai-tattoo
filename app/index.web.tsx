@@ -130,12 +130,12 @@ export default function HomeScreen() {
       {/* Footer */}
       <View style={styles.footer}>
         <View style={styles.footerLinks}>
-          <Link href="/(web)/privacy-policy" asChild>
+          <Link href="/privacy-policy" asChild>
             <TouchableOpacity style={styles.footerLink}>
               <Text style={styles.footerLinkText}>Privacy Policy</Text>
             </TouchableOpacity>
           </Link>
-          <Link href="/(web)/terms-of-service" asChild>
+          <Link href="/terms-of-service" asChild>
             <TouchableOpacity style={styles.footerLink}>
               <Text style={styles.footerLinkText}>Terms of Service</Text>
             </TouchableOpacity>
