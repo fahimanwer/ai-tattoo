@@ -1,6 +1,7 @@
 import LinearGradientImageBlur from "@/components/LinearGradientImageBlur";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
+import { Colors } from "@/constants/Colors";
 
 import { AuthContext } from "@/context/AuthContext";
 
@@ -13,9 +14,22 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <LinearGradientImageBlur
-        imageUrl="https://res.cloudinary.com/dkr1hluva/image/upload/v1756162154/code-with-beto-assets/starket-kit-bg-1.png"
-        showBlur={true}
+        // imageUrl="https://res.cloudinary.com/dkr1hluva/image/upload/v1756162154/code-with-beto-assets/starket-kit-bg-1.png"
+        imageUrl={require("../../assets/images/model.png")}
+        showBlur={false}
         showGradient={true}
+        gradientColors={{
+          light: [
+            "transparent",
+            Colors.light.background + "50",
+            Colors.light.background,
+          ],
+          dark: [
+            "transparent",
+            Colors.dark.background + "50",
+            Colors.dark.background,
+          ],
+        }}
       />
       <View style={styles.contentContainer}>
         <View
@@ -35,7 +49,7 @@ export default function Home() {
               } as any
             }
           >
-            STARTER KIT
+            AI TATTOO
           </Text>
           <Text
             type="title"
@@ -43,7 +57,7 @@ export default function Home() {
             weight="light"
             style={{ opacity: 0.6, lineHeight: 40 } as any}
           >
-            Build your next mobile app quickly.
+            Preview virtual tattoos on your body with AI - arm, leg, face & more
           </Text>
           <Button
             title="Get started"
