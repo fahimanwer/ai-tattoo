@@ -31,7 +31,7 @@ export default function SignInWithGoogleButton({
             marginRight: 6,
           }}
         />
-        <Text type="default" weight="semibold" darkColor="#000">
+        <Text type="xl" weight="semibold" darkColor="#000">
           Continue with Google
         </Text>
       </View>
