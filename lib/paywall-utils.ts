@@ -1,4 +1,6 @@
 import { PLUS_ENTITLEMENT_IDENTIFIER } from "@/hooks/useSubscription";
+import { Alert, Linking, Platform } from "react-native";
+import Purchases from "react-native-purchases";
 import RevenueCatUI, { PAYWALL_RESULT } from "react-native-purchases-ui";
 
 /**
@@ -115,5 +117,43 @@ export function handlePaywallResult(
     default:
       console.log("❓ Unknown paywall result:", result);
       return false;
+  }
+}
+
+/**
+ * Open subscription management for the user
+ * This will take them to their device's subscription settings
+ */
+export async function manageSubscription(): Promise<void> {
+  try {
+    const customerInfo = await Purchases.getCustomerInfo();
+
+    if (customerInfo.managementURL) {
+      // Use RevenueCat's management URL if available
+      await Linking.openURL(customerInfo.managementURL);
+    } else {
+      // Fallback to platform-specific subscription management
+      if (Platform.OS === "ios") {
+        await Linking.openURL("https://apps.apple.com/account/subscriptions");
+      } else if (Platform.OS === "android") {
+        await Linking.openURL(
+          "https://play.google.com/store/account/subscriptions"
+        );
+      } else {
+        // Web or other platforms
+        Alert.alert(
+          "Manage Subscription",
+          "Please visit your app store account to manage your subscription.",
+          [{ text: "OK", style: "default" }]
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error opening subscription management:", error);
+    Alert.alert(
+      "Error",
+      "Unable to open subscription management. Please try again or contact support.",
+      [{ text: "OK", style: "default" }]
+    );
   }
 }

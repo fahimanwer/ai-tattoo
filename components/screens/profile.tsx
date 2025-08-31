@@ -1,9 +1,8 @@
-import { SubscriptionCard } from "@/components/SubscriptionCard";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { useSubscription } from "@/hooks/useSubscription";
 import { authClient } from "@/lib/auth-client";
-import { presentPaywall } from "@/lib/paywall-utils";
+import { manageSubscription, presentPaywall } from "@/lib/paywall-utils";
 import {
   Alert,
   Image,
@@ -142,6 +141,10 @@ export function Profile() {
     }
   };
 
+  const handleManageSubscription = async () => {
+    await manageSubscription();
+  };
+
   if (!user) {
     return (
       <ScrollView contentInsetAdjustmentBehavior="automatic">
@@ -185,8 +188,6 @@ export function Profile() {
             </Text>
           </View>
         </View>
-
-        <SubscriptionCard />
 
         {/* Subscription Plan Section */}
         <View style={styles.section}>
@@ -294,6 +295,16 @@ export function Profile() {
                   🎉 You have full access to all Plus features! Thank you for
                   your support.
                 </Text>
+                <Button
+                  variant="outline"
+                  color="blue"
+                  title="Manage Subscription"
+                  symbol="gear"
+                  onPress={handleManageSubscription}
+                  haptic={true}
+                  hapticStyle="light"
+                  size="sm"
+                />
               </View>
             )}
           </View>
