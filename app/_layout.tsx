@@ -41,6 +41,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import { authClient } from "@/lib/auth-client";
 import "react-native-reanimated";
 
+import Purchases, { LOG_LEVEL } from "react-native-purchases";
+
 const importedFonts = {
   Oswald_200ExtraLight,
   Oswald_300Light,
@@ -86,6 +88,16 @@ function AppContent() {
     if (pathname.includes("/typography")) return "Typography";
     return "General";
   };
+
+  useEffect(() => {
+    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+
+    if (Platform.OS === "ios") {
+      Purchases.configure({ apiKey: "appl_TglDpVSpcsiykcYmEbXbHvlMwMG" });
+    } else if (Platform.OS === "android") {
+      //  Purchases.configure({apiKey: <revenuecat_project_google_api_key>});
+    }
+  }, []);
 
   useEffect(() => {
     const newColor = getBackgroundColor();

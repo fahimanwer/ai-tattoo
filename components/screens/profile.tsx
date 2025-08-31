@@ -1,6 +1,9 @@
+import { SubscriptionCard } from "@/components/SubscriptionCard";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
+import { useSubscription } from "@/hooks/useSubscription";
 import { authClient } from "@/lib/auth-client";
+import { presentPaywall } from "@/lib/paywall-utils";
 import {
   Alert,
   Image,
@@ -13,6 +16,11 @@ import {
 
 export function Profile() {
   const { data: session } = authClient.useSession();
+  const {
+    isPlusUser,
+    isLoading: subscriptionLoading,
+    refreshSubscriptionStatus,
+  } = useSubscription();
 
   const user = session?.user;
 
@@ -110,6 +118,30 @@ export function Profile() {
     }
   };
 
+  const handleUpgradeToPlus = async () => {
+    try {
+      const success = await presentPaywall();
+
+      if (success) {
+        // Refresh subscription status after successful purchase/restore
+        await refreshSubscriptionStatus();
+
+        Alert.alert(
+          "Welcome to Plus! 🎉",
+          "You now have access to all Plus features including unlimited generations and priority support.",
+          [{ text: "Awesome!", style: "default" }]
+        );
+      }
+    } catch (error) {
+      console.error("Error presenting paywall:", error);
+      Alert.alert(
+        "Error",
+        "Something went wrong. Please try again or contact support if the issue persists.",
+        [{ text: "OK", style: "default" }]
+      );
+    }
+  };
+
   if (!user) {
     return (
       <ScrollView contentInsetAdjustmentBehavior="automatic">
@@ -154,16 +186,29 @@ export function Profile() {
           </View>
         </View>
 
+        <SubscriptionCard />
+
         {/* Subscription Plan Section */}
         <View style={styles.section}>
           <Text type="subtitle" weight="bold" style={styles.sectionTitle}>
-            AI Tattoo Pro Plan
+            AI Tattoo Plus Plan
           </Text>
-          <View style={styles.planCard}>
+          <View style={[styles.planCard, isPlusUser && styles.proUserCard]}>
             <View style={styles.planHeader}>
-              <View style={styles.planBadge}>
-                <Text type="caption" weight="bold" style={styles.planBadgeText}>
-                  FREE PLAN
+              <View style={[styles.planBadge, isPlusUser && styles.proBadge]}>
+                <Text
+                  type="caption"
+                  weight="bold"
+                  style={[
+                    styles.planBadgeText,
+                    isPlusUser && styles.proBadgeText,
+                  ]}
+                >
+                  {subscriptionLoading
+                    ? "LOADING..."
+                    : isPlusUser
+                    ? "PLUS PLAN"
+                    : "FREE PLAN"}
                 </Text>
               </View>
               <Text type="lg" weight="bold">
@@ -171,44 +216,86 @@ export function Profile() {
               </Text>
             </View>
 
-            <View style={styles.usageStats}>
-              <View style={styles.usageStat}>
-                <Text type="default" weight="medium">
-                  Messages Remaining
-                </Text>
-                <Text type="lg" weight="bold" style={styles.usageNumber}>
-                  47/50
-                </Text>
+            {!isPlusUser && (
+              <View style={styles.usageStats}>
+                <View style={styles.usageStat}>
+                  <Text type="default" weight="medium">
+                    Messages Remaining
+                  </Text>
+                  <Text type="lg" weight="bold" style={styles.usageNumber}>
+                    47/50
+                  </Text>
+                </View>
+                <View style={styles.usageStat}>
+                  <Text type="default" weight="medium">
+                    Tattoo Generations
+                  </Text>
+                  <Text type="lg" weight="bold" style={styles.usageNumber}>
+                    3/5
+                  </Text>
+                </View>
               </View>
-              <View style={styles.usageStat}>
-                <Text type="default" weight="medium">
-                  Tattoo Generations
-                </Text>
-                <Text type="lg" weight="bold" style={styles.usageNumber}>
-                  3/5
-                </Text>
-              </View>
-            </View>
+            )}
 
-            <View style={styles.upgradeSection}>
-              <Text type="sm" style={styles.upgradeText}>
-                Upgrade to Pro for unlimited generations, priority support, and
-                exclusive features.
-              </Text>
-              <Button
-                variant="solid"
-                color="blue"
-                title="Try Pro Free"
-                symbol="crown.fill"
-                onPress={() => {
-                  // TODO: Implement upgrade flow
-                  console.log("Upgrade to Pro");
-                }}
-                haptic={true}
-                hapticStyle="light"
-                size="sm"
-              />
-            </View>
+            {isPlusUser && (
+              <View style={styles.usageStats}>
+                <View style={styles.usageStat}>
+                  <Text type="default" weight="medium">
+                    Messages
+                  </Text>
+                  <Text
+                    type="lg"
+                    weight="bold"
+                    style={[styles.usageNumber, styles.unlimitedText]}
+                  >
+                    ∞ Unlimited
+                  </Text>
+                </View>
+                <View style={styles.usageStat}>
+                  <Text type="default" weight="medium">
+                    Tattoo Generations
+                  </Text>
+                  <Text
+                    type="lg"
+                    weight="bold"
+                    style={[styles.usageNumber, styles.unlimitedText]}
+                  >
+                    ∞ Unlimited
+                  </Text>
+                </View>
+              </View>
+            )}
+
+            {!isPlusUser && (
+              <View style={styles.upgradeSection}>
+                <Text type="sm" style={styles.upgradeText}>
+                  Upgrade to Plus for unlimited generations, priority support,
+                  and exclusive features.
+                </Text>
+                <Button
+                  variant="solid"
+                  color="blue"
+                  title="Try Plus Free"
+                  symbol="crown.fill"
+                  onPress={handleUpgradeToPlus}
+                  haptic={true}
+                  hapticStyle="light"
+                  size="sm"
+                />
+              </View>
+            )}
+
+            {isPlusUser && (
+              <View style={styles.upgradeSection}>
+                <Text
+                  type="sm"
+                  style={[styles.upgradeText, styles.proUserText]}
+                >
+                  🎉 You have full access to all Plus features! Thank you for
+                  your support.
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -405,6 +492,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(59, 130, 246, 0.2)",
   },
+  proUserCard: {
+    backgroundColor: "rgba(34, 197, 94, 0.08)",
+    borderColor: "rgba(34, 197, 94, 0.3)",
+  },
   planHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -422,6 +513,13 @@ const styles = StyleSheet.create({
     color: "#16a34a",
     fontSize: 10,
     letterSpacing: 0.5,
+  },
+  proBadge: {
+    backgroundColor: "rgba(168, 85, 247, 0.15)",
+    borderColor: "rgba(168, 85, 247, 0.3)",
+  },
+  proBadgeText: {
+    color: "#a855f7",
   },
   usageStats: {
     gap: 12,
@@ -443,6 +541,13 @@ const styles = StyleSheet.create({
   upgradeText: {
     opacity: 0.8,
     lineHeight: 18,
+  },
+  unlimitedText: {
+    color: "#16a34a",
+  },
+  proUserText: {
+    color: "#16a34a",
+    opacity: 1,
   },
   settingsRow: {
     flexDirection: "row",
