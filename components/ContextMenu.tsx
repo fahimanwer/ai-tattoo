@@ -1,8 +1,7 @@
 import { useSubscription } from "@/hooks/useSubscription";
 import { authClient } from "@/lib/auth-client";
-import { manageSubscription, presentPaywall } from "@/lib/paywall-utils";
 import * as React from "react";
-import { Alert, Linking, Share, View } from "react-native";
+import { Linking, Share, View } from "react-native";
 import {
   Button,
   ContextMenu,
@@ -17,49 +16,6 @@ const getProfileOptions = (
   user: any,
   refreshSubscriptionStatus: () => Promise<void>
 ) => [
-  {
-    title: "Subscription",
-    systemImage: "crown",
-    type: "submenu",
-    items: [
-      ...(isPlusUser
-        ? [
-            {
-              title: "Manage Subscription",
-              systemImage: "gear",
-              type: "button",
-              action: manageSubscription,
-            },
-          ]
-        : [
-            {
-              title: "Upgrade to Plus",
-              systemImage: "crown.fill",
-              type: "button",
-              action: async () => {
-                try {
-                  const success = await presentPaywall();
-                  if (success) {
-                    await refreshSubscriptionStatus();
-                    Alert.alert(
-                      "Welcome to Plus! 🎉",
-                      "You now have access to all Plus features including unlimited generations and priority support.",
-                      [{ text: "Awesome!", style: "default" }]
-                    );
-                  }
-                } catch (error) {
-                  console.error("Error presenting paywall:", error);
-                  Alert.alert(
-                    "Error",
-                    "Something went wrong. Please try again or contact support if the issue persists.",
-                    [{ text: "OK", style: "default" }]
-                  );
-                }
-              },
-            },
-          ]),
-    ],
-  },
   {
     title: "Support & Feedback",
     systemImage: "questionmark.circle",
@@ -141,52 +97,6 @@ const getProfileOptions = (
           } catch (error) {
             console.error("Error opening terms of service:", error);
           }
-        },
-      },
-    ],
-  },
-  {
-    title: "Account",
-    systemImage: "person.circle",
-    type: "submenu",
-    items: [
-      {
-        title: "Sign Out",
-        systemImage: "arrow.right.square",
-        type: "button",
-        action: authClient.signOut,
-      },
-      {
-        title: "Delete Account",
-        systemImage: "trash",
-        type: "button",
-        destructive: true,
-        action: () => {
-          Alert.alert(
-            "Delete Account",
-            "Are you sure you want to delete your account? This action is irreversible and will permanently remove all your data, including your tattoo designs and account information.",
-            [
-              {
-                text: "Cancel",
-                style: "cancel",
-              },
-              {
-                text: "Delete Account",
-                style: "destructive",
-                onPress: async () => {
-                  try {
-                    await authClient.deleteUser();
-                  } catch (error) {
-                    console.error("Error deleting account:", error);
-                    Alert.alert(
-                      "Error",
-                      "Failed to delete account. Please try again or contact support."
-                    );
-                  }
-                },
-              },
-            ]
-          );
         },
       },
     ],

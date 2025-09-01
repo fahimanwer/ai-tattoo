@@ -1,13 +1,26 @@
-import { Text } from "@/components/ui/Text";
 import { useSubscription } from "@/hooks/useSubscription";
 import { authClient } from "@/lib/auth-client";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { manageSubscription, presentPaywall } from "@/lib/paywall-utils";
+import { cornerRadius, frame } from "@expo/ui/build/swift-ui/modifiers";
+import {
+  Button,
+  DisclosureGroup,
+  Form,
+  Gauge,
+  Host,
+  HStack,
+  Section,
+  Text,
+  VStack,
+} from "@expo/ui/swift-ui";
+import { Image as ExpoImage } from "expo-image";
+import { useState } from "react";
+import { Alert } from "react-native";
 
-export function Profile() {
+function ProfileSection() {
   const { data: session } = authClient.useSession();
-  const { isPlusUser, isLoading: subscriptionLoading } = useSubscription();
-
   const user = session?.user;
+  const [profileExpanded, setProfileExpanded] = useState(false);
 
   const getInitials = (name?: string) => {
     if (!name) return "";
@@ -19,303 +32,189 @@ export function Profile() {
       .slice(0, 2);
   };
 
+  const handleSignOut = () => {
+    authClient.signOut();
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to delete your account? This action is irreversible and will permanently remove all your data, including your tattoo designs and account information.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete Account",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await authClient.deleteUser();
+            } catch (error) {
+              console.error("Error deleting account:", error);
+              Alert.alert(
+                "Error",
+                "Failed to delete account. Please try again or contact support."
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const displayName = user?.name?.includes("@")
+    ? user.name.slice(0, user.name.indexOf("@"))
+    : user?.name || "Unknown User";
+
   if (!user) {
     return (
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={styles.subcontainer}>
-          <Text type="subtitle" weight="bold">
-            Not signed in
-          </Text>
-        </View>
-      </ScrollView>
+      <Section>
+        <Text size={16}>Not signed in</Text>
+      </Section>
     );
   }
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ paddingBottom: 100 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <View style={styles.subcontainer}>
-        {/* User Profile Header */}
-        <View style={styles.profileHeader}>
-          <View style={styles.avatarContainer}>
-            {user.image ? (
-              <Image source={{ uri: user.image }} style={styles.avatar} />
-            ) : (
-              <View style={styles.avatarFallback}>
-                <Text type="title" weight="bold" style={styles.avatarText}>
-                  {getInitials(user.name)}
-                </Text>
-              </View>
-            )}
-          </View>
-          <View style={styles.userInfo}>
-            <Text type="title" weight="bold">
-              {(user.name?.includes("@")
-                ? user.name.slice(0, user.name.indexOf("@"))
-                : user.name) || "Unknown User"}
+    <Section>
+      <HStack spacing={16}>
+        <HStack
+          modifiers={[frame({ width: 80, height: 80 }), cornerRadius(40)]}
+        >
+          {user.image ? (
+            <ExpoImage
+              source={{ uri: user.image }}
+              style={{ width: 80, height: 80 }}
+              contentFit="cover"
+            />
+          ) : (
+            <Text size={24} weight="bold">
+              {getInitials(user.name)}
             </Text>
-            <Text type="body" style={styles.emailText}>
-              {user.email}
-            </Text>
-          </View>
-        </View>
+          )}
+        </HStack>
 
-        {/* Account Information Section */}
-        <View style={styles.section}>
-          <Text type="subtitle" weight="bold" style={styles.sectionTitle}>
-            Account Information
+        <VStack alignment="leading" spacing={4}>
+          <Text size={22} weight="bold">
+            {displayName}
           </Text>
-          <View style={styles.settingsGroup}>
-            <View style={styles.settingsRow}>
-              <Text type="xs" weight="light" style={styles.userIdLabel}>
-                User ID
-              </Text>
-              <Text type="xs" style={styles.userIdValue}>
-                {user.id}
-              </Text>
-            </View>
-            <View style={styles.settingsRow}>
-              <Text type="default" weight="medium">
-                Name
-              </Text>
-              <Text type="default" style={styles.settingsValue}>
-                {user.name || "Not provided"}
-              </Text>
-            </View>
-            <View style={styles.settingsRow}>
-              <Text type="default" weight="medium">
-                Email
-              </Text>
-              <Text type="default" style={styles.settingsValue}>
-                {user.email}
-              </Text>
-            </View>
-            <View style={styles.settingsRow}>
-              <Text type="default" weight="medium">
-                Email Verified
-              </Text>
-              <Text type="default" style={styles.settingsValue}>
-                {user.emailVerified ? "Yes" : "No"}
-              </Text>
-            </View>
-            <View style={styles.settingsRow}>
-              <Text type="default" weight="medium">
-                Account Created
-              </Text>
-              <Text type="default" style={styles.settingsValue}>
-                {new Date(user.createdAt).toLocaleDateString()}
-              </Text>
-            </View>
-          </View>
-        </View>
+          <Text size={16}>{user.email}</Text>
+        </VStack>
+      </HStack>
 
-        {/* Current Plan Section */}
-        <View style={styles.section}>
-          <Text type="subtitle" weight="bold" style={styles.sectionTitle}>
-            Current Plan
-          </Text>
-          <View style={[styles.planCard, isPlusUser && styles.proUserCard]}>
-            <View style={styles.planHeader}>
-              <View style={[styles.planBadge, isPlusUser && styles.proBadge]}>
-                <Text
-                  type="caption"
-                  weight="bold"
-                  style={[
-                    styles.planBadgeText,
-                    isPlusUser && styles.proBadgeText,
-                  ]}
-                >
-                  {subscriptionLoading
-                    ? "LOADING..."
-                    : isPlusUser
-                    ? "PLUS PLAN"
-                    : "FREE PLAN"}
-                </Text>
-              </View>
-            </View>
+      <DisclosureGroup
+        onStateChange={setProfileExpanded}
+        isExpanded={profileExpanded}
+        label="Profile Settings"
+      >
+        <Button onPress={handleSignOut}>Sign Out</Button>
 
-            {!isPlusUser && (
-              <View style={styles.usageStats}>
-                <View style={styles.usageStat}>
-                  <Text type="default" weight="medium">
-                    Messages Remaining
-                  </Text>
-                  <Text type="lg" weight="bold" style={styles.usageNumber}>
-                    47/50
-                  </Text>
-                </View>
-                <View style={styles.usageStat}>
-                  <Text type="default" weight="medium">
-                    Tattoo Generations
-                  </Text>
-                  <Text type="lg" weight="bold" style={styles.usageNumber}>
-                    3/5
-                  </Text>
-                </View>
-              </View>
-            )}
-
-            {isPlusUser && (
-              <View style={styles.usageStats}>
-                <View style={styles.usageStat}>
-                  <Text type="default" weight="medium">
-                    Messages
-                  </Text>
-                  <Text
-                    type="lg"
-                    weight="bold"
-                    style={[styles.usageNumber, styles.unlimitedText]}
-                  >
-                    ∞ Unlimited
-                  </Text>
-                </View>
-                <View style={styles.usageStat}>
-                  <Text type="default" weight="medium">
-                    Tattoo Generations
-                  </Text>
-                  <Text
-                    type="lg"
-                    weight="bold"
-                    style={[styles.usageNumber, styles.unlimitedText]}
-                  >
-                    ∞ Unlimited
-                  </Text>
-                </View>
-              </View>
-            )}
-          </View>
-        </View>
-      </View>
-    </ScrollView>
+        <Button role="destructive" onPress={handleDeleteAccount}>
+          Delete Account
+        </Button>
+      </DisclosureGroup>
+    </Section>
   );
 }
 
-const styles = StyleSheet.create({
-  subcontainer: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 24,
-    gap: 32,
-  },
-  profileHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    paddingBottom: 16,
-  },
-  avatarContainer: {
-    width: 80,
-    height: 80,
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-  },
-  avatarFallback: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#E5E7EB",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  avatarText: {
-    color: "#6B7280",
-  },
-  userInfo: {
-    flex: 1,
-    gap: 4,
-  },
-  emailText: {
-    opacity: 0.7,
-  },
-  section: {
-    gap: 12,
-  },
-  sectionTitle: {
-    marginBottom: 8,
-  },
-  settingsGroup: {
-    backgroundColor: "rgba(0,0,0,0.05)",
-    borderRadius: 12,
-    padding: 16,
-    gap: 16,
-  },
-  planCard: {
-    backgroundColor: "rgba(59, 130, 246, 0.08)",
-    borderRadius: 16,
-    padding: 16,
-    gap: 16,
-    borderWidth: 1,
-    borderColor: "rgba(59, 130, 246, 0.2)",
-  },
-  proUserCard: {
-    backgroundColor: "rgba(34, 197, 94, 0.08)",
-    borderColor: "rgba(34, 197, 94, 0.3)",
-  },
-  planHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-  planBadge: {
-    backgroundColor: "rgba(34, 197, 94, 0.15)",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(34, 197, 94, 0.3)",
-  },
-  planBadgeText: {
-    color: "#16a34a",
-    fontSize: 10,
-    letterSpacing: 0.5,
-  },
-  proBadge: {
-    backgroundColor: "rgba(168, 85, 247, 0.15)",
-    borderColor: "rgba(168, 85, 247, 0.3)",
-  },
-  proBadgeText: {
-    color: "#a855f7",
-  },
-  usageStats: {
-    gap: 12,
-  },
-  usageStat: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  usageNumber: {
-    color: "#3b82f6",
-  },
-  unlimitedText: {
-    color: "#16a34a",
-  },
-  settingsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    minHeight: 24,
-  },
-  settingsValue: {
-    opacity: 0.7,
-    textAlign: "right",
-    flex: 1,
-    marginLeft: 16,
-  },
-  userIdLabel: {
-    opacity: 0.5,
-  },
-  userIdValue: {
-    opacity: 0.4,
-    textAlign: "right",
-    flex: 1,
-    marginLeft: 16,
-    fontFamily: "monospace",
-  },
-});
+function CurrentPlanSection() {
+  const {
+    isPlusUser,
+    isLoading: subscriptionLoading,
+    refreshSubscriptionStatus,
+  } = useSubscription();
+  const [subscriptionExpanded, setSubscriptionExpanded] = useState(false);
+
+  const planText = subscriptionLoading
+    ? "LOADING..."
+    : isPlusUser
+    ? "Usage"
+    : "FREE PLAN";
+
+  const handleUpgradeToPlus = async () => {
+    try {
+      const success = await presentPaywall();
+      if (success) {
+        await refreshSubscriptionStatus();
+        Alert.alert(
+          "Welcome to Plus! 🎉",
+          "You now have access to all Plus features including unlimited generations and priority support.",
+          [{ text: "Awesome!", style: "default" }]
+        );
+      }
+    } catch (error) {
+      console.error("Error presenting paywall:", error);
+      Alert.alert(
+        "Error",
+        "Something went wrong. Please try again or contact support if the issue persists.",
+        [{ text: "OK", style: "default" }]
+      );
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    await manageSubscription();
+  };
+
+  return (
+    <Section title={planText}>
+      <VStack spacing={12} alignment="leading">
+        {!isPlusUser ? (
+          <>
+            <Text size={14} weight="medium">
+              Messages Remaining
+            </Text>
+            <Text size={16} weight="bold" color="#3b82f6">
+              47/50
+            </Text>
+            <Text size={14} weight="medium">
+              Tattoo Generations
+            </Text>
+            <Text size={16} weight="bold" color="#3b82f6">
+              3/5
+            </Text>
+          </>
+        ) : (
+          <VStack>
+            <Text size={16} weight="bold" color="#3b82f6">
+              Plus Plan
+            </Text>
+            <Gauge
+              current={{ value: 20 }}
+              type="default"
+              label={"20 / 30 Tattoo Generations"}
+              max={{ value: 30, label: "30" }}
+              min={{ value: 0, label: "0" }}
+            />
+          </VStack>
+        )}
+      </VStack>
+
+      <DisclosureGroup
+        onStateChange={setSubscriptionExpanded}
+        isExpanded={subscriptionExpanded}
+        label="Subscription Settings"
+      >
+        {isPlusUser ? (
+          <Button onPress={handleManageSubscription}>
+            Manage Subscription
+          </Button>
+        ) : (
+          <Button onPress={handleUpgradeToPlus}>Upgrade to Plus</Button>
+        )}
+      </DisclosureGroup>
+    </Section>
+  );
+}
+
+export function Profile() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <ProfileSection />
+        <CurrentPlanSection />
+      </Form>
+    </Host>
+  );
+}
