@@ -26,3 +26,23 @@ tattoo app
 - Prisma
 - Expo and EAS
 - Expo UI
+
+# Docs
+
+- https://ai.google.dev/gemini-api/docs/image-generation#rest
+
+# Pricing
+
+FREE -> 3–5 free generations on signup.
+
+SUB ->
+STARTER
+• $4.99/month → 125 generations.
+PLUS
+• $9.99/month → 300 generations.
+PRO
+• $29.99/month → 1,000 generations.
+
+You can also:
+• Fair use cap (e.g. “up to 1200 generations/month”).
+• Offer annual discount ($99/yr Pro).
