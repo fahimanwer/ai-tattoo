@@ -172,19 +172,48 @@ export default function TermsOfServiceScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>9. Prohibited Uses</Text>
-          <Text style={styles.paragraph}>You may not use the service for:</Text>
+          <Text style={styles.sectionTitle}>
+            9. AI Service and Third-Party Technologies
+          </Text>
+          <Text style={styles.paragraph}>
+            Our service utilizes Google Gemini AI technology and other
+            third-party services to provide tattoo simulation features. By using
+            our service, you acknowledge and agree that:
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Your images may be processed by Google AI services
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • You must comply with Google Generative AI Prohibited Use Policy
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • AI-generated previews are simulations and may not be perfectly
+            accurate
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • We may update or change AI providers without prior notice
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Third-party service availability may affect our functionality
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            10. Prohibited Uses and Content Restrictions
+          </Text>
+          <Text style={styles.paragraph}>
+            In accordance with our AI service providers policies and applicable
+            laws, you may not use the service for any of the following
+            prohibited activities:
+          </Text>
+
+          <Text style={styles.subSectionTitle}>General Prohibited Uses:</Text>
           <Text style={styles.bulletPoint}>
             • Any unlawful purpose or activity
           </Text>
           <Text style={styles.bulletPoint}>
-            • Uploading inappropriate or offensive images
-          </Text>
-          <Text style={styles.bulletPoint}>
             • Violating any intellectual property rights
-          </Text>
-          <Text style={styles.bulletPoint}>
-            • Attempting to harm or exploit minors
           </Text>
           <Text style={styles.bulletPoint}>
             • Transmitting viruses or malicious code
@@ -192,38 +221,153 @@ export default function TermsOfServiceScreen() {
           <Text style={styles.bulletPoint}>
             • Commercial use without authorization
           </Text>
-        </View>
+          <Text style={styles.bulletPoint}>
+            • Circumventing our safety filters or abuse protections
+          </Text>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>10. Account Termination</Text>
-          <Text style={styles.paragraph}>
-            We reserve the right to terminate or suspend accounts that violate
-            these terms. You may also terminate your account at any time by
-            contacting us or using the account deletion feature in the app.
+          <Text style={styles.subSectionTitle}>
+            Content Restrictions - You may not upload or generate:
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Content relating to child sexual abuse or exploitation
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Content that facilitates violent extremism or terrorism
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Non-consensual intimate imagery
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Content that facilitates self-harm
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Sexually explicit content created for pornography or sexual
+            gratification
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Content promoting hatred, harassment, bullying, or violence
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Content that violates others privacy rights or uses personal data
+            without consent
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Content intended for fraud, scams, or deceptive practices
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Content that impersonates individuals to deceive others
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Spam, phishing, or malware-related content
+          </Text>
+
+          <Text style={styles.subSectionTitle}>
+            Age and Safety Restrictions:
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Images of minors (under 18) without verifiable parental consent
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Content that could facilitate harm to minors
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Images that track or monitor people without their consent
           </Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>11. Age Restrictions</Text>
+          <Text style={styles.sectionTitle}>
+            11. AI-Generated Content Disclaimer
+          </Text>
+          <Text style={styles.paragraph}>
+            Important disclaimers regarding AI-generated content:
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • All tattoo previews are AI-generated simulations, not medical or
+            professional advice
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • AI results may contain inaccuracies, artifacts, or unexpected
+            variations
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Generated content should not be considered as human-created
+            artwork
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • We cannot guarantee the accuracy, completeness, or suitability of
+            AI outputs
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Users should verify all results and consult professionals before
+            making decisions
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • AI processing is subject to the terms and limitations of our
+            third-party providers
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            12. Content Monitoring and Enforcement
+          </Text>
+          <Text style={styles.paragraph}>
+            To ensure compliance with these terms and our AI providers policies:
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • We may monitor uploaded content using automated systems
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Prohibited content will be automatically rejected or removed
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Repeated violations may result in account suspension or
+            termination
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • We reserve the right to refuse service to users who violate
+            policies
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Appeals for content decisions can be submitted through our support
+            channels
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>13. Account Termination</Text>
+          <Text style={styles.paragraph}>
+            We reserve the right to terminate or suspend accounts that violate
+            these terms, including violations of AI service provider policies.
+            You may also terminate your account at any time by contacting us or
+            using the account deletion feature in the app.
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>14. Age Restrictions</Text>
           <Text style={styles.paragraph}>
             Users must be at least 13 years old to use this service. Users under
             18 should have parental supervision and consent before making any
             tattoo-related decisions. Always check local laws regarding tattoo
-            age restrictions.
+            age restrictions. We do not knowingly process images of minors
+            without proper consent.
           </Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>12. Changes to Terms</Text>
+          <Text style={styles.sectionTitle}>15. Changes to Terms</Text>
           <Text style={styles.paragraph}>
-            We reserve the right to modify these terms at any time. Users will
-            be notified of significant changes, and continued use of the service
-            constitutes acceptance of modified terms.
+            We reserve the right to modify these terms at any time, including
+            changes required by our AI service providers or applicable law.
+            Users will be notified of significant changes, and continued use of
+            the service constitutes acceptance of modified terms.
           </Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>13. Governing Law</Text>
+          <Text style={styles.sectionTitle}>16. Governing Law</Text>
           <Text style={styles.paragraph}>
             These terms shall be governed by and construed in accordance with
             the laws of [Your Jurisdiction], without regard to its conflict of
@@ -232,7 +376,7 @@ export default function TermsOfServiceScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>14. Contact Information</Text>
+          <Text style={styles.sectionTitle}>17. Contact Information</Text>
           <Text style={styles.paragraph}>
             If you have any questions about these Terms of Service, please
             contact us at:
@@ -300,5 +444,12 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     lineHeight: 24,
     marginBottom: 4,
+  },
+  subSectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#ffffff",
+    marginTop: 16,
+    marginBottom: 8,
   },
 });
