@@ -9,11 +9,17 @@ export default function ProfileLayout() {
     <Stack
       screenOptions={{
         ...largeHeaderOptions,
-        title: "Home",
-        headerLeft: () => <ContextMenuProfile />,
       }}
     >
-      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "Home",
+          headerLeft: () => <ContextMenuProfile />,
+        }}
+      />
+      <Stack.Screen name="new" />
+      <Stack.Screen name="choose-photo" />
     </Stack>
   );
 }

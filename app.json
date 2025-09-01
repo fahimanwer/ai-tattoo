@@ -42,6 +42,20 @@
           "backgroundColor": "#000000"
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to let you select a tattoo to try on."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to take a photo of your arm, leg, or face to try on a tattoo.",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone to take a photo of your arm, leg, or face to try on a tattoo.",
+          "recordAudioAndroid": true
+        }
+      ],
       "expo-apple-authentication",
       "expo-font",
       "expo-web-browser",

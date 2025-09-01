@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
+import { Link } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 export function Home() {
@@ -12,14 +13,16 @@ export function Home() {
         <Text type="subtitle" weight="bold">
           Generate a tattoo
         </Text>
-        <Button
-          symbol="plus"
-          variant="solid"
-          haptic
-          color="black"
-          title="Generate"
-          onPress={() => {}}
-        />
+        <Link href="/home/new" asChild>
+          <Button
+            symbol="plus"
+            variant="solid"
+            haptic
+            color="black"
+            title="Generate"
+            onPress={() => {}}
+          />
+        </Link>
       </View>
     </ScrollView>
   );
