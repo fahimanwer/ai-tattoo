@@ -20,6 +20,7 @@ export default function ProfileLayout() {
       />
       <Stack.Screen name="new" />
       <Stack.Screen name="choose-photo" />
+      <Stack.Screen name="tattoo-result" />
     </Stack>
   );
 }

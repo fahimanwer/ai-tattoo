@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
+import { Link } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
@@ -107,18 +108,17 @@ export function ChoosePhotoScreen() {
           </ScrollView>
         )}
 
-        <Button
-          symbol="arrow.right"
-          variant="solid"
-          haptic
-          color="black"
-          title="Continue"
-          disabled={!selectedPhoto}
-          onPress={() => {
-            // TODO: Navigate to next screen with selected photo
-            console.log("Selected photo:", selectedPhoto);
-          }}
-        />
+        <Link href="/home/tattoo-result" asChild>
+          <Button
+            symbol="arrow.right"
+            variant="solid"
+            haptic
+            color="black"
+            title="Continue"
+            disabled={!selectedPhoto}
+            onPress={() => {}}
+          />
+        </Link>
 
         <Button
           symbol="camera"
