@@ -56,6 +56,14 @@
           "recordAudioAndroid": true
         }
       ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to select a photo to try on a tattoo.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos to select a photo to try on a tattoo.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
       "expo-apple-authentication",
       "expo-font",
       "expo-web-browser",
