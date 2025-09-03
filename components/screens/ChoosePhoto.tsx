@@ -108,12 +108,12 @@ export function ChoosePhotoScreen() {
           </ScrollView>
         )}
 
-        <Link href="/home/tattoo-result" asChild>
+        <Link href="/home/tattoo-result" asChild style={{ marginTop: 16 }}>
           <Button
             symbol="arrow.right"
             variant="solid"
             haptic
-            color="black"
+            color="orange"
             title="Continue"
             disabled={!selectedPhoto}
             onPress={() => {}}
