@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <LinearGradientImageBlur
-        imageUrl={require("../../assets/images/model.png")}
+        imageUrl={require("../../assets/images/home.png")}
         showBlur={false}
         showGradient={true}
       />
@@ -25,23 +25,18 @@ export default function Home() {
           }}
         >
           <Text
-            type="9xl"
+            type="7xl"
             variant="poster"
             weight="black"
             style={
               {
-                letterSpacing: -10,
+                letterSpacing: -2,
               } as any
             }
           >
             AI TATTOO
           </Text>
-          <Text
-            type="title"
-            variant="poster"
-            weight="light"
-            style={{ opacity: 0.6, lineHeight: 40 } as any}
-          >
+          <Text type="xl" weight="normal" style={{ opacity: 0.6 } as any}>
             Preview virtual tattoos on your body with AI - arm, leg, face & more
           </Text>
 

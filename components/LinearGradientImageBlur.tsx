@@ -59,7 +59,12 @@ export default function LinearGradientImageBlur({
       {/* Image Section*/}
       {showImage || imageUrl ? (
         <View style={styles.imageContainer}>
-          <Image style={styles.image} source={imageUrl} />
+          <Image
+            style={styles.image}
+            contentFit="cover"
+            contentPosition="top"
+            source={imageUrl}
+          />
         </View>
       ) : null}
 
