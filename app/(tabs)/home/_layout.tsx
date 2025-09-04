@@ -18,9 +18,27 @@ export default function ProfileLayout() {
           headerLeft: () => <ContextMenuProfile />,
         }}
       />
-      <Stack.Screen name="new" />
-      <Stack.Screen name="choose-photo" />
-      <Stack.Screen name="tattoo-result" />
+      <Stack.Screen
+        name="new"
+        options={{
+          headerBackButtonDisplayMode: "minimal",
+          headerLargeTitle: false,
+        }}
+      />
+      <Stack.Screen
+        name="choose-photo"
+        options={{
+          headerBackButtonDisplayMode: "minimal",
+          headerLargeTitle: false,
+        }}
+      />
+      <Stack.Screen
+        name="tattoo-result"
+        options={{
+          headerBackButtonDisplayMode: "minimal",
+          headerLargeTitle: false,
+        }}
+      />
     </Stack>
   );
 }

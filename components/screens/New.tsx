@@ -15,49 +15,46 @@ export function New() {
   );
   const [selectedColor, setSelectedColor] = useState<ColorOption | null>(null);
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ paddingHorizontal: 16 }}
-    >
+    <ScrollView contentInsetAdjustmentBehavior="automatic">
       <View style={styles.section}>
         <Text type="subtitle" weight="bold">
           Select a tattoo
         </Text>
         <Text type="body">Select a tattoo to try on</Text>
-
-        <ScrollView horizontal style={{ flex: 1, height: 200 }}>
-          {featuredTattoos.map((tattoo) => (
-            <Pressable
-              key={tattoo.id}
-              onPress={() => setSelectedTattoo(tattoo)}
-            >
-              <Image
-                key={tattoo.id}
-                source={tattoo.image}
-                style={{
-                  width: 160,
-                  height: 160,
-                  borderWidth: 3.5,
-                  marginLeft: 8,
-                  borderRadius: 16,
-                  borderColor:
-                    selectedTattoo?.id === tattoo.id
-                      ? Color.orange[400]
-                      : "transparent",
-                }}
-                contentFit="contain"
-              />
-              <Text
-                type="body"
-                weight="bold"
-                style={{ textAlign: "center", marginTop: 8 }}
-              >
-                {tattoo.title}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
       </View>
+      <ScrollView
+        horizontal
+        style={{ flex: 1, height: 200, paddingHorizontal: 16 }}
+        showsHorizontalScrollIndicator={false}
+      >
+        {featuredTattoos.map((tattoo) => (
+          <Pressable key={tattoo.id} onPress={() => setSelectedTattoo(tattoo)}>
+            <Image
+              key={tattoo.id}
+              source={tattoo.image}
+              style={{
+                width: 160,
+                height: 160,
+                borderWidth: 3.5,
+                marginLeft: 8,
+                borderRadius: 16,
+                borderColor:
+                  selectedTattoo?.id === tattoo.id
+                    ? Color.orange[400]
+                    : "transparent",
+              }}
+              contentFit="contain"
+            />
+            <Text
+              type="body"
+              weight="bold"
+              style={{ textAlign: "center", marginTop: 8 }}
+            >
+              {tattoo.title}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
 
       <View style={styles.section}>
         <Text type="subtitle" weight="bold">
@@ -104,6 +101,7 @@ export function New() {
 const styles = StyleSheet.create({
   section: {
     gap: 8,
+    paddingHorizontal: 16,
   },
   colorOptions: {
     flexDirection: "row",
