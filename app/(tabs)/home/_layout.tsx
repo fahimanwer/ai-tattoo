@@ -1,12 +1,14 @@
 import { ContextMenuProfile } from "@/components/ContextMenu";
 import { useLargeHeaderOptions } from "@/constants/navigation-options";
+import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import { Stack } from "expo-router";
 
 export default function ProfileLayout() {
   const largeHeaderOptions = useLargeHeaderOptions();
 
   return (
-    <Stack
+    <TattooCreationProvider>
+      <Stack
       screenOptions={{
         ...largeHeaderOptions,
       }}
@@ -40,5 +42,6 @@ export default function ProfileLayout() {
         }}
       />
     </Stack>
+    </TattooCreationProvider>
   );
 }

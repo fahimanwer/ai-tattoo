@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
+import { useTattooCreation } from "@/context/TattooCreationContext";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import { Link } from "expo-router";
@@ -7,12 +8,21 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 export function ChoosePhotoScreen() {
-  const [selectedPhoto, setSelectedPhoto] = useState<MediaLibrary.Asset | null>(
-    null
-  );
+  const { 
+    selectedPhoto, 
+    setSelectedPhoto, 
+    setCurrentStep,
+    nextStep 
+  } = useTattooCreation();
+  
   const [photos, setPhotos] = useState<MediaLibrary.Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+  
+  // Set current step when component mounts
+  useEffect(() => {
+    setCurrentStep(2);
+  }, [setCurrentStep]);
 
   const loadRecentPhotos = useCallback(async () => {
     try {
@@ -116,7 +126,9 @@ export function ChoosePhotoScreen() {
             color="orange"
             title="Continue"
             disabled={!selectedPhoto}
-            onPress={() => {}}
+            onPress={() => {
+              nextStep();
+            }}
           />
         </Link>
 
@@ -126,10 +138,12 @@ export function ChoosePhotoScreen() {
           haptic
           color="blue"
           title="Take a photo"
-          disabled={!selectedPhoto}
           onPress={() => {
-            // TODO: Navigate to next screen with selected photo
-            console.log("Selected photo:", selectedPhoto);
+            // TODO: Implement camera functionality
+            Alert.alert(
+              "Camera", 
+              "Camera functionality will be implemented in the next phase"
+            );
           }}
         />
       </View>

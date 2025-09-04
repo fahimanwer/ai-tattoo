@@ -1,19 +1,25 @@
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
-import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
+import { type ColorOption, useTattooCreation } from "@/context/TattooCreationContext";
+import { featuredTattoos } from "@/lib/featured-tattoos";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
-import { useState } from "react";
+import { useEffect } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
-type ColorOption = "color" | "blackwhite";
-
 export function New() {
-  const [selectedTattoo, setSelectedTattoo] = useState<FeaturedTattoo | null>(
-    null
-  );
-  const [selectedColor, setSelectedColor] = useState<ColorOption | null>(null);
+  const { 
+    options, 
+    updateOptions, 
+    setCurrentStep,
+    nextStep 
+  } = useTattooCreation();
+  
+  // Set current step when component mounts
+  useEffect(() => {
+    setCurrentStep(1);
+  }, [setCurrentStep]);
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
       <View style={styles.section}>
@@ -28,7 +34,10 @@ export function New() {
         showsHorizontalScrollIndicator={false}
       >
         {featuredTattoos.map((tattoo) => (
-          <Pressable key={tattoo.id} onPress={() => setSelectedTattoo(tattoo)}>
+          <Pressable 
+            key={tattoo.id} 
+            onPress={() => updateOptions({ selectedTattoo: tattoo })}
+          >
             <Image
               key={tattoo.id}
               source={tattoo.image}
@@ -39,7 +48,7 @@ export function New() {
                 marginLeft: 8,
                 borderRadius: 16,
                 borderColor:
-                  selectedTattoo?.id === tattoo.id
+                  options.selectedTattoo?.id === tattoo.id
                     ? Color.orange[400]
                     : "transparent",
               }}
@@ -65,17 +74,17 @@ export function New() {
         <View style={styles.colorOptions}>
           <Button
             title="Color"
-            variant={selectedColor === "color" ? "solid" : "outline"}
-            color={selectedColor === "color" ? "orange" : "gray"}
-            onPress={() => setSelectedColor("color")}
+            variant={options.colorOption === "color" ? "solid" : "outline"}
+            color={options.colorOption === "color" ? "orange" : "gray"}
+            onPress={() => updateOptions({ colorOption: "color" })}
             style={styles.colorButton}
           />
 
           <Button
             title="Black & White"
-            variant={selectedColor === "blackwhite" ? "solid" : "outline"}
-            color={selectedColor === "blackwhite" ? "orange" : "gray"}
-            onPress={() => setSelectedColor("blackwhite")}
+            variant={options.colorOption === "blackwhite" ? "solid" : "outline"}
+            color={options.colorOption === "blackwhite" ? "orange" : "gray"}
+            onPress={() => updateOptions({ colorOption: "blackwhite" })}
             style={styles.colorButton}
           />
         </View>
@@ -89,8 +98,10 @@ export function New() {
             haptic
             color="orange"
             title="Continue"
-            disabled={!selectedTattoo || !selectedColor}
-            onPress={() => {}}
+            disabled={!options.selectedTattoo || !options.colorOption}
+            onPress={() => {
+              nextStep();
+            }}
           />
         </Link>
       </View>
