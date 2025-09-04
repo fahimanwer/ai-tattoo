@@ -37,7 +37,6 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { AuthProvider } from "@/context/AuthContext";
 import { authClient } from "@/lib/auth-client";
 import "react-native-reanimated";
 
@@ -219,11 +218,9 @@ export default function RootLayout() {
   // Native gets full app experience with auth
   return (
     <GestureHandlerRootView>
-      <AuthProvider>
-        <AccentColorProvider>
-          <AppContent />
-        </AccentColorProvider>
-      </AuthProvider>
+      <AccentColorProvider>
+        <AppContent />
+      </AccentColorProvider>
     </GestureHandlerRootView>
   );
 }
