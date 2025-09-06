@@ -1,16 +1,15 @@
+import { withAuth } from "@/server-utils/auth-middleware";
 import { constants } from "@/server-utils/constants";
-const { GENIMI_IMAGE_BASE_URL } = constants;
 
-export async function POST(request: Request) {
+const { GENIMI_IMAGE_BASE_URL, GEMINI_API_KEY } = constants;
+
+export const POST = withAuth(async (request: Request, session: any) => {
+  console.log("server", "authenticated user:", session.user.email);
+
   const { prompt } = await request.json();
-
   console.log("server", "received prompt", prompt);
 
   try {
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-    headers.set("x-goog-api-key", process.env.GEMINI_API_KEY || "");
-
     const response = await fetch(GENIMI_IMAGE_BASE_URL, {
       method: "POST",
       body: JSON.stringify({
@@ -20,7 +19,10 @@ export async function POST(request: Request) {
           },
         ],
       }),
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": GEMINI_API_KEY,
+      },
     });
 
     const data = await response.json();
@@ -53,4 +55,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
+});
