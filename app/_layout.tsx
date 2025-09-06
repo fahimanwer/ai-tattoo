@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, usePathname } from "expo-router";
 import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
 
@@ -209,17 +210,19 @@ function WebLayout() {
   );
 }
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
-  // Web gets simple static layout
   if (Platform.OS === "web") {
     return <WebLayout />;
   }
 
-  // Native gets full app experience with auth
   return (
     <GestureHandlerRootView>
       <AccentColorProvider>
-        <AppContent />
+        <QueryClientProvider client={queryClient}>
+          <AppContent />
+        </QueryClientProvider>
       </AccentColorProvider>
     </GestureHandlerRootView>
   );
