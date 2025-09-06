@@ -7,9 +7,9 @@ const { GENIMI_IMAGE_BASE_URL, GEMINI_API_KEY } = constants;
 // Zod schema for request validation
 const textToImageSchema = z.object({
   prompt: z.string().min(1, "Prompt is required and cannot be empty"),
-  image_base64: z
-    .string()
-    .min(1, "Image base64 is required and cannot be empty"),
+  images_base64: z
+    .array(z.string())
+    .min(1, "Images base64 are required and cannot be empty"),
 });
 
 export const POST = withAuth(async (request: Request, session: any) => {
@@ -22,24 +22,56 @@ export const POST = withAuth(async (request: Request, session: any) => {
 
   try {
     const body = await request.json();
-    const { prompt, image_base64 } = textToImageSchema.parse(body);
+    const { prompt, images_base64 } = textToImageSchema.parse(body);
     console.log("server", "received prompt", prompt);
 
-    // Generate image with validated prompt
+    // Helper: parse data URL or infer MIME from raw base64
+    const extractMimeAndData = (
+      input: string
+    ): { mime_type: string; data: string } => {
+      const trimmed = input.trim();
+      if (trimmed.startsWith("data:")) {
+        // data:[<mediatype>][;base64],<data>
+        const match = /^data:([^;]+);base64,(.*)$/i.exec(trimmed);
+        if (match && match[1] && match[2]) {
+          return { mime_type: match[1], data: match[2] };
+        }
+      }
+      // Infer from base64 magic numbers
+      // PNG: iVBORw0KGgo
+      if (trimmed.startsWith("iVBORw0KGgo")) {
+        return { mime_type: "image/png", data: trimmed };
+      }
+      // JPEG: /9j/
+      if (trimmed.startsWith("/9j/")) {
+        return { mime_type: "image/jpeg", data: trimmed };
+      }
+      // WEBP (RIFF): UklG ("RIFF" -> base64 "UklG")
+      if (trimmed.startsWith("UklG")) {
+        return { mime_type: "image/webp", data: trimmed };
+      }
+      // HEIC/HEIF are hard to detect via base64 prefix reliably without decoding.
+      // Default to JPEG if unknown.
+      return { mime_type: "image/jpeg", data: trimmed };
+    };
+
+    const images_base64_parts = images_base64.map((img) => {
+      const { mime_type, data } = extractMimeAndData(img);
+      console.log("server", "mime_type", mime_type);
+      return {
+        inline_data: {
+          mime_type,
+          data,
+        },
+      };
+    });
+
     const response = await fetch(GENIMI_IMAGE_BASE_URL, {
       method: "POST",
       body: JSON.stringify({
         contents: [
           {
-            parts: [
-              { text: prompt },
-              {
-                inline_data: {
-                  mime_type: "image/jpeg",
-                  data: image_base64,
-                },
-              },
-            ],
+            parts: [{ text: prompt }, ...images_base64_parts],
           },
         ],
       }),

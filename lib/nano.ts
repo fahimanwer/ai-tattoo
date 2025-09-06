@@ -11,13 +11,13 @@ export const textToImage = createJsonMutation<
 /**
  * Text and Image to Image
  */
-type TextAndImageToImageInput = { prompt: string; image_base64: string };
+type TextAndImageToImageInput = { prompt: string; images_base64: string[] };
 type TextAndImageToImageResponse = { imageData: string };
 
 export const textAndImageToImage = createJsonMutation<
   TextAndImageToImageInput,
   TextAndImageToImageResponse
->("/api/nano/text-and-image-to-image", "POST", ({ prompt, image_base64 }) => ({
+>("/api/nano/text-and-image-to-image", "POST", ({ prompt, images_base64 }) => ({
   prompt,
-  image_base64,
+  images_base64,
 }));
