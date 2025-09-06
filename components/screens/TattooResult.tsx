@@ -8,53 +8,56 @@ import { Text } from "../ui/Text";
 
 export function TattooResultScreen() {
   const router = useRouter();
-  const { 
-    options, 
-    selectedPhoto, 
+  const {
+    options,
+    selectedPhoto,
     setCurrentStep,
     getFormData,
     isComplete,
-    reset
+    reset,
   } = useTattooCreation();
-  
+
   // Set current step when component mounts
   useEffect(() => {
     setCurrentStep(3);
   }, [setCurrentStep]);
-  
+
   const handleSubmit = async () => {
     if (!isComplete()) {
       Alert.alert(
-        "Incomplete Form", 
+        "Incomplete Form",
         "Please complete all required fields before submitting."
       );
       return;
     }
-    
+
     const formData = getFormData();
-    
+
     // TODO: Implement API call to submit tattoo request
-    console.log("Submitting tattoo request:", formData);
-    
+    console.log(
+      "Submitting tattoo request:",
+      JSON.stringify(formData, null, 2)
+    );
+
     Alert.alert(
-      "Success!", 
+      "Success!",
       "Your tattoo request has been submitted. We'll process it and show you the result soon!",
       [
         {
           text: "OK",
           onPress: () => {
             reset();
-            router.push("/home");
-          }
-        }
+            router.dismissAll();
+          },
+        },
       ]
     );
   };
-  
+
   const handleEdit = () => {
     router.back();
   };
-  
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -68,7 +71,7 @@ export function TattooResultScreen() {
           Please review your tattoo selection before submitting
         </Text>
       </View>
-      
+
       {/* Selected Tattoo */}
       {options.selectedTattoo && (
         <View style={styles.section}>
@@ -90,7 +93,7 @@ export function TattooResultScreen() {
           </View>
         </View>
       )}
-      
+
       {/* Selected Photo */}
       {selectedPhoto && (
         <View style={styles.section}>
@@ -106,7 +109,7 @@ export function TattooResultScreen() {
           </View>
         </View>
       )}
-      
+
       {/* Options */}
       <View style={styles.section}>
         <Text type="body" weight="semibold">
@@ -125,7 +128,7 @@ export function TattooResultScreen() {
           </Text>
         </View>
       </View>
-      
+
       {/* Action Buttons */}
       <View style={styles.buttonContainer}>
         <Button
