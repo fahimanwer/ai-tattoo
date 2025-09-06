@@ -1,5 +1,6 @@
-import { authClient } from "@/lib/auth-client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ApiError } from "@/lib/api-client";
+import { textToImage } from "@/lib/nano";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { ActivityIndicator, Image, ScrollView, View } from "react-native";
 import { Button } from "../ui/Button";
@@ -7,7 +8,6 @@ import { Text } from "../ui/Text";
 
 export function Dev() {
   // Access the client
-  const queryClient = useQueryClient();
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
   // Queries
@@ -15,45 +15,18 @@ export function Dev() {
 
   // Mutations
   const mutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch(
-        process.env.EXPO_PUBLIC_BASE_URL + "/api/nano/text-to-image",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            prompt:
-              "Ultra-realistic photograph of a Japanese Yakuza traditional tattoo on a man's neck. The design follows the natural curvature of the throat and collarbones, with flowing waves and bold lines. Motifs include koi fish and cherry blossoms, rich colors and strong outlines, captured under natural light to show realistic skin texture and depth.",
-          }),
-          headers: {
-            "Content-Type": "application/json",
-            Cookie: authClient.getCookie(),
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-
-        // Handle validation errors specifically
-        if (response.status === 400 && errorData.details) {
-          const validationErrors = errorData.details
-            .map((detail: any) => `${detail.path.join(".")}: ${detail.message}`)
-            .join(", ");
-          throw new Error(`Validation Error: ${validationErrors}`);
-        }
-
-        throw new Error(
-          errorData.error ||
-            `Mutation failed with status ${response.status} and message ${response.statusText}`
-        );
-      }
-
-      return response.json();
-    },
+    mutationFn: async () =>
+      textToImage({
+        prompt:
+          "Ultra-realistic photograph of a Japanese Yakuza traditional tattoo on a man's neck. The design follows the natural curvature of the throat and collarbones, with flowing waves and bold lines. Motifs include koi fish and cherry blossoms, rich colors and strong outlines, captured under natural light to show realistic skin texture and depth.",
+      }),
     onSuccess: (data) => {
       console.log("client", "mutation was successful");
-      // This is base64
-      const { imageData } = data;
+
+      // This is base64 (not very useful to show it in the console)
+
+      // TODO:
+      // - Download image
 
       // Set the generated image data for display
       if (data.imageData) {
@@ -61,7 +34,16 @@ export function Dev() {
       }
     },
     onError: (error) => {
-      console.error("client", "mutation failed", error);
+      if (error instanceof ApiError) {
+        console.error(
+          "client",
+          "mutation failed",
+          error.message,
+          error.details
+        );
+      } else {
+        console.error("client", "mutation failed", error);
+      }
       setGeneratedImage(null);
     },
   });
