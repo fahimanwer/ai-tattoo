@@ -3,6 +3,10 @@ import { ImageSourcePropType } from "react-native";
 export interface FeaturedTattoo {
   id: number;
   title: string;
+  short_description: string;
+  style: string;
+  gallery: ImageSourcePropType[];
+  prompt: string;
   description: string;
   image: ImageSourcePropType | undefined;
 }
@@ -11,10 +15,29 @@ export const featuredTattoos: FeaturedTattoo[] = [
   {
     id: 1,
     title: "Japanese",
-    description: "Traditional Japanese tattoo with bold lines and vibrant colors",
-    image: require("@/assets/tattoos/tattoo-japanese.png"),
-  },
-  {
+    short_description: "Irezumi clásico: bold sumi outlines, vibrant color blocks, motifs like koi, dragons, Hannya masks and waves.",
+    description: "Japanese tattooing, known as Irezumi, has roots tracing back over 2,000 years in Japan. It evolved from early decorative markings and spiritual talismans into an art form deeply tied to folklore, mythology, and woodblock prints (ukiyo-e). During the Edo period (1603-1868), tattooing flourished despite being outlawed, becoming an underground culture of resistance and identity. Motifs such as koi fish represent perseverance, dragons symbolize wisdom and strength, and the Hannya mask reflects human emotion and transformation. Master artists like Horiyoshi III and Horimono traditions elevated Irezumi into a discipline of discipline, storytelling, and body-wide compositions. Historically associated with firemen, laborers, and later the Yakuza, today Japanese tattoos are recognized globally as one of the most sophisticated and narrative-driven styles of tattoo art.",
+    style: "Irezumi (Traditional Japanese)",
+    image: require("@/assets/tattoos/japanese/cover.png"),
+    gallery: [
+      require("@/assets/tattoos/japanese/abdomen-female.png"),
+      require("@/assets/tattoos/japanese/abdomen-male.png"),
+      require("@/assets/tattoos/japanese/arm-female.png"),
+      require("@/assets/tattoos/japanese/arm-male.png"),
+      require("@/assets/tattoos/japanese/back-female.png"),
+      require("@/assets/tattoos/japanese/back-male.png"),
+      require("@/assets/tattoos/japanese/hand-female.png"),
+      require("@/assets/tattoos/japanese/hand-male.png"),
+      require("@/assets/tattoos/japanese/neck-female.png"),
+      require("@/assets/tattoos/japanese/neck-male.png"),
+      require("@/assets/tattoos/japanese/thigh-female.png"),
+      require("@/assets/tattoos/japanese/thigh-male.png"),
+      require("@/assets/tattoos/japanese/toe-female.png"),
+      require("@/assets/tattoos/japanese/toe-male.png")
+    ],
+    prompt: "A professional Traditional Japanese (irezumi) tattoo design, isolated on a transparent background. Bold black sumi outlines with tapered linework, clean closed shapes, and a flowing, asymmetrical composition. Include classic motifs such as koi fish, dragon, tiger, Hannya mask, cherry blossoms, peonies, chrysanthemums, dynamic waves (nami), clouds (kumo), wind bars, and smoke elements. Use flat, high-contrast color blocks inspired by irezumi palettes (deep indigo, vermilion red, jade green, gold ochre) layered beneath the black linework; minimal smooth gradients only to suggest depth. Maintain clear silhouette readability, strong negative space, and coherent hierarchy between primary motif and background. Lines must be continuous and connected, no broken paths; edges crisp and precise; allow solid black fills where appropriate. Unique single composition (not mirrored, not duplicated). Ultra detailed, high resolution, ready as a professional tattoo stencil/artwork."
+  }
+ /*  {
     id: 2,
     title: "Realistic",
     description: "Photorealistic tattoo with incredible detail and shading",
@@ -127,5 +150,5 @@ export const featuredTattoos: FeaturedTattoo[] = [
     title: "Surreal",
     description: "Dreamlike, fantastical designs that defy reality",
     image: require("@/assets/tattoos/surreal.png"),
-  },
+  }, */
 ];

@@ -1,5 +1,6 @@
+import { GetInspiration } from "@/components/home/GetInspiration";
+import { Banner } from "@/components/pro/Banner";
 import { Button } from "@/components/ui/Button";
-import { Text } from "@/components/ui/Text";
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
@@ -10,9 +11,8 @@ export function Home() {
       contentContainerStyle={{ paddingHorizontal: 16 }}
     >
       <View style={styles.section}>
-        <Text type="subtitle" weight="bold">
-          Generate a tattoo
-        </Text>
+        <Banner />
+        <GetInspiration />
         <Link href="/home/new" asChild>
           <Button
             symbol="plus"
@@ -30,6 +30,7 @@ export function Home() {
 
 const styles = StyleSheet.create({
   section: {
-    gap: 8,
+    marginTop: 24,
+    gap: 24,
   },
 });

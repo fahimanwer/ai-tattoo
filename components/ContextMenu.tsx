@@ -1,15 +1,8 @@
 import { useSubscription } from "@/hooks/useSubscription";
 import { authClient } from "@/lib/auth-client";
 import * as React from "react";
-import { Linking, Share, View } from "react-native";
-import {
-  Button,
-  ContextMenu,
-  Host,
-  Image,
-  Submenu,
-  Switch,
-} from "../lib/expo-ui-web";
+import { Linking, Share } from "react-native";
+import { Button, ContextMenu, Host, Submenu, Switch } from "../lib/expo-ui-web";
 
 const getProfileOptions = (
   isPlusUser: boolean,
@@ -164,17 +157,33 @@ export function ContextMenuProfile() {
   };
 
   return (
-    <Host style={{ width: 150, height: 50 }}>
+    <Host
+      style={{ borderWidth: 1, borderColor: "blue", width: 35, height: 35 }}
+    >
       <ContextMenu>
         <ContextMenu.Items>
           {options.map((option, index) => renderOption(option, index))}
         </ContextMenu.Items>
         <ContextMenu.Trigger>
-          <View>
-            <Host style={{ width: 35, height: 35 }}>
+          <Host
+            style={{
+              width: 35,
+              height: 35,
+              borderWidth: 1,
+              borderColor: "red",
+              borderRadius: 99,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Button systemImage="ellipsis" size="sm" title="More" />
+          </Host>
+          {/*   <View>
+            <Host style={{ width: 25, height: 25 }}>
               <Image systemName="ellipsis" />
             </Host>
-          </View>
+          </View> */}
         </ContextMenu.Trigger>
       </ContextMenu>
     </Host>

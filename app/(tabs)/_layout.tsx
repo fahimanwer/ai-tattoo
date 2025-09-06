@@ -8,14 +8,6 @@ export default function TabLayout() {
         <Label>Home</Label>
         <Icon sf="house" />
       </NativeTabs.Trigger>
-      {/* <NativeTabs.Trigger name="buttons">
-        <Label>Buttons</Label>
-        <Icon sf="button.programmable" />
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="inputs">
-        <Label>Inputs</Label>
-        <Icon sf="ellipsis.rectangle" />
-      </NativeTabs.Trigger> */}
       <NativeTabs.Trigger name="profile">
         <Label>Profile</Label>
         <Icon sf="person" />
