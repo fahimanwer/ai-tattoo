@@ -20,23 +20,20 @@ export default function AboutStyle() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
 
-  // Buscar el estilo en featuredTattoos basado en el ID del parámetro
   const selectedStyle: FeaturedTattoo | undefined = featuredTattoos.find(
     (tattoo) => tattoo.id.toString() === styleParam
   );
 
-  // Si no se encuentra el estilo, usar el primero por defecto
   const currentStyle = selectedStyle || featuredTattoos[0];
 
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const galleryItemWidth = screenWidth * 0.7;
   const galleryItemHeight = galleryItemWidth * 1.2;
 
-  // Estilos dinámicos que dependen del tamaño de pantalla
   const dynamicStyles = {
     heroContainer: {
       ...styles.heroContainer,
-      height: screenHeight * 0.65, // 65% del alto de pantalla
+      height: screenHeight * 0.65,
     },
   };
 
@@ -221,7 +218,7 @@ const styles = StyleSheet.create({
   },
   titleOverlay: {
     position: "absolute",
-    top: 60, // Espacio para el status bar y notch
+    top: 60,
     left: 20,
     right: 20,
     zIndex: 10,
