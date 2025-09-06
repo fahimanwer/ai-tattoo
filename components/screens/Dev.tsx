@@ -20,7 +20,10 @@ export function Dev() {
         process.env.EXPO_PUBLIC_BASE_URL + "/api/nano/text-to-image",
         {
           method: "POST",
-          body: JSON.stringify({ prompt: "Generate a cute dog image" }),
+          body: JSON.stringify({
+            prompt:
+              "Ultra-realistic photograph of a Japanese Yakuza traditional tattoo on a man's neck. The design follows the natural curvature of the throat and collarbones, with flowing waves and bold lines. Motifs include koi fish and cherry blossoms, rich colors and strong outlines, captured under natural light to show realistic skin texture and depth.",
+          }),
           headers: {
             "Content-Type": "application/json",
             Cookie: authClient.getCookie(),
@@ -30,6 +33,15 @@ export function Dev() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+
+        // Handle validation errors specifically
+        if (response.status === 400 && errorData.details) {
+          const validationErrors = errorData.details
+            .map((detail: any) => `${detail.path.join(".")}: ${detail.message}`)
+            .join(", ");
+          throw new Error(`Validation Error: ${validationErrors}`);
+        }
+
         throw new Error(
           errorData.error ||
             `Mutation failed with status ${response.status} and message ${response.statusText}`
@@ -39,11 +51,9 @@ export function Dev() {
       return response.json();
     },
     onSuccess: (data) => {
-      console.log(
-        "client",
-        "mutation was successful",
-        JSON.stringify(data, null, 2)
-      );
+      console.log("client", "mutation was successful");
+      // This is base64
+      const { imageData } = data;
 
       // Set the generated image data for display
       if (data.imageData) {
@@ -58,7 +68,7 @@ export function Dev() {
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
-      <Text>Generate a cute dog image</Text>
+      <Text>A realistic Japanese Yakuza</Text>
 
       <Button
         onPress={() => {
@@ -78,10 +88,27 @@ export function Dev() {
 
       {mutation.isError && (
         <View
-          style={{ padding: 16, backgroundColor: "#ffebee", borderRadius: 8 }}
+          style={{
+            padding: 16,
+            backgroundColor: "#ffebee",
+            borderRadius: 8,
+            borderLeftWidth: 4,
+            borderLeftColor: "#c62828",
+          }}
         >
-          <Text style={{ color: "#c62828" }}>
-            Error: {mutation.error?.message || "Failed to generate image"}
+          <Text
+            style={{
+              color: "#c62828",
+              fontWeight: "bold",
+              marginBottom: 4,
+            }}
+          >
+            {mutation.error?.message?.startsWith("Validation Error:")
+              ? "❌ Invalid Request"
+              : "⚠️ Generation Failed"}
+          </Text>
+          <Text style={{ color: "#c62828", fontSize: 14 }}>
+            {mutation.error?.message || "Failed to generate image"}
           </Text>
         </View>
       )}
