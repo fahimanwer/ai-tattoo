@@ -19,7 +19,10 @@ export function Dev() {
           variant="segmented"
         />
       </Host>
-      <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
+      <ScrollView
+        contentContainerStyle={{ padding: 16, gap: 16 }}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         {selectedIndex === 0 && <TextToImage />}
         {selectedIndex === 1 && <TextAndImageToImage />}
       </ScrollView>
