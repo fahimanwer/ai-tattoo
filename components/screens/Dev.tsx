@@ -1,6 +1,7 @@
 import { Host, Picker } from "@expo/ui/swift-ui";
 import { useState } from "react";
 import { ScrollView } from "react-native";
+import { TextAndImageToImage } from "../dev/TextAndImageToImage";
 import { TextToImage } from "../dev/TextToImage";
 
 export function Dev() {
@@ -20,7 +21,7 @@ export function Dev() {
       </Host>
       <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
         {selectedIndex === 0 && <TextToImage />}
-        {selectedIndex === 1 && <></>}
+        {selectedIndex === 1 && <TextAndImageToImage />}
       </ScrollView>
     </>
   );

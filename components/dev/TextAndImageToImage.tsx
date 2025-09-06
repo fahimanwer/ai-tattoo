@@ -1,5 +1,5 @@
 import { ApiError } from "@/lib/api-client";
-import { textToImage } from "@/lib/nano";
+import { textAndImageToImage } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { useMutation } from "@tanstack/react-query";
 import { Image } from "expo-image";
@@ -8,16 +8,15 @@ import { ActivityIndicator, Alert, View } from "react-native";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 
-export function TextToImage() {
+export function TextAndImageToImage() {
   // Access the client
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
   const mutation = useMutation({
     mutationFn: async () =>
-      textToImage({
-        prompt:
-          // "Ultra-realistic photograph of a Japanese Yakuza traditional tattoo on a man's neck. The design follows the natural curvature of the throat and collarbones, with flowing waves and bold lines. Motifs include koi fish and cherry blossoms, rich colors and strong outlines, captured under natural light to show realistic skin texture and depth.",
-          "Generate a minimalistic tattoo of brackets [] for a programmer, tatto shuld be in the neck rotated 45 degrees to the right",
+      textAndImageToImage({
+        prompt: "",
+        image_base64: "",
       }),
     onSuccess: async (data) => {
       if (data.imageData) {
@@ -48,17 +47,35 @@ export function TextToImage() {
 
   return (
     <>
-      <Text>A realistic Japanese Yakuza</Text>
-
+      <Text>
+        Using this photo of my arm and the tattoo photo, generate an image
+        showing how the tattoo would look on my arm.
+      </Text>
+      <View style={{ flexDirection: "row", gap: 10 }}>
+        <Image
+          source={require("@/assets/a.jpg")}
+          style={{ width: "50%", height: 200, borderRadius: 8 }}
+          contentFit="cover"
+          transition={200}
+        />
+        <Image
+          source={require("@/assets/tattoos/anime.png")}
+          style={{ width: "50%", height: 200, borderRadius: 8 }}
+          contentFit="cover"
+          transition={200}
+        />
+      </View>
       <Button
         onPress={() => {
           setGeneratedImage(null);
           mutation.mutate();
         }}
-        title={mutation.isPending ? "Generating..." : "Text to Image"}
+        title={mutation.isPending ? "Generating..." : "Generate"}
         disabled={mutation.isPending}
+        symbol="sparkles"
+        variant="solid"
+        color="blue"
       />
-
       {mutation.isSuccess && (
         <Button
           symbol="square.and.arrow.down"
@@ -69,14 +86,12 @@ export function TextToImage() {
           disabled={mutation.isPending}
         />
       )}
-
       {mutation.isPending && (
         <View style={{ alignItems: "center", padding: 20 }}>
           <ActivityIndicator size="large" />
           <Text style={{ marginTop: 10 }}>Generating image...</Text>
         </View>
       )}
-
       {mutation.isError && (
         <View
           style={{
@@ -101,12 +116,8 @@ export function TextToImage() {
           <Text style={{ color: "#c62828", fontSize: 14 }}>
             {mutation.error?.message || "Failed to generate image"}
           </Text>
-          <Text style={{ color: "#c62828", fontSize: 14 }}>
-            {JSON.stringify(mutation.error, null, 2)}
-          </Text>
         </View>
       )}
-
       {generatedImage && (
         <View style={{ alignItems: "center" }}>
           <Text style={{ marginBottom: 10, fontWeight: "bold" }}>
