@@ -54,9 +54,10 @@ export default function AboutStyle() {
                 {currentStyle.gallery.map((image, index) => (
                   <Pressable
                     key={index}
-                    style={[
+                    style={({ pressed }) => [
                       styles.galleryItem,
                       {
+                        transform: [{ scale: pressed ? 0.99 : 1 }],
                         width: galleryItemWidth,
                         height: 240,
                       },

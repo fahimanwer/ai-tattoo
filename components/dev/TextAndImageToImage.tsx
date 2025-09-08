@@ -12,7 +12,7 @@ import { Text } from "../ui/Text";
 
 const MIX_TOW_PHOTHOS_PROMPT = `A hyper-realistic integration of the uploaded tattoo design onto the uploaded body photo. The tattoo should follow the exact curvature and natural folds of the neck and collarbone, adapting seamlessly to the anatomy. The ink must look authentically healed into the skin: slightly diffused in pores, with natural wear, subtle fading in areas of tension, and matte tones rather than excessive shine. Shading and lines should curve and flow with the muscles and skin surface, never floating above it. Show fine details of skin texture such as pores, wrinkles, and light imperfections, blending with the tattoo ink. Lighting should remain soft and realistic, avoiding glossy or artificial effects, so the tattoo looks fully integrated and aged naturally. No background, only the tattooed body part in ultra-high resolution.`;
 const bodyPartImage = "/a.jpg";
-const tattooImage = "/tattoos/gothic.png";
+const tattooImage = "https://d3ynb031qx3d1.cloudfront.net/tattoos/gothic.png";
 
 /**
  * Convert a bundled static asset (require("../assets/img.png")) into Base64.
@@ -43,7 +43,7 @@ export function TextAndImageToImage() {
       try {
         const [arm, tattoo] = await Promise.all([
           assetToBase64(require(`@/assets${bodyPartImage}`)),
-          assetToBase64(require(`@/assets${tattooImage}`)),
+          assetToBase64(tattooImage),
         ]);
         setArmBase64(arm);
         setTattooBase64(tattoo);
@@ -100,7 +100,7 @@ export function TextAndImageToImage() {
           transition={200}
         />
         <Image
-          source={require(`@/assets${tattooImage}`)}
+          source={tattooImage}
           style={{ width: "50%", height: 200, borderRadius: 8 }}
           contentFit="cover"
           transition={200}
