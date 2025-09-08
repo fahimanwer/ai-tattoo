@@ -18,7 +18,7 @@ export function Home() {
             symbol="plus"
             variant="solid"
             haptic
-            color="black"
+            color="white"
             title="Generate"
             onPress={() => {}}
           />

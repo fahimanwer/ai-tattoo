@@ -1,7 +1,7 @@
 import { Text } from "@/components/ui/Text";
+import { Color } from "@/constants/TWPalette";
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
@@ -42,24 +42,6 @@ export function GetInspiration() {
               { transform: [{ scale: pressed ? 0.99 : 1 }] },
             ]}
           >
-            <View
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                borderRadius: 16,
-                height: "100%",
-                width: "100%",
-                zIndex: 1,
-              }}
-            >
-              <LinearGradient
-                colors={["transparent", "rgba(0,0,0)"]}
-                style={{ height: "100%", width: "100%", borderRadius: 16 }}
-              />
-            </View>
             <Image
               source={style.image}
               style={[styles.styleImage]}
@@ -105,10 +87,18 @@ const styles = StyleSheet.create({
   styleImageContainer: {
     position: "absolute",
     width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    alignItems: "flex-start",
     left: 0,
-    bottom: 8,
+    top: 0,
     zIndex: 2,
-    paddingHorizontal: 12,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+    backgroundColor: "transparent",
+    experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
   },
   selectedDescription: {
     textAlign: "center",
