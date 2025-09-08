@@ -31,6 +31,19 @@ export async function assetToBase64(moduleId: number): Promise<string> {
   return base64;
 }
 
+/**
+ * Convert a remote URL to Base64.
+ */
+export async function urlToBase64(url: string): Promise<string> {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
+}
+
 export function TextAndImageToImage() {
   // Access the client
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -41,10 +54,12 @@ export function TextAndImageToImage() {
   useEffect(() => {
     (async () => {
       try {
-        const [arm, tattoo] = await Promise.all([
+        const [arm, tattooDataUrl] = await Promise.all([
           assetToBase64(require(`@/assets${bodyPartImage}`)),
-          assetToBase64(tattooImage),
+          urlToBase64(tattooImage),
         ]);
+        // Extract base64 from data URL (remove "data:image/png;base64," prefix)
+        const tattoo = tattooDataUrl.split(",")[1];
         setArmBase64(arm);
         setTattooBase64(tattoo);
       } catch (e) {

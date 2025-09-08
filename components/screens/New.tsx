@@ -1,19 +1,26 @@
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
+import {
+  bodyPartCategories,
+  type BodyPartCategory,
+  type BodyPartVariant,
+} from "@/constants/BodyParts";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
 import { ApiError } from "@/lib/api-client";
 import { featuredTattoos } from "@/lib/featured-tattoos";
 import { textAndImageToImage } from "@/lib/nano";
-import { saveBase64ToAlbum } from "@/lib/save-to-library";
+import { useFocusEffect } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
 import { Asset } from "expo-asset";
 import { File } from "expo-file-system/next";
 import { Image } from "expo-image";
-import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  BackHandler,
   ImageSourcePropType,
   Pressable,
   ScrollView,
@@ -22,8 +29,7 @@ import {
 } from "react-native";
 
 // Constants and utility functions
-const MIX_TWO_PHOTOS_PROMPT = `A hyper-realistic integration of the uploaded tattoo design onto the uploaded body photo. The tattoo should follow the exact curvature and natural folds of the skin, adapting seamlessly to the anatomy. The ink must look authentically healed into the skin: slightly diffused in pores, with natural wear, subtle fading in areas of tension, and matte tones rather than excessive shine. Shading and lines should curve and flow with the muscles and skin surface, never floating above it. Show fine details of skin texture such as pores, wrinkles, and light imperfections, blending with the tattoo ink. Lighting should remain soft and realistic, avoiding glossy or artificial effects, so the tattoo looks fully integrated and aged naturally. No background, only the tattooed body part in ultra-high resolution.`;
-const bodyPartImage = "/a.jpg";
+const MIX_TWO_PHOTOS_PROMPT = `Apply the tattoo design from the second image onto the body part from the first image. Create a hyper-realistic integration where the tattoo design follows the exact curvature and natural folds of the skin from the first image, adapting seamlessly to the anatomy. IMPORTANT: Preserve the exact natural skin tone, color, and texture from the original body part photo - do not alter or change the skin color in any way. The tattoo ink must look authentically healed into the skin: slightly diffused in pores, with natural wear, subtle fading in areas of tension, and matte tones rather than excessive shine. Shading and lines should curve and flow with the muscles and skin surface, never floating above it. Show fine details of skin texture such as pores, wrinkles, and light imperfections, blending with the tattoo ink while maintaining the original skin coloring. Lighting should remain soft and realistic, avoiding glossy or artificial effects, so the tattoo looks fully integrated and aged naturally. The final result should be the body part from the first image with the tattoo design applied, keeping all original skin characteristics intact. No background, only the tattooed body part in ultra-high resolution.`;
 
 /**
  * Convert a bundled static asset (require("../assets/img.png")) into Base64.
@@ -68,12 +74,17 @@ export async function uriToBase64(uri: string): Promise<string> {
 
 export function New() {
   const { options, updateOptions, setCurrentStep } = useTattooCreation();
+  const router = useRouter();
 
   // Additional state for the tattoo creation functionality
   const [selectedTattooImage, setSelectedTattooImage] =
     useState<ImageSourcePropType | null>(null);
+  const [selectedBodyPartCategory, setSelectedBodyPartCategory] =
+    useState<BodyPartCategory | null>(null);
+  const [selectedBodyPartVariant, setSelectedBodyPartVariant] =
+    useState<BodyPartVariant | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [armBase64, setArmBase64] = useState<string | null>(null);
+  const [bodyPartBase64, setBodyPartBase64] = useState<string | null>(null);
   const [tattooBase64, setTattooBase64] = useState<string | null>(null);
 
   // Set current step when component mounts
@@ -81,19 +92,26 @@ export function New() {
     setCurrentStep(1);
   }, [setCurrentStep]);
 
-  // Preload arm image to base64
+  // We'll add the back button prevention after mutation is declared
+
+  // Preload selected body part variant image to base64
   useEffect(() => {
+    if (!selectedBodyPartVariant) {
+      setBodyPartBase64(null);
+      return;
+    }
+
     (async () => {
       try {
-        const armImage = await assetToBase64(
-          require(`@/assets${bodyPartImage}`)
+        const bodyPartImage = await uriToBase64(
+          selectedBodyPartVariant.imageUrl
         );
-        setArmBase64(armImage);
+        setBodyPartBase64(bodyPartImage);
       } catch (e) {
-        console.error("Failed to load arm image:", e);
+        console.error("Failed to load body part image:", e);
       }
     })();
-  }, []);
+  }, [selectedBodyPartVariant]);
 
   // Convert selected tattoo image to base64 when it changes
   useEffect(() => {
@@ -124,29 +142,36 @@ export function New() {
   // Mutation for generating tattoo
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!armBase64 || !tattooBase64) {
+      if (!bodyPartBase64 || !tattooBase64) {
         throw new Error("Images not ready");
       }
 
       let prompt = MIX_TWO_PHOTOS_PROMPT;
 
-      // Modify prompt based on color option
+      // Modify prompt based on color option - ONLY affects tattoo, NOT skin
       if (options.colorOption === "blackwhite") {
         prompt +=
-          " The tattoo should be rendered in black and white only, with no color elements.";
+          " The tattoo design should be rendered in black and white ink only, with no color elements in the tattoo itself. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic.";
       } else {
         prompt +=
-          " The tattoo should maintain its original colors and vibrancy.";
+          " The tattoo design should maintain its original colors and vibrancy. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic.";
       }
 
       return textAndImageToImage({
         prompt,
-        images_base64: [armBase64, tattooBase64],
+        images_base64: [bodyPartBase64, tattooBase64],
       });
     },
     onSuccess: async (data) => {
       if (data.imageData) {
-        setGeneratedImage(`data:image/png;base64,${data.imageData}`);
+        const generatedImageUri = `data:image/png;base64,${data.imageData}`;
+        setGeneratedImage(generatedImageUri);
+
+        // Redirect to result page with the generated image
+        router.push({
+          pathname: "/(tabs)/home/generated-result",
+          params: { imageUri: generatedImageUri },
+        });
       }
     },
     onError: (error) => {
@@ -159,21 +184,79 @@ export function New() {
     },
   });
 
-  const saveToLibrary = async () => {
-    if (generatedImage) {
-      await saveBase64ToAlbum(generatedImage, "png");
-      Alert.alert(
-        "Saved to Library",
-        "Your tattoo design has been saved to your photo library!"
+  // Function to reset all form state
+  const resetFormCompletely = useCallback(() => {
+    setSelectedBodyPartCategory(null);
+    setSelectedBodyPartVariant(null);
+    setSelectedTattooImage(null);
+    setGeneratedImage(null);
+    setBodyPartBase64(null);
+    setTattooBase64(null);
+    updateOptions({
+      selectedTattoo: undefined,
+      colorOption: undefined,
+    });
+  }, [updateOptions]);
+
+  // Handle back navigation with different behavior based on state
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (mutation.isPending) {
+          // Prevent going back during loading
+          return true;
+        }
+
+        if (mutation.isSuccess && generatedImage) {
+          // Show confirmation alert when trying to go back after successful generation
+          Alert.alert(
+            "Reset Form",
+            "If you go back, the current form will be reset and you'll start from the beginning. Are you sure?",
+            [
+              {
+                text: "Cancel",
+                style: "cancel",
+              },
+              {
+                text: "Accept",
+                style: "destructive",
+                onPress: () => {
+                  resetFormCompletely();
+                  // Navigate back after reset
+                  router.back();
+                },
+              },
+            ]
+          );
+          return true; // Prevent default back action until user decides
+        }
+
+        return false; // Allow normal back navigation
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
       );
-    }
-  };
+
+      return () => subscription.remove();
+    }, [
+      mutation.isPending,
+      mutation.isSuccess,
+      generatedImage,
+      resetFormCompletely,
+      router,
+    ])
+  );
+
+  // Remove saveToLibrary function as it's now handled in the result screen
 
   const canGenerate =
     options.selectedTattoo &&
     options.colorOption &&
     selectedTattooImage &&
-    armBase64 &&
+    selectedBodyPartVariant &&
+    bodyPartBase64 &&
     tattooBase64;
 
   const handleCreateTattoo = () => {
@@ -181,13 +264,139 @@ export function New() {
     mutation.mutate();
   };
 
+  // Show only loading when generating
+  if (mutation.isPending) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text
+          type="subtitle"
+          weight="bold"
+          style={{ marginTop: 16, textAlign: "center", color: "#ffffff" }}
+        >
+          Creating your tattoo design...
+        </Text>
+        <Text
+          type="body"
+          style={{ marginTop: 8, textAlign: "center", color: "#ffffff" }}
+        >
+          This may take a few moments
+        </Text>
+        <Text
+          type="caption"
+          style={{ marginTop: 4, textAlign: "center", color: "#ffffff" }}
+        >
+          Please keep the application open
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
       <View style={styles.section}>
         <Text type="subtitle" weight="bold">
+          Select body part
+        </Text>
+        <Text type="body">Choose where you want to see your tattoo</Text>
+      </View>
+
+      {/* Body Part Category Selection */}
+      <ScrollView
+        horizontal
+        style={{ flex: 1, height: 200, paddingHorizontal: 16 }}
+        showsHorizontalScrollIndicator={false}
+      >
+        {bodyPartCategories.map((category) => (
+          <Pressable
+            key={category.id}
+            onPress={() => {
+              setSelectedBodyPartCategory(category);
+              setSelectedBodyPartVariant(null); // Reset selected variant when changing category
+            }}
+          >
+            <Image
+              source={category.image}
+              style={{
+                width: 160,
+                height: 160,
+                borderWidth: 3.5,
+                marginLeft: 8,
+                borderRadius: 16,
+                borderColor:
+                  selectedBodyPartCategory?.id === category.id
+                    ? Color.orange[400]
+                    : "transparent",
+              }}
+              contentFit="cover"
+            />
+            <Text
+              type="body"
+              weight="bold"
+              style={{ textAlign: "center", marginTop: 8, width: 160 }}
+              numberOfLines={2}
+            >
+              {category.name}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
+      {/* Body Part Variant Selection */}
+      {selectedBodyPartCategory && (
+        <>
+          <View style={[styles.section, { marginTop: 24 }]}>
+            <Text type="subtitle" weight="bold">
+              Choose specific {selectedBodyPartCategory.name.toLowerCase()}
+            </Text>
+            <Text type="body">
+              Select the exact body part type you want to try
+            </Text>
+          </View>
+          <ScrollView
+            horizontal
+            style={{ flex: 1, height: 180, paddingHorizontal: 16 }}
+            showsHorizontalScrollIndicator={false}
+          >
+            {selectedBodyPartCategory.gallery.map((variant) => (
+              <Pressable
+                key={variant.id}
+                onPress={() => setSelectedBodyPartVariant(variant)}
+              >
+                <Image
+                  source={variant.image}
+                  style={{
+                    width: 140,
+                    height: 140,
+                    borderWidth: 3,
+                    marginLeft: 8,
+                    borderRadius: 12,
+                    borderColor:
+                      selectedBodyPartVariant?.id === variant.id
+                        ? Color.orange[400]
+                        : "transparent",
+                  }}
+                  contentFit="cover"
+                />
+                <Text
+                  type="caption"
+                  weight="medium"
+                  style={{ textAlign: "center", marginTop: 6, width: 140 }}
+                  numberOfLines={2}
+                >
+                  {variant.name}
+                </Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        </>
+      )}
+
+      <View style={[styles.section, { marginTop: 24 }]}>
+        <Text type="subtitle" weight="bold">
           Select a tattoo style
         </Text>
-        <Text type="body">Choose a tattoo style to see available designs</Text>
+        <Text type="body">Choose a style to see the available designs</Text>
       </View>
 
       {/* Tattoo Style Selection */}
@@ -319,7 +528,7 @@ export function New() {
               color: Color.gray[500],
             }}
           >
-            Select a tattoo style, design, and color option to create
+            Select body part, tattoo style, design, and color option to create
           </Text>
         )}
       </View>
@@ -384,11 +593,10 @@ export function New() {
                 weight="bold"
                 style={{ marginBottom: 8, textAlign: "center" }}
               >
-                Original Arm
+                Original {selectedBodyPartVariant?.name}
               </Text>
               <Image
-                /* eslint-disable-next-line @typescript-eslint/no-require-imports */
-                source={require(`@/assets${bodyPartImage}`)}
+                source={selectedBodyPartVariant?.image}
                 style={styles.previewImage}
                 contentFit="cover"
               />
@@ -413,11 +621,18 @@ export function New() {
           {/* Action buttons */}
           <View style={styles.actionButtons}>
             <Button
-              symbol="square.and.arrow.down"
+              symbol="eye"
               variant="solid"
               color="blue"
-              onPress={saveToLibrary}
-              title="Save to Library"
+              onPress={() => {
+                if (generatedImage) {
+                  router.push({
+                    pathname: "/(tabs)/home/generated-result",
+                    params: { imageUri: generatedImage },
+                  });
+                }
+              }}
+              title="Ver en Detalle"
               style={{ flex: 1 }}
             />
             <Button
@@ -425,7 +640,7 @@ export function New() {
               variant="outline"
               color="orange"
               onPress={handleCreateTattoo}
-              title="Generate Again"
+              title="Generar Otro"
               disabled={mutation.isPending}
               style={{ flex: 1 }}
             />
@@ -448,6 +663,13 @@ const styles = StyleSheet.create({
   },
   colorButton: {
     width: "48%",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 32,
+    backgroundColor: "#000000",
   },
   loadingSection: {
     alignItems: "center",
