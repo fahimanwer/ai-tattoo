@@ -85,6 +85,13 @@ export default function ProfileLayout() {
             headerLargeTitle: false,
           }}
         />
+        <Stack.Screen
+          name="body-part"
+          options={{
+            headerBackButtonDisplayMode: "minimal",
+            headerLargeTitle: false,
+          }}
+        />
       </Stack>
     </TattooCreationProvider>
   );

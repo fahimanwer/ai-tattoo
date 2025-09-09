@@ -16,7 +16,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
     id: 1,
     title: "Japanese",
     short_description: "A traditional style from the Edo period that tells stories on the skin through flowing designs inspired by myth and nature.",    description: "Japanese tattooing, known as Irezumi, has roots tracing back over 2,000 years in Japan. It evolved from early decorative markings and spiritual talismans into an art form deeply tied to folklore, mythology, and woodblock prints (ukiyo-e). During the Edo period (1603-1868), tattooing flourished despite being outlawed, becoming an underground culture of resistance and identity. Motifs such as koi fish represent perseverance, dragons symbolize wisdom and strength, and the Hannya mask reflects human emotion and transformation. Master artists like Horiyoshi III and Horimono traditions elevated Irezumi into a discipline of discipline, storytelling, and body-wide compositions. Historically associated with firemen, laborers, and later the Yakuza, today Japanese tattoos are recognized globally as one of the most sophisticated and narrative-driven styles of tattoo art.",
-    style: "Irezumi (Traditional Japanese)",
+    style: "Traditional",
     image: { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/cover.png" },
     gallery: [
       { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/hand-male.png" },
@@ -41,7 +41,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
     title: "Realistic",
     short_description: "A style focused on lifelike imagery where shading, gradients, and depth bring portraits, objects, and scenes to the skin with striking fidelity.",
     description: "Realistic tattooing emerged in the late 20th century, heavily influenced by fine art, portraiture, and the advancement of modern tattoo machines and pigments. Unlike earlier traditional styles, realism aimed to replicate the exact look of photographs, paintings, or real-life objects on the skin. Common themes include human portraits, animals, and natural elements rendered with precise detail. The technique requires advanced skills in shading, contrast, and tonal transitions to create depth and texture. Major exponents include artists like Nikko Hurtado, Dmitriy Samohin, and Steve Butcher, who pushed realism into hyperrealism by capturing vivid likeness and emotional presence. Today, this style is recognized worldwide as a benchmark of technical mastery and artistic discipline in tattooing.",
-    style: "Photorealism / Black & Grey Realism",
+    style: "Photorealism",
     image: { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/cover.png" },
     gallery: [
       { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/hand-male.png" },
@@ -66,7 +66,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
     title: "Blackwork",
     short_description: "A bold style rooted in tribal and cultural traditions, using solid black ink and negative space for symbolic storytelling.",
     description: "Blackwork tattooing has its origins in ancient tribal practices, including Polynesian, Maori, and Celtic cultures. These tattoos were rich with symbolism, representing strength, ancestry, and spiritual protection. Over time, blackwork evolved into a modern graphic tattoo style known for its heavy contrast, solid black fills, and ornamental geometric patterns. This style emphasizes boldness and clarity, using negative space as a powerful design element to create striking visual narratives that honor cultural heritage and personal identity.",
-    style: "Blackwork",
+    style: "Solid Black",
     image: { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/cover.png" },
     gallery: [
       { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/hand-male.png" },

@@ -1,7 +1,6 @@
+import { BodyPartsInspiration } from "@/components/home/BodyPartsInspiration";
 import { GetInspiration } from "@/components/home/GetInspiration";
 import { Banner } from "@/components/pro/Banner";
-import { Button } from "@/components/ui/Button";
-import { Link } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 export function Home() {
@@ -13,7 +12,8 @@ export function Home() {
       <View style={styles.section}>
         <Banner />
         <GetInspiration />
-        <Link href="/home/new" asChild>
+        <BodyPartsInspiration />
+        {/*  <Link href="/home/new" asChild>
           <Button
             symbol="plus"
             variant="solid"
@@ -22,7 +22,7 @@ export function Home() {
             title="Generate"
             onPress={() => {}}
           />
-        </Link>
+        </Link> */}
       </View>
     </ScrollView>
   );
