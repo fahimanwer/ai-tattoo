@@ -79,8 +79,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   styleImage: {
-    width: 240,
-    height: 140,
+    width: 160,
+    height: 280,
     borderRadius: 16,
     borderWidth: 2,
   },
