@@ -1,55 +1,89 @@
+import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
+import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
 interface VerticalCardProps {
   style: FeaturedTattoo;
   onPress: (style: FeaturedTattoo) => void;
+  showOverlay?: boolean; // Controls visibility of title, description, and blur
 }
 
 export const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
-export function VerticalCard({ style, onPress }: VerticalCardProps) {
+export function VerticalCard({
+  style,
+  onPress,
+  showOverlay = true,
+}: VerticalCardProps) {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleImagePress = () => {
+    setModalVisible(true);
+  };
+
   return (
-    <Pressable
-      key={style.id}
-      onPress={() => onPress(style)}
-      style={({ pressed }) => [
-        styles.styleContainer,
-        { transform: [{ scale: pressed ? 0.99 : 1 }] },
-      ]}
-    >
-      <Image
-        source={style.image}
-        style={[styles.styleImage]}
-        contentFit="cover"
-        contentPosition="center"
-        placeholder={{ blurhash }}
-        transition={1000}
+    <>
+      <Pressable
+        key={style.id}
+        onPress={() => onPress(style)}
+        style={({ pressed }) => [
+          styles.styleContainer,
+          { transform: [{ scale: pressed ? 0.99 : 1 }] },
+        ]}
+      >
+        <Pressable onPress={handleImagePress}>
+          <Image
+            source={style.image}
+            style={[styles.styleImage]}
+            contentFit="cover"
+            contentPosition="center"
+            placeholder={{ blurhash }}
+            transition={1000}
+          />
+        </Pressable>
+        {showOverlay && (
+          <>
+            <BlurView
+              intensity={20}
+              style={{
+                position: "absolute",
+                left: 0,
+                bottom: 0,
+                height: 70,
+                width: "100%",
+              }}
+            />
+            <View style={styles.styleImageContainer}>
+              <Text type="base" weight="bold">
+                {style.title}
+              </Text>
+              <Text
+                type="sm"
+                weight="normal"
+                style={styles.description}
+                numberOfLines={1}
+              >
+                {style.style}
+              </Text>
+            </View>
+          </>
+        )}
+      </Pressable>
+
+      <BottomSheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        type="photo"
+        imageSource={style.image}
+        imageTitle={style.title}
       />
-      <BlurView
-        intensity={20}
-        style={{
-          position: "absolute",
-          left: 0,
-          bottom: 0,
-          height: 70,
-          width: "100%",
-        }}
-      />
-      <View style={styles.styleImageContainer}>
-        <Text type="base" weight="bold">
-          {style.title}
-        </Text>
-        <Text type="sm" weight="normal" style={styles.description}>
-          {style.style}
-        </Text>
-      </View>
-    </Pressable>
+    </>
   );
 }
 

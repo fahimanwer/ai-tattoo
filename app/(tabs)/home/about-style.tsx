@@ -1,13 +1,12 @@
 import ParallaxScrollView from "@/components/about/ParallaxScrollView";
+import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
+import { VerticalCard } from "@/components/ui/VerticalCard";
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
-import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
-  Dimensions,
   ImageSourcePropType,
-  Pressable,
   ScrollView,
   StyleSheet,
   View,
@@ -15,7 +14,12 @@ import {
 
 export default function AboutStyle() {
   const { style: styleParam } = useLocalSearchParams<{ style: string }>();
-  const [selectedGalleryIndex, setSelectedGalleryIndex] = useState(0);
+  const [photoModalVisible, setPhotoModalVisible] = useState(false);
+  const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
+  const [selectedGalleryItem, setSelectedGalleryItem] = useState<{
+    image: ImageSourcePropType;
+    title: string;
+  } | null>(null);
 
   const selectedStyle: FeaturedTattoo | undefined = featuredTattoos.find(
     (tattoo) => tattoo.id.toString() === styleParam
@@ -23,14 +27,27 @@ export default function AboutStyle() {
 
   const currentStyle = selectedStyle || featuredTattoos[0];
 
-  const { width: screenWidth } = Dimensions.get("screen");
-  const galleryItemWidth = screenWidth * 0.7;
+  const handleGalleryItemPress = (
+    image: ImageSourcePropType,
+    index: number
+  ) => {
+    setSelectedGalleryItem({
+      image,
+      title: `${currentStyle.title} ${index + 1}`,
+    });
+    setPhotoModalVisible(true);
+  };
+
+  const handleReadMore = () => {
+    setDescriptionModalVisible(true);
+  };
 
   return (
     <ParallaxScrollView
       imageUrl={currentStyle?.image as ImageSourcePropType}
       title={currentStyle?.title}
       shortDescription={currentStyle?.short_description}
+      onReadMore={currentStyle?.description ? handleReadMore : undefined}
     >
       <ScrollView
         style={[styles.container]}
@@ -46,32 +63,38 @@ export default function AboutStyle() {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 decelerationRate="fast"
-                snapToInterval={galleryItemWidth + 16}
+                snapToInterval={176} // VerticalCard width (160) + marginRight (16)
                 snapToAlignment="center"
                 contentInsetAdjustmentBehavior="automatic"
                 contentContainerStyle={styles.galleryScrollContainer}
               >
-                {currentStyle.gallery.map((image, index) => (
-                  <Pressable
-                    key={index}
-                    style={({ pressed }) => [
-                      styles.galleryItem,
-                      {
-                        transform: [{ scale: pressed ? 0.99 : 1 }],
-                        width: galleryItemWidth,
-                        height: 240,
-                      },
-                    ]}
-                    onPress={() => setSelectedGalleryIndex(index)}
-                  >
-                    <Image
-                      source={image as ImageSourcePropType}
-                      style={styles.galleryImage}
-                      contentFit="cover"
-                      contentPosition="center"
+                {currentStyle.gallery.map((image, index) => {
+                  // Transform gallery image to FeaturedTattoo-like object for VerticalCard
+                  const galleryItem: FeaturedTattoo = {
+                    id: index,
+                    title: `${currentStyle.title} ${index + 1}`,
+                    style: currentStyle.short_description || "Inspiration",
+                    short_description: currentStyle.short_description || "",
+                    description: "",
+                    prompt: "",
+                    gallery: [],
+                    image: image as ImageSourcePropType,
+                  };
+
+                  return (
+                    <VerticalCard
+                      key={index}
+                      style={galleryItem}
+                      showOverlay={false}
+                      onPress={() =>
+                        handleGalleryItemPress(
+                          image as ImageSourcePropType,
+                          index
+                        )
+                      }
                     />
-                  </Pressable>
-                ))}
+                  );
+                })}
               </ScrollView>
             </View>
           )}
@@ -83,11 +106,30 @@ export default function AboutStyle() {
               variant="solid"
               color="white"
               symbol="plus.circle.fill"
+              radius="full"
               haptic
             />
           </View>
         </View>
       </ScrollView>
+
+      {/* Photo Bottom Sheet */}
+      <BottomSheet
+        visible={photoModalVisible}
+        onClose={() => setPhotoModalVisible(false)}
+        type="photo"
+        imageSource={selectedGalleryItem?.image}
+        imageTitle={selectedGalleryItem?.title}
+      />
+
+      {/* Description Bottom Sheet */}
+      <BottomSheet
+        visible={descriptionModalVisible}
+        onClose={() => setDescriptionModalVisible(false)}
+        type="description"
+        title={currentStyle?.title}
+        description={currentStyle?.description}
+      />
     </ParallaxScrollView>
   );
 }
@@ -155,20 +197,6 @@ const styles = StyleSheet.create({
   },
   galleryScrollContainer: {
     paddingHorizontal: 16,
-  },
-  galleryItem: {
-    marginRight: 16,
-    overflow: "hidden",
-    position: "relative",
-  },
-  galleryImage: {
-    width: "100%",
-    height: "100%",
-  },
-  galleryOverlay: {
-    position: "absolute",
-    top: 12,
-    right: 12,
   },
   actionContainer: {
     paddingHorizontal: 16,

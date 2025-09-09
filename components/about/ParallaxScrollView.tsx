@@ -2,7 +2,7 @@ import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { Image } from "expo-image";
 import type { PropsWithChildren } from "react";
-import { ImageSourcePropType, StyleSheet, View } from "react-native";
+import { ImageSourcePropType, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -20,10 +20,12 @@ export default function ParallaxScrollView({
   imageUrl,
   title,
   shortDescription,
+  onReadMore,
 }: PropsWithChildren<{
   imageUrl: ImageSourcePropType;
   title: string;
   shortDescription: string;
+  onReadMore?: () => void;
 }>) {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
@@ -84,9 +86,13 @@ export default function ParallaxScrollView({
             <Text type="default" weight="normal" style={{ opacity: 0.7 }}>
               {shortDescription}
             </Text>
-            <Text type="default" weight="normal">
-              Read More
-            </Text>
+            {onReadMore && (
+              <Pressable onPress={onReadMore} hitSlop={8}>
+                <Text type="default" weight="bold" style={styles.readMoreText}>
+                  Read More
+                </Text>
+              </Pressable>
+            )}
           </View>
         </View>
 
@@ -123,5 +129,9 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: 8,
     paddingHorizontal: 16,
+  },
+  readMoreText: {
+    textDecorationLine: "underline",
+    opacity: 0.9,
   },
 });
