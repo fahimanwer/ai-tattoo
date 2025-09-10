@@ -1,19 +1,11 @@
 import { Text } from "@/components/ui/Text";
 import { VerticalCard } from "@/components/ui/VerticalCard";
-import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
+import { featuredTattoos } from "@/lib/featured-tattoos";
 import { router } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
-function goToAboutStyle(style: FeaturedTattoo) {
-  router.push(`/home/about-style?style=${style.id}`);
-}
-
 export function GetInspiration() {
   const inspirationStyles = featuredTattoos.slice(0, 8);
-
-  const handleStylePress = (style: FeaturedTattoo) => {
-    goToAboutStyle(style);
-  };
 
   return (
     <View style={{ flex: 1, gap: 8 }}>
@@ -30,7 +22,14 @@ export function GetInspiration() {
           <VerticalCard
             key={style.id}
             style={style}
-            onPress={handleStylePress}
+            onPress={() =>
+              router.push({
+                pathname: "/home/about/style",
+                params: {
+                  style: style.id,
+                },
+              })
+            }
           />
         ))}
       </ScrollView>

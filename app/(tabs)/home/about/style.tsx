@@ -3,7 +3,7 @@ import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
 import { VerticalCard } from "@/components/ui/VerticalCard";
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
   ImageSourcePropType,
@@ -15,7 +15,6 @@ import {
 export default function AboutStyle() {
   const { style: styleParam } = useLocalSearchParams<{ style: string }>();
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
-  const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
   const [selectedGalleryItem, setSelectedGalleryItem] = useState<{
     image: ImageSourcePropType;
     title: string;
@@ -38,16 +37,19 @@ export default function AboutStyle() {
     setPhotoModalVisible(true);
   };
 
-  const handleReadMore = () => {
-    setDescriptionModalVisible(true);
-  };
-
   return (
     <ParallaxScrollView
       imageUrl={currentStyle?.image as ImageSourcePropType}
       title={currentStyle?.title}
       shortDescription={currentStyle?.short_description}
-      onReadMore={currentStyle?.description ? handleReadMore : undefined}
+      onReadMore={() =>
+        router.push({
+          pathname: "/home/about/learn-more",
+          params: {
+            style: currentStyle?.id,
+          },
+        })
+      }
     >
       <ScrollView
         style={[styles.container]}
@@ -120,15 +122,6 @@ export default function AboutStyle() {
         type="photo"
         imageSource={selectedGalleryItem?.image}
         imageTitle={selectedGalleryItem?.title}
-      />
-
-      {/* Description Bottom Sheet */}
-      <BottomSheet
-        visible={descriptionModalVisible}
-        onClose={() => setDescriptionModalVisible(false)}
-        type="description"
-        title={currentStyle?.title}
-        description={currentStyle?.description}
       />
     </ParallaxScrollView>
   );

@@ -78,7 +78,7 @@ export default function ProfileLayout() {
           }}
         />
         <Stack.Screen
-          name="about-style"
+          name="about/style"
           options={{
             title: "",
             headerBackButtonDisplayMode: "minimal",
@@ -90,6 +90,16 @@ export default function ProfileLayout() {
           options={{
             headerBackButtonDisplayMode: "minimal",
             headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="about/learn-more"
+          options={{
+            headerLargeTitle: true,
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.3, 0.5, 1],
+            sheetInitialDetentIndex: 0,
           }}
         />
       </Stack>
