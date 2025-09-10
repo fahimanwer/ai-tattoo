@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import {
   bodyPartCategories,
+  getDefaultBodyPartCategory,
   type BodyPartCategory,
   type BodyPartVariant,
 } from "@/constants/BodyParts";
@@ -80,7 +81,7 @@ export function New() {
   const [selectedTattooImage, setSelectedTattooImage] =
     useState<ImageSourcePropType | null>(null);
   const [selectedBodyPartCategory, setSelectedBodyPartCategory] =
-    useState<BodyPartCategory | null>(null);
+    useState<BodyPartCategory | null>(getDefaultBodyPartCategory());
   const [selectedBodyPartVariant, setSelectedBodyPartVariant] =
     useState<BodyPartVariant | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -343,7 +344,7 @@ export function New() {
       </ScrollView>
 
       {/* Body Part Variant Selection */}
-      {selectedBodyPartCategory && (
+      {selectedBodyPartCategory && selectedBodyPartCategory.id !== "all" && (
         <>
           <View style={[styles.section, { marginTop: 24 }]}>
             <Text type="subtitle" weight="bold">
@@ -390,6 +391,18 @@ export function New() {
             ))}
           </ScrollView>
         </>
+      )}
+
+      {/* Show message for "all" category */}
+      {selectedBodyPartCategory && selectedBodyPartCategory.id === "all" && (
+        <View style={[styles.section, { marginTop: 24 }]}>
+          <Text type="subtitle" weight="bold">
+            All Body Parts Selected
+          </Text>
+          <Text type="body">
+            You can choose any body part from the available styles below
+          </Text>
+        </View>
       )}
 
       <View style={[styles.section, { marginTop: 24 }]}>

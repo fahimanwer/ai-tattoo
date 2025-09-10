@@ -10,6 +10,8 @@ import { ActivityIndicator, Alert, View } from "react-native";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 
+export const blurhash =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 const MIX_TOW_PHOTHOS_PROMPT = `A hyper-realistic integration of the uploaded tattoo design onto the uploaded body photo. The tattoo should follow the exact curvature and natural folds of the neck and collarbone, adapting seamlessly to the anatomy. The ink must look authentically healed into the skin: slightly diffused in pores, with natural wear, subtle fading in areas of tension, and matte tones rather than excessive shine. Shading and lines should curve and flow with the muscles and skin surface, never floating above it. Show fine details of skin texture such as pores, wrinkles, and light imperfections, blending with the tattoo ink. Lighting should remain soft and realistic, avoiding glossy or artificial effects, so the tattoo looks fully integrated and aged naturally. No background, only the tattooed body part in ultra-high resolution.`;
 const bodyPartImage = "/a.jpg";
 const tattooImage = "https://d3ynb031qx3d1.cloudfront.net/tattoos/gothic.png";
@@ -109,16 +111,18 @@ export function TextAndImageToImage() {
       <Text numberOfLines={3}>{MIX_TOW_PHOTHOS_PROMPT}</Text>
       <View style={{ flexDirection: "row", gap: 10 }}>
         <Image
+          placeholder={{ blurhash }}
+          transition={1000}
           source={require(`@/assets${bodyPartImage}`)}
           style={{ width: "50%", height: 200, borderRadius: 8 }}
           contentFit="cover"
-          transition={200}
         />
         <Image
+          placeholder={{ blurhash }}
+          transition={1000}
           source={tattooImage}
           style={{ width: "50%", height: 200, borderRadius: 8 }}
           contentFit="cover"
-          transition={200}
         />
       </View>
       <Button

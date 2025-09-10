@@ -1,18 +1,19 @@
 import { NotFound } from "@/components/screens/notFound";
-import { Text } from "@/components/ui/Text";
-import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { ScrollView } from "react-native";
 
-export default function Photo() {
-  const { style } = useLocalSearchParams<{ style: string }>();
-  const selectedStyle: FeaturedTattoo | undefined = featuredTattoos.find(
-    (tattoo) => tattoo.id.toString() === style
-  );
-  console.log(selectedStyle);
+export const blurhash =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
-  if (!selectedStyle) {
+export default function Photo() {
+  const params = useLocalSearchParams<{
+    imageUrl: string;
+  }>();
+
+  console.log("Image URL:", params.imageUrl);
+
+  if (!params.imageUrl) {
     return <NotFound />;
   }
 
@@ -25,11 +26,12 @@ export default function Photo() {
         contentContainerStyle={{ padding: 16, gap: 16 }}
       >
         <Image
-          source={selectedStyle.image}
-          style={{ width: "100%", height: 200 }}
+          source={{ uri: params.imageUrl }}
+          placeholder={{ blurhash }}
+          transition={1000}
+          style={{ width: "100%", height: 420 }}
           contentFit="contain"
         />
-        <Text type="default">{selectedStyle.description}</Text>
       </ScrollView>
     </>
   );

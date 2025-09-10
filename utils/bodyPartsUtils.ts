@@ -82,8 +82,20 @@ export function getBodyPartImagesFromOneStyle(bodyPart: string): GalleryImage[] 
   return bodyPartImages.filter(image => image.styleId === firstStyle.styleId);
 }
 
+// Get all images for a specific body part across all styles
+export function getBodyPartImagesFromAllStyles(bodyPart: string): GalleryImage[] {
+  return filterImagesByBodyPart(bodyPart);
+}
+
+// Get all images when "all" category is selected
+export function getAllBodyPartImages(): GalleryImage[] {
+  return getAllGalleryImages();
+}
+
 // Get body part display name
 export function getBodyPartDisplayName(bodyPart: string): string {
+  if (bodyPart === 'all') return 'All';
+  
   const displayNames: Record<string, string> = {
     'arm': 'Arms',
     'back': 'Back',

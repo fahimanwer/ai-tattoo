@@ -3,7 +3,6 @@ import { Color } from "@/constants/TWPalette";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 
 interface VerticalCardProps {
@@ -20,8 +19,6 @@ export function VerticalCard({
   onPress,
   showOverlay = true,
 }: VerticalCardProps) {
-  const router = useRouter();
-
   return (
     <>
       <Pressable
@@ -32,25 +29,14 @@ export function VerticalCard({
           { transform: [{ scale: pressed ? 0.99 : 1 }] },
         ]}
       >
-        <Pressable
-          onPress={() => {
-            router.push({
-              pathname: "/home/about/photo",
-              params: {
-                style: style.id,
-              },
-            });
-          }}
-        >
-          <Image
-            source={style.image}
-            style={[styles.styleImage]}
-            contentFit="cover"
-            contentPosition="center"
-            placeholder={{ blurhash }}
-            transition={1000}
-          />
-        </Pressable>
+        <Image
+          source={style.image}
+          style={[styles.styleImage]}
+          contentFit="cover"
+          contentPosition="center"
+          placeholder={{ blurhash }}
+          transition={1000}
+        />
         {showOverlay && (
           <>
             <BlurView

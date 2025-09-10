@@ -13,16 +13,6 @@ export function Home() {
         <Banner />
         <GetInspiration />
         <BodyPartsInspiration />
-        {/*  <Link href="/home/new" asChild>
-          <Button
-            symbol="plus"
-            variant="solid"
-            haptic
-            color="white"
-            title="Generate"
-            onPress={() => {}}
-          />
-        </Link> */}
       </View>
     </ScrollView>
   );
@@ -31,6 +21,7 @@ export function Home() {
 const styles = StyleSheet.create({
   section: {
     marginTop: 24,
+    marginBottom: 52,
     gap: 24,
   },
 });

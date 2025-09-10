@@ -95,7 +95,6 @@ export default function ParallaxScrollView({
             )}
           </View>
         </View>
-
         {children}
       </Animated.ScrollView>
     </View>

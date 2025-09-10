@@ -70,14 +70,20 @@ export default function AboutStyle() {
                       key={index}
                       style={galleryItem}
                       showOverlay={false}
-                      onPress={() =>
+                      onPress={() => {
+                        const imageUrl =
+                          typeof galleryItem.image === "object" &&
+                          "uri" in galleryItem.image
+                            ? galleryItem.image.uri
+                            : galleryItem.image;
+
                         router.push({
                           pathname: "/home/about/photo",
                           params: {
-                            style: currentStyle?.id,
+                            imageUrl: imageUrl as string,
                           },
-                        })
-                      }
+                        });
+                      }}
                     />
                   );
                 })}
@@ -105,6 +111,7 @@ export default function AboutStyle() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: 56,
   },
   content: {
     flex: 1,

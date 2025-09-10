@@ -3,9 +3,10 @@ import { Text } from "@/components/ui/Text";
 import { Button, ContextMenu, Host } from "@/lib/expo-ui-web";
 import {
   GalleryImage,
+  getAllBodyPartImages,
   getAllBodyParts,
   getBodyPartDisplayName,
-  getBodyPartImagesFromOneStyle,
+  getBodyPartImagesFromAllStyles,
 } from "@/utils/bodyPartsUtils";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -13,11 +14,17 @@ import { ScrollView, StyleSheet, View } from "react-native";
 
 export function BodyPartsInspiration() {
   const allBodyParts = getAllBodyParts();
-  const [selectedBodyPart, setSelectedBodyPart] = useState(
-    allBodyParts[0] || "arm"
-  );
+  const [selectedBodyPart, setSelectedBodyPart] = useState("all");
 
-  const filteredImages = getBodyPartImagesFromOneStyle(selectedBodyPart);
+  // Get filtered images based on selected body part
+  const getFilteredImages = (bodyPart: string): GalleryImage[] => {
+    if (bodyPart === "all") {
+      return getAllBodyPartImages();
+    }
+    return getBodyPartImagesFromAllStyles(bodyPart);
+  };
+
+  const filteredImages = getFilteredImages(selectedBodyPart);
 
   const handleImagePress = (image: GalleryImage) => {
     // Navigate to body part detail screen
@@ -35,10 +42,14 @@ export function BodyPartsInspiration() {
     setSelectedBodyPart(bodyPart);
   };
 
-  const bodyPartOptions = allBodyParts.map((part) => ({
-    title: getBodyPartDisplayName(part),
-    action: () => handleBodyPartSelect(part),
-  }));
+  // Create options including "all" category
+  const bodyPartOptions = [
+    { title: "All", action: () => handleBodyPartSelect("all") },
+    ...allBodyParts.map((part) => ({
+      title: getBodyPartDisplayName(part),
+      action: () => handleBodyPartSelect(part),
+    })),
+  ];
 
   return (
     <View style={styles.container}>

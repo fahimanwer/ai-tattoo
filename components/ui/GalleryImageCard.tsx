@@ -10,6 +10,9 @@ interface GalleryImageCardProps {
   onPress: (image: GalleryImage) => void;
 }
 
+export const blurhash =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
+
 export function GalleryImageCard({ image, onPress }: GalleryImageCardProps) {
   return (
     <Pressable
@@ -21,6 +24,8 @@ export function GalleryImageCard({ image, onPress }: GalleryImageCardProps) {
     >
       <Image
         source={{ uri: image.uri }}
+        placeholder={{ blurhash }}
+        transition={1000}
         style={styles.image}
         contentFit="cover"
         contentPosition="center"
