@@ -1,10 +1,9 @@
-import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
-import { useState } from "react";
+import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 
 interface VerticalCardProps {
@@ -21,11 +20,7 @@ export function VerticalCard({
   onPress,
   showOverlay = true,
 }: VerticalCardProps) {
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const handleImagePress = () => {
-    setModalVisible(true);
-  };
+  const router = useRouter();
 
   return (
     <>
@@ -37,7 +32,16 @@ export function VerticalCard({
           { transform: [{ scale: pressed ? 0.99 : 1 }] },
         ]}
       >
-        <Pressable onPress={handleImagePress}>
+        <Pressable
+          onPress={() => {
+            router.push({
+              pathname: "/home/about/photo",
+              params: {
+                style: style.id,
+              },
+            });
+          }}
+        >
           <Image
             source={style.image}
             style={[styles.styleImage]}
@@ -75,14 +79,6 @@ export function VerticalCard({
           </>
         )}
       </Pressable>
-
-      <BottomSheet
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        type="photo"
-        imageSource={style.image}
-        imageTitle={style.title}
-      />
     </>
   );
 }

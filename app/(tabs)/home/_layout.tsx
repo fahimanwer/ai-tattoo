@@ -102,6 +102,16 @@ export default function ProfileLayout() {
             sheetInitialDetentIndex: 0,
           }}
         />
+        <Stack.Screen
+          name="about/photo"
+          options={{
+            headerLargeTitle: true,
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.3, 0.5, 1],
+            sheetInitialDetentIndex: 0,
+          }}
+        />
       </Stack>
     </TattooCreationProvider>
   );

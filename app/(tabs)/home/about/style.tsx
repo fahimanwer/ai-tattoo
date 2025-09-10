@@ -1,10 +1,8 @@
 import ParallaxScrollView from "@/components/about/ParallaxScrollView";
-import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
 import { VerticalCard } from "@/components/ui/VerticalCard";
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
 import {
   ImageSourcePropType,
   ScrollView,
@@ -14,28 +12,12 @@ import {
 
 export default function AboutStyle() {
   const { style: styleParam } = useLocalSearchParams<{ style: string }>();
-  const [photoModalVisible, setPhotoModalVisible] = useState(false);
-  const [selectedGalleryItem, setSelectedGalleryItem] = useState<{
-    image: ImageSourcePropType;
-    title: string;
-  } | null>(null);
 
   const selectedStyle: FeaturedTattoo | undefined = featuredTattoos.find(
     (tattoo) => tattoo.id.toString() === styleParam
   );
 
   const currentStyle = selectedStyle || featuredTattoos[0];
-
-  const handleGalleryItemPress = (
-    image: ImageSourcePropType,
-    index: number
-  ) => {
-    setSelectedGalleryItem({
-      image,
-      title: `${currentStyle.title} ${index + 1}`,
-    });
-    setPhotoModalVisible(true);
-  };
 
   return (
     <ParallaxScrollView
@@ -89,10 +71,12 @@ export default function AboutStyle() {
                       style={galleryItem}
                       showOverlay={false}
                       onPress={() =>
-                        handleGalleryItemPress(
-                          image as ImageSourcePropType,
-                          index
-                        )
+                        router.push({
+                          pathname: "/home/about/photo",
+                          params: {
+                            style: currentStyle?.id,
+                          },
+                        })
                       }
                     />
                   );
@@ -114,15 +98,6 @@ export default function AboutStyle() {
           </View>
         </View>
       </ScrollView>
-
-      {/* Photo Bottom Sheet */}
-      <BottomSheet
-        visible={photoModalVisible}
-        onClose={() => setPhotoModalVisible(false)}
-        type="photo"
-        imageSource={selectedGalleryItem?.image}
-        imageTitle={selectedGalleryItem?.title}
-      />
     </ParallaxScrollView>
   );
 }

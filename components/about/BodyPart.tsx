@@ -72,7 +72,12 @@ export default function BodyPartParallaxView({
 
   const handleImagePress = (image: GalleryImage) => {
     // Navigate to tattoo detail or generation screen
-    router.push(`/home/about-style?style=${image.styleId}`);
+    router.push({
+      pathname: "/home/about/style",
+      params: {
+        style: image.styleId,
+      },
+    });
   };
 
   return (
