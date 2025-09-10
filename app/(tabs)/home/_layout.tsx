@@ -1,21 +1,8 @@
 import { Icon } from "@/components/ui/Icon";
-import { Text } from "@/components/ui/Text";
 import { useLargeHeaderOptions } from "@/constants/navigation-options";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import { Stack, useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
-
-function Title() {
-  return (
-    <Text
-      type="4xl"
-      weight="bold"
-      style={{ textAlign: "left", width: "100%", color: "white" }}
-    >
-      Get Inspired
-    </Text>
-  );
-}
 
 function ButtonToCreateTattoo() {
   const router = useRouter();
@@ -51,8 +38,7 @@ export default function ProfileLayout() {
           name="index"
           options={{
             title: "Get Inspired",
-            headerLargeTitle: false,
-            headerTitle: () => <Title />,
+            headerLargeTitle: true,
             headerRight: () => <ButtonToCreateTattoo />,
           }}
         />
