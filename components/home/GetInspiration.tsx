@@ -8,7 +8,7 @@ export function GetInspiration() {
   const inspirationStyles = featuredTattoos.slice(0, 8);
 
   return (
-    <View style={{ flex: 1, gap: 8 }}>
+    <View style={{ flex: 1, gap: 16 }}>
       <Text type="subtitle" weight="bold">
         Discover new styles
       </Text>

@@ -93,15 +93,6 @@ const armVariants: BodyPartVariant[] = [
 // Main body part categories (similar to featured tattoos structure)
 export const bodyPartCategories: BodyPartCategory[] = [
   {
-    id: "all",
-    name: "All",
-    description: "View all body parts and styles",
-    image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-1.png",
-    }, // Use first variant as cover
-    gallery: [], // Empty for all category - will be handled in utils
-  },
-  {
     id: "arm",
     name: "Arms",
     description: "Upper arm area perfect for medium to large tattoos",
@@ -129,7 +120,7 @@ export const getBodyPartCategoryById = (
 };
 
 export const getDefaultBodyPartCategory = (): BodyPartCategory => {
-  return bodyPartCategories[0]; // Return "all" as default (first category)
+  return bodyPartCategories[0]; // Return "arm" as default (first category)
 };
 
 export const getDefaultBodyPart = (): BodyPartVariant => {

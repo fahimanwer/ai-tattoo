@@ -105,7 +105,7 @@ export function BodyPartsInspiration() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 8,
+    gap: 16,
   },
   header: {
     flexDirection: "row",

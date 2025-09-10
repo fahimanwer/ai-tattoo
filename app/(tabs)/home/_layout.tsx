@@ -57,6 +57,13 @@ export default function ProfileLayout() {
           }}
         />
         <Stack.Screen
+          name="generated-result"
+          options={{
+            headerBackButtonDisplayMode: "minimal",
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
           name="tattoo-result"
           options={{
             headerBackButtonDisplayMode: "minimal",

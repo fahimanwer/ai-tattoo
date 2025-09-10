@@ -76,6 +76,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
     overflow: "hidden",
+    borderBottomEndRadius: 16,
+    borderBottomStartRadius: 16,
   },
   styleImage: {
     width: 160,
@@ -95,6 +97,8 @@ const styles = StyleSheet.create({
     zIndex: 2,
     paddingBottom: 16,
     paddingHorizontal: 16,
+    borderBottomEndRadius: 16,
+    borderBottomStartRadius: 16,
     backgroundColor: "transparent",
     experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
   },

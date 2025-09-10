@@ -76,64 +76,46 @@ export function GeneratedTattooResult({
       contentContainerStyle={styles.container}
     >
       <View style={styles.header}>
-        <Text type="title" weight="bold">
+        <Text type="title" weight="bold" style={styles.title}>
           Your Tattoo is Ready!
         </Text>
-        <Text type="body">This is how your design would look applied</Text>
+        <Text type="default" style={styles.subtitle}>
+          This is how your design would look applied
+        </Text>
       </View>
 
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: imageUri }}
           style={styles.resultImage}
-          contentFit="contain"
-          transition={300}
+          contentFit="cover"
+          contentPosition="center"
+          transition={1000}
           placeholder={{ blurhash }}
         />
       </View>
 
       <View style={styles.actionsContainer}>
-        <Text type="body" weight="semibold">
-          What do you want to do now?
-        </Text>
-
         <View style={styles.buttonGrid}>
           <Button
             symbol="square.and.arrow.down"
             variant="solid"
-            color="blue"
+            color="white"
             title="Save to Gallery"
             onPress={saveToLibrary}
             style={styles.primaryButton}
             haptic
+            radius="full"
           />
-
-          <Button
-            symbol="square.and.arrow.up"
-            variant="outline"
-            color="green"
-            title="Share"
-            onPress={shareResult}
-            style={styles.secondaryButton}
-          />
-
           <Button
             symbol="arrow.clockwise"
             variant="outline"
-            color="orange"
+            color="white"
             title="Generate Another"
             onPress={generateAnother}
             style={styles.secondaryButton}
+            radius="full"
           />
-        </View>
-      </View>
-
-      <View style={styles.infoContainer}>
-        <View style={styles.infoCard}>
-          <Text type="caption" style={styles.infoText}>
-            💡 <Text weight="semibold">Tip:</Text> Save this image and show it
-            to your tattoo artist to get the best result.
-          </Text>
         </View>
       </View>
     </ScrollView>
@@ -144,42 +126,31 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     paddingHorizontal: 16,
-    paddingVertical: 20,
   },
   header: {
+    display: "flex",
+    flexDirection: "column",
     alignItems: "center",
-    marginBottom: 20,
+    marginVertical: 12,
+    gap: 1,
   },
   title: {
     textAlign: "center",
-    marginBottom: 8,
-    color: Color.gray[900],
+    color: Color.grayscale[950],
   },
   subtitle: {
     textAlign: "center",
-    color: Color.gray[600],
+    color: Color.grayscale[950] + "80",
   },
   imageContainer: {
-    alignItems: "center",
     marginBottom: 30,
-    backgroundColor: Color.gray[50],
-    borderRadius: 20,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+    borderRadius: 16,
+    overflow: "hidden",
   },
   resultImage: {
-    width: screenWidth - 64,
-    height: screenWidth - 64,
+    width: "100%",
+    height: 360,
     borderRadius: 16,
-    maxWidth: 400,
-    maxHeight: 400,
   },
   actionsContainer: {
     marginBottom: 24,

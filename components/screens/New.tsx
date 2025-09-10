@@ -9,6 +9,7 @@ import {
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
 import { ApiError } from "@/lib/api-client";
+/* import { Button as ExpoButton } from "@/lib/expo-ui-web"; */
 import { featuredTattoos } from "@/lib/featured-tattoos";
 import { textAndImageToImage } from "@/lib/nano";
 import { useFocusEffect } from "@react-navigation/native";
@@ -16,6 +17,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Asset } from "expo-asset";
 import { File } from "expo-file-system/next";
 import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -88,6 +90,13 @@ export function New() {
   const [bodyPartBase64, setBodyPartBase64] = useState<string | null>(null);
   const [tattooBase64, setTattooBase64] = useState<string | null>(null);
 
+  // New state for custom user image
+  const [customUserImage, setCustomUserImage] = useState<string | null>(null);
+  const [customUserImageBase64, setCustomUserImageBase64] = useState<
+    string | null
+  >(null);
+  const [isUsingCustomImage, setIsUsingCustomImage] = useState(false);
+
   // Set current step when component mounts
   useEffect(() => {
     setCurrentStep(1);
@@ -140,10 +149,31 @@ export function New() {
     })();
   }, [selectedTattooImage]);
 
+  // Convert custom user image to base64 when it changes
+  useEffect(() => {
+    if (!customUserImage) {
+      setCustomUserImageBase64(null);
+      return;
+    }
+
+    (async () => {
+      try {
+        const customImage = await uriToBase64(customUserImage);
+        setCustomUserImageBase64(customImage);
+      } catch (e) {
+        console.error("Failed to convert custom user image:", e);
+      }
+    })();
+  }, [customUserImage]);
+
   // Mutation for generating tattoo
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!bodyPartBase64 || !tattooBase64) {
+      const bodyImage = isUsingCustomImage
+        ? customUserImageBase64
+        : bodyPartBase64;
+
+      if (!bodyImage || !tattooBase64) {
         throw new Error("Images not ready");
       }
 
@@ -160,7 +190,7 @@ export function New() {
 
       return textAndImageToImage({
         prompt,
-        images_base64: [bodyPartBase64, tattooBase64],
+        images_base64: [bodyImage, tattooBase64],
       });
     },
     onSuccess: async (data) => {
@@ -185,6 +215,51 @@ export function New() {
     },
   });
 
+  // Function to select image from gallery
+  const pickImageFromGallery = useCallback(async () => {
+    try {
+      // Request permission
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (permissionResult.granted === false) {
+        Alert.alert(
+          "Permission Required",
+          "Permission to access camera roll is required!"
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        const selectedImage = result.assets[0];
+        setCustomUserImage(selectedImage.uri);
+        setIsUsingCustomImage(true);
+        // Reset body part selection when using custom image
+        setSelectedBodyPartVariant(null);
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "Failed to pick image from gallery");
+    }
+  }, []);
+
+  // Function to remove custom image and return to default
+  const removeCustomImage = useCallback(() => {
+    setCustomUserImage(null);
+    setCustomUserImageBase64(null);
+    setIsUsingCustomImage(false);
+    // Reset to default body part
+    setSelectedBodyPartVariant(null);
+  }, []);
+
   // Function to reset all form state
   const resetFormCompletely = useCallback(() => {
     setSelectedBodyPartCategory(null);
@@ -193,6 +268,9 @@ export function New() {
     setGeneratedImage(null);
     setBodyPartBase64(null);
     setTattooBase64(null);
+    setCustomUserImage(null);
+    setCustomUserImageBase64(null);
+    setIsUsingCustomImage(false);
     updateOptions({
       selectedTattoo: undefined,
       colorOption: undefined,
@@ -256,9 +334,9 @@ export function New() {
     options.selectedTattoo &&
     options.colorOption &&
     selectedTattooImage &&
-    selectedBodyPartVariant &&
-    bodyPartBase64 &&
-    tattooBase64;
+    tattooBase64 &&
+    ((isUsingCustomImage && customUserImageBase64) ||
+      (!isUsingCustomImage && selectedBodyPartVariant && bodyPartBase64));
 
   const handleCreateTattoo = () => {
     setGeneratedImage(null);
@@ -299,59 +377,115 @@ export function New() {
         <Text type="subtitle" weight="bold">
           Select body part
         </Text>
-        <Text type="body">Choose where you want to see your tattoo</Text>
+        <Button
+          symbol={isUsingCustomImage ? "photo" : "plus"}
+          onPress={
+            isUsingCustomImage ? pickImageFromGallery : pickImageFromGallery
+          }
+          radius="full"
+          variant="link"
+          color="white"
+          style={{ width: 40, height: 40 }}
+        />
       </View>
 
-      {/* Body Part Category Selection */}
-      <ScrollView
-        horizontal
-        style={{ flex: 1, height: 200, paddingHorizontal: 16 }}
-        showsHorizontalScrollIndicator={false}
-      >
-        {bodyPartCategories.map((category) => (
-          <Pressable
-            key={category.id}
-            onPress={() => {
-              setSelectedBodyPartCategory(category);
-              setSelectedBodyPartVariant(null); // Reset selected variant when changing category
-            }}
+      {/* Custom User Image Preview */}
+      {isUsingCustomImage && customUserImage && (
+        <View style={styles.customImageSection}>
+          <Text
+            type="body"
+            weight="bold"
+            style={{ marginBottom: 12, textAlign: "center" }}
           >
+            Your Custom Image
+          </Text>
+          <View style={styles.customImageContainer}>
             <Image
-              source={category.image}
-              style={{
-                width: 160,
-                height: 160,
-                borderWidth: 3.5,
-                marginLeft: 8,
-                borderRadius: 16,
-                borderColor:
-                  selectedBodyPartCategory?.id === category.id
-                    ? Color.orange[400]
-                    : "transparent",
-              }}
+              source={{ uri: customUserImage }}
+              style={styles.customImagePreview}
               contentFit="cover"
             />
-            <Text
-              type="body"
-              weight="bold"
-              style={{ textAlign: "center", marginTop: 8, width: 160 }}
-              numberOfLines={2}
-            >
-              {category.name}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+            <View style={styles.customImageActions}>
+              <Button
+                symbol="trash"
+                onPress={removeCustomImage}
+                radius="full"
+                variant="outline"
+                color="red"
+                style={{ width: 36, height: 36 }}
+              />
+              <Button
+                symbol="photo"
+                onPress={pickImageFromGallery}
+                radius="full"
+                variant="outline"
+                color="blue"
+                style={{ width: 36, height: 36 }}
+              />
+            </View>
+          </View>
+          <Text
+            type="caption"
+            style={{
+              textAlign: "center",
+              marginTop: 8,
+              color: Color.gray[500],
+            }}
+          >
+            Tap the camera icon to change or trash icon to remove
+          </Text>
+        </View>
+      )}
 
-      {/* Body Part Variant Selection */}
-      {selectedBodyPartCategory && selectedBodyPartCategory.id !== "all" && (
+      {/* Body Part Category Selection - Only show when not using custom image */}
+      {!isUsingCustomImage && (
+        <ScrollView
+          horizontal
+          style={{ flex: 1, height: 200, paddingHorizontal: 16 }}
+          showsHorizontalScrollIndicator={false}
+        >
+          {bodyPartCategories.map((category) => (
+            <Pressable
+              key={category.id}
+              onPress={() => {
+                setSelectedBodyPartCategory(category);
+                setSelectedBodyPartVariant(null); // Reset selected variant when changing category
+              }}
+            >
+              <Image
+                source={category.image}
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderWidth: 3.5,
+                  marginLeft: 8,
+                  borderRadius: 16,
+                  borderColor:
+                    selectedBodyPartCategory?.id === category.id
+                      ? Color.orange[400]
+                      : "transparent",
+                }}
+                contentFit="cover"
+              />
+              <Text
+                type="body"
+                weight="bold"
+                style={{ textAlign: "center", marginTop: 8 }}
+                numberOfLines={2}
+              >
+                {category.name}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      )}
+
+      {/* Body Part Variant Selection - Only show when not using custom image */}
+      {!isUsingCustomImage && selectedBodyPartCategory && (
         <>
           <View style={[styles.section, { marginTop: 24 }]}>
             <Text type="subtitle" weight="bold">
               Choose specific {selectedBodyPartCategory.name.toLowerCase()}
-            </Text>
-            <Text type="body">
-              Select the exact body part type you want to try
             </Text>
           </View>
           <ScrollView
@@ -393,23 +527,10 @@ export function New() {
         </>
       )}
 
-      {/* Show message for "all" category */}
-      {selectedBodyPartCategory && selectedBodyPartCategory.id === "all" && (
-        <View style={[styles.section, { marginTop: 24 }]}>
-          <Text type="subtitle" weight="bold">
-            All Body Parts Selected
-          </Text>
-          <Text type="body">
-            You can choose any body part from the available styles below
-          </Text>
-        </View>
-      )}
-
       <View style={[styles.section, { marginTop: 24 }]}>
         <Text type="subtitle" weight="bold">
           Select a tattoo style
         </Text>
-        <Text type="body">Choose a style to see the available designs</Text>
       </View>
 
       {/* Tattoo Style Selection */}
@@ -461,9 +582,6 @@ export function New() {
             <Text type="subtitle" weight="bold">
               Choose specific design
             </Text>
-            <Text type="body">
-              Select the exact tattoo design you want to try
-            </Text>
           </View>
           <ScrollView
             horizontal
@@ -496,11 +614,19 @@ export function New() {
         </>
       )}
 
-      <View style={styles.section}>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: 8,
+          paddingHorizontal: 16,
+        }}
+      >
         <Text type="subtitle" weight="bold">
           Choose style
         </Text>
-        <Text type="body">Select color preference for your tattoo</Text>
 
         <View style={styles.colorOptions}>
           <Button
@@ -645,7 +771,7 @@ export function New() {
                   });
                 }
               }}
-              title="Ver en Detalle"
+              title="See detail"
               style={{ flex: 1 }}
             />
             <Button
@@ -653,7 +779,7 @@ export function New() {
               variant="outline"
               color="orange"
               onPress={handleCreateTattoo}
-              title="Generar Otro"
+              title="Generate another"
               disabled={mutation.isPending}
               style={{ flex: 1 }}
             />
@@ -666,8 +792,13 @@ export function New() {
 
 const styles = StyleSheet.create({
   section: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: 8,
     paddingHorizontal: 16,
+    marginBottom: 16,
   },
   colorOptions: {
     flexDirection: "row",
@@ -737,5 +868,39 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: "row",
     gap: 12,
+  },
+  customImageSection: {
+    paddingHorizontal: 16,
+    marginTop: 16,
+    alignItems: "center",
+  },
+  customImageContainer: {
+    position: "relative",
+    alignItems: "center",
+  },
+  customImagePreview: {
+    width: 200,
+    height: 200,
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: Color.orange[400],
+  },
+  customImageActions: {
+    position: "absolute",
+    bottom: -8,
+    flexDirection: "row",
+    gap: 12,
+    backgroundColor: "white",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });
