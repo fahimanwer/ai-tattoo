@@ -585,7 +585,7 @@ export function New() {
                     borderRadius: 12,
                     borderColor:
                       selectedBodyPartVariant?.id === variant.id
-                        ? Color.orange[400]
+                        ? Color.grayscale[950]
                         : "transparent",
                   }}
                   contentFit="cover"
@@ -727,7 +727,7 @@ export function New() {
                     borderRadius: 12,
                     borderColor:
                       selectedTattooImage === galleryImage
-                        ? Color.orange[400]
+                        ? Color.grayscale[950]
                         : "transparent",
                   }}
                   contentFit="cover"
