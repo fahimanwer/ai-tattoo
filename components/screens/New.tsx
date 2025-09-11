@@ -56,7 +56,7 @@ export async function assetToBase64(moduleId: number): Promise<string> {
 /**
  * Convert URI image to Base64
  */
-export async function uriToBase64(uri: string): Promise<string> {
+async function uriToBase64(uri: string): Promise<string> {
   try {
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -89,23 +89,18 @@ export function New() {
   const [selectedBodyPartVariant, setSelectedBodyPartVariant] =
     useState<BodyPartVariant | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [bodyPartBase64, setBodyPartBase64] = useState<string | null>(null);
-  const [tattooBase64, setTattooBase64] = useState<string | null>(null);
-
-  // New state for custom user image
-  const [customUserImage, setCustomUserImage] = useState<string | null>(null);
-  const [customUserImageBase64, setCustomUserImageBase64] = useState<
-    string | null
-  >(null);
+  // Simplified state for custom user image with base64
+  const [customUserImage, setCustomUserImage] = useState<{
+    uri: string;
+    base64: string;
+  } | null>(null);
   const [isUsingCustomImage, setIsUsingCustomImage] = useState(false);
 
-  // New state for existing tattoo image
-  const [existingTattooImage, setExistingTattooImage] = useState<string | null>(
-    null
-  );
-  const [existingTattooImageBase64, setExistingTattooImageBase64] = useState<
-    string | null
-  >(null);
+  // Simplified state for existing tattoo image with base64
+  const [existingTattooImage, setExistingTattooImage] = useState<{
+    uri: string;
+    base64: string;
+  } | null>(null);
   const [isUsingExistingTattoo, setIsUsingExistingTattoo] = useState(false);
 
   // Set current step when component mounts
@@ -115,110 +110,62 @@ export function New() {
 
   // We'll add the back button prevention after mutation is declared
 
-  // Preload selected body part variant image to base64
-  useEffect(() => {
-    if (!selectedBodyPartVariant) {
-      setBodyPartBase64(null);
-      return;
+  // Helper function to convert static asset to base64
+  const getStaticImageBase64 = async (
+    imageSource: ImageSourcePropType
+  ): Promise<string> => {
+    if (typeof imageSource === "number") {
+      // Static require() asset
+      return await assetToBase64(imageSource);
+    } else if (
+      typeof imageSource === "object" &&
+      "uri" in imageSource &&
+      imageSource.uri
+    ) {
+      // URI-based image
+      return await uriToBase64(imageSource.uri);
     }
-
-    (async () => {
-      try {
-        const bodyPartImage = await uriToBase64(
-          selectedBodyPartVariant.imageUrl
-        );
-        setBodyPartBase64(bodyPartImage);
-      } catch (e) {
-        console.error("Failed to load body part image:", e);
-      }
-    })();
-  }, [selectedBodyPartVariant]);
-
-  // Convert selected tattoo image to base64 when it changes
-  useEffect(() => {
-    if (!selectedTattooImage) {
-      setTattooBase64(null);
-      return;
-    }
-
-    (async () => {
-      try {
-        if (
-          selectedTattooImage &&
-          typeof selectedTattooImage === "object" &&
-          "uri" in selectedTattooImage &&
-          selectedTattooImage.uri
-        ) {
-          const tattooImage = await uriToBase64(selectedTattooImage.uri);
-          setTattooBase64(tattooImage);
-        } else {
-          console.error("Invalid tattoo image format");
-        }
-      } catch (e) {
-        console.error("Failed to convert tattoo image:", e);
-      }
-    })();
-  }, [selectedTattooImage]);
-
-  // Convert custom user image to base64 when it changes
-  useEffect(() => {
-    if (!customUserImage) {
-      setCustomUserImageBase64(null);
-      return;
-    }
-
-    (async () => {
-      try {
-        const customImage = await uriToBase64(customUserImage);
-        setCustomUserImageBase64(customImage);
-      } catch (e) {
-        console.error("Failed to convert custom user image:", e);
-      }
-    })();
-  }, [customUserImage]);
-
-  // Convert existing tattoo image to base64 when it changes
-  useEffect(() => {
-    if (!existingTattooImage) {
-      setExistingTattooImageBase64(null);
-      return;
-    }
-
-    (async () => {
-      try {
-        const existingTattoo = await uriToBase64(existingTattooImage);
-        setExistingTattooImageBase64(existingTattoo);
-      } catch (e) {
-        console.error("Failed to convert existing tattoo image:", e);
-      }
-    })();
-  }, [existingTattooImage]);
+    throw new Error("Invalid image source");
+  };
 
   // Mutation for generating tattoo
   const mutation = useMutation({
     mutationFn: async () => {
-      const bodyImage = isUsingCustomImage
-        ? customUserImageBase64
-        : bodyPartBase64;
+      let bodyImage: string;
+      let tattooImage: string;
 
-      const tattooImage = isUsingExistingTattoo
-        ? existingTattooImageBase64
-        : tattooBase64;
-
-      if (!bodyImage || !tattooImage) {
-        throw new Error("Images not ready");
-      }
-
-      let prompt = MIX_TWO_PHOTOS_PROMPT;
-
-      // Modify prompt based on color option - ONLY affects tattoo, NOT skin
-      if (options.colorOption === "blackwhite") {
-        prompt +=
-          " The tattoo design should be rendered in black and white ink only, with no color elements in the tattoo itself. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic.";
+      // Get body image base64
+      if (isUsingCustomImage) {
+        if (!customUserImage?.base64) {
+          throw new Error("Custom user image not ready");
+        }
+        bodyImage = customUserImage.base64;
       } else {
-        prompt +=
-          " The tattoo design should maintain its original colors and vibrancy. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic.";
+        if (!selectedBodyPartVariant) {
+          throw new Error("No body part selected");
+        }
+        bodyImage = await getStaticImageBase64(selectedBodyPartVariant.image);
       }
+
+      // Get tattoo image base64
+      if (isUsingExistingTattoo) {
+        if (!existingTattooImage?.base64) {
+          throw new Error("Existing tattoo image not ready");
+        }
+        tattooImage = existingTattooImage.base64;
+      } else {
+        if (!selectedTattooImage) {
+          throw new Error("No tattoo image selected");
+        }
+        tattooImage = await getStaticImageBase64(selectedTattooImage);
+      }
+
+      const colorPrompt =
+        options.colorOption === "blackwhite"
+          ? " The tattoo design should be rendered in black and white ink only, with no color elements in the tattoo itself. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic."
+          : " The tattoo design should maintain its original colors and vibrancy. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic.";
+
+      const prompt = MIX_TWO_PHOTOS_PROMPT + colorPrompt;
 
       return textAndImageToImage({
         prompt,
@@ -250,32 +197,28 @@ export function New() {
   // Function to select image from gallery
   const pickImageFromGallery = useCallback(async () => {
     try {
-      // Request permission
-      const permissionResult =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (permissionResult.granted === false) {
-        Alert.alert(
-          "Permission Required",
-          "Permission to access camera roll is required!"
-        );
-        return;
-      }
-
-      // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.8,
+        quality: 0.5,
+        allowsMultipleSelection: false,
+        base64: true,
       });
 
       if (!result.canceled && result.assets[0]) {
         const selectedImage = result.assets[0];
-        setCustomUserImage(selectedImage.uri);
-        setIsUsingCustomImage(true);
-        // Reset body part selection when using custom image
-        setSelectedBodyPartVariant(null);
+        if (selectedImage.base64) {
+          setCustomUserImage({
+            uri: selectedImage.uri,
+            base64: selectedImage.base64,
+          });
+          setIsUsingCustomImage(true);
+          // Reset body part selection when using custom image
+          setSelectedBodyPartVariant(null);
+        } else {
+          Alert.alert("Error", "Failed to get image data");
+        }
       }
     } catch (error) {
       console.error("Error picking image:", error);
@@ -286,7 +229,6 @@ export function New() {
   // Function to remove custom image and return to default
   const removeCustomImage = useCallback(() => {
     setCustomUserImage(null);
-    setCustomUserImageBase64(null);
     setIsUsingCustomImage(false);
     // Reset to default body part
     setSelectedBodyPartVariant(null);
@@ -313,15 +255,23 @@ export function New() {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
+        base64: true,
       });
 
       if (!result.canceled && result.assets[0]) {
-        const imageUri = result.assets[0].uri;
-        setExistingTattooImage(imageUri);
-        setIsUsingExistingTattoo(true);
-        // Reset selected tattoo image and style when using existing tattoo
-        setSelectedTattooImage(null);
-        updateOptions({ selectedTattoo: undefined });
+        const selectedImage = result.assets[0];
+        if (selectedImage.base64) {
+          setExistingTattooImage({
+            uri: selectedImage.uri,
+            base64: selectedImage.base64,
+          });
+          setIsUsingExistingTattoo(true);
+          // Reset selected tattoo image and style when using existing tattoo
+          setSelectedTattooImage(null);
+          updateOptions({ selectedTattoo: undefined });
+        } else {
+          Alert.alert("Error", "Failed to get tattoo image data");
+        }
       }
     } catch (error) {
       console.error("Error picking existing tattoo image:", error);
@@ -332,7 +282,6 @@ export function New() {
   // Function to remove existing tattoo image and return to gallery selection
   const removeExistingTattooImage = useCallback(() => {
     setExistingTattooImage(null);
-    setExistingTattooImageBase64(null);
     setIsUsingExistingTattoo(false);
     // Reset selected tattoo image when removing existing tattoo
     setSelectedTattooImage(null);
@@ -344,11 +293,10 @@ export function New() {
     setSelectedBodyPartVariant(null);
     setSelectedTattooImage(null);
     setGeneratedImage(null);
-    setBodyPartBase64(null);
-    setTattooBase64(null);
     setCustomUserImage(null);
-    setCustomUserImageBase64(null);
     setIsUsingCustomImage(false);
+    setExistingTattooImage(null);
+    setIsUsingExistingTattoo(false);
     updateOptions({
       selectedTattoo: undefined,
       colorOption: undefined,
@@ -410,10 +358,10 @@ export function New() {
 
   const canGenerate =
     options.colorOption &&
-    ((isUsingExistingTattoo && existingTattooImageBase64) ||
-      (!isUsingExistingTattoo && selectedTattooImage && tattooBase64)) &&
-    ((isUsingCustomImage && customUserImageBase64) ||
-      (!isUsingCustomImage && selectedBodyPartVariant && bodyPartBase64));
+    ((isUsingExistingTattoo && existingTattooImage?.base64) ||
+      (!isUsingExistingTattoo && selectedTattooImage)) &&
+    ((isUsingCustomImage && customUserImage?.base64) ||
+      (!isUsingCustomImage && selectedBodyPartVariant));
 
   const handleCreateTattoo = () => {
     setGeneratedImage(null);
@@ -471,7 +419,7 @@ export function New() {
         <View style={styles.customImageSection}>
           <View style={styles.customImageContainer}>
             <Image
-              source={{ uri: customUserImage }}
+              source={{ uri: customUserImage.uri }}
               style={styles.customImagePreview}
               contentFit="cover"
             />
@@ -671,7 +619,7 @@ export function New() {
         <View style={styles.customImageSection}>
           <View style={styles.customImageContainer}>
             <Image
-              source={{ uri: existingTattooImage }}
+              source={{ uri: existingTattooImage.uri }}
               style={styles.customImagePreview}
               contentFit="cover"
             />
@@ -800,26 +748,6 @@ export function New() {
         )}
       </View>
 
-      {/* Loading State */}
-      {mutation.isPending && (
-        <View style={styles.loadingSection}>
-          <ActivityIndicator size="large" />
-          <Text style={{ marginTop: 10, textAlign: "center" }}>
-            Creating your tattoo design...
-          </Text>
-          <Text
-            type="caption"
-            style={{
-              marginTop: 4,
-              textAlign: "center",
-              color: Color.gray[500],
-            }}
-          >
-            This may take a few moments
-          </Text>
-        </View>
-      )}
-
       {/* Error State */}
       {mutation.isError && (
         <View style={styles.errorSection}>
@@ -838,80 +766,6 @@ export function New() {
             onPress={() => mutation.reset()}
             style={{ marginTop: 12 }}
           />
-        </View>
-      )}
-
-      {/* Success State with Generated Image */}
-      {generatedImage && (
-        <View style={styles.resultSection}>
-          <Text
-            type="subtitle"
-            weight="bold"
-            style={{ marginBottom: 16, textAlign: "center" }}
-          >
-            Your Tattoo Design
-          </Text>
-
-          {/* Show before and after */}
-          <View style={styles.beforeAfterContainer}>
-            <View style={styles.imageContainer}>
-              <Text
-                type="body"
-                weight="bold"
-                style={{ marginBottom: 8, textAlign: "center" }}
-              >
-                Original {selectedBodyPartVariant?.name}
-              </Text>
-              <Image
-                source={selectedBodyPartVariant?.image}
-                style={styles.previewImage}
-                contentFit="cover"
-              />
-            </View>
-
-            <View style={styles.imageContainer}>
-              <Text
-                type="body"
-                weight="bold"
-                style={{ marginBottom: 8, textAlign: "center" }}
-              >
-                With Tattoo
-              </Text>
-              <Image
-                source={{ uri: generatedImage }}
-                style={styles.previewImage}
-                contentFit="cover"
-              />
-            </View>
-          </View>
-
-          {/* Action buttons */}
-          <View style={styles.actionButtons}>
-            <Button
-              symbol="eye"
-              variant="solid"
-              color="blue"
-              onPress={() => {
-                if (generatedImage) {
-                  router.push({
-                    pathname: "/(tabs)/home/generated-result",
-                    params: { imageUri: generatedImage },
-                  });
-                }
-              }}
-              title="See detail"
-              style={{ flex: 1 }}
-            />
-            <Button
-              symbol="arrow.clockwise"
-              variant="outline"
-              color="orange"
-              onPress={handleCreateTattoo}
-              title="Generate another"
-              disabled={mutation.isPending}
-              style={{ flex: 1 }}
-            />
-          </View>
         </View>
       )}
     </ScrollView>
@@ -943,14 +797,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     backgroundColor: "#000000",
   },
-  loadingSection: {
-    alignItems: "center",
-    padding: 24,
-    marginHorizontal: 16,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 12,
-    marginTop: 16,
-  },
   errorSection: {
     padding: 16,
     marginHorizontal: 16,
@@ -968,34 +814,6 @@ const styles = StyleSheet.create({
   errorMessage: {
     color: "#c62828",
     fontSize: 14,
-  },
-  resultSection: {
-    padding: 16,
-    marginHorizontal: 16,
-    backgroundColor: "#f0fdf4",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#bbf7d0",
-    marginTop: 16,
-    marginBottom: 24,
-  },
-  beforeAfterContainer: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 20,
-  },
-  imageContainer: {
-    flex: 1,
-    alignItems: "center",
-  },
-  previewImage: {
-    width: "100%",
-    height: 160,
-    borderRadius: 8,
-  },
-  actionButtons: {
-    flexDirection: "row",
-    gap: 12,
   },
   customImageSection: {
     paddingHorizontal: 16,
