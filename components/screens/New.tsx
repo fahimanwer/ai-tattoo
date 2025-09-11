@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import {
@@ -15,6 +16,7 @@ import { textAndImageToImage } from "@/lib/nano";
 import { useFocusEffect } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
 import { Asset } from "expo-asset";
+import { BlurView } from "expo-blur";
 import { File } from "expo-file-system/next";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
@@ -97,6 +99,15 @@ export function New() {
   >(null);
   const [isUsingCustomImage, setIsUsingCustomImage] = useState(false);
 
+  // New state for existing tattoo image
+  const [existingTattooImage, setExistingTattooImage] = useState<string | null>(
+    null
+  );
+  const [existingTattooImageBase64, setExistingTattooImageBase64] = useState<
+    string | null
+  >(null);
+  const [isUsingExistingTattoo, setIsUsingExistingTattoo] = useState(false);
+
   // Set current step when component mounts
   useEffect(() => {
     setCurrentStep(1);
@@ -166,6 +177,23 @@ export function New() {
     })();
   }, [customUserImage]);
 
+  // Convert existing tattoo image to base64 when it changes
+  useEffect(() => {
+    if (!existingTattooImage) {
+      setExistingTattooImageBase64(null);
+      return;
+    }
+
+    (async () => {
+      try {
+        const existingTattoo = await uriToBase64(existingTattooImage);
+        setExistingTattooImageBase64(existingTattoo);
+      } catch (e) {
+        console.error("Failed to convert existing tattoo image:", e);
+      }
+    })();
+  }, [existingTattooImage]);
+
   // Mutation for generating tattoo
   const mutation = useMutation({
     mutationFn: async () => {
@@ -173,7 +201,11 @@ export function New() {
         ? customUserImageBase64
         : bodyPartBase64;
 
-      if (!bodyImage || !tattooBase64) {
+      const tattooImage = isUsingExistingTattoo
+        ? existingTattooImageBase64
+        : tattooBase64;
+
+      if (!bodyImage || !tattooImage) {
         throw new Error("Images not ready");
       }
 
@@ -190,7 +222,7 @@ export function New() {
 
       return textAndImageToImage({
         prompt,
-        images_base64: [bodyImage, tattooBase64],
+        images_base64: [bodyImage, tattooImage],
       });
     },
     onSuccess: async (data) => {
@@ -258,6 +290,52 @@ export function New() {
     setIsUsingCustomImage(false);
     // Reset to default body part
     setSelectedBodyPartVariant(null);
+  }, []);
+
+  // Function to select existing tattoo image from gallery
+  const pickExistingTattooFromGallery = useCallback(async () => {
+    try {
+      // Request permission
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (permissionResult.granted === false) {
+        Alert.alert(
+          "Permission Required",
+          "Permission to access photo library is required!"
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        const imageUri = result.assets[0].uri;
+        setExistingTattooImage(imageUri);
+        setIsUsingExistingTattoo(true);
+        // Reset selected tattoo image and style when using existing tattoo
+        setSelectedTattooImage(null);
+        updateOptions({ selectedTattoo: undefined });
+      }
+    } catch (error) {
+      console.error("Error picking existing tattoo image:", error);
+      Alert.alert("Error", "Failed to pick existing tattoo image from gallery");
+    }
+  }, [updateOptions]);
+
+  // Function to remove existing tattoo image and return to gallery selection
+  const removeExistingTattooImage = useCallback(() => {
+    setExistingTattooImage(null);
+    setExistingTattooImageBase64(null);
+    setIsUsingExistingTattoo(false);
+    // Reset selected tattoo image when removing existing tattoo
+    setSelectedTattooImage(null);
   }, []);
 
   // Function to reset all form state
@@ -331,10 +409,9 @@ export function New() {
   // Remove saveToLibrary function as it's now handled in the result screen
 
   const canGenerate =
-    options.selectedTattoo &&
     options.colorOption &&
-    selectedTattooImage &&
-    tattooBase64 &&
+    ((isUsingExistingTattoo && existingTattooImageBase64) ||
+      (!isUsingExistingTattoo && selectedTattooImage && tattooBase64)) &&
     ((isUsingCustomImage && customUserImageBase64) ||
       (!isUsingCustomImage && selectedBodyPartVariant && bodyPartBase64));
 
@@ -392,13 +469,6 @@ export function New() {
       {/* Custom User Image Preview */}
       {isUsingCustomImage && customUserImage && (
         <View style={styles.customImageSection}>
-          <Text
-            type="body"
-            weight="bold"
-            style={{ marginBottom: 12, textAlign: "center" }}
-          >
-            Your Custom Image
-          </Text>
           <View style={styles.customImageContainer}>
             <Image
               source={{ uri: customUserImage }}
@@ -406,34 +476,26 @@ export function New() {
               contentFit="cover"
             />
             <View style={styles.customImageActions}>
-              <Button
-                symbol="trash"
-                onPress={removeCustomImage}
-                radius="full"
-                variant="outline"
-                color="red"
-                style={{ width: 36, height: 36 }}
-              />
-              <Button
-                symbol="photo"
-                onPress={pickImageFromGallery}
-                radius="full"
-                variant="outline"
-                color="blue"
-                style={{ width: 36, height: 36 }}
-              />
+              <BlurView intensity={20} style={styles.customImageActionsBlur}>
+                <Button
+                  symbol="trash"
+                  onPress={removeCustomImage}
+                  radius="full"
+                  variant="outline"
+                  color="white"
+                  style={{ width: 36, height: 36 }}
+                />
+                <Button
+                  symbol="photo"
+                  onPress={pickImageFromGallery}
+                  radius="full"
+                  variant="outline"
+                  color="white"
+                  style={{ width: 36, height: 36 }}
+                />
+              </BlurView>
             </View>
           </View>
-          <Text
-            type="caption"
-            style={{
-              textAlign: "center",
-              marginTop: 8,
-              color: Color.gray[500],
-            }}
-          >
-            Tap the camera icon to change or trash icon to remove
-          </Text>
         </View>
       )}
 
@@ -441,7 +503,11 @@ export function New() {
       {!isUsingCustomImage && (
         <ScrollView
           horizontal
-          style={{ flex: 1, height: 200, paddingHorizontal: 16 }}
+          style={{
+            flex: 1,
+            paddingHorizontal: 16,
+            marginBottom: 12,
+          }}
           showsHorizontalScrollIndicator={false}
         >
           {bodyPartCategories.map((category) => (
@@ -483,14 +549,19 @@ export function New() {
       {/* Body Part Variant Selection - Only show when not using custom image */}
       {!isUsingCustomImage && selectedBodyPartCategory && (
         <>
-          <View style={[styles.section, { marginTop: 24 }]}>
+          <View style={[styles.section]}>
             <Text type="subtitle" weight="bold">
               Choose specific {selectedBodyPartCategory.name.toLowerCase()}
             </Text>
           </View>
+
           <ScrollView
             horizontal
-            style={{ flex: 1, height: 180, paddingHorizontal: 16 }}
+            style={{
+              flex: 1,
+              paddingHorizontal: 16,
+              marginBottom: 12,
+            }}
             showsHorizontalScrollIndicator={false}
           >
             {selectedBodyPartCategory.gallery.map((variant) => (
@@ -501,8 +572,8 @@ export function New() {
                 <Image
                   source={variant.image}
                   style={{
-                    width: 140,
-                    height: 140,
+                    width: 100,
+                    height: 100,
                     borderWidth: 3,
                     marginLeft: 8,
                     borderRadius: 12,
@@ -516,7 +587,7 @@ export function New() {
                 <Text
                   type="caption"
                   weight="medium"
-                  style={{ textAlign: "center", marginTop: 6, width: 140 }}
+                  style={{ textAlign: "center", marginTop: 6, width: "100%" }}
                   numberOfLines={2}
                 >
                   {variant.name}
@@ -529,58 +600,119 @@ export function New() {
 
       <View style={[styles.section, { marginTop: 24 }]}>
         <Text type="subtitle" weight="bold">
-          Select a tattoo style
+          Select a tattoo
         </Text>
+        <Button
+          symbol={isUsingExistingTattoo ? "trash" : "plus"}
+          onPress={
+            isUsingExistingTattoo
+              ? removeExistingTattooImage
+              : pickExistingTattooFromGallery
+          }
+          radius="full"
+          variant="link"
+          color="white"
+          style={{ width: 40, height: 40 }}
+        />
       </View>
 
-      {/* Tattoo Style Selection */}
-      <ScrollView
-        horizontal
-        style={{ flex: 1, height: 200, paddingHorizontal: 16 }}
-        showsHorizontalScrollIndicator={false}
-      >
-        {featuredTattoos.map((tattoo) => (
-          <Pressable
-            key={tattoo.id}
-            onPress={() => {
-              updateOptions({ selectedTattoo: tattoo });
-              setSelectedTattooImage(null); // Reset selected tattoo image when changing style
-            }}
-          >
-            <Image
+      {/* Tattoo Style Selection - Only show when not using existing tattoo */}
+      {!isUsingExistingTattoo && (
+        <ScrollView
+          horizontal
+          style={{ flex: 1, paddingHorizontal: 16 }}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 12,
+            paddingVertical: 8,
+          }}
+        >
+          {featuredTattoos.map((tattoo) => (
+            <Pressable
               key={tattoo.id}
-              source={tattoo.image}
-              style={{
-                width: 160,
-                height: 160,
-                borderWidth: 3.5,
-                marginLeft: 8,
-                borderRadius: 16,
-                borderColor:
-                  options.selectedTattoo?.id === tattoo.id
-                    ? Color.orange[400]
-                    : "transparent",
+              onPress={() => {
+                updateOptions({ selectedTattoo: tattoo });
+                setSelectedTattooImage(null); // Reset selected tattoo image when changing style
               }}
-              contentFit="contain"
-            />
-            <Text
-              type="body"
-              weight="bold"
-              style={{ textAlign: "center", marginTop: 8, width: 160 }}
-              numberOfLines={2}
+              style={{ marginBottom: 8 }}
             >
-              {tattoo.title}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+              <Badge
+                variant={
+                  options.selectedTattoo?.id === tattoo.id ? "solid" : "outline"
+                }
+                color={
+                  options.selectedTattoo?.id === tattoo.id
+                    ? "orange"
+                    : "neutral"
+                }
+                size="md"
+                radius="full"
+                style={{
+                  borderWidth: options.selectedTattoo?.id === tattoo.id ? 2 : 1,
+                  minWidth: 120,
+                  paddingHorizontal: 16,
+                }}
+              >
+                {tattoo.title}
+              </Badge>
+            </Pressable>
+          ))}
+        </ScrollView>
+      )}
 
-      {/* Tattoo Gallery Selection */}
-      {options.selectedTattoo && (
+      {/* Existing Tattoo Image Preview */}
+      {isUsingExistingTattoo && existingTattooImage && (
+        <View style={styles.customImageSection}>
+          <View style={styles.customImageContainer}>
+            <Image
+              source={{ uri: existingTattooImage }}
+              style={styles.customImagePreview}
+              contentFit="cover"
+            />
+            <View style={styles.customImageActions}>
+              <BlurView intensity={20} style={styles.customImageActionsBlur}>
+                <Button
+                  symbol="trash"
+                  onPress={removeExistingTattooImage}
+                  radius="full"
+                  variant="outline"
+                  color="white"
+                  style={{ width: 36, height: 36 }}
+                />
+                <Button
+                  symbol="photo"
+                  onPress={pickExistingTattooFromGallery}
+                  radius="full"
+                  variant="outline"
+                  color="white"
+                  style={{ width: 36, height: 36 }}
+                />
+              </BlurView>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Tattoo Gallery Selection - Only show when not using existing tattoo */}
+      {options.selectedTattoo && !isUsingExistingTattoo && (
         <>
-          <View style={[styles.section, { marginTop: 24 }]}>
+          {/* <View style={[styles.section, { marginTop: 24 }]}>
             <Text type="subtitle" weight="bold">
               Choose specific design
+            </Text>
+            <Button
+              symbol="plus"
+              onPress={() => setSelectedTattooImage(null)}
+              radius="full"
+              variant="outline"
+              color="white"
+            />
+          </View> */}
+          <View style={styles.section}>
+            <Text type="subtitle" weight="bold">
+              Select specific design
             </Text>
           </View>
           <ScrollView
@@ -622,10 +754,11 @@ export function New() {
           justifyContent: "space-between",
           gap: 8,
           paddingHorizontal: 16,
+          marginTop: 12,
         }}
       >
         <Text type="subtitle" weight="bold">
-          Choose style
+          Choose color
         </Text>
 
         <View style={styles.colorOptions}>
@@ -667,7 +800,8 @@ export function New() {
               color: Color.gray[500],
             }}
           >
-            Select body part, tattoo style, design, and color option to create
+            Select body part, tattoo style (or upload existing tattoo), and
+            color option to create
           </Text>
         )}
       </View>
@@ -798,7 +932,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 8,
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   colorOptions: {
     flexDirection: "row",
@@ -877,30 +1011,32 @@ const styles = StyleSheet.create({
   customImageContainer: {
     position: "relative",
     alignItems: "center",
+    width: "100%",
+    height: 300,
   },
   customImagePreview: {
-    width: 200,
-    height: 200,
+    width: "100%",
+    height: "100%",
     borderRadius: 16,
     borderWidth: 3,
     borderColor: Color.orange[400],
   },
   customImageActions: {
     position: "absolute",
-    bottom: -8,
+    bottom: -20,
     flexDirection: "row",
     gap: 12,
-    backgroundColor: "white",
+    borderRadius: 999,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    overflow: "hidden",
+  },
+  customImageActionsBlur: {
+    position: "relative",
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    flexDirection: "row",
+    gap: 12,
   },
 });
