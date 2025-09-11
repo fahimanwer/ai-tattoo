@@ -86,6 +86,7 @@ export function GeneratedTattooResult({
 
       <View style={styles.imageContainer}>
         <Image
+          cachePolicy="memory-disk"
           source={{ uri: imageUri }}
           style={styles.resultImage}
           contentFit="cover"

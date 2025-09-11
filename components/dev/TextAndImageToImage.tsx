@@ -111,6 +111,7 @@ export function TextAndImageToImage() {
       <Text numberOfLines={3}>{MIX_TOW_PHOTHOS_PROMPT}</Text>
       <View style={{ flexDirection: "row", gap: 10 }}>
         <Image
+          cachePolicy="memory-disk"
           placeholder={{ blurhash }}
           transition={1000}
           source={require(`@/assets${bodyPartImage}`)}
@@ -118,6 +119,7 @@ export function TextAndImageToImage() {
           contentFit="cover"
         />
         <Image
+          cachePolicy="memory-disk"
           placeholder={{ blurhash }}
           transition={1000}
           source={tattooImage}
@@ -184,6 +186,7 @@ export function TextAndImageToImage() {
             Generated Image:
           </Text>
           <Image
+            cachePolicy="memory-disk"
             source={{ uri: generatedImage }}
             style={{ width: 300, height: 300, borderRadius: 8 }}
             contentFit="contain"

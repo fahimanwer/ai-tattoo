@@ -23,6 +23,7 @@ export function GalleryImageCard({ image, onPress }: GalleryImageCardProps) {
       ]}
     >
       <Image
+        cachePolicy="memory-disk"
         source={{ uri: image.uri }}
         placeholder={{ blurhash }}
         transition={1000}

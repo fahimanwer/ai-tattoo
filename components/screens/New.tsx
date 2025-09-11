@@ -431,7 +431,8 @@ export function New() {
         <View style={styles.customImageSection}>
           <View style={styles.customImageContainer}>
             <Image
-              source={{ uri: customUserImage.uri }}
+              cachePolicy="memory-disk"
+              source={{ uri: customUserImage }}
               style={styles.customImagePreview}
               contentFit="cover"
             />
@@ -568,6 +569,7 @@ export function New() {
                 onPress={() => setSelectedBodyPartVariant(variant)}
               >
                 <Image
+                  cachePolicy="memory-disk"
                   source={variant.image}
                   style={{
                     width: 100,
@@ -663,7 +665,8 @@ export function New() {
         <View style={styles.customImageSection}>
           <View style={styles.customImageContainer}>
             <Image
-              source={{ uri: existingTattooImage.uri }}
+              cachePolicy="memory-disk"
+              source={{ uri: existingTattooImage }}
               style={styles.customImagePreview}
               contentFit="cover"
             />
@@ -710,6 +713,7 @@ export function New() {
                 onPress={() => setSelectedTattooImage(galleryImage)}
               >
                 <Image
+                  cachePolicy="memory-disk"
                   source={galleryImage}
                   style={{
                     width: 100,

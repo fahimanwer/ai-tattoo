@@ -59,6 +59,7 @@ export function Banner() {
         </Text>
       </View>
       <Image
+        cachePolicy="memory-disk"
         source={require("@/assets/images/banner-pro.png")}
         style={{ width: "100%", height: "100%", borderRadius: 16 }}
         contentFit="cover"

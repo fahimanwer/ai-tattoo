@@ -30,6 +30,7 @@ export function VerticalCard({
         ]}
       >
         <Image
+          cachePolicy="memory-disk"
           source={style.image}
           style={[styles.styleImage]}
           contentFit="cover"

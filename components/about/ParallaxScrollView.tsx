@@ -68,6 +68,7 @@ export default function ParallaxScrollView({
       >
         <Animated.View style={[styles.header, headerAnimatedStyle]}>
           <Image
+          cachePolicy="memory-disk"
             source={imageUrl}
             placeholder={{ blurhash }}
             contentFit="cover"

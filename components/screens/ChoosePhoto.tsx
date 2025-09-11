@@ -8,17 +8,13 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 export function ChoosePhotoScreen() {
-  const { 
-    selectedPhoto, 
-    setSelectedPhoto, 
-    setCurrentStep,
-    nextStep 
-  } = useTattooCreation();
-  
+  const { selectedPhoto, setSelectedPhoto, setCurrentStep, nextStep } =
+    useTattooCreation();
+
   const [photos, setPhotos] = useState<MediaLibrary.Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
-  
+
   // Set current step when component mounts
   useEffect(() => {
     setCurrentStep(2);
@@ -101,6 +97,7 @@ export function ChoosePhotoScreen() {
                 style={styles.photoContainer}
               >
                 <Image
+                  cachePolicy="memory-disk"
                   source={{ uri: photo.uri }}
                   style={[
                     styles.photo,
@@ -141,7 +138,7 @@ export function ChoosePhotoScreen() {
           onPress={() => {
             // TODO: Implement camera functionality
             Alert.alert(
-              "Camera", 
+              "Camera",
               "Camera functionality will be implemented in the next phase"
             );
           }}

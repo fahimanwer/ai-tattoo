@@ -80,6 +80,7 @@ export function TattooResultScreen() {
           </Text>
           <View style={styles.card}>
             <Image
+              cachePolicy="memory-disk"
               source={options.selectedTattoo.image}
               style={styles.tattooImage}
               contentFit="contain"
@@ -102,6 +103,7 @@ export function TattooResultScreen() {
           </Text>
           <View style={styles.card}>
             <Image
+              cachePolicy="memory-disk"
               source={{ uri: selectedPhoto.uri }}
               style={styles.userPhoto}
               contentFit="cover"
