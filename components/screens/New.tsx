@@ -509,6 +509,12 @@ export function New() {
             marginBottom: 12,
           }}
           showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 12,
+            paddingVertical: 8,
+          }}
         >
           {bodyPartCategories.map((category) => (
             <Pressable
@@ -517,30 +523,30 @@ export function New() {
                 setSelectedBodyPartCategory(category);
                 setSelectedBodyPartVariant(null); // Reset selected variant when changing category
               }}
+              style={{ marginBottom: 8 }}
             >
-              <Image
-                source={category.image}
+              <Badge
+                variant={
+                  selectedBodyPartCategory?.id === category.id
+                    ? "solid"
+                    : "outline"
+                }
+                color={
+                  selectedBodyPartCategory?.id === category.id
+                    ? "white"
+                    : "neutral"
+                }
+                size="md"
+                radius="full"
                 style={{
-                  width: 100,
-                  height: 100,
-                  borderWidth: 3.5,
-                  marginLeft: 8,
-                  borderRadius: 16,
-                  borderColor:
-                    selectedBodyPartCategory?.id === category.id
-                      ? Color.orange[400]
-                      : "transparent",
+                  borderWidth:
+                    selectedBodyPartCategory?.id === category.id ? 2 : 1,
+                  minWidth: 120,
+                  paddingHorizontal: 16,
                 }}
-                contentFit="cover"
-              />
-              <Text
-                type="body"
-                weight="bold"
-                style={{ textAlign: "center", marginTop: 8 }}
-                numberOfLines={2}
               >
                 {category.name}
-              </Text>
+              </Badge>
             </Pressable>
           ))}
         </ScrollView>
@@ -550,7 +556,7 @@ export function New() {
       {!isUsingCustomImage && selectedBodyPartCategory && (
         <>
           <View style={[styles.section]}>
-            <Text type="subtitle" weight="bold">
+            <Text type="base" weight="bold">
               Choose specific {selectedBodyPartCategory.name.toLowerCase()}
             </Text>
           </View>
@@ -643,9 +649,7 @@ export function New() {
                   options.selectedTattoo?.id === tattoo.id ? "solid" : "outline"
                 }
                 color={
-                  options.selectedTattoo?.id === tattoo.id
-                    ? "orange"
-                    : "neutral"
+                  options.selectedTattoo?.id === tattoo.id ? "white" : "neutral"
                 }
                 size="md"
                 radius="full"
@@ -698,26 +702,14 @@ export function New() {
       {/* Tattoo Gallery Selection - Only show when not using existing tattoo */}
       {options.selectedTattoo && !isUsingExistingTattoo && (
         <>
-          {/* <View style={[styles.section, { marginTop: 24 }]}>
-            <Text type="subtitle" weight="bold">
-              Choose specific design
-            </Text>
-            <Button
-              symbol="plus"
-              onPress={() => setSelectedTattooImage(null)}
-              radius="full"
-              variant="outline"
-              color="white"
-            />
-          </View> */}
           <View style={styles.section}>
-            <Text type="subtitle" weight="bold">
+            <Text type="base" weight="bold">
               Select specific design
             </Text>
           </View>
           <ScrollView
             horizontal
-            style={{ flex: 1, height: 180, paddingHorizontal: 16 }}
+            style={{ flex: 1, paddingHorizontal: 16, marginBottom: 24 }}
             showsHorizontalScrollIndicator={false}
           >
             {options.selectedTattoo.gallery.map((galleryImage, index) => (
@@ -728,8 +720,8 @@ export function New() {
                 <Image
                   source={galleryImage}
                   style={{
-                    width: 140,
-                    height: 140,
+                    width: 100,
+                    height: 100,
                     borderWidth: 3,
                     marginLeft: 8,
                     borderRadius: 12,
@@ -754,7 +746,6 @@ export function New() {
           justifyContent: "space-between",
           gap: 8,
           paddingHorizontal: 16,
-          marginTop: 12,
         }}
       >
         <Text type="subtitle" weight="bold">
@@ -765,17 +756,19 @@ export function New() {
           <Button
             title="Color"
             variant={options.colorOption === "color" ? "solid" : "outline"}
-            color={options.colorOption === "color" ? "orange" : "gray"}
+            color={options.colorOption === "color" ? "white" : "gray"}
             onPress={() => updateOptions({ colorOption: "color" })}
             style={styles.colorButton}
+            radius="full"
           />
 
           <Button
             title="Black & White"
             variant={options.colorOption === "blackwhite" ? "solid" : "outline"}
-            color={options.colorOption === "blackwhite" ? "orange" : "gray"}
+            color={options.colorOption === "blackwhite" ? "white" : "gray"}
             onPress={() => updateOptions({ colorOption: "blackwhite" })}
             style={styles.colorButton}
+            radius="full"
           />
         </View>
       </View>
@@ -785,6 +778,7 @@ export function New() {
         <Button
           symbol="sparkles"
           variant="solid"
+          radius="full"
           haptic
           color="orange"
           title={mutation.isPending ? "Creating..." : "Create Tattoo"}
