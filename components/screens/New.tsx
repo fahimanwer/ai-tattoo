@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Text } from "@/components/ui/Text";
 import {
   bodyPartCategories,
@@ -103,6 +104,10 @@ export function New() {
   } | null>(null);
   const [isUsingExistingTattoo, setIsUsingExistingTattoo] = useState(false);
 
+  // State for custom prompt instructions
+  const [customInstructions, setCustomInstructions] = useState<string>("");
+  const [showInstructionsInput, setShowInstructionsInput] = useState(false);
+
   // Set current step when component mounts
   useEffect(() => {
     setCurrentStep(1);
@@ -165,7 +170,12 @@ export function New() {
           ? " The tattoo design should be rendered in black and white ink only, with no color elements in the tattoo itself. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic."
           : " The tattoo design should maintain its original colors and vibrancy. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic.";
 
-      const prompt = MIX_TWO_PHOTOS_PROMPT + colorPrompt;
+      const customInstructionsPrompt = customInstructions.trim()
+        ? ` Additional instructions: ${customInstructions.trim()}`
+        : "";
+
+      const prompt =
+        MIX_TWO_PHOTOS_PROMPT + colorPrompt + customInstructionsPrompt;
 
       return textAndImageToImage({
         prompt,
@@ -297,6 +307,8 @@ export function New() {
     setIsUsingCustomImage(false);
     setExistingTattooImage(null);
     setIsUsingExistingTattoo(false);
+    setCustomInstructions("");
+    setShowInstructionsInput(false);
     updateOptions({
       selectedTattoo: undefined,
       colorOption: undefined,
@@ -498,6 +510,38 @@ export function New() {
             </Pressable>
           ))}
         </ScrollView>
+      )}
+
+      {/* Custom Instructions Section */}
+      <View style={[styles.section, { marginVertical: 24 }]}>
+        <Text type="subtitle" weight="bold">
+          Custom instructions
+        </Text>
+        <Button
+          symbol={showInstructionsInput ? "minus" : "plus"}
+          onPress={() => setShowInstructionsInput(!showInstructionsInput)}
+          radius="full"
+          variant="link"
+          color="white"
+          style={{ width: 40, height: 40 }}
+        />
+      </View>
+
+      {showInstructionsInput && (
+        <View style={styles.instructionsContainer}>
+          <Input
+            placeholder="e.g., 'Add the tattoo to the left side of my face' or 'Place the tattoo on my upper arm'"
+            value={customInstructions}
+            onChangeText={setCustomInstructions}
+            multiline
+            numberOfLines={3}
+            style={styles.instructionsInput}
+          />
+          <Text type="caption" style={styles.instructionsHint}>
+            Add specific instructions about where to place the tattoo or any
+            other details you want to include.
+          </Text>
+        </View>
       )}
 
       {/* Body Part Variant Selection - Only show when not using custom image */}
@@ -850,5 +894,20 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     flexDirection: "row",
     gap: 12,
+  },
+  instructionsContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  instructionsInput: {
+    minHeight: 80,
+    textAlignVertical: "top",
+    paddingTop: 12,
+  },
+  instructionsHint: {
+    marginTop: 8,
+    marginBottom: 32,
+    color: "#6b7280",
+    fontStyle: "italic",
   },
 });
