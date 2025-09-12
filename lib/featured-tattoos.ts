@@ -157,7 +157,7 @@ export const bodyParts = {
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-3.png",
     ],
   },
-  hand: {
+  /* hand: {
     male: [
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-male-1.png",
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-male-2.png",
@@ -166,8 +166,8 @@ export const bodyParts = {
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-female-1.png",
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-female-2.png",
     ],
-  },
-  thigh: {
+  }, */
+  /* thigh: {
     male: [
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/thigh-male-1.png",
     ],
@@ -198,7 +198,7 @@ export const bodyParts = {
     female: [
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-female-1.png",
     ],
-  },
+  }, */
 };
 
 export const getTattooStyleById = (id: number): FeaturedTattoo | undefined => {

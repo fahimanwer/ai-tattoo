@@ -26,7 +26,7 @@ export function CustomDetails() {
         </Text>
       </View>
 
-      <View style={styles.instructionsContainer}>
+      <View style={[styles.instructionsContainer, { marginTop: 12 }]}>
         <Input
           placeholder="A little bit of details..."
           value={customInstructions}
@@ -83,6 +83,7 @@ export function CustomDetails() {
             style={styles.navButton}
           /> */}
           <Button
+            symbol="wand.and.sparkles"
             title="Create Tattoo"
             variant="solid"
             radius="full"

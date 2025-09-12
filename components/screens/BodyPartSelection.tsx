@@ -7,6 +7,7 @@ import { useTattooCreation } from "@/context/TattooCreationContext";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
 import { useCallback } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
@@ -20,7 +21,6 @@ export function BodyPartSelection() {
     setSelectedBodyPartVariant,
     setCustomUserImage,
     setIsUsingCustomImage,
-    nextStep,
   } = useTattooCreation();
 
   // Function to select image from gallery
@@ -58,6 +58,10 @@ export function BodyPartSelection() {
     setCustomUserImage(undefined);
     setIsUsingCustomImage(false);
   }, [setCustomUserImage, setIsUsingCustomImage]);
+
+  function nextStep() {
+    router.push("/home/new/select-tattoo");
+  }
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">

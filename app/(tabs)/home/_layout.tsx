@@ -7,7 +7,7 @@ import { Pressable, View } from "react-native";
 function ButtonToCreateTattoo() {
   const router = useRouter();
   const goToCreateTattoo = () => {
-    router.push("/home/new");
+    router.push("/home/new/select-body-part");
   };
 
   return (
@@ -39,13 +39,30 @@ export default function ProfileLayout() {
           options={{
             title: "Get Inspired",
             headerLargeTitle: true,
+            headerBackButtonDisplayMode: "minimal",
             headerRight: () => <ButtonToCreateTattoo />,
           }}
         />
         <Stack.Screen
-          name="new"
+          name="new/select-body-part"
           options={{
             title: "Create Your Tattoo",
+            headerBackButtonDisplayMode: "minimal",
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="new/select-tattoo"
+          options={{
+            title: "Select Tattoo Style",
+            headerBackButtonDisplayMode: "minimal",
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="new/add-details"
+          options={{
+            title: "Add Details",
             headerBackButtonDisplayMode: "minimal",
             headerLargeTitle: false,
           }}
