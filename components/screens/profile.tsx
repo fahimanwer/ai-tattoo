@@ -120,7 +120,7 @@ function ProfileSection() {
 
 function CurrentPlanSection() {
   const {
-    isPlusUser,
+    subscriptionTier,
     isLoading: subscriptionLoading,
     refreshSubscriptionStatus,
   } = useSubscription();
@@ -128,9 +128,7 @@ function CurrentPlanSection() {
 
   const planText = subscriptionLoading
     ? "LOADING..."
-    : isPlusUser
-    ? "Usage"
-    : "FREE PLAN";
+    : subscriptionTier.toUpperCase() + " PLAN";
 
   const handleUpgradeToPlus = async () => {
     try {
@@ -160,33 +158,129 @@ function CurrentPlanSection() {
   return (
     <Section title={planText}>
       <VStack spacing={12} alignment="leading">
-        {!isPlusUser ? (
+        {/* Subscription Tier Display */}
+        <HStack spacing={8}>
+          <Text size={14} weight="medium" color="#6b7280">
+            Current Plan:
+          </Text>
+          <Text
+            size={16}
+            weight="bold"
+            color={
+              subscriptionTier === "plus"
+                ? "#10b981"
+                : subscriptionTier === "pro"
+                ? "#3b82f6"
+                : subscriptionTier === "starter"
+                ? "#f59e0b"
+                : "#6b7280"
+            }
+          >
+            {subscriptionTier.charAt(0).toUpperCase() +
+              subscriptionTier.slice(1)}
+          </Text>
+        </HStack>
+
+        {/* Generation Usage Display */}
+        {subscriptionTier === "free" ? (
           <>
-            <Text size={14} weight="medium">
-              Messages Remaining
+            <Text size={14} weight="medium" color="#6b7280">
+              Free Plan Generations
             </Text>
             <Text size={16} weight="bold" color="#3b82f6">
-              47/50
+              3/5 remaining
             </Text>
-            <Text size={14} weight="medium">
-              Tattoo Generations
-            </Text>
-            <Text size={16} weight="bold" color="#3b82f6">
-              3/5
+            <Text size={12} color="#6b7280">
+              Upgrade to get more generations
             </Text>
           </>
         ) : (
-          <VStack>
-            <Text size={16} weight="bold" color="#3b82f6">
-              Plus Plan
+          <VStack spacing={8}>
+            {/* Subscription Plan Status */}
+            <Text
+              size={16}
+              weight="bold"
+              color={
+                subscriptionTier === "plus"
+                  ? "#10b981"
+                  : subscriptionTier === "pro"
+                  ? "#3b82f6"
+                  : "#f59e0b"
+              }
+            >
+              {`${
+                subscriptionTier.charAt(0).toUpperCase() +
+                subscriptionTier.slice(1)
+              } Plan Active`}
             </Text>
-            <Gauge
-              current={{ value: 20 }}
-              type="default"
-              label={"20 / 30 Tattoo Generations"}
-              max={{ value: 30, label: "30" }}
-              min={{ value: 0, label: "0" }}
-            />
+
+            {/* Generation Gauge based on subscription tier */}
+            {subscriptionTier === "starter" && (
+              <Gauge
+                current={{ value: 75 }}
+                type="default"
+                label={"75 / 125 Generations"}
+                max={{ value: 125, label: "125" }}
+                min={{ value: 0, label: "0" }}
+              />
+            )}
+
+            {subscriptionTier === "plus" && (
+              <Gauge
+                current={{ value: 180 }}
+                type="default"
+                label={"180 / 300 Generations"}
+                max={{ value: 300, label: "300" }}
+                min={{ value: 0, label: "0" }}
+              />
+            )}
+
+            {subscriptionTier === "pro" && (
+              <Gauge
+                current={{ value: 650 }}
+                type="default"
+                label={"650 / 1,000 Generations"}
+                max={{ value: 1000, label: "1,000" }}
+                min={{ value: 0, label: "0" }}
+              />
+            )}
+
+            {/* Pricing Information */}
+            <VStack spacing={4} alignment="leading">
+              <Text size={12} color="#6b7280">
+                Plan Details:
+              </Text>
+              {subscriptionTier === "starter" && (
+                <>
+                  <Text size={12} color="#6b7280">
+                    • $4.99/month
+                  </Text>
+                  <Text size={12} color="#6b7280">
+                    • 125 generations per month
+                  </Text>
+                </>
+              )}
+              {subscriptionTier === "plus" && (
+                <>
+                  <Text size={12} color="#6b7280">
+                    • $9.99/month
+                  </Text>
+                  <Text size={12} color="#6b7280">
+                    • 300 generations per month
+                  </Text>
+                </>
+              )}
+              {subscriptionTier === "pro" && (
+                <>
+                  <Text size={12} color="#6b7280">
+                    • $29.99/month
+                  </Text>
+                  <Text size={12} color="#6b7280">
+                    • 1,000 generations per month
+                  </Text>
+                </>
+              )}
+            </VStack>
           </VStack>
         )}
       </VStack>
@@ -196,12 +290,16 @@ function CurrentPlanSection() {
         isExpanded={subscriptionExpanded}
         label="Subscription Settings"
       >
-        {isPlusUser ? (
+        {subscriptionTier !== "free" ? (
           <Button onPress={handleManageSubscription}>
             Manage Subscription
           </Button>
         ) : (
-          <Button onPress={handleUpgradeToPlus}>Upgrade to Plus</Button>
+          <Button onPress={handleUpgradeToPlus}>
+            {subscriptionTier === "free"
+              ? "Upgrade to Starter"
+              : "Upgrade Plan"}
+          </Button>
         )}
       </DisclosureGroup>
     </Section>

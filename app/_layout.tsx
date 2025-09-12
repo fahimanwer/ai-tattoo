@@ -90,7 +90,7 @@ function AppContent() {
   };
 
   useEffect(() => {
-    Purchases.setLogLevel(LOG_LEVEL.ERROR);
+    Purchases.setLogLevel(LOG_LEVEL.DEBUG);
 
     if (Platform.OS === "ios") {
       Purchases.configure({ apiKey: "appl_TglDpVSpcsiykcYmEbXbHvlMwMG" });
