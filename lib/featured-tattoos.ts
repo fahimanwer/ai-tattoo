@@ -11,6 +11,25 @@ export interface FeaturedTattoo {
   image: ImageSourcePropType | undefined;
 }
 
+export interface BodyPartVariant {
+  id: string;
+  name: string;
+  image: ImageSourcePropType;
+  imageUrl: string;
+  description: string;
+  tattooStyleId: number;
+}
+
+export interface BodyPartCategory {
+  id: string;
+  name: string;
+  label: string;
+  description: string;
+  image: ImageSourcePropType;
+  gallery: BodyPartVariant[];
+  tattooStyleId: number;
+}
+
 export const featuredTattoos: FeaturedTattoo[] = [
   {
     id: 1,
@@ -85,119 +104,103 @@ export const featuredTattoos: FeaturedTattoo[] = [
       { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/abdomen-male.png" }
     ],
     prompt: "A professional Blackwork tattoo design rooted in tribal and cultural traditions. Heavy use of solid black fills, geometric and abstract motifs, sharp edges, clean negative space, high contrast. Inspired by Polynesian, Maori, and Celtic heritage, symbolizing strength, ancestry, and spiritual protection. The composition must be bold, ornamental, and harmonious, without gradients or shading. Ultra detailed, high resolution, suitable as a professional tattoo stencil/artwork."
-  }
- /*  {
-    id: 2,
-    title: "Realistic",
-    description: "Photorealistic tattoo with incredible detail and shading",
-    image: require("@/assets/tattoos/realistic.png"),
-  },
-  {
-    id: 3,
-    title: "Blackwork",
-    description: "Bold black ink tattoo with solid fills and strong contrast",
-    image: require("@/assets/tattoos/blackwork.png"),
   },
   {
     id: 4,
     title: "Watercolor",
-    description: "Artistic watercolor style with flowing colors and abstract elements",
-    image: require("@/assets/tattoos/watercolor.png"),
-  },
-  {
-    id: 5,
-    title: "Geometric",
-    description: "Clean geometric patterns with precise lines and shapes",
-    image: require("@/assets/tattoos/geometric.png"),
-  },
-  {
-    id: 6,
-    title: "Tribal",
-    description: "Traditional tribal designs with bold black patterns",
-    image: require("@/assets/tattoos/tribal.png"),
-  },
-  {
-    id: 7,
-    title: "Neo-Traditional",
-    description: "Modern take on traditional tattoo style with enhanced detail",
-    image: require("@/assets/tattoos/neo-traditional.png"),
-  },
-  {
-    id: 8,
-    title: "Old School",
-    description: "Classic American traditional tattoo with bold outlines",
-    image: require("@/assets/tattoos/old_school.png"),
-  },
-  {
-    id: 9,
-    title: "New School",
-    description: "Contemporary cartoon-like style with exaggerated features",
-    image: require("@/assets/tattoos/new_school.png"),
-  },
-  {
-    id: 10,
-    title: "Minimal",
-    description: "Simple, clean lines with minimalist aesthetic",
-    image: require("@/assets/tattoos/minimal.png"),
-  },
-  {
-    id: 11,
-    title: "Fine Line",
-    description: "Delicate single-needle work with thin, precise lines",
-    image: require("@/assets/tattoos/fine_line.png"),
-  },
-  {
-    id: 12,
-    title: "Dotwork",
-    description: "Intricate patterns created entirely with dots and stippling",
-    image: require("@/assets/tattoos/dotwork.png"),
-  },
-  {
-    id: 13,
-    title: "Mandala",
-    description: "Sacred geometric patterns inspired by spiritual symbols",
-    image: require("@/assets/tattoos/mandala.png"),
-  },
-  {
-    id: 14,
-    title: "Celtic",
-    description: "Ancient Celtic knots and interwoven patterns",
-    image: require("@/assets/tattoos/celtic.png"),
-  },
-  {
-    id: 15,
-    title: "Maori",
-    description: "Traditional Polynesian tribal art with cultural significance",
-    image: require("@/assets/tattoos/maori.png"),
-  },
-  {
-    id: 16,
-    title: "Biomechanical",
-    description: "Fusion of organic and mechanical elements",
-    image: require("@/assets/tattoos/biomechanical.png"),
-  },
-  {
-    id: 17,
-    title: "Gothic",
-    description: "Dark, dramatic designs with medieval and gothic elements",
-    image: require("@/assets/tattoos/gothic.png"),
-  },
-  {
-    id: 18,
-    title: "Anime",
-    description: "Japanese animation-inspired characters and artwork",
-    image: require("@/assets/tattoos/anime.png"),
-  },
-  {
-    id: 19,
-    title: "Chicano",
-    description: "Mexican-American cultural art with religious and street elements",
-    image: require("@/assets/tattoos/chicano.png"),
-  },
-  {
-    id: 20,
-    title: "Surreal",
-    description: "Dreamlike, fantastical designs that defy reality",
-    image: require("@/assets/tattoos/surreal.png"),
-  }, */
+    short_description: "A modern style that transforms tattoos into living paintings, with flowing brushstrokes, splashes, and vibrant color gradients inspired by watercolor art.",
+    description: "Watercolor tattooing is a contemporary artistic style inspired by fine art watercolor painting. Emerging in the early 2000s, it challenged traditional tattoo conventions by moving away from rigid black outlines and instead embracing fluidity, transparency, and vibrant palettes. This technique recreates brushstrokes, splashes, and layered gradients, allowing tattoos to look like living paintings on the skin. The art form is influenced by abstract and impressionist painting, using diffusion and blending to mimic how pigment and water interact on paper. Although not rooted in ancient ritual, it represents a cultural shift: tattoos as expressive fine art. Watercolor tattoos celebrate individuality, creativity, and freedom, requiring advanced technical skill to preserve vibrancy and structure over time.",
+    style: "Watercolor / Abstract Painting",
+    image: { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/cover.png" },
+    gallery: [
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/hand-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/abdomen-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/toe-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/arm-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/thigh-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/back-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/neck-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/hand-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/neck-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/back-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/thigh-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/arm-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/toe-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/abdomen-male.png" }
+    ],
+    prompt: "A hyper realistic 4K photo of human skin with a Watercolor tattoo. The tattoo features flowing brushstrokes, splashes of vibrant colors (blue, red, purple, green, yellow) and translucent gradients that look like watercolor paint absorbed into the skin. The ink follows the anatomy naturally, adapting to pores, veins, and fine skin texture. No harsh black outlines, only soft edges and blending colors. The photo should look like a professional studio shot, with cinematic lighting, ultra sharp focus, and natural shadows on the body. Background pure black, no external shadows, only the realistic shading and texture of the skin and tattoo."
+  }
 ];
+
+export const bodyParts = {
+  arm: {
+    male: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-1.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-2.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-3.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-4.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-5.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-6.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-7.png",
+    ],
+  },
+  back: {
+    male: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-1.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-2.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-3.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-4.png",
+    ],
+    female: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-1.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-2.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-3.png",
+    ],
+  },
+  hand: {
+    male: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-male-1.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-male-2.png",
+    ],
+    female: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-female-1.png",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-female-2.png",
+    ],
+  },
+  thigh: {
+    male: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/thigh-male-1.png",
+    ],
+    female: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/thigh-female-1.png",
+    ],
+  },
+  neck: {
+    male: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-male-1.png",
+    ],
+    female: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-female-1.png",
+    ],
+  },
+  abdomen: {
+    male: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-male-1.png",
+    ],
+    female: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-female-1.png",
+    ],
+  },
+  toe: {
+    male: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-male-1.png",
+    ],
+    female: [
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-female-1.png",
+    ],
+  },
+};
+
+export const getTattooStyleById = (id: number): FeaturedTattoo | undefined => {
+  return featuredTattoos.find(tattoo => tattoo.id === id);
+};

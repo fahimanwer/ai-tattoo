@@ -45,6 +45,7 @@ export default function ProfileLayout() {
         <Stack.Screen
           name="new"
           options={{
+            title: "Create Your Tattoo",
             headerBackButtonDisplayMode: "minimal",
             headerLargeTitle: false,
           }}

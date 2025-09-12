@@ -1,9 +1,8 @@
 import { ApiError } from "@/lib/api-client";
+import { assetToBase64, urlToBase64 } from "@/lib/base64-utils";
 import { textAndImageToImage } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { useMutation } from "@tanstack/react-query";
-import { Asset } from "expo-asset";
-import { File } from "expo-file-system/next";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, View } from "react-native";
@@ -16,36 +15,6 @@ const MIX_TOW_PHOTHOS_PROMPT = `A hyper-realistic integration of the uploaded ta
 const bodyPartImage = "/a.jpg";
 const tattooImage = "https://d3ynb031qx3d1.cloudfront.net/tattoos/gothic.png";
 
-/**
- * Convert a bundled static asset (require("../assets/img.png")) into Base64.
- */
-export async function assetToBase64(moduleId: number): Promise<string> {
-  // 1. Resolve the static asset
-  const [asset] = await Asset.loadAsync(moduleId);
-  const uri = asset.localUri ?? asset.uri;
-  if (!uri) throw new Error("Unable to resolve asset URI");
-
-  // 2. Wrap the path with File
-  const file = new File(uri);
-
-  // 3. Read as Base64
-  const base64 = file.base64(); // synchronous, returns string
-  return base64;
-}
-
-/**
- * Convert a remote URL to Base64.
- */
-export async function urlToBase64(url: string): Promise<string> {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.readAsDataURL(blob);
-  });
-}
-
 export function TextAndImageToImage() {
   // Access the client
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -56,12 +25,10 @@ export function TextAndImageToImage() {
   useEffect(() => {
     (async () => {
       try {
-        const [arm, tattooDataUrl] = await Promise.all([
+        const [arm, tattoo] = await Promise.all([
           assetToBase64(require(`@/assets${bodyPartImage}`)),
           urlToBase64(tattooImage),
         ]);
-        // Extract base64 from data URL (remove "data:image/png;base64," prefix)
-        const tattoo = tattooDataUrl.split(",")[1];
         setArmBase64(arm);
         setTattooBase64(tattoo);
       } catch (e) {
