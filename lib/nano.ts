@@ -1,3 +1,4 @@
+import { apiFetch } from "./api-client";
 import { createJsonMutation } from "./mutations";
 
 type TextToImageInput = { prompt: string };
@@ -21,3 +22,23 @@ export const textAndImageToImage = createJsonMutation<
   prompt,
   images_base64,
 }));
+
+/**
+ * User Usage API
+ */
+export interface UsageRecord {
+  entitlement: string;
+  periodStart: string;
+  periodEnd: string;
+  count: number;
+  revenuecatUserId: string;
+}
+
+export interface UsageResponse {
+  usage: UsageRecord[];
+  totalUsage: number;
+}
+
+export const fetchUserUsage = (): Promise<UsageResponse> => {
+  return apiFetch<UsageResponse>("/api/user/usage", { method: "GET" });
+};
