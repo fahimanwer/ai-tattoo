@@ -16,6 +16,18 @@ model Todo {
   updatedAt DateTime @updatedAt
 }
 
+model Usage {
+  userId           String
+  entitlement      String // e.g., "pro"
+  periodStart      DateTime // from RC
+  periodEnd        DateTime // from RC
+  count            Int      @default(0)
+  revenuecatUserId String
+
+  @@id([userId, entitlement, periodStart]) // 1 row per cycle
+  @@index([userId, periodStart])
+}
+
 model User {
   id            String    @id
   name          String
