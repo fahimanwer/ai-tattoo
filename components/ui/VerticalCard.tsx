@@ -1,7 +1,9 @@
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
-import { BlurView } from "expo-blur";
+/* import { BlurView } from "expo-blur";
+ */
+import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { Pressable, StyleSheet, View } from "react-native";
 
@@ -40,7 +42,7 @@ export function VerticalCard({
         />
         {showOverlay && (
           <>
-            <BlurView
+            {/*  <BlurView
               intensity={20}
               style={{
                 position: "absolute",
@@ -49,7 +51,31 @@ export function VerticalCard({
                 height: 70,
                 width: "100%",
               }}
+            /> */}
+            {/* Basic Glass View */}
+            <GlassView
+              style={{
+                position: "absolute",
+                left: 0,
+                bottom: 0,
+                height: 70,
+                width: 100, 
+                zIndex: 2,
+              }}
             />
+
+            {/* Glass View with clear style */}
+            {/*      <GlassView
+              style={{
+                position: "absolute",
+                left: 0,
+                bottom: 0,
+                height: 70,
+                width: "100%",
+              }}
+              glassEffectStyle="clear"
+            /> */}
+
             <View style={styles.styleImageContainer}>
               <Text type="base" weight="bold">
                 {style.title}
