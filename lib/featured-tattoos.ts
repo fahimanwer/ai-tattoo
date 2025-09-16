@@ -177,19 +177,19 @@ export const bodyParts = {
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-hand-1.png",
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-hand-2.png",
   ],
-  thigh: [
+  /* thigh: [
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-2.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-neck-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-neck-2.png",
+  ], */
+  neck: [
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-1.png",
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-2.png",
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-neck-1.png",
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-neck-2.png",
   ],
-  neck: [
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-1.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-2.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-3.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-4.png",
-  ],
-  abdomen: [
+ /*  abdomen: [
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-1.png",
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-2.png",
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-3.png",
@@ -200,7 +200,7 @@ export const bodyParts = {
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-2.png",
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-3.png",
     "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-4.png",
-  ],
+  ], */
 };
 
 export const getTattooStyleById = (id: number): FeaturedTattoo | undefined => {
