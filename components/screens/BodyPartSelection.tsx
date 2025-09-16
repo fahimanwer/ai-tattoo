@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { bodyParts } from "@/constants/BodyParts";
@@ -116,7 +115,7 @@ export function BodyPartSelection() {
       )}
 
       {/* Body Part Category Selection - Only show when not using custom image */}
-      {!isUsingCustomImage && (
+      {/*  {!isUsingCustomImage && (
         <ScrollView
           horizontal
           style={{
@@ -161,22 +160,314 @@ export function BodyPartSelection() {
           ))}
         </ScrollView>
       )}
+ */}
+      <View
+        style={{
+          position: "relative",
+          height: 110,
+        }}
+      >
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "100%",
+            paddingHorizontal: 16,
+          }}
+        >
+          <Pressable
+            onPress={(pressed) => {
+              setSelectedBodyPartCategory("back");
+            }}
+            style={({ pressed }) => [
+              {
+                transform: [
+                  {
+                    scale:
+                      selectedBodyPartCategory === "back"
+                        ? 1
+                        : pressed
+                        ? 0.89
+                        : 0.9,
+                  },
+                ],
+                position: "relative",
+                width: 110,
+                height: "100%",
+                marginTop: 8,
+              },
+            ]}
+          >
+            <View
+              style={{
+                position: "absolute",
+                transform: [{ rotate: "-4deg" }],
+                left: 14,
+                top: 0,
+                height: 80,
+                width: 80,
+                borderRadius: 16,
+                overflow: "hidden",
+                boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-3.png",
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </View>
+            <View
+              style={{
+                position: "absolute",
+                left: -10,
+                top: 18,
+                transform: [{ rotate: "12deg" }],
+                height: 80,
+                width: 80,
+                borderRadius: 16,
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-2.png",
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </View>
+            <View
+              style={{
+                position: "absolute",
+                left: 32,
+                top: 14,
+                transform: [{ rotate: "-12deg" }],
+                height: 80,
+                width: 80,
+                boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-1.png",
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 16,
+                }}
+              />
+            </View>
+          </Pressable>
+
+          <Pressable
+            onPress={(pressed) => {
+              setSelectedBodyPartCategory("arm");
+            }}
+            style={({ pressed }) => [
+              {
+                transform: [
+                  {
+                    scale:
+                      selectedBodyPartCategory === "arm"
+                        ? 1
+                        : pressed
+                        ? 0.89
+                        : 0.9,
+                  },
+                ],
+                position: "relative",
+                width: 110,
+                height: "100%",
+                marginLeft: 44,
+              },
+            ]}
+          >
+            <View
+              style={{
+                position: "absolute",
+                transform: [{ rotate: "-4deg" }],
+                left: 14,
+                top: 0,
+                height: 80,
+                width: 80,
+                borderRadius: 16,
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-3.png",
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </View>
+            <View
+              style={{
+                position: "absolute",
+                left: -10,
+                top: 18,
+                transform: [{ rotate: "12deg" }],
+                height: 80,
+                width: 80,
+                borderRadius: 16,
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-2.png",
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </View>
+            <View
+              style={{
+                position: "absolute",
+                left: 32,
+                top: 14,
+                transform: [{ rotate: "-12deg" }],
+                height: 80,
+                width: 80,
+                borderRadius: 16,
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-1.png",
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </View>
+          </Pressable>
+
+          <Pressable
+            onPress={(pressed) => {
+              setSelectedBodyPartCategory("neck");
+            }}
+            style={({ pressed }) => [
+              {
+                transform: [
+                  {
+                    scale:
+                      selectedBodyPartCategory === "neck"
+                        ? 1
+                        : pressed
+                        ? 0.89
+                        : 0.9,
+                  },
+                ],
+                position: "relative",
+                width: 110,
+                height: "100%",
+                marginLeft: 44,
+              },
+            ]}
+          >
+            <View
+              style={{
+                position: "absolute",
+                transform: [{ rotate: "-4deg" }],
+                left: 14,
+                top: 0,
+                height: 80,
+                width: 80,
+                borderRadius: 16,
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-3.png",
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </View>
+            <View
+              style={{
+                position: "absolute",
+                left: -10,
+                top: 18,
+                transform: [{ rotate: "12deg" }],
+                height: 80,
+                width: 80,
+                borderRadius: 16,
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-2.png",
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </View>
+            <View
+              style={{
+                position: "absolute",
+                left: 32,
+                top: 14,
+                transform: [{ rotate: "-12deg" }],
+                height: 80,
+                width: 80,
+                borderRadius: 16,
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-1.png",
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </View>
+          </Pressable>
+        </ScrollView>
+      </View>
 
       {/* Body Part Variant Selection - Only show when not using custom image */}
       {!isUsingCustomImage && selectedBodyPartCategory && (
         <>
-          <View style={styles.section}>
+          {/* <View style={styles.section}>
             <Text type="base" weight="bold">
               Choose specific {selectedBodyPartCategory} variant
             </Text>
-          </View>
+          </View> */}
 
           <ScrollView
             horizontal
             style={{
               flex: 1,
               paddingHorizontal: 16,
-              marginBottom: 12,
+              marginTop: 34,
             }}
             showsHorizontalScrollIndicator={false}
           >
@@ -184,7 +475,7 @@ export function BodyPartSelection() {
               const categoryData =
                 bodyParts[selectedBodyPartCategory as keyof typeof bodyParts];
               const allImages = [
-                ...categoryData.male.map((url, index) => ({
+                ...categoryData.map((url, index) => ({
                   url,
                   gender: "male",
                   index: index + 1,
@@ -200,11 +491,10 @@ export function BodyPartSelection() {
                     cachePolicy="memory-disk"
                     source={{ uri: imageData.url }}
                     style={{
-                      width: 100,
-                      height: 100,
-                      borderWidth: 3,
+                      width: 80,
+                      height: 80,
                       marginLeft: 8,
-                      borderRadius: 12,
+                      borderRadius: 16,
                       borderColor:
                         selectedBodyPartVariant === imageData.url
                           ? Color.grayscale[950]

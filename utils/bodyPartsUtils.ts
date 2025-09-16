@@ -29,7 +29,7 @@ export function getAllBodyParts(): string[] {
   featuredTattoos.forEach(tattoo => {
     tattoo.gallery.forEach(image => {
       if (typeof image === 'object' && 'uri' in image) {
-        const bodyPart = extractBodyPartFromUrl(image.uri);
+        const bodyPart = extractBodyPartFromUrl(image.uri || '');
         if (bodyPart) {
           bodyParts.add(bodyPart);
         }
@@ -47,11 +47,11 @@ export function getAllGalleryImages(): GalleryImage[] {
   featuredTattoos.forEach(tattoo => {
     tattoo.gallery.forEach(image => {
       if (typeof image === 'object' && 'uri' in image) {
-        const bodyPart = extractBodyPartFromUrl(image.uri);
-        const gender = extractGenderFromUrl(image.uri);
+        const bodyPart = extractBodyPartFromUrl(image.uri || '');
+        const gender = extractGenderFromUrl(image.uri || '');
         
         images.push({
-          uri: image.uri,
+          uri: image.uri || '',
           bodyPart,
           gender,
           styleId: tattoo.id,

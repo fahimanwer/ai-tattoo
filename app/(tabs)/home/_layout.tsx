@@ -111,6 +111,9 @@ export default function ProfileLayout() {
             sheetGrabberVisible: true,
             sheetAllowedDetents: [0.3, 0.5, 1],
             sheetInitialDetentIndex: 0,
+            contentStyle: {
+              backgroundColor: "transparent",
+            },
           }}
         />
         <Stack.Screen
@@ -121,6 +124,9 @@ export default function ProfileLayout() {
             sheetGrabberVisible: true,
             sheetAllowedDetents: [0.3, 0.5, 1],
             sheetInitialDetentIndex: 0,
+            contentStyle: {
+              backgroundColor: "transparent",
+            },
           }}
         />
       </Stack>

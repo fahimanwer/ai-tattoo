@@ -129,76 +129,78 @@ export const featuredTattoos: FeaturedTattoo[] = [
       { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/abdomen-male.png" }
     ],
     prompt: "A hyper realistic 4K photo of human skin with a Watercolor tattoo. The tattoo features flowing brushstrokes, splashes of vibrant colors (blue, red, purple, green, yellow) and translucent gradients that look like watercolor paint absorbed into the skin. The ink follows the anatomy naturally, adapting to pores, veins, and fine skin texture. No harsh black outlines, only soft edges and blending colors. The photo should look like a professional studio shot, with cinematic lighting, ultra sharp focus, and natural shadows on the body. Background pure black, no external shadows, only the realistic shading and texture of the skin and tattoo."
+  },
+  {
+    id: 5,
+    title: "Old School",
+    short_description: "A classic tattoo style with bold outlines, flat colors, and iconic sailor motifs like anchors, roses, daggers, and swallows.",
+    description: "Old School tattooing, also known as American Traditional, has its roots in the late 19th and early 20th centuries, flourishing among sailors, soldiers, and adventurers. It became the visual language of a generation that used tattoos as symbols of loyalty, love, bravery, and remembrance. This style is defined by bold black outlines, a restricted color palette (red, green, yellow, blue, and black), and simple yet powerful imagery that ensured tattoos remained readable even after years on the skin. Motifs such as anchors represented stability, swallows symbolized safe return, daggers embodied danger or betrayal, while roses and hearts expressed love and devotion. Legendary artists like Norman “Sailor Jerry” Collins shaped this movement, blending Western iconography with Asian influences. Today, Old School remains a timeless cultural icon of tattoo art, celebrated for its heritage, simplicity, and strength of design.",
+    style: "American Traditional / Old School",
+    image: { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/cover.png" },
+    gallery: [
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/hand-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/abdomen-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/toe-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/arm-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/thigh-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/back-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/neck-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/hand-female.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/neck-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/back-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/thigh-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/arm-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/toe-male.png" },
+      { uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/abdomen-male.png" }
+    ],
+    prompt: "A hyper realistic 4K photo of human skin with an Old School tattoo. The tattoo features bold black outlines, flat color fills, and iconic motifs such as anchors, roses, daggers, hearts, and swallows. The design adapts naturally to pores, veins, and skin texture, with strong contrast and minimal shading. Colors limited to red, green, yellow, blue, and black. The photo should look like a professional studio shot, cinematic lighting, ultra sharp focus, black background, no external shadows, only realistic shading and texture of the tattoo on the skin."
   }
+
 ];
 
 export const bodyParts = {
-  arm: {
-    male: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-1.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-2.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-3.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-4.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-5.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-6.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-7.png",
-    ],
-  },
-  back: {
-    male: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-1.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-2.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-3.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-4.png",
-    ],
-    female: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-1.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-2.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-3.png",
-    ],
-  },
-  /* hand: {
-    male: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-male-1.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-male-2.png",
-    ],
-    female: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-female-1.png",
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/hand-female-2.png",
-    ],
-  }, */
-  /* thigh: {
-    male: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/thigh-male-1.png",
-    ],
-    female: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/thigh-female-1.png",
-    ],
-  },
-  neck: {
-    male: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-male-1.png",
-    ],
-    female: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-female-1.png",
-    ],
-  },
-  abdomen: {
-    male: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-male-1.png",
-    ],
-    female: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-female-1.png",
-    ],
-  },
-  toe: {
-    male: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-male-1.png",
-    ],
-    female: [
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-female-1.png",
-    ],
-  }, */
+  arm: [
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-2.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-3.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-4.png",
+  ],
+  back: [
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-2.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-2.png",
+  ],
+  hand: [
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-hand-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-hand-2.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-hand-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-hand-2.png",
+  ],
+  thigh: [
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-2.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-neck-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-neck-2.png",
+  ],
+  neck: [
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-2.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-3.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-4.png",
+  ],
+  abdomen: [
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-2.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-3.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/abdomen-4.png",
+  ],
+  toe: [
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-1.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-2.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-3.png",
+    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/toe-4.png",
+  ],
 };
 
 export const getTattooStyleById = (id: number): FeaturedTattoo | undefined => {
