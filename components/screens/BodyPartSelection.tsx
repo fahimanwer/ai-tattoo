@@ -3,6 +3,7 @@ import { Text } from "@/components/ui/Text";
 import { bodyParts } from "@/constants/BodyParts";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
+import { ContextMenu, Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
@@ -52,6 +53,35 @@ export function BodyPartSelection() {
     }
   }, [setCustomUserImage, setIsUsingCustomImage]);
 
+  // Function to take photo with camera
+  const takePhotoWithCamera = useCallback(async () => {
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        const selectedImage = result.assets[0];
+        if (selectedImage.base64) {
+          setCustomUserImage({
+            uri: selectedImage.uri,
+            base64: selectedImage.base64,
+          });
+          setIsUsingCustomImage(true);
+        } else {
+          Alert.alert("Error", "Failed to get image data");
+        }
+      }
+    } catch (error) {
+      console.error("Error taking photo:", error);
+      Alert.alert("Error", "Failed to take photo");
+    }
+  }, [setCustomUserImage, setIsUsingCustomImage]);
+
   // Function to remove custom image and return to default
   const removeCustomImage = useCallback(() => {
     setCustomUserImage(undefined);
@@ -68,7 +98,33 @@ export function BodyPartSelection() {
         <Text type="subtitle" weight="bold">
           Select body part or upload photo
         </Text>
-        <Button
+        {/* Context menu for image selection */}
+        <Host useViewportSizeMeasurement matchContents>
+          <ContextMenu>
+            <ContextMenu.Items>
+              <ExpoUIButton
+                systemImage="photo.on.rectangle"
+                onPress={pickImageFromGallery}
+              >
+                Select from Library
+              </ExpoUIButton>
+              <ExpoUIButton
+                systemImage="camera.fill"
+                onPress={takePhotoWithCamera}
+              >
+                Take Photo
+              </ExpoUIButton>
+            </ContextMenu.Items>
+            <ContextMenu.Trigger>
+              <ExpoUIButton
+                systemImage="photo.badge.plus.fill"
+                variant="glass"
+                color="white"
+              />
+            </ContextMenu.Trigger>
+          </ContextMenu>
+        </Host>
+        {/* <Button
           symbol={isUsingCustomImage ? "photo" : "plus"}
           onPress={
             isUsingCustomImage ? pickImageFromGallery : pickImageFromGallery
@@ -77,7 +133,7 @@ export function BodyPartSelection() {
           variant="link"
           color="white"
           style={{ width: 40, height: 40 }}
-        />
+        /> */}
       </View>
 
       {/* Custom User Image Preview */}
