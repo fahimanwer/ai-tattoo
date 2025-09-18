@@ -1,7 +1,8 @@
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
-import { GlassView } from "expo-glass-effect";
+import { BlurView } from "expo-blur";
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 /* import { BlurView } from "expo-blur";
  */
 import { Image } from "expo-image";
@@ -46,17 +47,6 @@ export function VerticalCard({
         />
         {showOverlay && (
           <>
-            {/*  <BlurView
-              intensity={20}
-              style={{
-                position: "absolute",
-                left: 0,
-                bottom: 0,
-                height: 70,
-                width: "100%",
-              }}
-            /> */}
-
             {/* Glass View with clear style */}
             {/* <GlassView
               style={{
@@ -70,22 +60,38 @@ export function VerticalCard({
               }}
               glassEffectStyle="clear"
             /> */}
-            <GlassView
-              style={styles.styleImageContainer}
-              glassEffectStyle="clear"
-            >
-              <Text type="base" weight="bold">
-                {title || style.title}
-              </Text>
-              <Text
-                type="sm"
-                weight="normal"
-                style={styles.description}
-                numberOfLines={1}
+            {isLiquidGlassAvailable() ? (
+              <GlassView
+                style={styles.styleImageContainer}
+                glassEffectStyle="clear"
               >
-                {subtitle || style.style}
-              </Text>
-            </GlassView>
+                <Text type="base" weight="bold">
+                  {title || style.title}
+                </Text>
+                <Text
+                  type="sm"
+                  weight="normal"
+                  style={styles.description}
+                  numberOfLines={1}
+                >
+                  {subtitle || style.style}
+                </Text>
+              </GlassView>
+            ) : (
+              <BlurView intensity={20} style={styles.blurViewContainer}>
+                <Text type="base" weight="bold">
+                  {title || style.title}
+                </Text>
+                <Text
+                  type="sm"
+                  weight="normal"
+                  style={styles.description}
+                  numberOfLines={1}
+                >
+                  {subtitle || style.style}
+                </Text>
+              </BlurView>
+            )}
           </>
         )}
       </Pressable>
@@ -119,6 +125,24 @@ const styles = StyleSheet.create({
     left: "50%",
     transform: [{ translateX: "-50%" }],
     bottom: 4,
+    zIndex: 2,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    backgroundColor: "transparent",
+    experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
+  },
+  blurViewContainer: {
+    position: "absolute",
+    width: "100%",
+    height: 70,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    alignItems: "flex-start",
+    left: "50%",
+    transform: [{ translateX: "-50%" }],
+    bottom: 0,
     zIndex: 2,
     paddingBottom: 16,
     paddingHorizontal: 16,

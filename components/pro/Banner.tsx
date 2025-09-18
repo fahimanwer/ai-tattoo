@@ -49,10 +49,10 @@ export function Banner() {
       <GlassView
         style={{
           position: "absolute",
-          width: "95%",
+          width: "98%",
           left: "50%",
           transform: [{ translateX: "-50%" }],
-          bottom: 8,
+          bottom: 4,
           zIndex: 2,
           flex: 1,
           borderRadius: 16,

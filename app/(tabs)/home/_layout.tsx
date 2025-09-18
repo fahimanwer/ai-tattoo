@@ -69,6 +69,15 @@ export default function ProfileLayout() {
           }}
         />
         <Stack.Screen
+          name="new/create-tattoo"
+          options={{
+            title: "Creating Your Tattoo",
+            headerBackButtonDisplayMode: "minimal",
+            headerLargeTitle: false,
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
           name="choose-photo"
           options={{
             headerBackButtonDisplayMode: "minimal",
@@ -78,6 +87,7 @@ export default function ProfileLayout() {
         <Stack.Screen
           name="generated-result"
           options={{
+            title: "Generated Result",
             headerBackButtonDisplayMode: "minimal",
             headerLargeTitle: false,
           }}

@@ -3,12 +3,13 @@ import { Input } from "@/components/ui/Input";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
+import { useRouter } from "expo-router";
 import { useCallback } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 export function CustomDetails() {
-  const { customInstructions, setCustomInstructions, nextStep } =
-    useTattooCreation();
+  const { customInstructions, setCustomInstructions } = useTattooCreation();
+  const router = useRouter();
 
   const handleInstructionsChange = useCallback(
     (text: string) => {
@@ -88,7 +89,7 @@ export function CustomDetails() {
             variant="solid"
             radius="full"
             color="orange"
-            onPress={nextStep}
+            onPress={() => router.push("/home/new/create-tattoo")}
           />
         </View>
       </View>
