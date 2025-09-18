@@ -9,7 +9,14 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useCallback } from "react";
-import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
 export function BodyPartSelection() {
   const {
@@ -56,6 +63,24 @@ export function BodyPartSelection() {
   // Function to take photo with camera
   const takePhotoWithCamera = useCallback(async () => {
     try {
+      // Request camera permissions
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
+      if (status !== "granted") {
+        Alert.alert(
+          "Camera Permission Required",
+          "We need camera permissions to take photos. Please enable camera access in your device settings.",
+          [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Settings",
+              onPress: () => Linking.openURL("app-settings:"),
+            },
+          ]
+        );
+        return;
+      }
+
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ["images"],
         allowsEditing: true,
