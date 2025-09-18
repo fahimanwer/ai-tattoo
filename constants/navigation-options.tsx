@@ -1,16 +1,17 @@
 import { Color } from "@/constants/TWPalette";
-import { useColorScheme } from "react-native";
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
+import { isLiquidGlassAvailable } from "expo-glass-effect";
 
 /**
  * Hook that provides reusable large header screen options
  */
-export function useLargeHeaderOptions() {
-  const colorScheme = useColorScheme();
+export function useLargeHeaderOptions(): NativeStackNavigationOptions {
+  const isGlassAvailable = isLiquidGlassAvailable();
 
   return {
-    headerTintColor:
-      colorScheme === "dark" ? Color.grayscale[950] : Color.grayscale[50],
+    headerTintColor: Color.grayscale[950],
     headerTransparent: true,
+    headerBlurEffect: !isGlassAvailable ? "dark" : undefined,
     headerLargeStyle: {
       backgroundColor: "transparent",
     },
