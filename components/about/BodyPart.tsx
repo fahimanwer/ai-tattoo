@@ -101,6 +101,7 @@ export default function BodyPartParallaxView({
         ref={scrollRef}
         scrollEventThrottle={32}
         showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
       >
         <Animated.View style={[styles.header, headerAnimatedStyle]}>
           <Image
