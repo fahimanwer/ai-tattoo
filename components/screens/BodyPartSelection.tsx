@@ -4,10 +4,15 @@ import { bodyParts } from "@/constants/BodyParts";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
 import { ContextMenu, Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
-import { GlassContainer, GlassView } from "expo-glass-effect";
+import {
+  GlassContainer,
+  GlassView,
+  isLiquidGlassAvailable,
+} from "expo-glass-effect";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 
+import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { useCallback } from "react";
 import {
@@ -164,68 +169,84 @@ export function BodyPartSelection() {
               contentFit="cover"
             />
             <View style={styles.customImageActions}>
-              <GlassContainer
-                spacing={10}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
-                <GlassView
+              {isLiquidGlassAvailable() ? (
+                <GlassContainer
+                  spacing={10}
                   style={{
-                    height: 36,
-                    width: 36,
-                    borderRadius: 999,
+                    flexDirection: "row",
                     alignItems: "center",
-                    justifyContent: "center",
                   }}
-                  isInteractive
                 >
-                  <Pressable onPress={removeCustomImage}>
-                    <Icon
+                  <GlassView
+                    style={{
+                      height: 36,
+                      width: 36,
+                      borderRadius: 999,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    isInteractive
+                  >
+                    <Pressable onPress={removeCustomImage}>
+                      <Icon
+                        symbol="trash"
+                        style={{ width: 20, height: 20 }}
+                        color="white"
+                      />
+                    </Pressable>
+                  </GlassView>
+                  <GlassView
+                    style={{
+                      height: 36,
+                      width: 36,
+                      borderRadius: 999,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    isInteractive
+                  >
+                    <Pressable onPress={pickImageFromGallery}>
+                      <Icon
+                        symbol="photo"
+                        style={{ width: 20, height: 20 }}
+                        color="white"
+                      />
+                    </Pressable>
+                  </GlassView>
+                </GlassContainer>
+              ) : (
+                <View style={styles.customImageActionsBlur}>
+                  <BlurView
+                    intensity={20}
+                    tint="dark"
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      gap: 8,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 999,
+                      paddingVertical: 8,
+                      paddingHorizontal: 8,
+                    }}
+                  >
+                    <Button
                       symbol="trash"
-                      style={{ width: 20, height: 20 }}
+                      onPress={removeCustomImage}
+                      radius="full"
                       color="white"
+                      style={{ width: 36, height: 36 }}
                     />
-                  </Pressable>
-                </GlassView>
-                <GlassView
-                  style={{
-                    height: 36,
-                    width: 36,
-                    borderRadius: 999,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  isInteractive
-                >
-                  <Pressable onPress={pickImageFromGallery}>
-                    <Icon
+                    <Button
                       symbol="photo"
-                      style={{ width: 20, height: 20 }}
+                      onPress={pickImageFromGallery}
+                      radius="full"
                       color="white"
+                      style={{ width: 36, height: 36 }}
                     />
-                  </Pressable>
-                </GlassView>
-              </GlassContainer>
-              {/* <BlurView intensity={20} style={styles.customImageActionsBlur}>
-                <Button
-                  symbol="trash"
-                  onPress={removeCustomImage}
-                  radius="full"
-                  variant="outline"
-                  color="white"
-                  style={{ width: 36, height: 36 }}
-                />
-                <Button
-                  symbol="photo"
-                  onPress={pickImageFromGallery}
-                  radius="full"
-                  variant="outline"
-                  color="white"
-                  style={{ width: 36, height: 36 }}
-                />
-              </BlurView> */}
+                  </BlurView>
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -665,10 +686,8 @@ const styles = StyleSheet.create({
   customImageActionsBlur: {
     position: "relative",
     borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    flexDirection: "row",
     gap: 12,
+    overflow: "hidden",
   },
   navigationContainer: {
     paddingHorizontal: 16,

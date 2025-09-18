@@ -43,7 +43,7 @@ export function GeneratedTattooResult({
   };
 
   const generateAnother = () => {
-    router.push("/home/new");
+    router.push("/home");
   };
 
   const shareResult = () => {

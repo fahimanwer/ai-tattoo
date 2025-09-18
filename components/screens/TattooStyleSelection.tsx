@@ -7,7 +7,12 @@ import { featuredTattoos } from "@/lib/featured-tattoos";
 import { ContextMenu, Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
 /* import { BlurView } from "expo-blur"; */
 import { Icon } from "@/components/ui/Icon";
-import { GlassContainer, GlassView } from "expo-glass-effect";
+import { BlurView } from "expo-blur";
+import {
+  GlassContainer,
+  GlassView,
+  isLiquidGlassAvailable,
+} from "expo-glass-effect";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
@@ -136,68 +141,84 @@ export function TattooStyleSelection() {
               contentFit="cover"
             />
             <View style={styles.customImageActions}>
-              {/*   <BlurView intensity={20} style={styles.customImageActionsBlur}>
-                <Button
-                  symbol="trash"
-                  onPress={removeExistingTattooImage}
-                  radius="full"
-                  variant="outline"
-                  color="white"
-                  style={{ width: 36, height: 36 }}
-                />
-                <Button
-                  symbol="photo"
-                  onPress={pickExistingTattooFromGallery}
-                  radius="full"
-                  variant="outline"
-                  color="white"
-                  style={{ width: 36, height: 36 }}
-                />
-              </BlurView> */}
-              <GlassContainer
-                spacing={10}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
-                <GlassView
+              {isLiquidGlassAvailable() ? (
+                <GlassContainer
+                  spacing={10}
                   style={{
-                    height: 36,
-                    width: 36,
-                    borderRadius: 999,
+                    flexDirection: "row",
                     alignItems: "center",
-                    justifyContent: "center",
                   }}
-                  isInteractive
                 >
-                  <Pressable onPress={removeExistingTattooImage}>
-                    <Icon
+                  <GlassView
+                    style={{
+                      height: 36,
+                      width: 36,
+                      borderRadius: 999,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    isInteractive
+                  >
+                    <Pressable onPress={removeExistingTattooImage}>
+                      <Icon
+                        symbol="trash"
+                        style={{ width: 20, height: 20 }}
+                        color="white"
+                      />
+                    </Pressable>
+                  </GlassView>
+                  <GlassView
+                    style={{
+                      height: 36,
+                      width: 36,
+                      borderRadius: 999,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    isInteractive
+                  >
+                    <Pressable onPress={pickExistingTattooFromGallery}>
+                      <Icon
+                        symbol="photo"
+                        style={{ width: 20, height: 20 }}
+                        color="white"
+                      />
+                    </Pressable>
+                  </GlassView>
+                </GlassContainer>
+              ) : (
+                <View style={styles.customImageActionsBlur}>
+                  <BlurView
+                    intensity={20}
+                    tint="dark"
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      gap: 8,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 999,
+                      paddingVertical: 8,
+                      paddingHorizontal: 8,
+                    }}
+                  >
+                    <Button
                       symbol="trash"
-                      style={{ width: 20, height: 20 }}
+                      onPress={removeExistingTattooImage}
+                      radius="full"
                       color="white"
+                      style={{ width: 36, height: 36 }}
                     />
-                  </Pressable>
-                </GlassView>
-                <GlassView
-                  style={{
-                    height: 36,
-                    width: 36,
-                    borderRadius: 999,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  isInteractive
-                >
-                  <Pressable onPress={pickExistingTattooFromGallery}>
-                    <Icon
+                    <Button
                       symbol="photo"
-                      style={{ width: 20, height: 20 }}
+                      onPress={pickExistingTattooFromGallery}
+                      radius="full"
                       color="white"
+                      style={{ width: 36, height: 36 }}
                     />
-                  </Pressable>
-                </GlassView>
-              </GlassContainer>
+                  </BlurView>
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -344,9 +365,7 @@ const styles = StyleSheet.create({
   customImageActionsBlur: {
     position: "relative",
     borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    flexDirection: "row",
+    overflow: "hidden",
     gap: 12,
   },
   navigationContainer: {
