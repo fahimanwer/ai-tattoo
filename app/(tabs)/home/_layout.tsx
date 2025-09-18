@@ -1,8 +1,8 @@
+import { Icon } from "@/components/ui/Icon";
 import { useLargeHeaderOptions } from "@/constants/navigation-options";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
-import { GlassContainer, GlassView } from "expo-glass-effect";
 import { Stack, useRouter } from "expo-router";
-import { StyleSheet } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 function ButtonToCreateTattoo() {
   const router = useRouter();
@@ -11,13 +11,7 @@ function ButtonToCreateTattoo() {
   };
 
   return (
-    <>
-      <GlassContainer spacing={10} style={styles.containerStyle}>
-        <GlassView style={styles.glass1} isInteractive />
-        <GlassView style={styles.glass2} />
-        <GlassView style={styles.glass3} />
-      </GlassContainer>
-      {/* <View
+    <View
       style={{
         flexDirection: "row",
         alignItems: "center",
@@ -26,8 +20,7 @@ function ButtonToCreateTattoo() {
       <Pressable style={{ paddingLeft: 8 }} onPress={goToCreateTattoo}>
         <Icon symbol="plus" color={"#007AFF"} />
       </Pressable>
-    </View> */}
-    </>
+    </View>
   );
 }
 
@@ -158,20 +151,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-  },
-  glass1: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-  },
-  glass2: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  glass3: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
   },
 });

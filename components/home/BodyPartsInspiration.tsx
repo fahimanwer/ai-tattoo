@@ -1,6 +1,8 @@
-import { GalleryImageCard } from "@/components/ui/GalleryImageCard";
+import { Icon } from "@/components/ui/Icon";
 import { Text } from "@/components/ui/Text";
+import { VerticalCard } from "@/components/ui/VerticalCard";
 import { Button, ContextMenu, Host } from "@/lib/expo-ui-web";
+import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import {
   GalleryImage,
   getAllBodyPartImages,
@@ -8,6 +10,7 @@ import {
   getBodyPartDisplayName,
   getBodyPartImagesFromAllStyles,
 } from "@/utils/bodyPartsUtils";
+import { GlassView } from "expo-glass-effect";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -42,6 +45,20 @@ export function BodyPartsInspiration() {
     setSelectedBodyPart(bodyPart);
   };
 
+  // Convert GalleryImage to FeaturedTattoo format for VerticalCard
+  const convertToVerticalCardFormat = (image: GalleryImage): FeaturedTattoo => {
+    return {
+      id: image.styleId,
+      title: image.styleTitle,
+      short_description: "",
+      style: image.styleTitle,
+      gallery: [],
+      prompt: "",
+      description: "",
+      image: { uri: image.uri },
+    };
+  };
+
   // Create options including "all" category
   const bodyPartOptions = [
     { title: "All", action: () => handleBodyPartSelect("all") },
@@ -57,7 +74,12 @@ export function BodyPartsInspiration() {
         <Text type="subtitle" weight="bold">
           Discover by body part
         </Text>
+
         <Host style={styles.contextMenuHost}>
+          {/* <GlassContainer spacing={10} style={{ height: 40, width: 100 }}>
+            <GlassView style={{ height: 40, width: 100 }} isInteractive />
+            <GlassView style={{ height: 40, width: 100 }} isInteractive />
+          </GlassContainer> */}
           <ContextMenu>
             <ContextMenu.Items>
               {bodyPartOptions.map((option, index) => (
@@ -72,13 +94,18 @@ export function BodyPartsInspiration() {
               ))}
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <Host style={styles.contextMenuTrigger}>
-                <Button
-                  systemImage="ellipsis"
-                  size="sm"
-                  title={getBodyPartDisplayName(selectedBodyPart)}
-                />
-              </Host>
+              <GlassView
+                style={{
+                  height: 40,
+                  width: 40,
+                  borderRadius: 99,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Icon symbol="ellipsis" size={20} color="white" />
+              </GlassView>
             </ContextMenu.Trigger>
           </ContextMenu>
         </Host>
@@ -91,10 +118,19 @@ export function BodyPartsInspiration() {
         contentContainerStyle={styles.scrollContainer}
       >
         {filteredImages.map((image, index) => (
-          <GalleryImageCard
+          <VerticalCard
             key={`${image.styleId}-${image.bodyPart}-${image.gender}-${index}`}
-            image={image}
-            onPress={handleImagePress}
+            style={convertToVerticalCardFormat(image)}
+            onPress={() => handleImagePress(image)}
+            title={
+              image.bodyPart.charAt(0).toUpperCase() +
+              image.bodyPart.slice(1) +
+              " | " +
+              image.styleTitle
+            }
+            subtitle={
+              image.gender.charAt(0).toUpperCase() + image.gender.slice(1)
+            }
           />
         ))}
       </ScrollView>

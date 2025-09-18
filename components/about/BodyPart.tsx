@@ -1,6 +1,7 @@
-import { GalleryImageCard } from "@/components/ui/GalleryImageCard";
 import { Text } from "@/components/ui/Text";
+import { VerticalCard } from "@/components/ui/VerticalCard";
 import { Color } from "@/constants/TWPalette";
+import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import {
   filterImagesByBodyPart,
   GalleryImage,
@@ -80,6 +81,20 @@ export default function BodyPartParallaxView({
     });
   };
 
+  // Convert GalleryImage to FeaturedTattoo format for VerticalCard
+  const convertToVerticalCardFormat = (image: GalleryImage): FeaturedTattoo => {
+    return {
+      id: image.styleId,
+      title: image.styleTitle,
+      short_description: "",
+      style: image.styleTitle,
+      gallery: [],
+      prompt: "",
+      description: "",
+      image: { uri: image.uri },
+    };
+  };
+
   return (
     <View style={styles.container}>
       <Animated.ScrollView
@@ -122,7 +137,14 @@ export default function BodyPartParallaxView({
                 key={`${image.styleId}-${image.bodyPart}-${image.gender}-${index}`}
                 style={styles.galleryItem}
               >
-                <GalleryImageCard image={image} onPress={handleImagePress} />
+                <VerticalCard
+                  style={convertToVerticalCardFormat(image)}
+                  onPress={() => handleImagePress(image)}
+                  title={image.styleTitle}
+                  subtitle={
+                    image.gender.charAt(0).toUpperCase() + image.gender.slice(1)
+                  }
+                />
               </View>
             ))}
           </View>

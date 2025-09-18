@@ -12,6 +12,7 @@ export function GetInspiration() {
       <Text type="subtitle" weight="bold">
         Discover new styles
       </Text>
+      {/* <GlassContainerDemo /> */}
       <ScrollView
         horizontal
         style={styles.scrollView}

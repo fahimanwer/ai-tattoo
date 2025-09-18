@@ -1,7 +1,6 @@
 import { useSubscription } from "@/hooks/useSubscription";
 import { authClient } from "@/lib/auth-client";
 import { manageSubscription, presentPaywall } from "@/lib/paywall-utils";
-import { cornerRadius, frame } from "@expo/ui/build/swift-ui/modifiers";
 import {
   Button,
   DisclosureGroup,
@@ -13,6 +12,7 @@ import {
   Text,
   VStack,
 } from "@expo/ui/swift-ui";
+import { cornerRadius, frame } from "@expo/ui/swift-ui/modifiers";
 import { Image as ExpoImage } from "expo-image";
 import { useState } from "react";
 import { Alert } from "react-native";

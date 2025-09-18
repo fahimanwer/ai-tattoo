@@ -1,16 +1,18 @@
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
+import { GlassView } from "expo-glass-effect";
 /* import { BlurView } from "expo-blur";
  */
-import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 
 interface VerticalCardProps {
   style: FeaturedTattoo;
   onPress: (style: FeaturedTattoo) => void;
   showOverlay?: boolean; // Controls visibility of title, description, and blur
+  title?: string; // Override title from style object
+  subtitle?: string; // Override subtitle from style object
 }
 
 export const blurhash =
@@ -20,6 +22,8 @@ export function VerticalCard({
   style,
   onPress,
   showOverlay = true,
+  title,
+  subtitle,
 }: VerticalCardProps) {
   return (
     <>
@@ -52,33 +56,26 @@ export function VerticalCard({
                 width: "100%",
               }}
             /> */}
-            {/* Basic Glass View */}
-            <GlassView
-              style={{
-                position: "absolute",
-                left: 0,
-                bottom: 0,
-                height: 70,
-                width: 100, 
-                zIndex: 2,
-              }}
-            />
 
             {/* Glass View with clear style */}
-            {/*      <GlassView
+            {/* <GlassView
               style={{
                 position: "absolute",
-                left: 0,
-                bottom: 0,
-                height: 70,
-                width: "100%",
+                left: "50%",
+                transform: [{ translateX: "-50%" }],
+                bottom: 24,
+                height: 50,
+                width: "95%",
+                borderRadius: 16,
               }}
               glassEffectStyle="clear"
             /> */}
-
-            <View style={styles.styleImageContainer}>
+            <GlassView
+              style={styles.styleImageContainer}
+              glassEffectStyle="clear"
+            >
               <Text type="base" weight="bold">
-                {style.title}
+                {title || style.title}
               </Text>
               <Text
                 type="sm"
@@ -86,9 +83,9 @@ export function VerticalCard({
                 style={styles.description}
                 numberOfLines={1}
               >
-                {style.style}
+                {subtitle || style.style}
               </Text>
-            </View>
+            </GlassView>
           </>
         )}
       </Pressable>
@@ -113,19 +110,19 @@ const styles = StyleSheet.create({
   },
   styleImageContainer: {
     position: "absolute",
-    width: "100%",
-    height: "100%",
+    width: "95%",
+    height: 70,
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
     alignItems: "flex-start",
-    left: 0,
-    top: 0,
+    left: "50%",
+    transform: [{ translateX: "-50%" }],
+    bottom: 4,
     zIndex: 2,
     paddingBottom: 16,
     paddingHorizontal: 16,
-    borderBottomEndRadius: 16,
-    borderBottomStartRadius: 16,
+    borderRadius: 16,
     backgroundColor: "transparent",
     experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
   },
