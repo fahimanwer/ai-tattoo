@@ -150,6 +150,48 @@ const generateVariantConfig = (
     };
   }
 
+  if (color === "transparent") {
+    const textColor = isDark
+      ? getColorValue("white", 950)
+      : getColorValue("black", 950);
+    const subtleBorderColor = isDark
+      ? getColorValue("gray", 700)
+      : getColorValue("gray", 300);
+
+    return {
+      solid: {
+        backgroundColor: "transparent",
+        borderColor: "transparent",
+        textColor: textColor,
+        borderWidth: 0,
+      },
+      outline: {
+        backgroundColor: "transparent",
+        borderColor: subtleBorderColor,
+        textColor: textColor,
+        borderWidth: 1,
+      },
+      soft: {
+        backgroundColor: `${subtleBorderColor}${isDark ? "20" : "10"}`,
+        borderColor: "transparent",
+        textColor: textColor,
+        borderWidth: 0,
+      },
+      subtle: {
+        backgroundColor: `${subtleBorderColor}${isDark ? "20" : "10"}`,
+        borderColor: subtleBorderColor,
+        textColor: textColor,
+        borderWidth: 1,
+      },
+      link: {
+        backgroundColor: "transparent",
+        borderColor: "transparent",
+        textColor: textColor,
+        borderWidth: 0,
+      },
+    };
+  }
+
   return {
     solid: {
       backgroundColor: getColorValue(color, isDark ? 500 : 600),

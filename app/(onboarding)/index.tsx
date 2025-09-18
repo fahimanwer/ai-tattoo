@@ -37,7 +37,7 @@ export default function Home() {
             AI TATTOO
           </Text>
           <Text type="xl" weight="normal" style={{ opacity: 0.6 } as any}>
-            Preview virtual tattoos on your body with AI - arm, leg, face & more
+            The only tattoo mistake you can undo. Try first, ink later
           </Text>
 
           <View style={{ gap: 16, marginTop: 32, width: "100%" }}>

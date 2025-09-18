@@ -38,7 +38,8 @@ export type UIColor =
   | "pink"
   | "rose"
   | "black"
-  | "white";
+  | "white"
+  | "transparent";
 
 // Shared radius values mapping
 export const RADIUS_VALUES: Record<UIRadius, number> = {
@@ -68,6 +69,10 @@ export interface InputColorConfig extends ColorConfig {
 
 // Shared utility function to get color values
 export const getColorValue = (color: UIColor, shade: number = 500): string => {
+  if (color === "transparent") {
+    return "transparent";
+  }
+  
   if (color === "black") {
     return (
       Color.grayscale[shade as keyof typeof Color.grayscale] ||

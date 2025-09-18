@@ -4,9 +4,10 @@ import { bodyParts } from "@/constants/BodyParts";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
 import { ContextMenu, Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
-import { BlurView } from "expo-blur";
+import { GlassContainer, GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
+
 import { router } from "expo-router";
 import { useCallback } from "react";
 import {
@@ -17,6 +18,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { Icon } from "../ui/Icon";
 
 export function BodyPartSelection() {
   const {
@@ -149,16 +151,6 @@ export function BodyPartSelection() {
             </ContextMenu.Trigger>
           </ContextMenu>
         </Host>
-        {/* <Button
-          symbol={isUsingCustomImage ? "photo" : "plus"}
-          onPress={
-            isUsingCustomImage ? pickImageFromGallery : pickImageFromGallery
-          }
-          radius="full"
-          variant="link"
-          color="white"
-          style={{ width: 40, height: 40 }}
-        /> */}
       </View>
 
       {/* Custom User Image Preview */}
@@ -172,7 +164,51 @@ export function BodyPartSelection() {
               contentFit="cover"
             />
             <View style={styles.customImageActions}>
-              <BlurView intensity={20} style={styles.customImageActionsBlur}>
+              <GlassContainer
+                spacing={10}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <GlassView
+                  style={{
+                    height: 36,
+                    width: 36,
+                    borderRadius: 999,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  isInteractive
+                >
+                  <Pressable onPress={removeCustomImage}>
+                    <Icon
+                      symbol="trash"
+                      style={{ width: 20, height: 20 }}
+                      color="white"
+                    />
+                  </Pressable>
+                </GlassView>
+                <GlassView
+                  style={{
+                    height: 36,
+                    width: 36,
+                    borderRadius: 999,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  isInteractive
+                >
+                  <Pressable onPress={pickImageFromGallery}>
+                    <Icon
+                      symbol="photo"
+                      style={{ width: 20, height: 20 }}
+                      color="white"
+                    />
+                  </Pressable>
+                </GlassView>
+              </GlassContainer>
+              {/* <BlurView intensity={20} style={styles.customImageActionsBlur}>
                 <Button
                   symbol="trash"
                   onPress={removeCustomImage}
@@ -189,360 +225,343 @@ export function BodyPartSelection() {
                   color="white"
                   style={{ width: 36, height: 36 }}
                 />
-              </BlurView>
+              </BlurView> */}
             </View>
           </View>
         </View>
       )}
 
-      {/* Body Part Category Selection - Only show when not using custom image */}
-      {/*  {!isUsingCustomImage && (
-        <ScrollView
-          horizontal
-          style={{
-            flex: 1,
-            paddingHorizontal: 16,
-            marginBottom: 12,
-          }}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: 12,
-            paddingVertical: 8,
-          }}
-        >
-          {Object.keys(bodyParts).map((categoryKey) => (
-            <Pressable
-              key={categoryKey}
-              onPress={() => {
-                setSelectedBodyPartCategory(categoryKey);
-              }}
-              style={{ marginBottom: 8 }}
-            >
-              <Badge
-                variant={
-                  selectedBodyPartCategory === categoryKey ? "solid" : "outline"
-                }
-                color={
-                  selectedBodyPartCategory === categoryKey ? "white" : "neutral"
-                }
-                size="md"
-                radius="full"
-                style={{
-                  borderWidth: selectedBodyPartCategory === categoryKey ? 2 : 1,
-                  minWidth: 120,
-                  paddingHorizontal: 16,
-                }}
-              >
-                {categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)}
-              </Badge>
-            </Pressable>
-          ))}
-        </ScrollView>
-      )}
- */}
-      <View
-        style={{
-          position: "relative",
-          height: 110,
-        }}
-      >
-        <ScrollView
-          showsHorizontalScrollIndicator={false}
-          horizontal
+      {!isUsingCustomImage && (
+        <View
           style={{
             position: "relative",
-            width: "100%",
-            height: "100%",
-            paddingHorizontal: 16,
+            height: 110,
           }}
         >
-          <Pressable
-            onPress={(pressed) => {
-              setSelectedBodyPartCategory("back");
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            style={{
+              position: "relative",
+              width: "100%",
+              height: "100%",
+              paddingHorizontal: 16,
+              paddingTop: 4,
             }}
-            style={({ pressed }) => [
-              {
-                transform: [
-                  {
-                    scale:
-                      selectedBodyPartCategory === "back"
-                        ? 1
-                        : pressed
-                        ? 0.89
-                        : 0.9,
-                  },
-                ],
-                position: "relative",
-                width: 110,
-                height: "100%",
-                marginTop: 8,
-              },
-            ]}
           >
-            <View
-              style={{
-                position: "absolute",
-                transform: [{ rotate: "-4deg" }],
-                left: 14,
-                top: 0,
-                height: 80,
-                width: 80,
-                borderRadius: 16,
-                overflow: "hidden",
-                boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+            <Pressable
+              onPress={(pressed) => {
+                setSelectedBodyPartCategory("back");
               }}
-            >
-              <Image
-                source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-3.png",
-                }}
-                style={{
-                  width: "100%",
+              style={({ pressed }) => [
+                {
+                  transform: [
+                    {
+                      scale:
+                        selectedBodyPartCategory === "back"
+                          ? 1
+                          : pressed
+                          ? 0.89
+                          : 0.9,
+                    },
+                  ],
+                  position: "relative",
+                  width: 110,
                   height: "100%",
-                }}
-              />
-            </View>
-            <View
-              style={{
-                position: "absolute",
-                left: -10,
-                top: 18,
-                transform: [{ rotate: "12deg" }],
-                height: 80,
-                width: 80,
-                borderRadius: 16,
-                overflow: "hidden",
-              }}
+                  marginTop: 8,
+                },
+              ]}
             >
-              <Image
-                source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-2.png",
-                }}
+              <View
                 style={{
-                  width: "100%",
-                  height: "100%",
-                }}
-              />
-            </View>
-            <View
-              style={{
-                position: "absolute",
-                left: 32,
-                top: 14,
-                transform: [{ rotate: "-12deg" }],
-                height: 80,
-                width: 80,
-                boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <Image
-                source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-1.png",
-                }}
-                style={{
-                  width: "100%",
-                  height: "100%",
+                  position: "absolute",
+                  transform: [{ rotate: "-4deg" }],
+                  left: 14,
+                  top: 0,
+                  height: 80,
+                  width: 80,
                   borderRadius: 16,
+                  overflow: "hidden",
+                  borderWidth: 4,
+                  borderColor: Color.grayscale[950],
+                  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
                 }}
-              />
-            </View>
-          </Pressable>
+              >
+                <Image
+                  cachePolicy="memory-disk"
+                  source={{
+                    uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-3.png",
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  position: "absolute",
+                  left: -10,
+                  top: 18,
+                  transform: [{ rotate: "12deg" }],
+                  height: 80,
+                  width: 80,
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  borderWidth: 4,
+                  borderColor: Color.grayscale[950],
+                  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <Image
+                  source={{
+                    uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-2.png",
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  position: "absolute",
+                  left: 32,
+                  top: 14,
+                  transform: [{ rotate: "-12deg" }],
+                  height: 80,
+                  width: 80,
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  borderWidth: 4,
+                  borderColor: Color.grayscale[950],
+                  boxShadow: "0 0 14px 0 rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <Image
+                  cachePolicy="memory-disk"
+                  source={{
+                    uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-1.png",
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </View>
+            </Pressable>
 
-          <Pressable
-            onPress={(pressed) => {
-              setSelectedBodyPartCategory("arm");
-            }}
-            style={({ pressed }) => [
-              {
-                transform: [
-                  {
-                    scale:
-                      selectedBodyPartCategory === "arm"
-                        ? 1
-                        : pressed
-                        ? 0.89
-                        : 0.9,
-                  },
-                ],
-                position: "relative",
-                width: 110,
-                height: "100%",
-                marginLeft: 44,
-              },
-            ]}
-          >
-            <View
-              style={{
-                position: "absolute",
-                transform: [{ rotate: "-4deg" }],
-                left: 14,
-                top: 0,
-                height: 80,
-                width: 80,
-                borderRadius: 16,
-                overflow: "hidden",
+            <Pressable
+              onPress={(pressed) => {
+                setSelectedBodyPartCategory("arm");
               }}
-            >
-              <Image
-                source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-3.png",
-                }}
-                style={{
-                  width: "100%",
+              style={({ pressed }) => [
+                {
+                  transform: [
+                    {
+                      scale:
+                        selectedBodyPartCategory === "arm"
+                          ? 1
+                          : pressed
+                          ? 0.89
+                          : 0.9,
+                    },
+                  ],
+                  position: "relative",
+                  width: 110,
                   height: "100%",
-                }}
-              />
-            </View>
-            <View
-              style={{
-                position: "absolute",
-                left: -10,
-                top: 18,
-                transform: [{ rotate: "12deg" }],
-                height: 80,
-                width: 80,
-                borderRadius: 16,
-                overflow: "hidden",
-              }}
+                  marginLeft: 44,
+                },
+              ]}
             >
-              <Image
-                source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-2.png",
-                }}
+              <View
                 style={{
-                  width: "100%",
-                  height: "100%",
+                  position: "absolute",
+                  transform: [{ rotate: "-4deg" }],
+                  left: 14,
+                  top: 0,
+                  height: 80,
+                  width: 80,
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  borderWidth: 4,
+                  borderColor: Color.grayscale[950],
+                  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
                 }}
-              />
-            </View>
-            <View
-              style={{
-                position: "absolute",
-                left: 32,
-                top: 14,
-                transform: [{ rotate: "-12deg" }],
-                height: 80,
-                width: 80,
-                borderRadius: 16,
-                overflow: "hidden",
-              }}
-            >
-              <Image
-                source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-1.png",
-                }}
+              >
+                <Image
+                  cachePolicy="memory-disk"
+                  source={{
+                    uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-3.png",
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </View>
+              <View
                 style={{
-                  width: "100%",
-                  height: "100%",
+                  position: "absolute",
+                  left: -10,
+                  top: 18,
+                  transform: [{ rotate: "12deg" }],
+                  height: 80,
+                  width: 80,
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  borderWidth: 4,
+                  borderColor: Color.grayscale[950],
+                  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
                 }}
-              />
-            </View>
-          </Pressable>
+              >
+                <Image
+                  cachePolicy="memory-disk"
+                  source={{
+                    uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-2.png",
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  position: "absolute",
+                  left: 32,
+                  top: 14,
+                  transform: [{ rotate: "-12deg" }],
+                  height: 80,
+                  width: 80,
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  borderWidth: 4,
+                  borderColor: Color.grayscale[950],
+                  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <Image
+                  cachePolicy="memory-disk"
+                  source={{
+                    uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-1.png",
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </View>
+            </Pressable>
 
-          <Pressable
-            onPress={(pressed) => {
-              setSelectedBodyPartCategory("neck");
-            }}
-            style={({ pressed }) => [
-              {
-                transform: [
-                  {
-                    scale:
-                      selectedBodyPartCategory === "neck"
-                        ? 1
-                        : pressed
-                        ? 0.89
-                        : 0.9,
-                  },
-                ],
-                position: "relative",
-                width: 110,
-                height: "100%",
-                marginLeft: 44,
-              },
-            ]}
-          >
-            <View
-              style={{
-                position: "absolute",
-                transform: [{ rotate: "-4deg" }],
-                left: 14,
-                top: 0,
-                height: 80,
-                width: 80,
-                borderRadius: 16,
-                overflow: "hidden",
+            <Pressable
+              onPress={(pressed) => {
+                setSelectedBodyPartCategory("neck");
               }}
-            >
-              <Image
-                source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-1.png",
-                }}
-                style={{
-                  width: "100%",
+              style={({ pressed }) => [
+                {
+                  transform: [
+                    {
+                      scale:
+                        selectedBodyPartCategory === "neck"
+                          ? 1
+                          : pressed
+                          ? 0.89
+                          : 0.9,
+                    },
+                  ],
+                  position: "relative",
+                  width: 110,
                   height: "100%",
-                }}
-              />
-            </View>
-            <View
-              style={{
-                position: "absolute",
-                left: -10,
-                top: 18,
-                transform: [{ rotate: "12deg" }],
-                height: 80,
-                width: 80,
-                borderRadius: 16,
-                overflow: "hidden",
-              }}
+                  marginLeft: 44,
+                },
+              ]}
             >
-              <Image
-                source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-2.png",
-                }}
+              <View
                 style={{
-                  width: "100%",
-                  height: "100%",
+                  position: "absolute",
+                  transform: [{ rotate: "-4deg" }],
+                  left: 14,
+                  top: 0,
+                  height: 80,
+                  width: 80,
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  borderWidth: 4,
+                  borderColor: Color.grayscale[950],
+                  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
                 }}
-              />
-            </View>
-            <View
-              style={{
-                position: "absolute",
-                left: 32,
-                top: 14,
-                transform: [{ rotate: "-12deg" }],
-                height: 80,
-                width: 80,
-                borderRadius: 16,
-                overflow: "hidden",
-              }}
-            >
-              <Image
-                source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-female-1.png",
-                }}
+              >
+                <Image
+                  cachePolicy="memory-disk"
+                  source={{
+                    uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-1.png",
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </View>
+              <View
                 style={{
-                  width: "100%",
-                  height: "100%",
+                  position: "absolute",
+                  left: -10,
+                  top: 18,
+                  transform: [{ rotate: "12deg" }],
+                  height: 80,
+                  width: 80,
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  borderWidth: 4,
+                  borderColor: Color.grayscale[950],
+                  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
                 }}
-              />
-            </View>
-          </Pressable>
-        </ScrollView>
-      </View>
+              >
+                <Image
+                  cachePolicy="memory-disk"
+                  source={{
+                    uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-2.png",
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  position: "absolute",
+                  left: 32,
+                  top: 14,
+                  transform: [{ rotate: "-12deg" }],
+                  height: 80,
+                  width: 80,
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  borderWidth: 4,
+                  borderColor: Color.grayscale[950],
+                  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <Image
+                  source={{
+                    uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-female-1.png",
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </View>
+            </Pressable>
+          </ScrollView>
+        </View>
+      )}
 
       {/* Body Part Variant Selection - Only show when not using custom image */}
       {!isUsingCustomImage && selectedBodyPartCategory && (
         <>
-          {/* <View style={styles.section}>
-            <Text type="base" weight="bold">
-              Choose specific {selectedBodyPartCategory} variant
-            </Text>
-          </View> */}
-
           <ScrollView
             horizontal
             style={{
@@ -576,9 +595,10 @@ export function BodyPartSelection() {
                       height: 80,
                       marginLeft: 12,
                       borderRadius: 16,
+                      borderWidth: 4,
                       borderColor:
                         selectedBodyPartVariant === imageData.url
-                          ? Color.grayscale[950]
+                          ? Color.orange[400]
                           : "transparent",
                     }}
                     contentFit="cover"
@@ -639,13 +659,8 @@ const styles = StyleSheet.create({
   },
   customImageActions: {
     position: "absolute",
-    bottom: -20,
-    flexDirection: "row",
-    gap: 12,
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    overflow: "hidden",
+    bottom: 8,
+    right: 8,
   },
   customImageActionsBlur: {
     position: "relative",

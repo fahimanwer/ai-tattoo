@@ -4,7 +4,10 @@ import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
 import { featuredTattoos } from "@/lib/featured-tattoos";
-import { BlurView } from "expo-blur";
+import { ContextMenu, Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
+/* import { BlurView } from "expo-blur"; */
+import { Icon } from "@/components/ui/Icon";
+import { GlassContainer, GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
@@ -93,20 +96,33 @@ export function TattooStyleSelection() {
     <ScrollView contentInsetAdjustmentBehavior="automatic">
       <View style={styles.section}>
         <Text type="subtitle" weight="bold">
-          Select tattoo style
+          Select tattoo style or upload photo
         </Text>
-        <Button
-          symbol={isUsingExistingTattoo ? "trash" : "plus"}
-          onPress={
-            isUsingExistingTattoo
-              ? removeExistingTattooImage
-              : pickExistingTattooFromGallery
-          }
-          radius="full"
-          variant="link"
-          color="white"
-          style={{ width: 40, height: 40 }}
-        />
+        <Host useViewportSizeMeasurement matchContents>
+          <ContextMenu>
+            <ContextMenu.Items>
+              <ExpoUIButton
+                systemImage="photo.on.rectangle"
+                onPress={pickExistingTattooFromGallery}
+              >
+                Select from Library
+              </ExpoUIButton>
+              <ExpoUIButton
+                systemImage="camera.fill"
+                onPress={pickExistingTattooFromGallery}
+              >
+                Take Photo
+              </ExpoUIButton>
+            </ContextMenu.Items>
+            <ContextMenu.Trigger>
+              <ExpoUIButton
+                systemImage="photo.badge.plus.fill"
+                variant="glass"
+                color="white"
+              />
+            </ContextMenu.Trigger>
+          </ContextMenu>
+        </Host>
       </View>
 
       {/* Existing Tattoo Image Preview */}
@@ -120,7 +136,7 @@ export function TattooStyleSelection() {
               contentFit="cover"
             />
             <View style={styles.customImageActions}>
-              <BlurView intensity={20} style={styles.customImageActionsBlur}>
+              {/*   <BlurView intensity={20} style={styles.customImageActionsBlur}>
                 <Button
                   symbol="trash"
                   onPress={removeExistingTattooImage}
@@ -137,7 +153,51 @@ export function TattooStyleSelection() {
                   color="white"
                   style={{ width: 36, height: 36 }}
                 />
-              </BlurView>
+              </BlurView> */}
+              <GlassContainer
+                spacing={10}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <GlassView
+                  style={{
+                    height: 36,
+                    width: 36,
+                    borderRadius: 999,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  isInteractive
+                >
+                  <Pressable onPress={removeExistingTattooImage}>
+                    <Icon
+                      symbol="trash"
+                      style={{ width: 20, height: 20 }}
+                      color="white"
+                    />
+                  </Pressable>
+                </GlassView>
+                <GlassView
+                  style={{
+                    height: 36,
+                    width: 36,
+                    borderRadius: 999,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  isInteractive
+                >
+                  <Pressable onPress={pickExistingTattooFromGallery}>
+                    <Icon
+                      symbol="photo"
+                      style={{ width: 20, height: 20 }}
+                      color="white"
+                    />
+                  </Pressable>
+                </GlassView>
+              </GlassContainer>
             </View>
           </View>
         </View>
@@ -278,13 +338,8 @@ const styles = StyleSheet.create({
   },
   customImageActions: {
     position: "absolute",
-    bottom: -20,
-    flexDirection: "row",
-    gap: 12,
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    overflow: "hidden",
+    bottom: 8,
+    right: 8,
   },
   customImageActionsBlur: {
     position: "relative",
