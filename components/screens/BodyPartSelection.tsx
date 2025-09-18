@@ -397,7 +397,7 @@ export function BodyPartSelection() {
             >
               <Image
                 source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-3.png",
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-1.png",
                 }}
                 style={{
                   width: "100%",
@@ -419,7 +419,7 @@ export function BodyPartSelection() {
             >
               <Image
                 source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-2.png",
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-2.png",
                 }}
                 style={{
                   width: "100%",
@@ -441,7 +441,7 @@ export function BodyPartSelection() {
             >
               <Image
                 source={{
-                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-1.png",
+                  uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-female-1.png",
                 }}
                 style={{
                   width: "100%",
@@ -493,7 +493,7 @@ export function BodyPartSelection() {
                     style={{
                       width: 80,
                       height: 80,
-                      marginLeft: 8,
+                      marginLeft: 12,
                       borderRadius: 16,
                       borderColor:
                         selectedBodyPartVariant === imageData.url

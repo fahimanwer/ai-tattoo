@@ -123,13 +123,13 @@ export function BodyPartsInspiration() {
             style={convertToVerticalCardFormat(image)}
             onPress={() => handleImagePress(image)}
             title={
-              image.bodyPart.charAt(0).toUpperCase() +
-              image.bodyPart.slice(1) +
-              " | " +
-              image.styleTitle
+              image.bodyPart.charAt(0).toUpperCase() + image.bodyPart.slice(1)
             }
             subtitle={
-              image.gender.charAt(0).toUpperCase() + image.gender.slice(1)
+              image.gender.charAt(0).toUpperCase() +
+              image.gender.slice(1) +
+              " | " +
+              image.styleTitle
             }
           />
         ))}
