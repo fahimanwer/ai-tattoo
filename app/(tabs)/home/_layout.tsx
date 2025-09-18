@@ -1,6 +1,7 @@
 import { Icon } from "@/components/ui/Icon";
 import { useLargeHeaderOptions } from "@/constants/navigation-options";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
+import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack, useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 
@@ -112,7 +113,9 @@ export default function ProfileLayout() {
             sheetAllowedDetents: [0.3, 0.5, 1],
             sheetInitialDetentIndex: 0,
             contentStyle: {
-              backgroundColor: "transparent",
+              backgroundColor: isLiquidGlassAvailable()
+                ? "transparent"
+                : "black",
             },
           }}
         />
@@ -125,7 +128,9 @@ export default function ProfileLayout() {
             sheetAllowedDetents: [0.3, 0.5, 1],
             sheetInitialDetentIndex: 0,
             contentStyle: {
-              backgroundColor: "transparent",
+              backgroundColor: isLiquidGlassAvailable()
+                ? "transparent"
+                : "black",
             },
           }}
         />

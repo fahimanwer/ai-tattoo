@@ -3,7 +3,7 @@ import React from "react";
 
 export default function TabLayout() {
   return (
-    <NativeTabs>
+    <NativeTabs disableTransparentOnScrollEdge={true}>
       <NativeTabs.Trigger name="home">
         <Label>Home</Label>
         <Icon sf="house" />
