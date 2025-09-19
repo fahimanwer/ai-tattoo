@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
+import { useTattooCreation } from "@/context/TattooCreationContext";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Alert, Dimensions, ScrollView, StyleSheet, View } from "react-native";
-
-const { width: screenWidth } = Dimensions.get("window");
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 
 interface GeneratedTattooResultProps {
   generatedImageUri?: string;
@@ -20,6 +19,7 @@ export function GeneratedTattooResult({
 }: GeneratedTattooResultProps) {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const { reset: resetTattooCreation, setCurrentStep } = useTattooCreation();
 
   // Get image URI from props or route params
   const imageUri = generatedImageUri || (params.imageUri as string);
@@ -43,12 +43,16 @@ export function GeneratedTattooResult({
   };
 
   const generateAnother = () => {
-    router.push("/home");
-  };
+    // Reset all tattoo creation state to initial values
+    resetTattooCreation();
 
-  const shareResult = () => {
-    // TODO: Implement sharing functionality
-    Alert.alert("Share", "Share functionality coming soon");
+    // Set current step back to 1 (body part selection)
+    setCurrentStep(1);
+
+    // Complete navigation stack reset - this removes all navigation history
+    // and provides a truly fresh start without back button
+    router.dismissAll();
+    router.replace("/(tabs)/home");
   };
 
   if (!imageUri) {
