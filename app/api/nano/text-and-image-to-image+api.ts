@@ -23,8 +23,9 @@ export const POST = withAuth(async (request: Request, session: any) => {
   }).$extends(withAccelerate());
 
   const now = new Date();
-  const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  // Use same logic as database trigger: first day of current month at midnight UTC
+  const periodStart = new Date(now.getUTCFullYear(), now.getUTCMonth(), 1);
+  const periodEnd = new Date(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999);
   const entitlement = "free";
 
   try {
@@ -164,6 +165,7 @@ export const POST = withAuth(async (request: Request, session: any) => {
 
     // Invalidate usage cache
     // Note: In a real app, you'd use a cache invalidation system
+    console.log("🌐 server", "Usage updated successfully");
 
     return Response.json({ imageData }, { status: 200 });
   } catch (error) {

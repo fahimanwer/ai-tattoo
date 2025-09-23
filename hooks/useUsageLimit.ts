@@ -1,15 +1,24 @@
 import { fetchUserUsage } from "@/lib/nano";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useUsageLimit = () => {
   console.log("🔍 useUsageLimit: Starting hook");
   
+  const queryClient = useQueryClient();
+  
   const { data: usageData, isLoading, error } = useQuery({
     queryKey: ["user", "usage"],
     queryFn: fetchUserUsage,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // Always refetch
+    refetchInterval: 10 * 1000, // Refetch every 10 seconds
     retry: 3,
   });
+
+  // Function to manually refetch usage data
+  const refetchUsage = () => {
+    console.log("🔍 useUsageLimit: Manually refetching usage data");
+    queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
+  };
 
   console.log("🔍 useUsageLimit: Query state", { 
     isLoading, 
@@ -44,5 +53,6 @@ export const useUsageLimit = () => {
     isLimitReached,
     isLoading,
     error,
+    refetchUsage,
   };
 };

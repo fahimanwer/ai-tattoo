@@ -14,8 +14,9 @@ import {
   VStack,
 } from "@expo/ui/swift-ui";
 import { cornerRadius, frame } from "@expo/ui/swift-ui/modifiers";
+import { useFocusEffect } from "@react-navigation/native";
 import { Image as ExpoImage } from "expo-image";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Alert } from "react-native";
 
 function ProfileSection() {
@@ -120,8 +121,21 @@ function ProfileSection() {
 }
 
 function FreePlanUsage() {
-  const { used, limit, remaining, isLimitReached } = useUsageLimit();
+  const { used, limit, remaining, isLimitReached, refetchUsage } =
+    useUsageLimit();
   console.log("used", used);
+
+  // Refetch usage data when component mounts or when user navigates to profile
+  React.useEffect(() => {
+    refetchUsage();
+  }, []);
+
+  // Refetch when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      refetchUsage();
+    }, [refetchUsage])
+  );
   return (
     <>
       <Text size={14} weight="medium" color="#6b7280">
