@@ -1,4 +1,5 @@
-import { PLUS_ENTITLEMENT_IDENTIFIER } from "@/hooks/useSubscription";
+import { PLUS_ENTITLEMENT_IDENTIFIER, SubscriptionTier } from "@/hooks/useSubscription";
+import { canUserUpgradeTo } from "@/lib/subscription-utils";
 import { Alert, Linking, Platform } from "react-native";
 import Purchases from "react-native-purchases";
 import RevenueCatUI, { PAYWALL_RESULT } from "react-native-purchases-ui";
@@ -117,6 +118,65 @@ export function handlePaywallResult(
     default:
       console.log("❓ Unknown paywall result:", result);
       return false;
+  }
+}
+
+/**
+ * Present upgrade paywall for a specific subscription tier
+ * @param targetTier - The tier to upgrade to
+ * @returns Promise<boolean> - true if upgrade was successful, false otherwise
+ */
+export async function presentUpgradePaywall(targetTier: SubscriptionTier): Promise<boolean> {
+  try {
+    // Present paywall for upgrade
+    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall();
+
+    return handlePaywallResult(paywallResult);
+  } catch (error) {
+    console.error("Error presenting upgrade paywall:", error);
+    return false;
+  }
+}
+
+/**
+ * Get available packages for upgrade
+ * @param currentTier - Current subscription tier
+ * @returns Promise<any[]> - Available upgrade packages
+ */
+export async function getUpgradePackages(currentTier: SubscriptionTier): Promise<any[]> {
+  try {
+    const offerings = await Purchases.getOfferings();
+    const currentOffering = offerings.current;
+    
+    if (!currentOffering) {
+      console.warn("No current offering available");
+      return [];
+    }
+
+    // Filter packages that are upgrades from current tier
+    return currentOffering.availablePackages.filter((packageItem: any) => {
+      const packageTier = getTierFromEntitlement(packageItem.entitlementIdentifier);
+      return canUserUpgradeTo(currentTier, packageTier);
+    });
+  } catch (error) {
+    console.error("Error getting upgrade packages:", error);
+    return [];
+  }
+}
+
+/**
+ * Get tier from entitlement identifier
+ */
+function getTierFromEntitlement(entitlement: string): SubscriptionTier {
+  switch (entitlement) {
+    case "Starter":
+      return "starter";
+    case "Pro":
+      return "pro";
+    case "Plus":
+      return "plus";
+    default:
+      return "free";
   }
 }
 

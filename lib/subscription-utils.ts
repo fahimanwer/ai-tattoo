@@ -1,4 +1,5 @@
-import { PLUS_ENTITLEMENT_IDENTIFIER } from "@/hooks/useSubscription";
+import { canUpgradeTo } from "@/constants/SubscriptionLimits";
+import { PLUS_ENTITLEMENT_IDENTIFIER, SubscriptionTier } from "@/hooks/useSubscription";
 import Purchases, { CustomerInfo } from "react-native-purchases";
 
 /**
@@ -66,23 +67,51 @@ export function hasReachedLimit(
 }
 
 /**
- * Example usage patterns:
- *
- * // In a component or function where you need to check plus access
- * const canAccessFeature = await hasPlusAccess();
- * if (canAccessFeature) {
- *   // Grant user "plus" access
- *   // Show plus features
- * } else {
- *   // Show upgrade prompt or free tier limitations
- * }
- *
- * // Using the guard function
- * if (await requirePlusAccess()) {
- *   // Execute plus-only code
- * }
- *
- * // Using with existing customerInfo (more efficient)
- * const { customerInfo } = useSubscription();
- * const isPlus = hasPlusAccessSync(customerInfo);
+ * Get the entitlement identifier for a subscription tier
  */
+export function getEntitlementForTier(tier: SubscriptionTier): string {
+  switch (tier) {
+    case "starter":
+      return "Starter";
+    case "pro":
+      return "Pro";
+    case "plus":
+      return "Plus";
+    default:
+      return "free";
+  }
+}
+
+/**
+ * Check if user can upgrade to a specific tier
+ */
+export function canUserUpgradeTo(
+  currentTier: SubscriptionTier,
+  targetTier: SubscriptionTier
+): boolean {
+  return canUpgradeTo(currentTier, targetTier);
+}
+
+/**
+ * Get upgrade options for current tier
+ */
+export function getAvailableUpgrades(currentTier: SubscriptionTier): SubscriptionTier[] {
+  const allTiers: SubscriptionTier[] = ["starter", "plus", "pro"];
+  return allTiers.filter(tier => canUpgradeTo(currentTier, tier));
+}
+
+/**
+ * Get subscription tier from entitlement
+ */
+export function getTierFromEntitlement(entitlement: string): SubscriptionTier {
+  switch (entitlement) {
+    case "Starter":
+      return "starter";
+    case "Pro":
+      return "pro";
+    case "Plus":
+      return "plus";
+    default:
+      return "free";
+  }
+}

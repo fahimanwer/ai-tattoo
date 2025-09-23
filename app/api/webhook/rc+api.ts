@@ -321,8 +321,81 @@ async function handleProductChange(event: RevenueCatWebhookEvent["event"]) {
     )}`
   );
 
-  // Handle upgrade/downgrade - create new usage records for new entitlements
-  await handleInitialPurchase(event);
+  // Handle upgrade/downgrade - reset current period and create new usage records
+  await resetCurrentPeriodAndCreateNew(userId, entitlementIds, event);
+}
+
+async function resetCurrentPeriodAndCreateNew(
+  userId: string,
+  entitlementIds: string[],
+  event: RevenueCatWebhookEvent["event"]
+) {
+  const now = new Date();
+  
+  // 1. Mark current active period as ended
+  await prisma.usage.updateMany({
+    where: {
+      userId,
+      periodStart: { lte: now },
+      periodEnd: { gte: now }
+    },
+    data: {
+      periodEnd: now
+    }
+  });
+
+  // 2. Create new usage records for each new entitlement
+  for (const entitlementId of entitlementIds) {
+    const periodStart = new Date(event.purchased_at_ms);
+    const periodEnd = event.expiration_at_ms
+      ? new Date(event.expiration_at_ms)
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
+
+    // Get appropriate limit based on entitlement
+    const limit = getLimitForEntitlement(entitlementId);
+
+    await prisma.usage.upsert({
+      where: {
+        userId_entitlement_periodStart: {
+          userId,
+          entitlement: entitlementId,
+          periodStart,
+        },
+      },
+      update: {
+        periodEnd,
+        revenuecatUserId: event.original_app_user_id,
+        count: 0, // Reset count for new period
+        limit,
+      },
+      create: {
+        userId,
+        entitlement: entitlementId,
+        periodStart,
+        periodEnd,
+        count: 0,
+        limit,
+        revenuecatUserId: event.original_app_user_id,
+      },
+    });
+  }
+
+  console.log(
+    `Reset period and created new usage records for entitlements: ${entitlementIds.join(", ")}`
+  );
+}
+
+function getLimitForEntitlement(entitlement: string): number {
+  switch (entitlement) {
+    case "Starter":
+      return 125;
+    case "Plus":
+      return 300;
+    case "Pro":
+      return 1000;
+    default:
+      return 5; // Free tier
+  }
 }
 
 async function handleExpiration(event: RevenueCatWebhookEvent["event"]) {

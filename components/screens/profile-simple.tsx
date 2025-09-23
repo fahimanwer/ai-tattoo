@@ -14,6 +14,7 @@ import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 export function Profile() {
   const { data: session } = authClient.useSession();
   const user = session?.user;
+  const [subscriptionExpanded, setSubscriptionExpanded] = useState(false);
   const [upgradeOptions, setUpgradeOptions] = useState<string[]>([]);
 
   const {
@@ -115,7 +116,7 @@ export function Profile() {
   }
 
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
       <View style={{ padding: 20 }}>
         {/* Profile Section */}
         <View
