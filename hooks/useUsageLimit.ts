@@ -10,7 +10,6 @@ export const useUsageLimit = () => {
     queryKey: ["user", "usage"],
     queryFn: fetchUserUsage,
     staleTime: 0, // Always refetch
-    refetchInterval: 10 * 1000, // Refetch every 10 seconds
     retry: 3,
   });
 
