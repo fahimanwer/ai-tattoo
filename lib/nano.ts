@@ -31,6 +31,7 @@ export interface UsageRecord {
   periodStart: string;
   periodEnd: string;
   count: number;
+  limit: number;
   revenuecatUserId: string;
 }
 
@@ -40,5 +41,6 @@ export interface UsageResponse {
 }
 
 export const fetchUserUsage = (): Promise<UsageResponse> => {
-  return apiFetch<UsageResponse>("/api/user/usage", { method: "GET" });
+  console.log("🌐 client: Calling fetchUserUsage");
+  return apiFetch<UsageResponse>("/api/user/usage", { method: "POST" });
 };

@@ -5,11 +5,17 @@ import { auth } from "../lib/auth";
  * Compatible with Cloudflare Workers
  */
 export async function authenticateRequest(request: Request) {
+  console.log("🔐 auth middleware: Checking authentication");
+  console.log("🔐 auth middleware: Headers:", Object.fromEntries(request.headers.entries()));
+  
   const session = await auth.api.getSession({
     headers: request.headers,
   });
 
+  console.log("🔐 auth middleware: Session result:", session ? "Found" : "Not found");
+
   if (!session) {
+    console.log("🔐 auth middleware: No session found, returning 401");
     return {
       error: new Response(
         JSON.stringify({ error: "Unauthorized - Please sign in" }),

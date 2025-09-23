@@ -78,6 +78,7 @@ export const POST = withAuth(async (request: Request, session: any) => {
         periodStart,
         periodEnd,
         count: 0,
+        limit: 5,
         revenuecatUserId: session.user.id,
       },
     });
@@ -90,11 +91,11 @@ export const POST = withAuth(async (request: Request, session: any) => {
           periodStart,
         },
       },
-      select: { count: true },
+      select: { count: true, limit: true },
     });
 
-    const used = usage?.count ?? 0;
-    if (used >= 5) {
+    const remaining = usage?.limit ?? 0;
+    if (remaining <= 0) {
       return Response.json(
         { success: false, message: "Monthly free generation limit reached" },
         { status: 402 }
@@ -149,7 +150,7 @@ export const POST = withAuth(async (request: Request, session: any) => {
       imageData?.length,
       "characters"
     );
-    // Increment usage after successful generation
+    // Atomically increment count and decrement limit after success
     await prisma.usage.update({
       where: {
         userId_entitlement_periodStart: {
@@ -158,8 +159,11 @@ export const POST = withAuth(async (request: Request, session: any) => {
           periodStart,
         },
       },
-      data: { count: { increment: 1 } },
+      data: { count: { increment: 1 }, limit: { decrement: 1 } },
     });
+
+    // Invalidate usage cache
+    // Note: In a real app, you'd use a cache invalidation system
 
     return Response.json({ imageData }, { status: 200 });
   } catch (error) {

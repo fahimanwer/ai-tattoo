@@ -2,6 +2,8 @@ import { fetchUserUsage } from "@/lib/nano";
 import { useQuery } from "@tanstack/react-query";
 
 export const useUsageLimit = () => {
+  console.log("🔍 useUsageLimit: Starting hook");
+  
   const { data: usageData, isLoading, error } = useQuery({
     queryKey: ["user", "usage"],
     queryFn: fetchUserUsage,
@@ -9,8 +11,14 @@ export const useUsageLimit = () => {
     retry: 3,
   });
 
+  console.log("🔍 useUsageLimit: Query state", { 
+    isLoading, 
+    error: error?.message, 
+    hasData: !!usageData 
+  });
+
   // Get current month usage for "free" entitlement
-  const currentMonthUsage = usageData?.usage.find((usage) => {
+  const currentMonthUsage = usageData?.usage?.find((usage) => {
     const now = new Date();
     const periodStart = new Date(usage.periodStart);
     const periodEnd = new Date(usage.periodEnd);
@@ -22,10 +30,12 @@ export const useUsageLimit = () => {
     );
   });
 
+  console.log("currentMonthUsage", JSON.stringify(usageData, null, 2));
+
   const used = currentMonthUsage?.count || 0;
-  const limit = 5; // Fixed limit for free users
-  const remaining = Math.max(0, limit - used);
-  const isLimitReached = used >= limit;
+  const remaining = currentMonthUsage?.limit || 5;
+  const limit = 5;
+  const isLimitReached = remaining <= 0;
 
   return {
     used,

@@ -14,6 +14,7 @@ function ButtonToCreateTattoo() {
     router.push("/home/new/select-body-part");
   };
 
+  console.log("isLimitReached", isLimitReached);
   // Don't show button if limit is reached
   if (isLimitReached) {
     return null;

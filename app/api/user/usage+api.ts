@@ -11,6 +11,7 @@ interface UsageRecord {
   periodStart: string;
   periodEnd: string;
   count: number;
+  limit: number;
   revenuecatUserId: string;
 }
 
@@ -19,12 +20,15 @@ interface UsageResponse {
   totalUsage: number;
 }
 
-export const GET = withAuth(async (request: Request, session: any) => {
+export const POST = withAuth(async (request: Request, session: any) => {
+  console.log("🌐 server", "=== USAGE API CALLED ===");
   console.log("🌐 server", "fetching usage for user:", session.user.email);
   console.log("🌐 server", "user id:", session.user.id);
 
   try {
     const userId = session.user.id;
+
+    console.log("🌐 server", "userId:", userId);
 
     // Fetch all usage records for the user
     const usageRecords = await prisma.usage.findMany({
@@ -34,7 +38,18 @@ export const GET = withAuth(async (request: Request, session: any) => {
       orderBy: {
         periodStart: "desc",
       },
+      select: {
+        userId: true,
+        entitlement: true,
+        periodStart: true,
+        periodEnd: true,
+        count: true,
+        limit: true,
+        revenuecatUserId: true,
+      },
     });
+
+    console.log("🌐 server", "raw usage records:", usageRecords);
 
     // Calculate total usage across all entitlements and periods
     const totalUsage = usageRecords.reduce(
@@ -48,6 +63,7 @@ export const GET = withAuth(async (request: Request, session: any) => {
       periodStart: record.periodStart.toISOString(),
       periodEnd: record.periodEnd.toISOString(),
       count: record.count,
+      limit: record.limit,
       revenuecatUserId: record.revenuecatUserId,
     }));
 
