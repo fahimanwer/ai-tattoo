@@ -1,4 +1,5 @@
 import { useSubscription } from "@/hooks/useSubscription";
+import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { authClient } from "@/lib/auth-client";
 import { manageSubscription, presentPaywall } from "@/lib/paywall-utils";
 import {
@@ -118,6 +119,34 @@ function ProfileSection() {
   );
 }
 
+function FreePlanUsage() {
+  const { used, limit, remaining, isLimitReached } = useUsageLimit();
+  console.log("used", used);
+  return (
+    <>
+      <Text size={14} weight="medium" color="#6b7280">
+        Free Plan Generations
+      </Text>
+      <Text
+        size={16}
+        weight="bold"
+        color={isLimitReached ? "#ef4444" : "#3b82f6"}
+      >
+        {`${remaining}/${limit} remaining`}
+      </Text>
+      {isLimitReached ? (
+        <Text size={12} color="#ef4444">
+          Monthly limit reached. Upgrade to get more generations.
+        </Text>
+      ) : (
+        <Text size={12} color="#6b7280">
+          Upgrade to get more generations
+        </Text>
+      )}
+    </>
+  );
+}
+
 function CurrentPlanSection() {
   const {
     subscriptionTier,
@@ -183,17 +212,7 @@ function CurrentPlanSection() {
 
         {/* Generation Usage Display */}
         {subscriptionTier === "free" ? (
-          <>
-            <Text size={14} weight="medium" color="#6b7280">
-              Free Plan Generations
-            </Text>
-            <Text size={16} weight="bold" color="#3b82f6">
-              3/5 remaining
-            </Text>
-            <Text size={12} color="#6b7280">
-              Upgrade to get more generations
-            </Text>
-          </>
+          <FreePlanUsage />
         ) : (
           <VStack spacing={8}>
             {/* Subscription Plan Status */}

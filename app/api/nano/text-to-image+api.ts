@@ -1,5 +1,7 @@
+import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAuth } from "@/server-utils/auth-middleware";
 import { constants } from "@/server-utils/constants";
+import { withAccelerate } from "@prisma/extension-accelerate";
 import { z } from "zod";
 
 const { GENIMI_IMAGE_BASE_URL, GEMINI_API_KEY } = constants;
@@ -13,14 +15,58 @@ export const POST = withAuth(async (request: Request, session: any) => {
   console.log("🌐 server", "authenticated user:", session.user.email);
   console.log("🌐 server", "user id:", session.user.id);
 
-  // TODO:
-  // - Increase user's generation count (after successful generation)
-  // - Check if user has enough credits (before generating)
+  const prisma = new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const now = new Date();
+  const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  const entitlement = "free";
 
   try {
     const body = await request.json();
     const { prompt } = textToImageSchema.parse(body);
     console.log("server", "received prompt", prompt);
+
+    // Ensure usage row exists for this period (defensive)
+    await prisma.usage.upsert({
+      where: {
+        userId_entitlement_periodStart: {
+          userId: session.user.id,
+          entitlement,
+          periodStart,
+        },
+      },
+      update: {},
+      create: {
+        userId: session.user.id,
+        entitlement,
+        periodStart,
+        periodEnd,
+        count: 0,
+        revenuecatUserId: session.user.id,
+      },
+    });
+
+    const usage = await prisma.usage.findUnique({
+      where: {
+        userId_entitlement_periodStart: {
+          userId: session.user.id,
+          entitlement,
+          periodStart,
+        },
+      },
+      select: { count: true },
+    });
+
+    const used = usage?.count ?? 0;
+    if (used >= 5) {
+      return Response.json(
+        { success: false, message: "Monthly free generation limit reached" },
+        { status: 402 }
+      );
+    }
 
     // Generate image with validated prompt
     const response = await fetch(GENIMI_IMAGE_BASE_URL, {
@@ -60,7 +106,19 @@ export const POST = withAuth(async (request: Request, session: any) => {
       imageData?.length,
       "characters"
     );
-    return new Response(JSON.stringify({ imageData }), { status: 200 });
+    // Increment usage after successful generation
+    await prisma.usage.update({
+      where: {
+        userId_entitlement_periodStart: {
+          userId: session.user.id,
+          entitlement,
+          periodStart,
+        },
+      },
+      data: { count: { increment: 1 } },
+    });
+
+    return Response.json({ imageData }, { status: 200 });
   } catch (error) {
     // Handle validation errors
     if (error instanceof z.ZodError) {

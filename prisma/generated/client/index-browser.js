@@ -20,11 +20,11 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.16.1
+ * Prisma Client JS version: 6.16.2
  * Query Engine version: 1c57fdcd7e44b29b9313256c76699e91c3ac3c43
  */
 Prisma.prismaVersion = {
-  client: "6.16.1",
+  client: "6.16.2",
   engine: "1c57fdcd7e44b29b9313256c76699e91c3ac3c43"
 }
 
@@ -120,20 +120,13 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.TodoScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  completed: 'completed',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.UsageScalarFieldEnum = {
   userId: 'userId',
   entitlement: 'entitlement',
   periodStart: 'periodStart',
   periodEnd: 'periodEnd',
   count: 'count',
+  limit: 'limit',
   revenuecatUserId: 'revenuecatUserId'
 };
 
@@ -200,7 +193,6 @@ exports.Prisma.NullsOrder = {
 
 
 exports.Prisma.ModelName = {
-  Todo: 'Todo',
   Usage: 'Usage',
   User: 'User',
   Session: 'Session',

@@ -8,6 +8,7 @@ const prisma = new PrismaClient({
   datasourceUrl: process.env.DATABASE_URL,
 }).$extends(withAccelerate());
 
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",

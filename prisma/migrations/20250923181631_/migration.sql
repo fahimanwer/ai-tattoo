@@ -1,0 +1,4 @@
+-- Intentionally left blank to prevent dropping the `limit` column on `usage`.
+-- This file previously attempted to drop the column, which conflicts with the
+-- current schema where `limit` is required. Keeping this migration as a no-op
+-- ensures clean application to the shadow database.

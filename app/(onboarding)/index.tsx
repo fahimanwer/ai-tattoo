@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <LinearGradientImageBlur
-        imageUrl={require("../../assets/images/home.png")}
+        imageUrl={require("@/assets/images/AITattooHome.png")}
         showBlur={false}
         showGradient={true}
       />
@@ -20,24 +20,23 @@ export default function Home() {
         <View
           style={{
             width: "100%",
-            alignItems: "flex-start",
+            alignItems: "center",
             position: "relative",
           }}
         >
           <Text
-            type="7xl"
-            variant="poster"
-            weight="black"
-            style={
-              {
-                letterSpacing: -2,
-              } as any
-            }
+            type="6xl"
+            weight="bold"
+            style={{ letterSpacing: -2, textAlign: "center", lineHeight: 58 }}
           >
-            AI TATTOO
+            Try first, {`\n`} ink later
           </Text>
-          <Text type="xl" weight="normal" style={{ opacity: 0.6 } as any}>
-            The only tattoo mistake you can undo. Try first, ink later
+          <Text
+            type="xl"
+            weight="normal"
+            style={{ opacity: 0.6, textAlign: "center" } as any}
+          >
+            The only tattoo mistake {`\n`} you can undo.
           </Text>
 
           <View style={{ gap: 16, marginTop: 32, width: "100%" }}>
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
 
   termsText: {
     textAlign: "center",
-    opacity: 0.7,
+    opacity: 0.5,
     lineHeight: 20,
   },
 
@@ -106,6 +105,5 @@ const styles = StyleSheet.create({
 
   linkText: {
     textDecorationLine: "underline",
-    opacity: 0.9,
   },
 });

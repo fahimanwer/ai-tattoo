@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "public"."Usage" (
+CREATE TABLE "public"."usage" (
     "userId" TEXT NOT NULL,
     "entitlement" TEXT NOT NULL,
     "periodStart" TIMESTAMP(3) NOT NULL,
@@ -7,8 +7,8 @@ CREATE TABLE "public"."Usage" (
     "count" INTEGER NOT NULL DEFAULT 0,
     "revenuecatUserId" TEXT NOT NULL,
 
-    CONSTRAINT "Usage_pkey" PRIMARY KEY ("userId","entitlement","periodStart")
+    CONSTRAINT "usage_pkey" PRIMARY KEY ("userId","entitlement","periodStart")
 );
 
 -- CreateIndex
-CREATE INDEX "Usage_userId_periodStart_idx" ON "public"."Usage"("userId", "periodStart");
+CREATE INDEX "usage_userId_periodStart_idx" ON "public"."usage"("userId", "periodStart");

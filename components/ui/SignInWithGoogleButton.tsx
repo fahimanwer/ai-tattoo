@@ -1,3 +1,4 @@
+import { Color } from "@/constants/TWPalette";
 import { Image, Pressable, View } from "react-native";
 import { Text } from "./Text";
 
@@ -13,7 +14,7 @@ export default function SignInWithGoogleButton({
       <View
         style={{
           width: "100%",
-          height: 56,
+          height: 44,
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
@@ -31,7 +32,11 @@ export default function SignInWithGoogleButton({
             marginRight: 6,
           }}
         />
-        <Text type="xl" weight="semibold" darkColor="#000">
+        <Text
+          type="default"
+          weight="semibold"
+          style={{ color: Color.grayscale[50] }}
+        >
           Continue with Google
         </Text>
       </View>

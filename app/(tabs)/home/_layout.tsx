@@ -1,15 +1,23 @@
 import { Icon } from "@/components/ui/Icon";
 import { useLargeHeaderOptions } from "@/constants/navigation-options";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
+import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack, useRouter } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 function ButtonToCreateTattoo() {
   const router = useRouter();
+  const { isLimitReached } = useUsageLimit();
+
   const goToCreateTattoo = () => {
     router.push("/home/new/select-body-part");
   };
+
+  // Don't show button if limit is reached
+  if (isLimitReached) {
+    return null;
+  }
 
   return (
     <View
@@ -148,23 +156,3 @@ export default function ProfileLayout() {
     </TattooCreationProvider>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backgroundImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
-  },
-  containerStyle: {
-    position: "absolute",
-    top: 200,
-    left: 50,
-    width: 250,
-    height: 100,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-});

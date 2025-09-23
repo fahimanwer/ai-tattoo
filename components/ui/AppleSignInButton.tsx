@@ -53,6 +53,6 @@ export function AppleSignInButton() {
 const styles = StyleSheet.create({
   button: {
     width: "100%",
-    height: 56,
+    height: 44,
   },
 });
