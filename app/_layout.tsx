@@ -41,7 +41,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { authClient } from "@/lib/auth-client";
 import "react-native-reanimated";
 
-import Purchases, { LOG_LEVEL } from "react-native-purchases";
+import Purchases from "react-native-purchases";
 
 const importedFonts = {
   Oswald_200ExtraLight,
@@ -68,6 +68,7 @@ SplashScreen.setOptions({
   duration: 1000,
   fade: true,
 });
+
 SplashScreen.preventAutoHideAsync();
 
 function AppContent() {
@@ -90,14 +91,16 @@ function AppContent() {
   };
 
   useEffect(() => {
-    Purchases.setLogLevel(LOG_LEVEL.DEBUG);
-
-    if (Platform.OS === "ios") {
-      Purchases.configure({ apiKey: "appl_TglDpVSpcsiykcYmEbXbHvlMwMG" });
-    } else if (Platform.OS === "android") {
-      //  Purchases.configure({apiKey: <revenuecat_project_google_api_key>});
-    }
+    loadRevenueCat();
   }, []);
+
+  const loadRevenueCat = async () => {
+    if (Platform.OS === "ios") {
+      await Purchases.configure({ apiKey: "appl_TglDpVSpcsiykcYmEbXbHvlMwMG" });
+    } else if (Platform.OS === "android") {
+      // await Purchases.configure({ apiKey: "" });
+    }
+  };
 
   useEffect(() => {
     const newColor = getBackgroundColor();

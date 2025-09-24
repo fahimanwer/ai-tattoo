@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useCurrentPeriodUsage } from "@/hooks/useUsage";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -11,6 +12,36 @@ import {
 import { getAvailableUpgrades } from "@/lib/subscription-utils";
 import React, { useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
+
+// Helper function to get entitlement ID from subscription tier
+const getEntitlementId = (tier: string): string => {
+  switch (tier) {
+    case "starter":
+      return "Starter";
+    case "pro":
+      return "Pro";
+    case "plus":
+      return "Plus";
+    case "free":
+    default:
+      return "free";
+  }
+};
+
+// Helper function to get plan limits
+const getPlanLimits = (tier: string): { limit: number; price: string } => {
+  switch (tier) {
+    case "starter":
+      return { limit: 125, price: "$4.99/month" };
+    case "plus":
+      return { limit: 300, price: "$9.99/month" };
+    case "pro":
+      return { limit: 1000, price: "$29.99/month" };
+    case "free":
+    default:
+      return { limit: 5, price: "Free" };
+  }
+};
 
 export function Profile() {
   const { data: session } = authClient.useSession();
@@ -23,8 +54,25 @@ export function Profile() {
     refreshSubscriptionStatus,
   } = useSubscription();
 
-  // Usage data for free plan
-  const { limit, remaining, isLimitReached } = useUsageLimit();
+  // Usage data for current plan
+  const entitlementId = getEntitlementId(subscriptionTier);
+  const { currentCount, data: currentUsageData } =
+    useCurrentPeriodUsage(entitlementId);
+  const { limit: planLimit, price: planPrice } =
+    getPlanLimits(subscriptionTier);
+
+  // For free tier, also use the existing useUsageLimit hook for backwards compatibility
+  const { limit: freeLimit, remaining: freeRemaining } = useUsageLimit();
+
+  // Calculate usage stats based on subscription tier
+  const currentLimit =
+    subscriptionTier === "free"
+      ? freeLimit
+      : currentUsageData?.limit || planLimit;
+  const currentUsed =
+    subscriptionTier === "free" ? freeLimit - freeRemaining : currentCount;
+  const currentRemaining = currentLimit - currentUsed;
+  const isLimitReached = currentRemaining <= 0;
 
   const handleUpgradeToPlus = async () => {
     try {
@@ -170,92 +218,61 @@ export function Profile() {
             </Text>
           </View>
 
-          {/* Generation Usage Display */}
-          {subscriptionTier === "free" ? (
-            <View style={{ marginBottom: 16 }}>
-              <Text type="sm" lightColor="#666" style={{ marginBottom: 4 }}>
-                Free Plan Generations
-              </Text>
-              <Text
-                type="body"
-                weight="bold"
-                style={{
-                  color: isLimitReached ? "#ef4444" : "#3b82f6",
-                }}
-              >
-                {`${remaining}/${limit} remaining`}
-              </Text>
-              <Text
-                type="xs"
-                style={{
-                  color: isLimitReached ? "#ef4444" : "#666",
-                  marginTop: 4,
-                }}
-              >
-                {isLimitReached
+          {/* Generation Usage Display - For All Plans */}
+          <View style={{ marginBottom: 16 }}>
+            <Text type="sm" lightColor="#666" style={{ marginBottom: 4 }}>
+              Current Usage
+            </Text>
+            <Text
+              type="body"
+              weight="bold"
+              style={{
+                color: isLimitReached
+                  ? "#ef4444"
+                  : subscriptionTier === "plus"
+                  ? "#10b981"
+                  : subscriptionTier === "pro"
+                  ? "#3b82f6"
+                  : subscriptionTier === "starter"
+                  ? "#f59e0b"
+                  : "#6b7280",
+                marginBottom: 4,
+              }}
+            >
+              {`${currentUsed}/${currentLimit} used`}
+            </Text>
+            <Text
+              type="xs"
+              style={{
+                color: isLimitReached ? "#ef4444" : "#666",
+              }}
+            >
+              {isLimitReached
+                ? subscriptionTier === "free"
                   ? "Monthly limit reached. Upgrade to get more generations."
-                  : "Upgrade to get more generations"}
-              </Text>
-            </View>
-          ) : (
-            <View style={{ marginBottom: 16 }}>
-              <Text
-                type="body"
-                weight="bold"
-                style={{
-                  color:
-                    subscriptionTier === "plus"
-                      ? "#10b981"
-                      : subscriptionTier === "pro"
-                      ? "#3b82f6"
-                      : "#f59e0b",
-                  marginBottom: 8,
-                }}
-              >
-                {`${
-                  subscriptionTier.charAt(0).toUpperCase() +
-                  subscriptionTier.slice(1)
-                } Plan Active`}
-              </Text>
+                  : "Monthly limit reached. Your plan resets next month."
+                : `${currentRemaining} generations remaining this period`}
+            </Text>
+          </View>
 
-              {/* Plan Details */}
-              <View style={{ marginBottom: 8 }}>
-                <Text type="xs" lightColor="#666" style={{ marginBottom: 4 }}>
-                  Plan Details:
-                </Text>
-                {subscriptionTier === "starter" && (
-                  <>
-                    <Text type="xs" lightColor="#666">
-                      • $4.99/month
-                    </Text>
-                    <Text type="xs" lightColor="#666">
-                      • 125 generations per month
-                    </Text>
-                  </>
-                )}
-                {subscriptionTier === "plus" && (
-                  <>
-                    <Text type="xs" lightColor="#666">
-                      • $9.99/month
-                    </Text>
-                    <Text type="xs" lightColor="#666">
-                      • 300 generations per month
-                    </Text>
-                  </>
-                )}
-                {subscriptionTier === "pro" && (
-                  <>
-                    <Text type="xs" lightColor="#666">
-                      • $29.99/month
-                    </Text>
-                    <Text type="xs" lightColor="#666">
-                      • 1,000 generations per month
-                    </Text>
-                  </>
-                )}
-              </View>
-            </View>
-          )}
+          {/* Plan Details - For All Plans */}
+          <View style={{ marginBottom: 16 }}>
+            <Text type="xs" lightColor="#666" style={{ marginBottom: 4 }}>
+              Plan Details:
+            </Text>
+            <Text type="xs" lightColor="#666">
+              • {planPrice}
+            </Text>
+            <Text type="xs" lightColor="#666">
+              • {planLimit} generations per{" "}
+              {subscriptionTier === "free" ? "month" : "month"}
+            </Text>
+            {subscriptionTier === "free" && (
+              <Text type="xs" lightColor="#666">
+                • No credit card required
+              </Text>
+            )}
+          </View>
 
           {/* Subscription Actions */}
           <View>
