@@ -1,7 +1,8 @@
+import { useSubscription } from "@/hooks/useSubscription";
 import { ApiError } from "@/lib/api-client";
 import { textToImage } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { useState } from "react";
 import { ActivityIndicator, Alert, View } from "react-native";
@@ -9,8 +10,9 @@ import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 
 export function TextToImage() {
-  // Access the client
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { refreshSubscriptionStatus } = useSubscription();
 
   const mutation = useMutation({
     mutationFn: async () =>
@@ -22,6 +24,16 @@ export function TextToImage() {
     onSuccess: async (data) => {
       if (data.imageData) {
         setGeneratedImage(`data:image/png;base64,${data.imageData}`);
+
+        // Invalidate usage query to reflect updated usage count
+        queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
+
+        // Refresh subscription status in case usage limits changed subscription behavior
+        try {
+          await refreshSubscriptionStatus();
+        } catch (error) {
+          console.warn("Failed to refresh subscription status:", error);
+        }
       }
     },
     onError: (error) => {

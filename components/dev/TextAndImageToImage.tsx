@@ -1,8 +1,9 @@
+import { useSubscription } from "@/hooks/useSubscription";
 import { ApiError } from "@/lib/api-client";
 import { assetToBase64, urlToBase64 } from "@/lib/base64-utils";
 import { textAndImageToImage } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, View } from "react-native";
@@ -16,10 +17,11 @@ const bodyPartImage = "/a.jpg";
 const tattooImage = "https://d3ynb031qx3d1.cloudfront.net/tattoos/gothic.png";
 
 export function TextAndImageToImage() {
-  // Access the client
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [armBase64, setArmBase64] = useState<string | null>(null);
   const [tattooBase64, setTattooBase64] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { refreshSubscriptionStatus } = useSubscription();
 
   // Preload + convert both assets to Base64 once
   useEffect(() => {
@@ -47,6 +49,16 @@ export function TextAndImageToImage() {
     onSuccess: async (data) => {
       if (data.imageData) {
         setGeneratedImage(`data:image/png;base64,${data.imageData}`);
+
+        // Invalidate usage query to reflect updated usage count
+        queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
+
+        // Refresh subscription status in case usage limits changed subscription behavior
+        try {
+          await refreshSubscriptionStatus();
+        } catch (error) {
+          console.warn("Failed to refresh subscription status:", error);
+        }
       }
     },
     onError: (error) => {

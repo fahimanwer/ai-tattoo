@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { useTattooCreation } from "@/context/TattooCreationContext";
+import { useSubscription } from "@/hooks/useSubscription";
 import { ApiError } from "@/lib/api-client";
 import { assetToBase64, urlToBase64 } from "@/lib/base64-utils";
 import { textAndImageToImage } from "@/lib/nano";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -26,6 +27,8 @@ export function TattooCreation() {
   } = useTattooCreation();
 
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { refreshSubscriptionStatus } = useSubscription();
 
   // Mutation for generating tattoo
   const mutation = useMutation({
@@ -93,6 +96,16 @@ export function TattooCreation() {
     onSuccess: async (data) => {
       if (data.imageData) {
         const generatedImageUri = `data:image/png;base64,${data.imageData}`;
+
+        // Invalidate usage query to reflect updated usage count
+        queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
+
+        // Refresh subscription status in case usage limits changed subscription behavior
+        try {
+          await refreshSubscriptionStatus();
+        } catch (error) {
+          console.warn("Failed to refresh subscription status:", error);
+        }
 
         // Redirect to result page with the generated image
         router.push({
