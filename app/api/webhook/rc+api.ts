@@ -189,6 +189,7 @@ async function processRevenueCatEvent(
 
 async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
+  const revenuecatUserId = event.original_app_user_id;
   const entitlementIds = event.entitlement_ids || [];
 
   if (entitlementIds.length === 0) {
@@ -196,43 +197,53 @@ async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
     return;
   }
 
-  // Create usage records for each entitlement
+  // Find the existing usage record by revenuecatUserId (consistent across devices)
+  const existingFreeRecord = await prisma.usage.findFirst({
+    where: {
+      revenuecatUserId: revenuecatUserId,
+    }
+  });
+
+  if (!existingFreeRecord) {
+    console.warn(`No existing free usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`);
+    return;
+  }
+
+  // Update the existing free record with the new entitlement
   for (const entitlementId of entitlementIds) {
-    const periodStart = new Date(event.purchased_at_ms);
     const periodEnd = event.expiration_at_ms
       ? new Date(event.expiration_at_ms)
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
 
-    await prisma.usage.upsert({
+    const limit = getLimitForEntitlement(entitlementId);
+
+    await prisma.usage.update({
       where: {
         userId_entitlement_periodStart: {
-          userId,
-          entitlement: entitlementId,
-          periodStart,
+          userId: existingFreeRecord.userId,
+          entitlement: existingFreeRecord.entitlement,
+          periodStart: existingFreeRecord.periodStart,
         },
       },
-      update: {
-        periodEnd,
-        revenuecatUserId: event.original_app_user_id,
-      },
-      create: {
-        userId,
+      data: {
+        userId: userId, // Update to current device's userId
         entitlement: entitlementId,
-        periodStart,
         periodEnd,
-        count: 0,
-        revenuecatUserId: event.original_app_user_id,
+        count: 0, // Reset count for new subscription
+        limit,
+        revenuecatUserId: revenuecatUserId,
       },
     });
-  }
 
-  console.log(
-    `Created usage records for initial purchase: ${entitlementIds.join(", ")}`
-  );
+    console.log(
+      `Updated existing free record to ${entitlementId} for user ${userId}`
+    );
+  }
 }
 
 async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
+  const revenuecatUserId = event.original_app_user_id;
   const entitlementIds = event.entitlement_ids || [];
 
   if (entitlementIds.length === 0) {
@@ -240,39 +251,47 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
     return;
   }
 
-  // Create new usage records for the renewed period
+  // Find the existing usage record by revenuecatUserId (consistent across devices)
+  const existingRecord = await prisma.usage.findFirst({
+    where: {
+      revenuecatUserId: revenuecatUserId,
+    }
+  });
+
+  if (!existingRecord) {
+    console.warn(`No existing usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`);
+    return;
+  }
+
+  // Update the existing record with renewed period
   for (const entitlementId of entitlementIds) {
-    const periodStart = new Date(event.purchased_at_ms);
     const periodEnd = event.expiration_at_ms
       ? new Date(event.expiration_at_ms)
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-    await prisma.usage.upsert({
+    const limit = getLimitForEntitlement(entitlementId);
+
+    await prisma.usage.update({
       where: {
         userId_entitlement_periodStart: {
-          userId,
-          entitlement: entitlementId,
-          periodStart,
+          userId: existingRecord.userId,
+          entitlement: existingRecord.entitlement,
+          periodStart: existingRecord.periodStart,
         },
       },
-      update: {
+      data: {
+        userId: userId, // Update to current device's userId
         periodEnd,
-        revenuecatUserId: event.original_app_user_id,
-      },
-      create: {
-        userId,
-        entitlement: entitlementId,
-        periodStart,
-        periodEnd,
-        count: 0,
-        revenuecatUserId: event.original_app_user_id,
+        count: 0, // Reset count for renewal
+        limit,
+        revenuecatUserId: revenuecatUserId,
       },
     });
-  }
 
-  console.log(
-    `Processed renewal for entitlements: ${entitlementIds.join(", ")}`
-  );
+    console.log(
+      `Updated existing record for renewal: ${entitlementId} for user ${userId}`
+    );
+  }
 }
 
 async function handleCancellation(event: RevenueCatWebhookEvent["event"]) {
@@ -461,3 +480,4 @@ async function handleNonRenewingPurchase(
   // Handle one-time purchase - similar to initial purchase but won't renew
   await handleInitialPurchase(event);
 }
+
