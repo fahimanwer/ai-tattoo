@@ -1,28 +1,26 @@
 import { fetchUserUsage } from "@/lib/nano";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export const useUsageLimit = () => {
-  console.log("🔍 useUsageLimit: Starting hook");
-  
-  const queryClient = useQueryClient();
-  
-  const { data: usageData, isLoading, error } = useQuery({
+  const {
+    data: usageData,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["user", "usage"],
     queryFn: fetchUserUsage,
-    staleTime: 0, // Always refetch
-    retry: 3,
-  });
-
-  // Function to manually refetch usage data
-  const refetchUsage = () => {
-    console.log("🔍 useUsageLimit: Manually refetching usage data");
-    queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
-  };
-
-  console.log("🔍 useUsageLimit: Query state", { 
-    isLoading, 
-    error: error?.message, 
-    hasData: !!usageData 
+    staleTime: 5 * 60 * 1000, // 5 minutes - data is fresh for 5 minutes
+    retry: (failureCount, error: any) => {
+      // Don't retry on 405 Method Not Allowed errors - it's a deployment issue
+      if (error?.status === 405) {
+        console.warn(
+          "⚠️ API endpoint not properly deployed - skipping retries"
+        );
+        return false;
+      }
+      return failureCount < 1; // Only retry once for other errors
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
   });
 
   // Get current month usage for "free" entitlement
@@ -32,13 +30,9 @@ export const useUsageLimit = () => {
     const periodEnd = new Date(usage.periodEnd);
 
     return (
-      usage.entitlement === "free" &&
-      now >= periodStart &&
-      now <= periodEnd
+      usage.entitlement === "free" && now >= periodStart && now <= periodEnd
     );
   });
-
-  console.log("currentMonthUsage", JSON.stringify(usageData, null, 2));
 
   const used = currentMonthUsage?.count || 0;
   const remaining = currentMonthUsage?.limit || 5;
@@ -52,6 +46,5 @@ export const useUsageLimit = () => {
     isLimitReached,
     isLoading,
     error,
-    refetchUsage,
   };
 };

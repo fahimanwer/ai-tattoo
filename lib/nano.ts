@@ -41,6 +41,5 @@ export interface UsageResponse {
 }
 
 export const fetchUserUsage = (): Promise<UsageResponse> => {
-  console.log("🌐 client: Calling fetchUserUsage");
   return apiFetch<UsageResponse>("/api/user/usage", { method: "POST" });
 };

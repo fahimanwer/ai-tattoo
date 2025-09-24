@@ -26,8 +26,6 @@ export async function apiFetch<TResponse>(
   const isFormData =
     typeof FormData !== "undefined" && body instanceof FormData;
 
-  console.log("🌐 client: Making API call to", `${baseUrl}${path}`);
-
   const response = await fetch(`${baseUrl}${path}`, {
     method,
     body: isFormData

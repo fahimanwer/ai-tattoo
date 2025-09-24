@@ -182,7 +182,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/cess/Developer/ai-tattoo/prisma/generated/client",
+      "value": "/Users/beto/Documents/cwb-org/ai-tattoo/prisma/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -196,7 +196,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/cess/Developer/ai-tattoo/prisma/schema.prisma",
+    "sourceFilePath": "/Users/beto/Documents/cwb-org/ai-tattoo/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -210,6 +210,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -220,7 +221,7 @@ const config = {
   },
   "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Usage {\n  userId           String\n  entitlement      String\n  periodStart      DateTime\n  periodEnd        DateTime\n  count            Int      @default(0)\n  limit            Int      @default(5)\n  revenuecatUserId String\n\n  @@id([userId, entitlement, periodStart])\n  @@index([userId, periodStart])\n  @@map(\"usage\")\n}\n\nmodel User {\n  id            String    @id\n  name          String\n  email         String    @unique\n  emailVerified Boolean\n  image         String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  accounts      Account[]\n  sessions      Session[]\n\n  @@map(\"user\")\n}\n\nmodel Session {\n  id        String   @id\n  expiresAt DateTime\n  token     String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@map(\"session\")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@map(\"account\")\n}\n\nmodel Verification {\n  id         String    @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime? @default(now())\n  updatedAt  DateTime? @updatedAt\n\n  @@map(\"verification\")\n}\n",
   "inlineSchemaHash": "b2aa172aac10fe9e70e5d1106bd3f4d396e48973939a1f74e90d488878467fa3",
-  "copyEngine": false
+  "copyEngine": true
 }
 config.dirname = '/'
 

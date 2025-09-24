@@ -7,7 +7,6 @@ import {
   presentUpgradePaywall,
 } from "@/lib/paywall-utils";
 import { getAvailableUpgrades } from "@/lib/subscription-utils";
-import { useFocusEffect } from "@react-navigation/native";
 import React, { useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
@@ -23,7 +22,7 @@ export function Profile() {
   } = useSubscription();
 
   // Usage data for free plan
-  const { limit, remaining, isLimitReached, refetchUsage } = useUsageLimit();
+  const { limit, remaining, isLimitReached } = useUsageLimit();
 
   const handleUpgradeToPlus = async () => {
     try {
@@ -87,17 +86,8 @@ export function Profile() {
     }
   }, [subscriptionTier, subscriptionLoading]);
 
-  // Refetch usage data when component mounts
-  React.useEffect(() => {
-    refetchUsage();
-  }, [refetchUsage]);
-
-  // Refetch when screen comes into focus
-  useFocusEffect(
-    React.useCallback(() => {
-      refetchUsage();
-    }, [refetchUsage])
-  );
+  // React Query automatically fetches data when needed
+  // No manual refetch required
 
   if (!user) {
     return (
