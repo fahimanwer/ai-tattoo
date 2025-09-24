@@ -1,11 +1,10 @@
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { Text } from "@/components/ui/Text";
-import { authClient } from "@/lib/auth-client";
-import { View } from "react-native";
+import { useUserData } from "@/hooks/useUserData";
+import { RefreshControl, ScrollView, View } from "react-native";
 
 export function Profile() {
-  const { data: session } = authClient.useSession();
-  const user = session?.user;
+  const { user, isLoading, refresh } = useUserData();
 
   if (!user) {
     return (
@@ -22,5 +21,18 @@ export function Profile() {
     );
   }
 
-  return <ProfileContent user={user} />;
+  return (
+    <ScrollView
+      style={{ flex: 1 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={isLoading}
+          onRefresh={refresh}
+          tintColor="#007AFF"
+        />
+      }
+    >
+      <ProfileContent user={user} />
+    </ScrollView>
+  );
 }

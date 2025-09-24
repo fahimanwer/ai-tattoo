@@ -135,7 +135,11 @@ const initialState: TattooCreationState = {
   },
   currentStep: 1,
   totalSteps: 4, // 1) Body part/Photo, 2) Tattoo style, 3) Details, 4) Creation
-  selectedBodyPartCategory: "arm",
+  selectedBodyPartCategory: undefined,
+  selectedBodyPartVariant: undefined,
+  customUserImage: undefined,
+  selectedTattooImage: undefined,
+  existingTattooImage: undefined,
   isUsingCustomImage: false,
   isUsingExistingTattoo: false,
   customInstructions: "",

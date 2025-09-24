@@ -1,3 +1,4 @@
+import { getCurrentUserEntitlement, hasReachedGenerationLimit } from "@/lib/entitlement-utils";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAuth } from "@/server-utils/auth-middleware";
 import { constants } from "@/server-utils/constants";
@@ -26,7 +27,22 @@ export const POST = withAuth(async (request: Request, session: any) => {
   // Use same logic as database trigger: first day of current month at midnight UTC
   const periodStart = new Date(now.getUTCFullYear(), now.getUTCMonth(), 1);
   const periodEnd = new Date(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999);
-  const entitlement = "free";
+  
+  // Get current user entitlement dynamically
+  const entitlement = await getCurrentUserEntitlement(session.user.id);
+  
+  // Check if user has reached their generation limit
+  const limitReached = await hasReachedGenerationLimit(session.user.id, entitlement);
+  if (limitReached) {
+    return Response.json(
+      { 
+        success: false, 
+        message: "Generation limit reached for current period. Please upgrade your plan or wait for the next period.",
+        error: "LIMIT_REACHED"
+      },
+      { status: 429 }
+    );
+  }
 
   try {
     const body = await request.json();
@@ -151,16 +167,34 @@ export const POST = withAuth(async (request: Request, session: any) => {
       imageData?.length,
       "characters"
     );
-    // Atomically increment count and decrement limit after success
-    await prisma.usage.update({
-      where: {
-        userId_entitlement_periodStart: {
+    // Use transaction to ensure atomicity
+    await prisma.$transaction(async (tx) => {
+      // Find the existing usage record by userId and revenuecatUserId
+      const existingUsage = await tx.usage.findFirst({
+        where: {
           userId: session.user.id,
-          entitlement,
-          periodStart,
+          revenuecatUserId: session.user.id, // Initially they are the same
         },
-      },
-      data: { count: { increment: 1 }, limit: { decrement: 1 } },
+        orderBy: {
+          periodStart: 'desc', // Get the most recent record
+        },
+      });
+
+      if (!existingUsage) {
+        throw new Error("No usage record found for user");
+      }
+
+      // Update the existing record
+      await tx.usage.update({
+        where: {
+          userId_entitlement_periodStart: {
+            userId: existingUsage.userId,
+            entitlement: existingUsage.entitlement,
+            periodStart: existingUsage.periodStart,
+          },
+        },
+        data: { count: { increment: 1 } },
+      });
     });
 
     // Invalidate usage cache

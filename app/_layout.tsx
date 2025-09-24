@@ -41,6 +41,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { authClient } from "@/lib/auth-client";
 import "react-native-reanimated";
 
+import { TattooCreationProvider } from "@/context/TattooCreationContext";
+import { TattooHistoryProvider } from "@/context/TattooHistoryContext";
 import Purchases from "react-native-purchases";
 
 const importedFonts = {
@@ -213,6 +215,20 @@ function WebLayout() {
           }}
         />
         <Stack.Screen
+          name="create-tattoo"
+          options={{
+            title: "Creating Your Tattoo",
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="generated-result"
+          options={{
+            title: "Generated Result",
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="privacy-policy"
           options={{
             title: "Privacy Policy",
@@ -240,7 +256,11 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <AccentColorProvider>
         <QueryClientProvider client={queryClient}>
-          <AppContent />
+          <TattooHistoryProvider>
+            <TattooCreationProvider>
+              <AppContent />
+            </TattooCreationProvider>
+          </TattooHistoryProvider>
         </QueryClientProvider>
       </AccentColorProvider>
     </GestureHandlerRootView>

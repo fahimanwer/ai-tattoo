@@ -1,3 +1,4 @@
+import { getPlanLimit } from "@/lib/pricing-utils";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import * as jose from "jose";
@@ -405,16 +406,7 @@ async function resetCurrentPeriodAndCreateNew(
 }
 
 function getLimitForEntitlement(entitlement: string): number {
-  switch (entitlement) {
-    case "Starter":
-      return 125;
-    case "Plus":
-      return 300;
-    case "Pro":
-      return 1000;
-    default:
-      return 5; // Free tier
-  }
+  return getPlanLimit(entitlement);
 }
 
 async function handleExpiration(event: RevenueCatWebhookEvent["event"]) {

@@ -94,7 +94,7 @@ export function TattooStyleSelection() {
   ]);
 
   function nextStep() {
-    router.push("/home/new/add-details");
+    router.push("/(new)/add-details");
   }
 
   return (

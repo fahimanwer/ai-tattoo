@@ -3,7 +3,6 @@ import { Text } from "@/components/ui/Text";
 import { useTattooCreation } from "@/context/TattooCreationContext";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
-import { Link } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
@@ -115,19 +114,18 @@ export function ChoosePhotoScreen() {
           </ScrollView>
         )}
 
-        <Link href="/home/tattoo-result" asChild style={{ marginTop: 16 }}>
-          <Button
-            symbol="arrow.right"
-            variant="solid"
-            haptic
-            color="orange"
-            title="Continue"
-            disabled={!selectedPhoto}
-            onPress={() => {
-              nextStep();
-            }}
-          />
-        </Link>
+        <Button
+          symbol="arrow.right"
+          variant="solid"
+          haptic
+          color="orange"
+          title="Continue"
+          disabled={!selectedPhoto}
+          onPress={() => {
+            nextStep();
+          }}
+          style={{ marginTop: 16 }}
+        />
 
         <Button
           symbol="camera"

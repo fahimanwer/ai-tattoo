@@ -1,4 +1,5 @@
 import { useSubscription } from "@/hooks/useSubscription";
+import { useTattooGeneration } from "@/hooks/useTattooGeneration";
 import { ApiError } from "@/lib/api-client";
 import { assetToBase64, urlToBase64 } from "@/lib/base64-utils";
 import { textAndImageToImage } from "@/lib/nano";
@@ -22,6 +23,7 @@ export function TextAndImageToImage() {
   const [tattooBase64, setTattooBase64] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { refreshSubscriptionStatus } = useSubscription();
+  const { saveGeneratedTattoo } = useTattooGeneration();
 
   // Preload + convert both assets to Base64 once
   useEffect(() => {
@@ -49,6 +51,17 @@ export function TextAndImageToImage() {
     onSuccess: async (data) => {
       if (data.imageData) {
         setGeneratedImage(`data:image/png;base64,${data.imageData}`);
+
+        // Save to local tattoo history
+        saveGeneratedTattoo(
+          data.imageData,
+          {
+            style: "Gothic",
+            bodyPart: "Arm",
+            isOwnData: true,
+          },
+          MIX_TOW_PHOTHOS_PROMPT
+        );
 
         // Invalidate usage query to reflect updated usage count
         queryClient.invalidateQueries({ queryKey: ["user", "usage"] });

@@ -1,4 +1,4 @@
-import { Directory, File, Paths } from "expo-file-system/next";
+import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 
 export const ALBUM_NAME = "AI Tattoo - Generations";
@@ -71,16 +71,21 @@ export async function saveBase64ToAlbum(
 ) {
   await ensureWritePermission();
 
-  // 1) Write bytes to a temp file using the NEXT API.
-  const dir = new Directory(Paths.cache, "generated");
-  if (!dir.exists) dir.create({ intermediates: true });
+  // 1) Write bytes to a temp file using FileSystem API.
+  const cacheDir = FileSystem.cacheDirectory + "generated/";
+  await FileSystem.makeDirectoryAsync(cacheDir, { intermediates: true });
 
-  const file = new File(dir, `${Date.now()}.${ext}`);
-  file.create({ overwrite: true });
-  file.write(base64ToBytes(base64)); // IMPORTANT: write bytes, not the base64 string
+  const fileName = `${Date.now()}.${ext}`;
+  const fileUri = cacheDir + fileName;
+  
+  // Convert base64 to bytes and write to file
+  const bytes = base64ToBytes(base64);
+  await FileSystem.writeAsStringAsync(fileUri, base64, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
 
   // 2) Create a MediaLibrary asset for that file.
-  const asset = await MediaLibrary.createAssetAsync(file.uri);
+  const asset = await MediaLibrary.createAssetAsync(fileUri);
 
   // 3) Ensure album exists and add the asset.
   const album = await getOrCreateAlbumWith(asset);

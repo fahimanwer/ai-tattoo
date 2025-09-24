@@ -1,5 +1,5 @@
 import { Asset } from "expo-asset";
-import { File } from "expo-file-system/next";
+import * as FileSystem from "expo-file-system";
 
 /**
  * Convert a bundled static asset (require("../assets/img.png")) into Base64.
@@ -11,11 +11,10 @@ export async function assetToBase64(moduleId: number): Promise<string> {
   const uri = asset.localUri ?? asset.uri;
   if (!uri) throw new Error("Unable to resolve asset URI");
 
-  // 2. Wrap the path with File
-  const file = new File(uri);
-
-  // 3. Read as Base64
-  const base64 = file.base64(); // synchronous, returns string
+  // 2. Read as Base64 using FileSystem
+  const base64 = await FileSystem.readAsStringAsync(uri, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
   return base64;
 }
 

@@ -1,4 +1,5 @@
 import { useSubscription } from "@/hooks/useSubscription";
+import { useTattooGeneration } from "@/hooks/useTattooGeneration";
 import { ApiError } from "@/lib/api-client";
 import { textToImage } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
@@ -13,6 +14,7 @@ export function TextToImage() {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { refreshSubscriptionStatus } = useSubscription();
+  const { saveGeneratedTattoo } = useTattooGeneration();
 
   const mutation = useMutation({
     mutationFn: async () =>
@@ -24,6 +26,17 @@ export function TextToImage() {
     onSuccess: async (data) => {
       if (data.imageData) {
         setGeneratedImage(`data:image/png;base64,${data.imageData}`);
+
+        // Save to local tattoo history
+        saveGeneratedTattoo(
+          data.imageData,
+          {
+            style: "Custom",
+            bodyPart: "Neck",
+            isOwnData: false,
+          },
+          "Generate a minimalistic tattoo of brackets [] for a programmer, tatto shuld be in the neck rotated 45 degrees to the right"
+        );
 
         // Invalidate usage query to reflect updated usage count
         queryClient.invalidateQueries({ queryKey: ["user", "usage"] });

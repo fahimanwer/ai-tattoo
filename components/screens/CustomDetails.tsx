@@ -89,7 +89,7 @@ export function CustomDetails() {
             variant="solid"
             radius="full"
             color="orange"
-            onPress={() => router.push("/home/new/create-tattoo")}
+            onPress={() => router.push("/create-tattoo")}
           />
         </View>
       </View>

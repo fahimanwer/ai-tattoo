@@ -121,14 +121,14 @@ export function BodyPartSelection() {
   }, [setCustomUserImage, setIsUsingCustomImage]);
 
   function nextStep() {
-    router.push("/home/new/select-tattoo");
+    router.push("/(new)/select-tattoo");
   }
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
       <View style={styles.section}>
         <Text type="subtitle" weight="bold">
-          Select body part or upload photo
+          Or upload photo
         </Text>
         {/* Context menu for image selection */}
         <Host useViewportSizeMeasurement matchContents>
@@ -644,6 +644,14 @@ export function BodyPartSelection() {
             !isUsingCustomImage &&
             (!selectedBodyPartCategory || !selectedBodyPartVariant)
           }
+        />
+        <Button
+          style={{ marginTop: 12 }}
+          title="Back"
+          variant="outline"
+          radius="full"
+          color="orange"
+          onPress={() => router.back()}
         />
       </View>
     </ScrollView>

@@ -11,7 +11,7 @@ function ButtonToCreateTattoo() {
   const { isLimitReached } = useUsageLimit();
 
   const goToCreateTattoo = () => {
-    router.push("/home/new/select-body-part");
+    router.push("/(new)/select-body-part");
   };
 
   console.log("isLimitReached", isLimitReached);
@@ -53,39 +53,7 @@ export default function ProfileLayout() {
             headerRight: () => <ButtonToCreateTattoo />,
           }}
         />
-        <Stack.Screen
-          name="new/select-body-part"
-          options={{
-            title: "Create Your Tattoo",
-            headerBackButtonDisplayMode: "minimal",
-            headerLargeTitle: false,
-          }}
-        />
-        <Stack.Screen
-          name="new/select-tattoo"
-          options={{
-            title: "Select Tattoo Style",
-            headerBackButtonDisplayMode: "minimal",
-            headerLargeTitle: false,
-          }}
-        />
-        <Stack.Screen
-          name="new/add-details"
-          options={{
-            title: "Add Details",
-            headerBackButtonDisplayMode: "minimal",
-            headerLargeTitle: false,
-          }}
-        />
-        <Stack.Screen
-          name="new/create-tattoo"
-          options={{
-            title: "Creating Your Tattoo",
-            headerBackButtonDisplayMode: "minimal",
-            headerLargeTitle: false,
-            gestureEnabled: false,
-          }}
-        />
+
         <Stack.Screen
           name="choose-photo"
           options={{
@@ -97,13 +65,6 @@ export default function ProfileLayout() {
           name="generated-result"
           options={{
             title: "Generated Result",
-            headerBackButtonDisplayMode: "minimal",
-            headerLargeTitle: false,
-          }}
-        />
-        <Stack.Screen
-          name="tattoo-result"
-          options={{
             headerBackButtonDisplayMode: "minimal",
             headerLargeTitle: false,
           }}
