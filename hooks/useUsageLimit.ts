@@ -35,9 +35,9 @@ export const useUsageLimit = () => {
   });
 
   const used = currentMonthUsage?.count || 0;
-  const remaining = currentMonthUsage?.limit || 5;
-  const limit = 5;
-  const isLimitReached = remaining <= 0;
+  const limit = currentMonthUsage?.limit || 5;
+  const remaining = Math.max(0, limit - used);
+  const isLimitReached = used >= limit;
 
   return {
     used,

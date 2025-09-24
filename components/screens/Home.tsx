@@ -1,23 +1,12 @@
 import { BodyPartsInspiration } from "@/components/home/BodyPartsInspiration";
 import { GetInspiration } from "@/components/home/GetInspiration";
 import { Banner } from "@/components/pro/Banner";
-import { useTattooHistory } from "@/context/TattooHistoryContext";
 import { useUserData } from "@/hooks/useUserData";
-import { router } from "expo-router";
 import { useEffect } from "react";
-import {
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
-import { Icon } from "../ui/Icon";
-import { Text } from "../ui/Text";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 
 export function Home() {
   const { user, usage, subscription, isLoading, refresh } = useUserData();
-  const { tattoos } = useTattooHistory();
 
   // Log user data when it changes
   useEffect(() => {
@@ -50,33 +39,6 @@ export function Home() {
         <Banner />
         <GetInspiration />
         <BodyPartsInspiration />
-
-        {/* My Tattoos Section */}
-        {tattoos.length > 0 && (
-          <View style={styles.myTattoosSection}>
-            <Pressable
-              style={styles.myTattoosButton}
-              onPress={() => router.push("/(tabs)/tattoos")}
-            >
-              <View style={styles.myTattoosContent}>
-                <View style={styles.myTattoosInfo}>
-                  <Text type="lg" weight="bold" style={styles.myTattoosTitle}>
-                    My Tattoos
-                  </Text>
-                  <Text type="sm" style={styles.myTattoosSubtitle}>
-                    {tattoos.length} generated design
-                    {tattoos.length !== 1 ? "s" : ""}
-                  </Text>
-                </View>
-                <Icon
-                  symbol="chevron.right"
-                  style={styles.chevronIcon}
-                  color="#666"
-                />
-              </View>
-            </Pressable>
-          </View>
-        )}
       </View>
     </ScrollView>
   );

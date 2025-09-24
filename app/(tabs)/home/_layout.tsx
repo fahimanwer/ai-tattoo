@@ -4,7 +4,7 @@ import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack, useRouter } from "expo-router";
-import { Pressable, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 function ButtonToCreateTattoo() {
   const router = useRouter();
@@ -17,7 +17,9 @@ function ButtonToCreateTattoo() {
   console.log("isLimitReached", isLimitReached);
   // Don't show button if limit is reached
   if (isLimitReached) {
-    return null;
+    return (
+      <Text style={{ color: "white", marginHorizontal: 8 }}>Limit Reached</Text>
+    );
   }
 
   return (
@@ -54,13 +56,6 @@ export default function ProfileLayout() {
           }}
         />
 
-        <Stack.Screen
-          name="choose-photo"
-          options={{
-            headerBackButtonDisplayMode: "minimal",
-            headerLargeTitle: false,
-          }}
-        />
         <Stack.Screen
           name="generated-result"
           options={{

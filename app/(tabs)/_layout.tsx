@@ -16,10 +16,6 @@ export default function TabLayout() {
         <Label>Profile</Label>
         <Icon sf="person" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="dev">
-        <Label>Dev</Label>
-        <Icon sf="gearshape" />
-      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }

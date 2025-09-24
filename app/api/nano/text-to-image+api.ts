@@ -1,4 +1,4 @@
-import { getCurrentUserEntitlement, hasReachedGenerationLimit } from "@/lib/entitlement-utils";
+import { getCurrentUserEntitlement } from "@/lib/entitlement-utils";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAuth } from "@/server-utils/auth-middleware";
 import { constants } from "@/server-utils/constants";
@@ -28,61 +28,46 @@ export const POST = withAuth(async (request: Request, session: any) => {
   // Get current user entitlement dynamically
   const entitlement = await getCurrentUserEntitlement(session.user.id);
   
-  // Check if user has reached their generation limit
-  const limitReached = await hasReachedGenerationLimit(session.user.id, entitlement);
-  if (limitReached) {
-    return Response.json(
-      { 
-        success: false, 
-        message: "Generation limit reached for current period. Please upgrade your plan or wait for the next period.",
-        error: "LIMIT_REACHED"
-      },
-      { status: 429 }
-    );
-  }
-
   try {
     const body = await request.json();
     const { prompt } = textToImageSchema.parse(body);
     console.log("server", "received prompt", prompt);
 
-    // Ensure usage row exists for this period (defensive)
-    await prisma.usage.upsert({
+    // First, find or create the usage record for this period
+    let usage = await prisma.usage.findFirst({
       where: {
-        userId_entitlement_periodStart: {
-          userId: session.user.id,
-          entitlement,
-          periodStart,
-        },
-      },
-      update: {},
-      create: {
         userId: session.user.id,
-        entitlement,
-        periodStart,
-        periodEnd,
-        count: 0,
-        limit: 5,
-        revenuecatUserId: session.user.id,
+        revenuecatUserId: session.user.id, // Initially they are the same
+      },
+      orderBy: {
+        periodStart: 'desc', // Get the most recent record
       },
     });
 
-    const usage = await prisma.usage.findUnique({
-      where: {
-        userId_entitlement_periodStart: {
+    // If no usage record exists, create one
+    if (!usage) {
+      usage = await prisma.usage.create({
+        data: {
           userId: session.user.id,
           entitlement,
           periodStart,
+          periodEnd,
+          count: 0,
+          limit: 5, // Default free limit
+          revenuecatUserId: session.user.id,
         },
-      },
-      select: { count: true, limit: true },
-    });
+      });
+    }
 
-    const remaining = usage?.limit ?? 0;
-    if (remaining <= 0) {
+    // Check if user has reached their generation limit
+    if (usage.count >= usage.limit) {
       return Response.json(
-        { success: false, message: "Monthly free generation limit reached" },
-        { status: 402 }
+        { 
+          success: false, 
+          message: "Generation limit reached for current period. Please upgrade your plan or wait for the next period.",
+          error: "LIMIT_REACHED"
+        },
+        { status: 429 }
       );
     }
 
@@ -127,28 +112,13 @@ export const POST = withAuth(async (request: Request, session: any) => {
 
     // Use transaction to ensure atomicity
     await prisma.$transaction(async (tx) => {
-      // Find the existing usage record by userId and revenuecatUserId
-      const existingUsage = await tx.usage.findFirst({
-        where: {
-          userId: session.user.id,
-          revenuecatUserId: session.user.id, // Initially they are the same
-        },
-        orderBy: {
-          periodStart: 'desc', // Get the most recent record
-        },
-      });
-
-      if (!existingUsage) {
-        throw new Error("No usage record found for user");
-      }
-
-      // Update the existing record
+      // Update the existing record we found earlier
       await tx.usage.update({
         where: {
           userId_entitlement_periodStart: {
-            userId: existingUsage.userId,
-            entitlement: existingUsage.entitlement,
-            periodStart: existingUsage.periodStart,
+            userId: usage.userId,
+            entitlement: usage.entitlement,
+            periodStart: usage.periodStart,
           },
         },
         data: { count: { increment: 1 } },
