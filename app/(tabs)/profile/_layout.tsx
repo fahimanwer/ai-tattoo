@@ -1,4 +1,4 @@
-import { ContextMenuProfile } from "@/components/ContextMenu";
+import { ContextMenuProfile } from "@/components/profile/ContextMenu";
 import { useLargeHeaderOptions } from "@/constants/navigation-options";
 import { Stack } from "expo-router";
 

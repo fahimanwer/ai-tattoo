@@ -2,7 +2,13 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { authClient } from "@/lib/auth-client";
 import * as React from "react";
 import { Linking, Share } from "react-native";
-import { Button, ContextMenu, Host, Submenu, Switch } from "../lib/expo-ui-web";
+import {
+  Button,
+  ContextMenu,
+  Host,
+  Submenu,
+  Switch,
+} from "../../lib/expo-ui-web";
 
 const getProfileOptions = (
   isPlusUser: boolean,
