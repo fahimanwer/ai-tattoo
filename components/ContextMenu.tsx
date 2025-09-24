@@ -157,9 +157,7 @@ export function ContextMenuProfile() {
   };
 
   return (
-    <Host
-      style={{ borderWidth: 1, borderColor: "blue", width: 35, height: 35 }}
-    >
+    <Host style={{ width: 35, height: 35 }}>
       <ContextMenu>
         <ContextMenu.Items>
           {options.map((option, index) => renderOption(option, index))}
@@ -169,8 +167,6 @@ export function ContextMenuProfile() {
             style={{
               width: 35,
               height: 35,
-              borderWidth: 1,
-              borderColor: "red",
               borderRadius: 99,
               flexDirection: "row",
               alignItems: "center",
