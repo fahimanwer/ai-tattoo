@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/Button";
+import { Text } from "@/components/ui/Text";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { authClient } from "@/lib/auth-client";
@@ -8,7 +10,7 @@ import {
 } from "@/lib/paywall-utils";
 import { getAvailableUpgrades } from "@/lib/subscription-utils";
 import React, { useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 
 export function Profile() {
   const { data: session } = authClient.useSession();
@@ -99,7 +101,7 @@ export function Profile() {
           alignItems: "center",
         }}
       >
-        <Text style={{ fontSize: 16 }}>Not signed in</Text>
+        <Text type="body">Not signed in</Text>
       </View>
     );
   }
@@ -110,57 +112,49 @@ export function Profile() {
         {/* Profile Section */}
         <View
           style={{
-            backgroundColor: "white",
+            backgroundColor: "#FFFFFF10",
             padding: 20,
             borderRadius: 12,
             marginBottom: 16,
           }}
         >
-          <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 8 }}>
+          <Text type="2xl" weight="bold" style={{ marginBottom: 8 }}>
             {displayName}
           </Text>
-          <Text style={{ fontSize: 16, color: "#666", marginBottom: 16 }}>
+          <Text type="body" lightColor="#666" style={{ marginBottom: 16 }}>
             {user.email}
           </Text>
 
-          <TouchableOpacity
+          <Button
+            title="Sign Out"
             onPress={() => authClient.signOut()}
-            style={{
-              backgroundColor: "#007AFF",
-              padding: 12,
-              borderRadius: 8,
-              marginBottom: 8,
-            }}
-          >
-            <Text
-              style={{ color: "white", textAlign: "center", fontWeight: "600" }}
-            >
-              Sign Out
-            </Text>
-          </TouchableOpacity>
+            variant="solid"
+            color="blue"
+            style={{ marginBottom: 8 }}
+          />
         </View>
 
         {/* Current Plan Section */}
         <View
           style={{
-            backgroundColor: "white",
+            backgroundColor: "#FFFFFF10",
             padding: 20,
             borderRadius: 12,
             marginBottom: 16,
           }}
         >
-          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 16 }}>
+          <Text type="xl" weight="bold" style={{ marginBottom: 16 }}>
             {planText}
           </Text>
 
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ fontSize: 14, color: "#666", marginBottom: 4 }}>
+            <Text type="sm" lightColor="#666" style={{ marginBottom: 4 }}>
               Current Plan:
             </Text>
             <Text
+              type="body"
+              weight="bold"
               style={{
-                fontSize: 16,
-                fontWeight: "bold",
                 color:
                   subscriptionTier === "plus"
                     ? "#10b981"
@@ -179,21 +173,21 @@ export function Profile() {
           {/* Generation Usage Display */}
           {subscriptionTier === "free" ? (
             <View style={{ marginBottom: 16 }}>
-              <Text style={{ fontSize: 14, color: "#666", marginBottom: 4 }}>
+              <Text type="sm" lightColor="#666" style={{ marginBottom: 4 }}>
                 Free Plan Generations
               </Text>
               <Text
+                type="body"
+                weight="bold"
                 style={{
-                  fontSize: 16,
-                  fontWeight: "bold",
                   color: isLimitReached ? "#ef4444" : "#3b82f6",
                 }}
               >
                 {`${remaining}/${limit} remaining`}
               </Text>
               <Text
+                type="xs"
                 style={{
-                  fontSize: 12,
                   color: isLimitReached ? "#ef4444" : "#666",
                   marginTop: 4,
                 }}
@@ -206,9 +200,9 @@ export function Profile() {
           ) : (
             <View style={{ marginBottom: 16 }}>
               <Text
+                type="body"
+                weight="bold"
                 style={{
-                  fontSize: 16,
-                  fontWeight: "bold",
                   color:
                     subscriptionTier === "plus"
                       ? "#10b981"
@@ -226,35 +220,35 @@ export function Profile() {
 
               {/* Plan Details */}
               <View style={{ marginBottom: 8 }}>
-                <Text style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>
+                <Text type="xs" lightColor="#666" style={{ marginBottom: 4 }}>
                   Plan Details:
                 </Text>
                 {subscriptionTier === "starter" && (
                   <>
-                    <Text style={{ fontSize: 12, color: "#666" }}>
+                    <Text type="xs" lightColor="#666">
                       • $4.99/month
                     </Text>
-                    <Text style={{ fontSize: 12, color: "#666" }}>
+                    <Text type="xs" lightColor="#666">
                       • 125 generations per month
                     </Text>
                   </>
                 )}
                 {subscriptionTier === "plus" && (
                   <>
-                    <Text style={{ fontSize: 12, color: "#666" }}>
+                    <Text type="xs" lightColor="#666">
                       • $9.99/month
                     </Text>
-                    <Text style={{ fontSize: 12, color: "#666" }}>
+                    <Text type="xs" lightColor="#666">
                       • 300 generations per month
                     </Text>
                   </>
                 )}
                 {subscriptionTier === "pro" && (
                   <>
-                    <Text style={{ fontSize: 12, color: "#666" }}>
+                    <Text type="xs" lightColor="#666">
                       • $29.99/month
                     </Text>
-                    <Text style={{ fontSize: 12, color: "#666" }}>
+                    <Text type="xs" lightColor="#666">
                       • 1,000 generations per month
                     </Text>
                   </>
@@ -266,81 +260,45 @@ export function Profile() {
           {/* Subscription Actions */}
           <View>
             {subscriptionTier !== "free" ? (
-              <TouchableOpacity
+              <Button
+                title="Manage Subscription"
                 onPress={handleManageSubscription}
-                style={{
-                  backgroundColor: "#007AFF",
-                  padding: 12,
-                  borderRadius: 8,
-                  marginBottom: 8,
-                }}
-              >
-                <Text
-                  style={{
-                    color: "white",
-                    textAlign: "center",
-                    fontWeight: "600",
-                  }}
-                >
-                  Manage Subscription
-                </Text>
-              </TouchableOpacity>
+                variant="solid"
+                color="blue"
+                style={{ marginBottom: 8 }}
+              />
             ) : (
-              <TouchableOpacity
+              <Button
+                title="Upgrade to Starter"
                 onPress={handleUpgradeToPlus}
-                style={{
-                  backgroundColor: "#007AFF",
-                  padding: 12,
-                  borderRadius: 8,
-                  marginBottom: 8,
-                }}
-              >
-                <Text
-                  style={{
-                    color: "white",
-                    textAlign: "center",
-                    fontWeight: "600",
-                  }}
-                >
-                  Upgrade to Starter
-                </Text>
-              </TouchableOpacity>
+                variant="solid"
+                color="blue"
+                style={{ marginBottom: 8 }}
+              />
             )}
 
             {/* Upgrade Options */}
             {upgradeOptions.length > 0 && (
               <View>
                 <Text
-                  style={{
-                    fontSize: 12,
-                    color: "#666",
-                    fontWeight: "600",
-                    marginBottom: 8,
-                  }}
+                  type="xs"
+                  lightColor="#666"
+                  weight="semibold"
+                  style={{ marginBottom: 8 }}
                 >
                   Upgrade Options:
                 </Text>
                 {upgradeOptions.map((tier) => (
-                  <TouchableOpacity
+                  <Button
                     key={tier}
+                    title={`Upgrade to ${
+                      tier.charAt(0).toUpperCase() + tier.slice(1)
+                    }`}
                     onPress={() => handleUpgradeToTier(tier)}
-                    style={{
-                      backgroundColor: "#f0f0f0",
-                      padding: 12,
-                      borderRadius: 8,
-                      marginBottom: 4,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#333",
-                        textAlign: "center",
-                        fontWeight: "500",
-                      }}
-                    >
-                      Upgrade to {tier.charAt(0).toUpperCase() + tier.slice(1)}
-                    </Text>
-                  </TouchableOpacity>
+                    variant="outline"
+                    color="neutral"
+                    style={{ marginBottom: 4 }}
+                  />
                 ))}
               </View>
             )}
