@@ -43,7 +43,6 @@ import "react-native-reanimated";
 
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import { TattooHistoryProvider } from "@/context/TattooHistoryContext";
-import Purchases from "react-native-purchases";
 
 const importedFonts = {
   Oswald_200ExtraLight,
@@ -80,37 +79,9 @@ function AppContent() {
   const [backgroundColor, setBackgroundColor] = useState<string>(() =>
     getBackgroundColor()
   );
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
 
   const isAuthenticated = !!session;
-
-  useEffect(() => {
-    if (session) {
-      loadRevenueCat(session.user.id);
-    }
-  }, [session]);
-
-  const loadRevenueCat = async (userId: string) => {
-    try {
-      if (Platform.OS === "ios") {
-        await Purchases.configure({
-          apiKey: "appl_TglDpVSpcsiykcYmEbXbHvlMwMG",
-          appUserID: userId,
-        });
-        console.log(`✅ RevenueCat configured for iOS with userId: ${userId}`);
-      } else if (Platform.OS === "android") {
-        // await Purchases.configure({
-        //   apiKey: "android-api-key",
-        //   appUserID: userId
-        // });
-        console.log(
-          `✅ RevenueCat configured for Android with userId: ${userId}`
-        );
-      }
-    } catch (error) {
-      console.error("❌ Error configuring RevenueCat:", error);
-    }
-  };
 
   useEffect(() => {
     const newColor = getBackgroundColor();
@@ -123,7 +94,7 @@ function AppContent() {
     }
   }, [loaded]);
 
-  if (!loaded) {
+  if (!loaded || isPending) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator />

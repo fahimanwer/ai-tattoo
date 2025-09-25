@@ -2,9 +2,12 @@ import { Icon } from "@/components/ui/Icon";
 import { useLargeHeaderOptions } from "@/constants/navigation-options";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
+import { authClient } from "@/lib/auth-client";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack, useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { useEffect } from "react";
+import { Platform, Pressable, Text, View } from "react-native";
+import Purchases from "react-native-purchases";
 
 function ButtonToCreateTattoo() {
   const router = useRouter();
@@ -38,6 +41,35 @@ function ButtonToCreateTattoo() {
 
 export default function ProfileLayout() {
   const largeHeaderOptions = useLargeHeaderOptions();
+  const { data: session } = authClient.useSession();
+
+  useEffect(() => {
+    if (session) {
+      loadRevenueCat(session.user.id);
+    }
+  }, [session]);
+
+  const loadRevenueCat = (userId: string) => {
+    try {
+      if (Platform.OS === "ios") {
+        Purchases.configure({
+          apiKey: "appl_TglDpVSpcsiykcYmEbXbHvlMwMG",
+          appUserID: userId,
+        });
+        console.log(`✅ RevenueCat configured for iOS with userId: ${userId}`);
+      } else if (Platform.OS === "android") {
+        // await Purchases.configure({
+        //   apiKey: "android-api-key",
+        //   appUserID: userId
+        // });
+        console.log(
+          `✅ RevenueCat configured for Android with userId: ${userId}`
+        );
+      }
+    } catch (error) {
+      console.error("❌ Error configuring RevenueCat:", error);
+    }
+  };
 
   return (
     <TattooCreationProvider>

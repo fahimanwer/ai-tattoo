@@ -18,11 +18,23 @@ type ApiFetchOptions = {
   headers?: Record<string, string>;
 };
 
+const getBaseURL = () => {
+  if (process.env.EXPO_PUBLIC_BASE_URL) {
+    return process.env.EXPO_PUBLIC_BASE_URL;
+  }
+  // Development fallback
+  if (__DEV__) {
+    return "http://localhost:8081";
+  }
+  // Production fallback
+  return "https://tattoaiapp.com";
+};
+
 export async function apiFetch<TResponse>(
   path: string,
   { method = "GET", body, headers }: ApiFetchOptions = {}
 ): Promise<TResponse> {
-  const baseUrl = process.env.EXPO_PUBLIC_BASE_URL!;
+  const baseUrl = getBaseURL();
   const isFormData =
     typeof FormData !== "undefined" && body instanceof FormData;
 

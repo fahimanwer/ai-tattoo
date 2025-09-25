@@ -1,26 +1,27 @@
-import { authMiddleware } from "@/server-utils/auth-middleware";
+import { withAuth } from "@/server-utils/auth-middleware";
 import Purchases from "react-native-purchases";
 
-export async function GET(request: Request) {
+export const GET = withAuth(async (request: Request, session: any) => {
   try {
     // Verify authentication
-    const authResult = await authMiddleware(request);
-    if (!authResult.success) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    console.log("🌐 server", "authenticated user:", session.user.email);
+    console.log("🌐 server", "user id:", session.user.id);
 
     // Get offerings from RevenueCat
     const offerings = await Purchases.getOfferings();
-    
+
     if (!offerings.current) {
-      return Response.json({ error: "No current offering available" }, { status: 404 });
+      return Response.json(
+        { error: "No current offering available" },
+        { status: 404 }
+      );
     }
 
-    const currentOffering = offerings.current;
-    const packages = currentOffering.availablePackages;
+    const currentOffering: any = offerings.current;
+    const packages: any = currentOffering.availablePackages;
 
     // Extract pricing information for each package
-    const pricingData = packages.map((pkg) => ({
+    const pricingData = packages.map((pkg: any) => ({
       identifier: pkg.identifier,
       packageType: pkg.packageType,
       product: {
@@ -30,34 +31,40 @@ export async function GET(request: Request) {
         price: pkg.product.price,
         priceString: pkg.product.priceString,
         currencyCode: pkg.product.currencyCode,
-        introPrice: pkg.product.introPrice ? {
-          price: pkg.product.introPrice.price,
-          priceString: pkg.product.introPrice.priceString,
-          period: pkg.product.introPrice.period,
-          cycles: pkg.product.introPrice.cycles,
-          periodUnit: pkg.product.introPrice.periodUnit,
-          periodNumberOfUnits: pkg.product.introPrice.periodNumberOfUnits,
-        } : null,
+        introPrice: pkg.product.introPrice
+          ? {
+              price: pkg.product.introPrice.price,
+              priceString: pkg.product.introPrice.priceString,
+              period: pkg.product.introPrice.period,
+              cycles: pkg.product.introPrice.cycles,
+              periodUnit: pkg.product.introPrice.periodUnit,
+              periodNumberOfUnits: pkg.product.introPrice.periodNumberOfUnits,
+            }
+          : null,
       },
     }));
 
     // Also get entitlements information
-    const entitlements = currentOffering.availableEntitlements;
-    const entitlementData = Object.values(entitlements).map((entitlement) => ({
-      identifier: entitlement.identifier,
-      description: entitlement.description,
-      isActive: entitlement.isActive,
-      willRenew: entitlement.willRenew,
-      periodType: entitlement.periodType,
-      product: entitlement.product ? {
-        identifier: entitlement.product.identifier,
-        description: entitlement.product.description,
-        title: entitlement.product.title,
-        price: entitlement.product.price,
-        priceString: entitlement.product.priceString,
-        currencyCode: entitlement.product.currencyCode,
-      } : null,
-    }));
+    const entitlements: any = currentOffering.availableEntitlements;
+    const entitlementData = Object.values(entitlements).map(
+      (entitlement: any) => ({
+        identifier: entitlement.identifier,
+        description: entitlement.description,
+        isActive: entitlement.isActive,
+        willRenew: entitlement.willRenew,
+        periodType: entitlement.periodType,
+        product: entitlement.product
+          ? {
+              identifier: entitlement.product.identifier,
+              description: entitlement.product.description,
+              title: entitlement.product.title,
+              price: entitlement.product.price,
+              priceString: entitlement.product.priceString,
+              currencyCode: entitlement.product.currencyCode,
+            }
+          : null,
+      })
+    );
 
     return Response.json({
       success: true,
@@ -78,4 +85,4 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   }
-}
+});
