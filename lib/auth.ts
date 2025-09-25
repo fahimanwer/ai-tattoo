@@ -9,6 +9,10 @@ const prisma = new PrismaClient({
 }).$extends(withAccelerate());
 
 export const auth = betterAuth({
+  rateLimit: {
+    window: 60,
+    max: 100,
+  },
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),

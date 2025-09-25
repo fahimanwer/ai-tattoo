@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
 
 // Native imports
-import { AccentColorProvider, useAccentColor } from "@/hooks/useAccentColor";
+import { AccentColorProvider } from "@/hooks/useAccentColor";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   BodoniModa_400Regular,
@@ -35,12 +35,13 @@ import {
 } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { authClient } from "@/lib/auth-client";
 import "react-native-reanimated";
 
+import { Text } from "@/components/ui/Text";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import { TattooHistoryProvider } from "@/context/TattooHistoryContext";
 
@@ -70,23 +71,18 @@ SplashScreen.setOptions({
   fade: true,
 });
 
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
 
 function AppContent() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts(importedFonts);
-  const { getBackgroundColor } = useAccentColor();
-  const [backgroundColor, setBackgroundColor] = useState<string>(() =>
-    getBackgroundColor()
-  );
-  const { data: session, isPending } = authClient.useSession();
+  const {
+    data: session,
+    isPending,
+    error: sessionError,
+  } = authClient.useSession();
 
   const isAuthenticated = !!session;
-
-  useEffect(() => {
-    const newColor = getBackgroundColor();
-    setBackgroundColor(newColor);
-  }, [getBackgroundColor, colorScheme]);
 
   const onLayoutRootView = useCallback(async () => {
     if (loaded) {
@@ -102,11 +98,22 @@ function AppContent() {
     );
   }
 
+  if (sessionError) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text type="body">Error: {sessionError.error}</Text>
+        <Text type="body">Error: {sessionError.message}</Text>
+        <Text type="body">Error: {sessionError.statusText}</Text>
+        <Text type="body">Error: {sessionError.status}</Text>
+      </View>
+    );
+  }
+
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: backgroundColor,
+        backgroundColor: "#000000",
       }}
       onLayout={onLayoutRootView}
     >
@@ -117,8 +124,8 @@ function AppContent() {
             ...(colorScheme === "dark"
               ? DarkTheme.colors
               : DefaultTheme.colors),
-            background: backgroundColor,
-            card: backgroundColor,
+            background: "#000000",
+            card: "#000000",
           },
         }}
       >
@@ -138,10 +145,7 @@ function AppContent() {
             <Stack.Screen name="+not-found" />
           </Stack.Protected>
         </Stack>
-        <StatusBar
-          style={colorScheme === "dark" ? "light" : "dark"}
-          backgroundColor={backgroundColor}
-        />
+        <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
       </ThemeProvider>
     </View>
   );
