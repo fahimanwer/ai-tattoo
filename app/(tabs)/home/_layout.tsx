@@ -44,17 +44,17 @@ export default function ProfileLayout() {
   const { data: session } = authClient.useSession();
 
   useEffect(() => {
-    if (session) {
+    if (session?.user?.id) {
       loadRevenueCat(session.user.id);
     }
   }, [session]);
 
-  const loadRevenueCat = (userId: string) => {
+  const loadRevenueCat = (userId?: string) => {
     try {
       if (Platform.OS === "ios") {
         Purchases.configure({
           apiKey: "appl_TglDpVSpcsiykcYmEbXbHvlMwMG",
-          appUserID: userId,
+          appUserID: userId || undefined,
         });
         console.log(`✅ RevenueCat configured for iOS with userId: ${userId}`);
       } else if (Platform.OS === "android") {

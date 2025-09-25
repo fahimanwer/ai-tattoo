@@ -4,7 +4,7 @@
     "slug": "ai-tattoo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/ios-tinted.png",
     "scheme": "aitattoo",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
@@ -19,10 +19,6 @@
       "appleTeamId": "T2A8YY9YDW"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "edgeToEdgeEnabled": true,
       "package": "dev.codewithbeto.aitattoo"
     },
