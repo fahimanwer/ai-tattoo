@@ -1,6 +1,6 @@
 import { expoClient } from "@better-auth/expo/client";
 import { createAuthClient } from "better-auth/react";
-import Storage from "expo-sqlite/kv-store";
+import * as SecureStore from "expo-secure-store";
 
 const getBaseURL = () => {
   if (process.env.EXPO_PUBLIC_BASE_URL) {
@@ -14,18 +14,6 @@ const getBaseURL = () => {
   return "https://tattoaiapp.com";
 };
 
-// Create a storage wrapper that handles the async/sync mismatch in better-auth expo plugin
-const storageAdapter = {
-  getItem: (key: string) => {
-    // The plugin uses await but expects sync interface - return the async method
-    return Storage.getItem(key) as any;
-  },
-  setItem: (key: string, value: string) => {
-    // The plugin uses await but expects sync interface - return the async method
-    return Storage.setItem(key, value) as any;
-  },
-};
-
 export const authClient = createAuthClient({
   baseURL: getBaseURL(),
   disableDefaultFetchPlugins: true,
@@ -33,7 +21,22 @@ export const authClient = createAuthClient({
     expoClient({
       scheme: "aitattoo",
       storagePrefix: "aitattoo",
-      storage: storageAdapter,
+      storage: SecureStore,
     }),
   ],
+  fetchOptions: {
+    onRequest: (context) => {
+      console.log("🌐 Auth request:", context.url, context.method || "GET");
+    },
+    onResponse: (context) => {
+      console.log(
+        "🌐 Auth response:",
+        context.response.status,
+        context.response.statusText
+      );
+    },
+    onError: (context) => {
+      console.log("🌐 Auth error:", context.error);
+    },
+  },
 });

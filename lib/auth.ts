@@ -35,6 +35,7 @@ export const auth = betterAuth({
     "aitattoo://**",
     "aitattoo:///(tabs)/home",
     "https://tattoaiapp.com",
+    "http://localhost:8081",
     "https://appleid.apple.com",
   ],
 });
