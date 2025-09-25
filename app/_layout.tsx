@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack, usePathname } from "expo-router";
+import { Stack } from "expo-router";
 import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
 
 // Native imports
@@ -80,23 +80,15 @@ function AppContent() {
   const [backgroundColor, setBackgroundColor] = useState<string>(() =>
     getBackgroundColor()
   );
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session } = authClient.useSession();
 
   const isAuthenticated = !!session;
-  const pathname = usePathname();
-
-  const getDynamicTitle = () => {
-    if (pathname.includes("/buttons")) return "Buttons";
-    if (pathname.includes("/inputs")) return "Inputs";
-    if (pathname.includes("/typography")) return "Typography";
-    return "General";
-  };
 
   useEffect(() => {
-    if (session && !isPending) {
+    if (session) {
       loadRevenueCat(session.user.id);
     }
-  }, [session, isPending]);
+  }, [session]);
 
   const loadRevenueCat = async (userId: string) => {
     try {
@@ -131,7 +123,7 @@ function AppContent() {
     }
   }, [loaded]);
 
-  if (!loaded || isPending) {
+  if (!loaded) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator />
@@ -171,12 +163,7 @@ function AppContent() {
             />
           </Stack.Protected>
           <Stack.Protected guard={isAuthenticated}>
-            <Stack.Screen
-              name="(tabs)"
-              options={{
-                title: getDynamicTitle(),
-              }}
-            />
+            <Stack.Screen name="(tabs)" />
             <Stack.Screen name="+not-found" />
           </Stack.Protected>
         </Stack>
