@@ -10,7 +10,7 @@ interface ProfileContentProps {
 
 export function ProfileContent({ user }: ProfileContentProps) {
   return (
-    <View style={{ padding: 20 }}>
+    <>
       <ProfileHeader user={user} />
       <View
         style={{
@@ -23,13 +23,8 @@ export function ProfileContent({ user }: ProfileContentProps) {
         {/* <SubscriptionActions
           subscriptionTier={subscription.tier}
           onSubscriptionChange={refresh}
-        />
-
-        <UpgradeOptions
-          subscriptionTier={subscription.tier}
-          onSubscriptionChange={refresh}
         /> */}
       </View>
-    </View>
+    </>
   );
 }

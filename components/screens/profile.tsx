@@ -3,7 +3,8 @@ import { Text } from "@/components/ui/Text";
 import { useUsage } from "@/hooks/useUsage";
 import { useUserData } from "@/hooks/useUserData";
 import { RefreshControl, ScrollView, View } from "react-native";
-import { UsageDisplay } from "../profile/UsageDisplay";
+import { PlanInfo } from "../profile/PlanInfo";
+import { UpgradeOptions } from "../profile/UpgradeOptions";
 
 export function Profile() {
   const { user, isLoading } = useUserData();
@@ -27,7 +28,7 @@ export function Profile() {
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ paddingHorizontal: 16 }}
+      contentContainerStyle={{ padding: 16 }}
       refreshControl={
         <RefreshControl
           refreshing={isLoading || isUsageLoading}
@@ -37,8 +38,12 @@ export function Profile() {
       }
     >
       <ProfileContent user={user} />
-      {/* <PlanInfo /> */}
-      <UsageDisplay />
+      <PlanInfo />
+      <UpgradeOptions
+        onUpgradeSuccess={() =>
+          alert("Upgrade successful -> Do something here")
+        }
+      />
     </ScrollView>
   );
 }

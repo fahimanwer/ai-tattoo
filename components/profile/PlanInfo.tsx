@@ -1,22 +1,57 @@
 import { Text } from "@/components/ui/Text";
+import { useSubscription } from "@/hooks/useSubscription";
+import { DEFAULT_PLAN_LIMITS, DEFAULT_PLAN_PRICING } from "@/lib/pricing-utils";
 import { View } from "react-native";
+import { UsageDisplay } from "./UsageDisplay";
 
-interface PlanInfoProps {
-  subscriptionTier: string;
-  subscriptionLoading: boolean;
-  planPrice: string;
-  planLimit: number;
-}
+export function PlanInfo() {
+  const {
+    subscriptionTier,
+    isLoading: subscriptionLoading,
+    customerInfo,
+    error: subscriptionError,
+  } = useSubscription();
 
-export function PlanInfo({
-  subscriptionTier,
-  subscriptionLoading,
-  planPrice,
-  planLimit,
-}: PlanInfoProps) {
+  // Calculate plan details based on subscription tier
+  const planLimit =
+    DEFAULT_PLAN_LIMITS[subscriptionTier] || DEFAULT_PLAN_LIMITS.free;
+  const planPrice =
+    DEFAULT_PLAN_PRICING[subscriptionTier] || DEFAULT_PLAN_PRICING.free;
+
   const planText = subscriptionLoading
     ? "LOADING..."
     : subscriptionTier.toUpperCase() + " PLAN";
+
+  // Handle loading and error states
+  if (subscriptionLoading) {
+    return (
+      <View
+        style={{
+          backgroundColor: "#FFFFFF10",
+          padding: 20,
+          borderRadius: 12,
+          marginBottom: 16,
+        }}
+      >
+        <Text type="body">Loading plan information...</Text>
+      </View>
+    );
+  }
+
+  if (subscriptionError) {
+    return (
+      <View
+        style={{
+          backgroundColor: "#FFFFFF10",
+          padding: 20,
+          borderRadius: 12,
+          marginBottom: 16,
+        }}
+      >
+        <Text type="body">Error loading plan information</Text>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -59,18 +94,23 @@ export function PlanInfo({
           Plan Details:
         </Text>
         <Text type="xs" lightColor="#666">
-          • {planPrice}
+          • {planPrice.priceString}
         </Text>
         <Text type="xs" lightColor="#666">
-          • {planLimit} generations per{" "}
-          {subscriptionTier === "free" ? "month" : "month"}
+          • {planLimit} generations per month
         </Text>
         {subscriptionTier === "free" && (
           <Text type="xs" lightColor="#666">
             • No credit card required
           </Text>
         )}
+        {subscriptionTier !== "free" && customerInfo && (
+          <Text type="xs" lightColor="#666">
+            • Premium support included
+          </Text>
+        )}
       </View>
+      <UsageDisplay />
     </View>
   );
 }
