@@ -1,10 +1,13 @@
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { Text } from "@/components/ui/Text";
+import { useUsage } from "@/hooks/useUsage";
 import { useUserData } from "@/hooks/useUserData";
 import { RefreshControl, ScrollView, View } from "react-native";
+import { UsageDisplay } from "../profile/UsageDisplay";
 
 export function Profile() {
-  const { user, isLoading, refresh } = useUserData();
+  const { user, isLoading } = useUserData();
+  const { refetch: refetchUsage, isLoading: isUsageLoading } = useUsage();
 
   if (!user) {
     return (
@@ -23,16 +26,19 @@ export function Profile() {
 
   return (
     <ScrollView
-      style={{ flex: 1 }}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ paddingHorizontal: 16 }}
       refreshControl={
         <RefreshControl
-          refreshing={isLoading}
-          onRefresh={refresh}
+          refreshing={isLoading || isUsageLoading}
+          onRefresh={refetchUsage}
           tintColor="#007AFF"
         />
       }
     >
       <ProfileContent user={user} />
+      {/* <PlanInfo /> */}
+      <UsageDisplay />
     </ScrollView>
   );
 }

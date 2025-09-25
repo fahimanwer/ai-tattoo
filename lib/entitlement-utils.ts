@@ -5,7 +5,9 @@ import { withAccelerate } from "@prisma/extension-accelerate";
  * Get the current active entitlement for a user
  * Returns the highest tier entitlement that is currently active
  */
-export async function getCurrentUserEntitlement(userId: string): Promise<string> {
+export async function getCurrentUserEntitlement(
+  userId: string
+): Promise<string> {
   const prisma = new PrismaClient({
     datasourceUrl: process.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -17,14 +19,9 @@ export async function getCurrentUserEntitlement(userId: string): Promise<string>
       where: {
         userId,
         periodStart: { lte: now },
-        periodEnd: { gte: now }
+        periodEnd: { gte: now },
       },
-      orderBy: {
-        // Order by entitlement priority (pro > plus > starter > free)
-        entitlement: {
-          sort: 'desc'
-        }
-      }
+      orderBy: { entitlement: "desc" },
     });
 
     if (activeUsage.length === 0) {
@@ -34,7 +31,7 @@ export async function getCurrentUserEntitlement(userId: string): Promise<string>
 
     // Return the highest priority entitlement
     const entitlement = activeUsage[0].entitlement;
-    
+
     // Map to standard entitlement names
     switch (entitlement.toLowerCase()) {
       case "pro":
@@ -59,7 +56,10 @@ export async function getCurrentUserEntitlement(userId: string): Promise<string>
 /**
  * Check if user has reached their generation limit
  */
-export async function hasReachedGenerationLimit(userId: string, entitlement: string): Promise<boolean> {
+export async function hasReachedGenerationLimit(
+  userId: string,
+  entitlement: string
+): Promise<boolean> {
   const prisma = new PrismaClient({
     datasourceUrl: process.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -71,8 +71,8 @@ export async function hasReachedGenerationLimit(userId: string, entitlement: str
         userId,
         entitlement,
         periodStart: { lte: now },
-        periodEnd: { gte: now }
-      }
+        periodEnd: { gte: now },
+      },
     });
 
     if (!currentUsage) {
@@ -94,7 +94,10 @@ export async function hasReachedGenerationLimit(userId: string, entitlement: str
 /**
  * Get current usage stats for a user
  */
-export async function getCurrentUsageStats(userId: string, entitlement: string): Promise<{
+export async function getCurrentUsageStats(
+  userId: string,
+  entitlement: string
+): Promise<{
   count: number;
   limit: number;
   remaining: number;
@@ -111,8 +114,8 @@ export async function getCurrentUsageStats(userId: string, entitlement: string):
         userId,
         entitlement,
         periodStart: { lte: now },
-        periodEnd: { gte: now }
-      }
+        periodEnd: { gte: now },
+      },
     });
 
     if (!currentUsage) {
@@ -126,7 +129,7 @@ export async function getCurrentUsageStats(userId: string, entitlement: string):
       count: currentUsage.count,
       limit: currentUsage.limit,
       remaining,
-      isLimitReached
+      isLimitReached,
     };
   } catch (error) {
     console.error("Error getting usage stats:", error);

@@ -1,5 +1,3 @@
-import { PlanPricing } from "@/hooks/usePricing";
-
 // Default limits as fallback when RevenueCat data is not available
 export const DEFAULT_PLAN_LIMITS = {
   free: 5,
@@ -31,62 +29,6 @@ export const DEFAULT_PLAN_PRICING = {
     currencyCode: "USD",
   },
 } as const;
-
-/**
- * Get plan limit for a given tier
- * Uses RevenueCat data if available, falls back to defaults
- */
-export function getPlanLimit(tier: string, pricingData?: PlanPricing[]): number {
-  if (pricingData) {
-    const plan = pricingData.find(p => p.identifier.toLowerCase() === tier.toLowerCase());
-    if (plan) return plan.limit;
-  }
-  
-  return DEFAULT_PLAN_LIMITS[tier.toLowerCase() as keyof typeof DEFAULT_PLAN_LIMITS] || 5;
-}
-
-/**
- * Get plan pricing for a given tier
- * Uses RevenueCat data if available, falls back to defaults
- */
-export function getPlanPricing(tier: string, pricingData?: PlanPricing[]): {
-  price: number;
-  priceString: string;
-  currencyCode: string;
-} {
-  if (pricingData) {
-    const plan = pricingData.find(p => p.identifier.toLowerCase() === tier.toLowerCase());
-    if (plan) {
-      return {
-        price: plan.price,
-        priceString: plan.priceString,
-        currencyCode: plan.currencyCode,
-      };
-    }
-  }
-  
-  return DEFAULT_PLAN_PRICING[tier.toLowerCase() as keyof typeof DEFAULT_PLAN_PRICING] || DEFAULT_PLAN_PRICING.free;
-}
-
-/**
- * Get all available plans with pricing and limits
- * Uses RevenueCat data if available, falls back to defaults
- */
-export function getAllPlansWithPricing(pricingData?: PlanPricing[]): Array<{
-  tier: string;
-  limit: number;
-  price: number;
-  priceString: string;
-  currencyCode: string;
-}> {
-  const tiers = ['free', 'starter', 'plus', 'pro'];
-  
-  return tiers.map(tier => ({
-    tier,
-    limit: getPlanLimit(tier, pricingData),
-    ...getPlanPricing(tier, pricingData),
-  }));
-}
 
 /**
  * Map entitlement identifier to internal tier
