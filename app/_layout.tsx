@@ -26,7 +26,6 @@ import {
   Oswald_500Medium,
   Oswald_600SemiBold,
   Oswald_700Bold,
-  useFonts,
 } from "@expo-google-fonts/oswald";
 import {
   DarkTheme,
@@ -35,12 +34,12 @@ import {
 } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useCallback } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { authClient } from "@/lib/auth-client";
 import "react-native-reanimated";
 
+import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import { TattooHistoryProvider } from "@/context/TattooHistoryContext";
@@ -75,7 +74,7 @@ SplashScreen.setOptions({
 
 function AppContent() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts(importedFonts);
+  // const [loaded] = useFonts(importedFonts);
   const {
     data: session,
     isPending,
@@ -84,13 +83,13 @@ function AppContent() {
 
   const isAuthenticated = !!session;
 
-  const onLayoutRootView = useCallback(async () => {
-    if (loaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (loaded) {
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [loaded]);
 
-  if (!loaded || isPending) {
+  if (isPending) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator />
@@ -105,6 +104,11 @@ function AppContent() {
         <Text type="body">Error: {sessionError.message}</Text>
         <Text type="body">Error: {sessionError.statusText}</Text>
         <Text type="body">Error: {sessionError.status}</Text>
+        <Button
+          variant="subtle"
+          onPress={() => authClient.signOut()}
+          title="Sign Out"
+        />
       </View>
     );
   }
@@ -115,7 +119,7 @@ function AppContent() {
         flex: 1,
         backgroundColor: "#000000",
       }}
-      onLayout={onLayoutRootView}
+      // onLayout={onLayoutRootView}
     >
       <ThemeProvider
         value={{

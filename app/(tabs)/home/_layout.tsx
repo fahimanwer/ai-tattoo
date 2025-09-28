@@ -51,6 +51,7 @@ export default function ProfileLayout() {
 
   const loadRevenueCat = (userId?: string) => {
     try {
+      Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
       if (Platform.OS === "ios") {
         Purchases.configure({
           apiKey: "appl_TglDpVSpcsiykcYmEbXbHvlMwMG",
