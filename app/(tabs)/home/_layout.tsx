@@ -88,15 +88,6 @@ export default function ProfileLayout() {
             headerRight: () => <ButtonToCreateTattoo />,
           }}
         />
-
-        <Stack.Screen
-          name="generated-result"
-          options={{
-            title: "Generated Result",
-            headerBackButtonDisplayMode: "minimal",
-            headerLargeTitle: false,
-          }}
-        />
         <Stack.Screen
           name="about/style"
           options={{
