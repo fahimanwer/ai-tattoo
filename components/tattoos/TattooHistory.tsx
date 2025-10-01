@@ -1,6 +1,8 @@
-import { useTattooHistory } from "@/context/TattooHistoryContext";
+import { listAlbumAssets } from "@/lib/save-to-library";
+import * as MediaLibrary from "expo-media-library";
 import { router } from "expo-router";
-import { FlatList, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { Text } from "../ui/Text";
 import { VerticalCard } from "../ui/VerticalCard";
 
@@ -9,9 +11,40 @@ interface TattooHistoryProps {
 }
 
 export function TattooHistory({ onTattooPress }: TattooHistoryProps) {
-  const { tattoos } = useTattooHistory();
+  const [tattoos, setTattoos] = useState<MediaLibrary.Asset[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [permissionGranted, setPermissionGranted] = useState(false);
 
-  const handleTattooPress = (tattoo: any) => {
+  useEffect(() => {
+    loadTattoos();
+  }, []);
+
+  const loadTattoos = async () => {
+    try {
+      setLoading(true);
+
+      // Check permissions
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted") {
+        setPermissionGranted(false);
+        setLoading(false);
+        return;
+      }
+
+      setPermissionGranted(true);
+
+      // Load tattoos from album
+      const assets = await listAlbumAssets(100);
+      setTattoos(assets);
+      console.log("assets", JSON.stringify(assets, null, 2));
+    } catch (error) {
+      console.error("Error loading tattoos from album:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTattooPress = (tattoo: MediaLibrary.Asset) => {
     if (onTattooPress) {
       onTattooPress(tattoo);
     } else {
@@ -20,37 +53,57 @@ export function TattooHistory({ onTattooPress }: TattooHistoryProps) {
     }
   };
 
-  const renderEmpty = () => (
-    <View style={styles.emptyContainer}>
-      <Text type="lg" weight="semibold" style={styles.emptyTitle}>
-        No tattoos generated yet
-      </Text>
-      <Text type="sm" style={styles.emptyDescription}>
-        Start creating your first tattoo design!
-      </Text>
-    </View>
-  );
+  const renderEmpty = () => {
+    if (loading) {
+      return (
+        <View style={styles.emptyContainer}>
+          <ActivityIndicator size="large" />
+          <Text type="sm" style={styles.emptyDescription}>
+            Loading tattoos...
+          </Text>
+        </View>
+      );
+    }
+
+    if (!permissionGranted) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text type="lg" weight="semibold" style={styles.emptyTitle}>
+            Permission Required
+          </Text>
+          <Text type="sm" style={styles.emptyDescription}>
+            Please grant photo library access to view your saved tattoos.
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.emptyContainer}>
+        <Text type="lg" weight="semibold" style={styles.emptyTitle}>
+          No tattoos saved yet
+        </Text>
+        <Text type="sm" style={styles.emptyDescription}>
+          Create and save your first tattoo design!
+        </Text>
+      </View>
+    );
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <FlatList
       data={tattoos}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <VerticalCard
-          style={{
-            id: parseInt(item.id) || 0,
-            title: item.style,
-            style: item.bodyPart,
-            short_description: item.isOwnData ? "Own Data" : "",
-            description: "",
-            gallery: [],
-            prompt: item.prompt || "",
-            image: { uri: `data:image/png;base64,${item.imageData}` },
-          }}
-          onPress={() => handleTattooPress(item)}
-          title={item.style}
-          subtitle={item.bodyPart}
-        />
+        <VerticalCard asset={item} onPress={() => handleTattooPress(item)} />
       )}
       numColumns={2}
       columnWrapperStyle={styles.row}
@@ -83,6 +136,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 16,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: 300,
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
@@ -97,5 +156,6 @@ const styles = StyleSheet.create({
   emptyDescription: {
     color: "#666",
     textAlign: "center",
+    marginTop: 8,
   },
 });

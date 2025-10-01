@@ -3,14 +3,14 @@ import { Color } from "@/constants/TWPalette";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import { BlurView } from "expo-blur";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
-/* import { BlurView } from "expo-blur";
- */
 import { Image } from "expo-image";
-import { Pressable, StyleSheet } from "react-native";
+import * as MediaLibrary from "expo-media-library";
+import { ImageSourcePropType, Pressable, StyleSheet } from "react-native";
 
 interface VerticalCardProps {
-  style: FeaturedTattoo;
-  onPress: (style: FeaturedTattoo) => void;
+  style?: FeaturedTattoo;
+  asset?: MediaLibrary.Asset;
+  onPress: (data: FeaturedTattoo | MediaLibrary.Asset) => void;
   showOverlay?: boolean; // Controls visibility of title, description, and blur
   title?: string; // Override title from style object
   subtitle?: string; // Override subtitle from style object
@@ -21,16 +21,37 @@ export const blurhash =
 
 export function VerticalCard({
   style,
+  asset,
   onPress,
   showOverlay = true,
   title,
   subtitle,
 }: VerticalCardProps) {
+  // Determine which data source to use
+  const data = asset || style;
+  if (!data) return null;
+
+  // Get image source
+  let imageSource: ImageSourcePropType;
+  if (asset) {
+    imageSource = { uri: asset.uri };
+  } else if (style?.image) {
+    imageSource = style.image;
+  } else {
+    return null;
+  }
+
+  // Get display values
+  const displayTitle = title || (asset ? asset.filename : style!.title);
+  const displaySubtitle =
+    subtitle ||
+    (asset ? new Date(asset.creationTime).toLocaleDateString() : style!.style);
+
   return (
     <>
       <Pressable
-        key={style.id}
-        onPress={() => onPress(style)}
+        key={asset?.id || style?.id}
+        onPress={() => onPress(data)}
         style={({ pressed }) => [
           styles.styleContainer,
           { transform: [{ scale: pressed ? 0.99 : 1 }] },
@@ -38,7 +59,7 @@ export function VerticalCard({
       >
         <Image
           cachePolicy="memory-disk"
-          source={style.image}
+          source={imageSource}
           style={[styles.styleImage]}
           contentFit="cover"
           contentPosition="center"
@@ -66,7 +87,7 @@ export function VerticalCard({
                 glassEffectStyle="clear"
               >
                 <Text type="base" weight="bold">
-                  {title || style.title}
+                  {displayTitle}
                 </Text>
                 <Text
                   type="sm"
@@ -74,13 +95,13 @@ export function VerticalCard({
                   style={styles.description}
                   numberOfLines={1}
                 >
-                  {subtitle || style.style}
+                  {displaySubtitle}
                 </Text>
               </GlassView>
             ) : (
               <BlurView intensity={20} style={styles.blurViewContainer}>
                 <Text type="base" weight="bold">
-                  {title || style.title}
+                  {displayTitle}
                 </Text>
                 <Text
                   type="sm"
@@ -88,7 +109,7 @@ export function VerticalCard({
                   style={styles.description}
                   numberOfLines={1}
                 >
-                  {subtitle || style.style}
+                  {displaySubtitle}
                 </Text>
               </BlurView>
             )}
