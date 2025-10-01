@@ -33,7 +33,19 @@ export function GeneratedTattooResult({
         await saveBase64ToAlbum(imageUri, "png");
         Alert.alert(
           "Saved!",
-          "Your tattoo design has been saved to your photo gallery."
+          "Your tattoo design has been saved to your photo gallery.",
+          [
+            {
+              text: "View in gallery",
+              style: "default",
+              onPress: () => {
+                resetTattooCreation();
+                setCurrentStep(1);
+                router.dismissTo("/(tabs)/tattoos");
+              },
+            },
+            { text: "Back", style: "cancel" },
+          ]
         );
       } catch (error) {
         Alert.alert("Error", "Unable to save image. Please try again.");
@@ -49,10 +61,7 @@ export function GeneratedTattooResult({
     // Set current step back to 1 (body part selection)
     setCurrentStep(1);
 
-    // Complete navigation stack reset - this removes all navigation history
-    // and provides a truly fresh start without back button
-    router.dismissAll();
-    router.replace("/(tabs)/home");
+    router.dismissTo("/home/new");
   };
 
   if (!imageUri) {
