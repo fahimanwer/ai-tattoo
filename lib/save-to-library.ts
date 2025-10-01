@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import { Directory, File, Paths } from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 
 export const ALBUM_NAME = "AI Tattoo - Generations";
@@ -64,7 +64,7 @@ async function getOrCreateAlbumWith(asset: MediaLibrary.Asset) {
   return album;
 }
 
-/** Save a base64 image into Photos (and into the app’s album). */
+/** Save a base64 image into Photos (and into the app's album). */
 export async function saveBase64ToAlbum(
   base64: string,
   ext: "png" | "jpg" = "png"
@@ -72,20 +72,20 @@ export async function saveBase64ToAlbum(
   await ensureWritePermission();
 
   // 1) Write bytes to a temp file using FileSystem API.
-  const cacheDir = FileSystem.cacheDirectory + "generated/";
-  await FileSystem.makeDirectoryAsync(cacheDir, { intermediates: true });
+  const cacheDir = new Directory(Paths.cache, "generated");
+  if (!cacheDir.exists) {
+    cacheDir.create();
+  }
 
   const fileName = `${Date.now()}.${ext}`;
-  const fileUri = cacheDir + fileName;
-  
+  const file = new File(cacheDir, fileName);
+
   // Convert base64 to bytes and write to file
   const bytes = base64ToBytes(base64);
-  await FileSystem.writeAsStringAsync(fileUri, base64, {
-    encoding: FileSystem.EncodingType.Base64,
-  });
+  file.write(bytes);
 
   // 2) Create a MediaLibrary asset for that file.
-  const asset = await MediaLibrary.createAssetAsync(fileUri);
+  const asset = await MediaLibrary.createAssetAsync(file.uri);
 
   // 3) Ensure album exists and add the asset.
   const album = await getOrCreateAlbumWith(asset);
