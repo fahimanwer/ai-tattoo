@@ -1,4 +1,3 @@
-import { useTattooHistory } from "@/context/TattooHistoryContext";
 import { GeneratedTattoo } from "@/types/tattoo";
 import {
   GlassContainer,
@@ -19,12 +18,11 @@ interface TattooModalProps {
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
-  const { toggleFavorite } = useTattooHistory();
-
   if (!tattoo) return null;
 
   const handleFavoritePress = () => {
-    toggleFavorite(tattoo.id);
+    // TODO: Implement favorite functionality
+    console.log("Favorite tattoo");
   };
 
   const formatDate = (date: Date) => {

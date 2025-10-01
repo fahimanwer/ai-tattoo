@@ -6,11 +6,7 @@ import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { Text } from "../ui/Text";
 import { VerticalCard } from "../ui/VerticalCard";
 
-interface TattooHistoryProps {
-  onTattooPress?: (tattoo: any) => void;
-}
-
-export function TattooHistory({ onTattooPress }: TattooHistoryProps) {
+export function TattooHistory() {
   const [tattoos, setTattoos] = useState<MediaLibrary.Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [permissionGranted, setPermissionGranted] = useState(false);
@@ -36,7 +32,6 @@ export function TattooHistory({ onTattooPress }: TattooHistoryProps) {
       // Load tattoos from album
       const assets = await listAlbumAssets(100);
       setTattoos(assets);
-      console.log("assets", JSON.stringify(assets, null, 2));
     } catch (error) {
       console.error("Error loading tattoos from album:", error);
     } finally {
@@ -45,12 +40,7 @@ export function TattooHistory({ onTattooPress }: TattooHistoryProps) {
   };
 
   const handleTattooPress = (tattoo: MediaLibrary.Asset) => {
-    if (onTattooPress) {
-      onTattooPress(tattoo);
-    } else {
-      // Default behavior: navigate to detail screen
-      router.push(`/(tabs)/tattoos/${tattoo.id}`);
-    }
+    router.push(`/(tabs)/tattoos/details?id=${tattoo.id}`);
   };
 
   const renderEmpty = () => {

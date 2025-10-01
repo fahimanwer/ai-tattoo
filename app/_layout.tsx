@@ -42,7 +42,6 @@ import "react-native-reanimated";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
-import { TattooHistoryProvider } from "@/context/TattooHistoryContext";
 
 const importedFonts = {
   Oswald_200ExtraLight,
@@ -222,11 +221,9 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <AccentColorProvider>
         <QueryClientProvider client={queryClient}>
-          <TattooHistoryProvider>
-            <TattooCreationProvider>
-              <AppContent />
-            </TattooCreationProvider>
-          </TattooHistoryProvider>
+          <TattooCreationProvider>
+            <AppContent />
+          </TattooCreationProvider>
         </QueryClientProvider>
       </AccentColorProvider>
     </GestureHandlerRootView>

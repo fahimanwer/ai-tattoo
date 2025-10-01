@@ -1,12 +1,20 @@
-import { useTattooHistory } from "@/context/TattooHistoryContext";
+import { ALBUM_NAME } from "@/lib/save-to-library";
 import {
   GlassContainer,
   GlassView,
   isLiquidGlassAvailable,
 } from "expo-glass-effect";
 import { Image } from "expo-image";
+import * as MediaLibrary from "expo-media-library";
 import { router } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  Share,
+  StyleSheet,
+  View,
+} from "react-native";
 import { Icon } from "../ui/Icon";
 import { Text } from "../ui/Text";
 
@@ -15,11 +23,71 @@ interface TattooDetailScreenProps {
 }
 
 export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
-  const { tattoos, toggleFavorite } = useTattooHistory();
+  const [asset, setAsset] = useState<MediaLibrary.Asset | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const tattoo = tattoos.find((t) => t.id === tattooId);
+  const loadAsset = useCallback(async () => {
+    try {
+      setLoading(true);
 
-  if (!tattoo) {
+      // Get the album
+      const album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
+      if (!album) {
+        setLoading(false);
+        return;
+      }
+
+      // Get all assets from the album
+      const { assets } = await MediaLibrary.getAssetsAsync({
+        album,
+        sortBy: [MediaLibrary.SortBy.creationTime],
+        mediaType: ["photo"],
+        first: 100,
+      });
+
+      // Find the asset with matching ID
+      const foundAsset = assets.find((a) => a.id === tattooId);
+      setAsset(foundAsset || null);
+    } catch (error) {
+      console.error("Error loading asset:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [tattooId]);
+
+  useEffect(() => {
+    loadAsset();
+  }, [loadAsset]);
+
+  const handleSharePress = async () => {
+    if (!asset) return;
+
+    try {
+      await Share.share({
+        url: asset.uri,
+        message: `Check out my AI-generated tattoo design!`,
+      });
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Pressable onPress={() => router.back()} style={styles.closeButton}>
+            <Icon symbol="xmark" style={styles.closeIcon} color="white" />
+          </Pressable>
+        </View>
+        <View style={styles.errorContainer}>
+          <ActivityIndicator size="large" color="white" />
+        </View>
+      </View>
+    );
+  }
+
+  if (!asset) {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -36,10 +104,6 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
     );
   }
 
-  const handleFavoritePress = () => {
-    toggleFavorite(tattoo.id);
-  };
-
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -52,11 +116,24 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
       {/* Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: `data:image/png;base64,${tattoo.imageData}` }}
+          source={{ uri: asset.uri }}
           style={styles.image}
           contentFit="contain"
           cachePolicy="memory-disk"
         />
+      </View>
+
+      {/* Info */}
+      <View style={styles.infoContainer}>
+        <Text type="lg" weight="bold" style={styles.infoTitle}>
+          {asset.filename}
+        </Text>
+        <Text type="sm" style={styles.infoSubtitle}>
+          Created: {new Date(asset.creationTime).toLocaleString()}
+        </Text>
+        <Text type="sm" style={styles.infoSubtitle}>
+          {asset.width} × {asset.height} pixels
+        </Text>
       </View>
 
       {/* Actions */}
@@ -64,22 +141,7 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
         {isLiquidGlassAvailable() ? (
           <GlassContainer spacing={16}>
             <GlassView style={styles.actionButton} isInteractive>
-              <Pressable onPress={handleFavoritePress}>
-                <Icon
-                  symbol={tattoo.isFavorite ? "heart.fill" : "heart"}
-                  style={styles.actionIcon}
-                  color={tattoo.isFavorite ? "#FF3B30" : "white"}
-                />
-              </Pressable>
-            </GlassView>
-
-            <GlassView style={styles.actionButton} isInteractive>
-              <Pressable
-                onPress={() => {
-                  // TODO: Implement share functionality
-                  console.log("Share tattoo");
-                }}
-              >
+              <Pressable onPress={handleSharePress}>
                 <Icon
                   symbol="square.and.arrow.up"
                   style={styles.actionIcon}
@@ -91,21 +153,7 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
         ) : (
           <View style={styles.fallbackActions}>
             <Pressable
-              onPress={handleFavoritePress}
-              style={[styles.actionButton, styles.fallbackButton]}
-            >
-              <Icon
-                symbol={tattoo.isFavorite ? "heart.fill" : "heart"}
-                style={styles.actionIcon}
-                color={tattoo.isFavorite ? "#FF3B30" : "white"}
-              />
-            </Pressable>
-
-            <Pressable
-              onPress={() => {
-                // TODO: Implement share functionality
-                console.log("Share tattoo");
-              }}
+              onPress={handleSharePress}
               style={[styles.actionButton, styles.fallbackButton]}
             >
               <Icon
@@ -168,6 +216,17 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+  },
+  infoContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    gap: 4,
+  },
+  infoTitle: {
+    color: "white",
+  },
+  infoSubtitle: {
+    color: "rgba(255,255,255,0.7)",
   },
   actions: {
     padding: 20,

@@ -1,5 +1,5 @@
-import { TattoosContainer } from "@/components/tattoos/Container";
+import { TattooHistory } from "@/components/tattoos/TattooHistory";
 
 export function MyTattoos() {
-  return <TattoosContainer />;
+  return <TattooHistory />;
 }

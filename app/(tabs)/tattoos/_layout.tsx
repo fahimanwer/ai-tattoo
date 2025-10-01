@@ -1,39 +1,6 @@
-import { Icon } from "@/components/ui/Icon";
 import { useLargeHeaderOptions } from "@/constants/navigation-options";
-import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
-import { Stack, useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
-
-function ButtonToCreateTattoo() {
-  const router = useRouter();
-  const { isLimitReached } = useUsageLimit();
-
-  const goToCreateTattoo = () => {
-    router.push("/(new)/select-body-part");
-  };
-
-  console.log("isLimitReached", isLimitReached);
-  // Don't show button if limit is reached
-  if (isLimitReached) {
-    return (
-      <Text style={{ color: "white", marginHorizontal: 8 }}>Limit Reached</Text>
-    );
-  }
-
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-      }}
-    >
-      <Pressable style={{ paddingLeft: 8 }} onPress={goToCreateTattoo}>
-        <Icon symbol="plus" color={"#007AFF"} />
-      </Pressable>
-    </View>
-  );
-}
+import { Stack } from "expo-router";
 
 export default function TattoosLayout() {
   const largeHeaderOptions = useLargeHeaderOptions();
@@ -45,14 +12,9 @@ export default function TattoosLayout() {
         title: "My Tattoos",
       }}
     >
+      <Stack.Screen name="index" />
       <Stack.Screen
-        name="index"
-        options={{
-          headerRight: () => <ButtonToCreateTattoo />,
-        }}
-      />
-      <Stack.Screen
-        name="[id]"
+        name="details/index"
         options={{
           headerLargeTitle: true,
           presentation: "formSheet",

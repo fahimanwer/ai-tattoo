@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { useTattooCreation } from "@/context/TattooCreationContext";
 import { useSubscription } from "@/hooks/useSubscription";
-import { useTattooGeneration } from "@/hooks/useTattooGeneration";
 import { ApiError } from "@/lib/api-client";
 import { assetToBase64, urlToBase64 } from "@/lib/base64-utils";
 import { textAndImageToImage } from "@/lib/nano";
@@ -30,7 +29,6 @@ export function TattooCreation() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { refreshSubscriptionStatus } = useSubscription();
-  const { saveGeneratedTattoo } = useTattooGeneration();
 
   // Mutation for generating tattoo
   const mutation = useMutation({
@@ -98,17 +96,6 @@ export function TattooCreation() {
     onSuccess: async (data) => {
       if (data.imageData) {
         const generatedImageUri = `data:image/png;base64,${data.imageData}`;
-
-        // Save to local tattoo history
-        saveGeneratedTattoo(
-          data.imageData,
-          {
-            style: selectedTattooImage?.style || "Custom",
-            bodyPart: selectedBodyPartCategory || "Unknown",
-            isOwnData: isUsingCustomImage || isUsingExistingTattoo,
-          },
-          customInstructions
-        );
 
         // Invalidate usage query to reflect updated usage count
         queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
