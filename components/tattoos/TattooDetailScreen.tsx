@@ -1,25 +1,105 @@
 import { ALBUM_NAME } from "@/lib/save-to-library";
-import {
-  GlassContainer,
-  GlassView,
-  isLiquidGlassAvailable,
-} from "expo-glass-effect";
+import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   Pressable,
   Share,
   StyleSheet,
   View,
 } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { Icon } from "../ui/Icon";
 import { Text } from "../ui/Text";
 
 interface TattooDetailScreenProps {
   tattooId: string;
+}
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+
+interface InteractiveImageProps {
+  uri: string;
+}
+
+function InteractiveImage({ uri }: InteractiveImageProps) {
+  const scale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
+  const offset = useSharedValue({ x: 0, y: 0 });
+  const start = useSharedValue({ x: 0, y: 0 });
+
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: offset.value.x },
+      { translateY: offset.value.y },
+      { scale: scale.value },
+    ],
+  }));
+
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      offset.value = {
+        x: e.translationX + start.value.x,
+        y: e.translationY + start.value.y,
+      };
+    })
+    .onEnd(() => {
+      start.value = {
+        x: offset.value.x,
+        y: offset.value.y,
+      };
+    });
+
+  const pinchGesture = Gesture.Pinch()
+    .onUpdate((e) => {
+      scale.value = savedScale.value * e.scale;
+    })
+    .onEnd(() => {
+      savedScale.value = scale.value;
+    });
+
+  const doubleTapGesture = Gesture.Tap()
+    .numberOfTaps(2)
+    .onEnd(() => {
+      if (scale.value > 1) {
+        // Reset to default
+        scale.value = withTiming(1);
+        savedScale.value = 1;
+        offset.value = withTiming({ x: 0, y: 0 });
+        start.value = { x: 0, y: 0 };
+      } else {
+        // Zoom in
+        scale.value = withTiming(2);
+        savedScale.value = 2;
+      }
+    });
+
+  const composed = Gesture.Simultaneous(
+    doubleTapGesture,
+    Gesture.Simultaneous(pinchGesture, panGesture)
+  );
+
+  return (
+    <GestureDetector gesture={composed}>
+      <Animated.View style={[styles.imageWrapper, animatedStyles]}>
+        <Image
+          source={{ uri }}
+          style={styles.image}
+          contentFit="contain"
+          cachePolicy="memory-disk"
+        />
+      </Animated.View>
+    </GestureDetector>
+  );
 }
 
 export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
@@ -105,73 +185,47 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.closeButton}>
-          <Icon symbol="xmark" style={styles.closeIcon} color="white" />
-        </Pressable>
-      </View>
-
-      {/* Image */}
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: asset.uri }}
-          style={styles.image}
-          contentFit="contain"
-          cachePolicy="memory-disk"
-        />
-      </View>
-
-      {/* Info */}
-      <View style={styles.infoContainer}>
-        <Text type="lg" weight="bold" style={styles.infoTitle}>
-          {asset.filename}
-        </Text>
-        <Text type="sm" style={styles.infoSubtitle}>
-          Created: {new Date(asset.creationTime).toLocaleString()}
-        </Text>
-        <Text type="sm" style={styles.infoSubtitle}>
-          {asset.width} × {asset.height} pixels
-        </Text>
-      </View>
-
-      {/* Actions */}
-      <View style={styles.actions}>
-        {isLiquidGlassAvailable() ? (
-          <GlassContainer spacing={16}>
-            <GlassView style={styles.actionButton} isInteractive>
-              <Pressable onPress={handleSharePress}>
-                <Icon
-                  symbol="square.and.arrow.up"
-                  style={styles.actionIcon}
-                  color="white"
-                />
-              </Pressable>
-            </GlassView>
-          </GlassContainer>
-        ) : (
-          <View style={styles.fallbackActions}>
-            <Pressable
-              onPress={handleSharePress}
-              style={[styles.actionButton, styles.fallbackButton]}
-            >
+    <>
+      <Stack.Screen
+        options={{
+          headerLeft: () => (
+            <Pressable onPress={() => router.back()} style={styles.closeButton}>
+              <Icon symbol="xmark" style={styles.closeIcon} color="white" />
+            </Pressable>
+          ),
+          headerRight: () => (
+            <Pressable onPress={handleSharePress} style={styles.shareButton}>
               <Icon
                 symbol="square.and.arrow.up"
-                style={styles.actionIcon}
+                style={styles.closeIcon}
                 color="white"
               />
             </Pressable>
-          </View>
-        )}
+          ),
+        }}
+      />
+      <View style={styles.container}>
+        {/* Interactive Image */}
+        <View style={styles.imageContainer}>
+          <InteractiveImage uri={asset.uri} />
+        </View>
+
+        {/* Info */}
+        <GlassView style={styles.infoContainer} glassEffectStyle="clear">
+          <Text type="sm" style={styles.infoSubtitle}>
+            {asset.width} × {asset.height} •{" "}
+            {new Date(asset.creationTime).toLocaleDateString()}
+          </Text>
+        </GlassView>
       </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#000000",
   },
   header: {
     flexDirection: "row",
@@ -179,83 +233,66 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     padding: 20,
     paddingBottom: 16,
-  },
-  headerInfo: {
-    flex: 1,
-    marginRight: 16,
-  },
-  title: {
-    color: "white",
-    marginBottom: 4,
-  },
-  subtitle: {
-    color: "rgba(255,255,255,0.7)",
-    marginBottom: 4,
-  },
-  ownDataText: {
-    color: "#007AFF",
-    fontSize: 12,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  shareButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(0,0,0,0.5)",
     alignItems: "center",
     justifyContent: "center",
   },
   closeIcon: {
-    width: 16,
-    height: 16,
-  },
-  imageContainer: {
-    flex: 1,
-    minHeight: 300,
-    paddingHorizontal: 20,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-  },
-  infoContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 4,
-  },
-  infoTitle: {
-    color: "white",
-  },
-  infoSubtitle: {
-    color: "rgba(255,255,255,0.7)",
-  },
-  actions: {
-    padding: 20,
-    paddingTop: 16,
-    alignItems: "center",
-  },
-  actionButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  actionIcon: {
     width: 20,
     height: 20,
   },
-  fallbackActions: {
-    flexDirection: "row",
-    gap: 16,
+  imageContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  fallbackButton: {
-    backgroundColor: "rgba(255,255,255,0.1)",
+  imageWrapper: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+  },
+  infoContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    paddingBottom: 32,
+  },
+  infoSubtitle: {
+    color: "rgba(255,255,255,0.9)",
+    textAlign: "center",
   },
   errorContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 40,
+    backgroundColor: "#000000",
   },
   errorText: {
     color: "white",

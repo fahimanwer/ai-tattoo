@@ -86,23 +86,12 @@ export function VerticalCard({
                 style={styles.styleImageContainer}
                 glassEffectStyle="clear"
               >
-                <Text type="base" weight="bold">
-                  {displayTitle}
-                </Text>
-                <Text
-                  type="sm"
-                  weight="normal"
-                  style={styles.description}
-                  numberOfLines={1}
-                >
+                <Text type="sm" weight="normal" numberOfLines={1}>
                   {displaySubtitle}
                 </Text>
               </GlassView>
             ) : (
               <BlurView intensity={20} style={styles.blurViewContainer}>
-                <Text type="base" weight="bold">
-                  {displayTitle}
-                </Text>
                 <Text
                   type="sm"
                   weight="normal"
@@ -138,7 +127,7 @@ const styles = StyleSheet.create({
   styleImageContainer: {
     position: "absolute",
     width: "95%",
-    height: 70,
+    height: 50,
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
@@ -156,7 +145,7 @@ const styles = StyleSheet.create({
   blurViewContainer: {
     position: "absolute",
     width: "100%",
-    height: 70,
+    height: 50,
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
