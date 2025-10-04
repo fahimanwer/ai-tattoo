@@ -1,13 +1,54 @@
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
+import { useUsageLimit } from "@/hooks/useUsageLimit";
+import { presentPaywall } from "@/lib/paywall-utils";
 import { BlurView } from "expo-blur";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
-import { Pressable } from "react-native";
+import { Alert, Pressable } from "react-native";
+
 export function Banner() {
+  const { isLimitReached, subscriptionTier } = useUsageLimit();
+
+  // Only show banner if user is on free tier or has reached their limit
+  const shouldShowBanner = subscriptionTier === "free" || isLimitReached;
+
+  // Dynamic banner text based on user status
+  const bannerTitle = isLimitReached
+    ? "Limit Reached - Upgrade Now"
+    : "Unlock Premium Tattoos";
+  const bannerSubtitle = isLimitReached
+    ? "Continue creating with unlimited generations"
+    : "Unlimited designs, exclusive styles & HD downloads";
+
+  const handlePress = async () => {
+    try {
+      const success = await presentPaywall();
+      if (success) {
+        Alert.alert(
+          "Welcome to Premium! 🎉",
+          "You now have access to unlimited tattoo generations and exclusive features.",
+          [{ text: "Awesome!", style: "default" }]
+        );
+      }
+    } catch (error) {
+      console.error("Error presenting paywall:", error);
+      Alert.alert(
+        "Error",
+        "Unable to open upgrade options. Please try again later.",
+        [{ text: "OK", style: "default" }]
+      );
+    }
+  };
+
+  // Don't render banner if user doesn't need to upgrade
+  if (!shouldShowBanner) {
+    return null;
+  }
+
   return (
     <Pressable
-      onPress={() => {}}
+      onPress={handlePress}
       android_ripple={{ color: "rgba(0,0,0,0.1)" }}
       unstable_pressDelay={0}
       style={({ pressed }) => [
@@ -67,14 +108,14 @@ export function Banner() {
           glassEffectStyle="clear"
         >
           <Text type="2xl" weight="bold">
-            Unlock Premium Tattoos
+            {bannerTitle}
           </Text>
           <Text
             type="base"
             weight="light"
             style={{ textAlign: "center", opacity: 0.7 }}
           >
-            Unlimited designs, exclusive styles & HD downloads
+            {bannerSubtitle}
           </Text>
         </GlassView>
       ) : (
@@ -96,14 +137,14 @@ export function Banner() {
           }}
         >
           <Text type="2xl" weight="bold">
-            Unlock Premium Tattoos
+            {bannerTitle}
           </Text>
           <Text
             type="base"
             weight="light"
             style={{ textAlign: "center", opacity: 0.7 }}
           >
-            Unlimited designs, exclusive styles & HD downloads
+            {bannerSubtitle}
           </Text>
         </BlurView>
       )}
