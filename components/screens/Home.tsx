@@ -2,26 +2,10 @@ import { BodyPartsInspiration } from "@/components/home/BodyPartsInspiration";
 import { GetInspiration } from "@/components/home/GetInspiration";
 import { Banner } from "@/components/pro/Banner";
 import { useUserData } from "@/hooks/useUserData";
-import { useEffect } from "react";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 
 export function Home() {
-  const { user, usage, subscription, isLoading, refresh } = useUserData();
-
-  // Log user data when it changes
-  useEffect(() => {
-    if (user) {
-      console.log("🏠 Home - User data:", {
-        userId: user.id,
-        email: user.email,
-        name: user.name,
-        subscriptionTier: subscription.tier,
-        usageCount: usage.currentPeriodUsage?.count || 0,
-        usageLimit: usage.currentPeriodUsage?.limit || 0,
-        hasActiveEntitlement: usage.hasActiveEntitlement,
-      });
-    }
-  }, [user, usage, subscription]);
+  const { isLoading, refresh } = useUserData();
 
   return (
     <ScrollView

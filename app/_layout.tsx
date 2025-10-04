@@ -41,6 +41,7 @@ import "react-native-reanimated";
 
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
+import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
 
 const importedFonts = {
@@ -222,9 +223,11 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <AccentColorProvider>
         <QueryClientProvider client={queryClient}>
-          <TattooCreationProvider>
-            <AppContent />
-          </TattooCreationProvider>
+          <SubscriptionProvider>
+            <TattooCreationProvider>
+              <AppContent />
+            </TattooCreationProvider>
+          </SubscriptionProvider>
         </QueryClientProvider>
       </AccentColorProvider>
     </GestureHandlerRootView>
