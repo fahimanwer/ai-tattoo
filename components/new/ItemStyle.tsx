@@ -2,6 +2,7 @@ import { Text } from "@/components/ui/Text";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import { Image } from "expo-image";
 import { Pressable, StyleSheet } from "react-native";
+import { Icon } from "../ui/Icon";
 
 interface ItemStyleProps {
   tattoo: FeaturedTattoo;
@@ -17,21 +18,19 @@ export function ItemStyle({
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.itemContainer, isSelected && styles.selectedContainer]}
+      style={styles.itemContainer}
       accessibilityLabel={`Select tattoo style: ${tattoo.title}`}
     >
+      {isSelected && (
+        <Icon symbol="checkmark" style={styles.checkmarkIcon} color="white" />
+      )}
       <Image
         source={tattoo.image ?? undefined}
         style={[styles.image, isSelected && styles.selectedImage]}
         accessibilityIgnoresInvertColors
         accessibilityLabel={`${tattoo.title} cover image`}
       />
-      <Text
-        weight="normal"
-        type="xs"
-        lightColor={isSelected ? "black" : "white"}
-        darkColor={isSelected ? "black" : "white"}
-      >
+      <Text weight="normal" type="xs" lightColor="white" darkColor="white">
         {tattoo.title}
       </Text>
     </Pressable>
@@ -47,20 +46,22 @@ const styles = StyleSheet.create({
     width: 64,
     height: "auto",
     paddingVertical: 4,
+    position: "relative",
   },
   image: {
     width: 44,
     height: 44,
     borderRadius: 99,
   },
-  selectedContainer: {
-    backgroundColor: "white",
-    borderColor: "white",
-    borderWidth: 2,
-    borderRadius: 8,
-  },
   selectedImage: {
-    borderWidth: 2,
-    borderColor: "rgba(0,0,0,0.1)",
+    borderWidth: 3,
+    borderColor: "white",
+  },
+  checkmarkIcon: {
+    position: "absolute",
+    top: 16,
+    width: 16,
+    height: 16,
+    zIndex: 10,
   },
 });
