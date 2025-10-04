@@ -1,8 +1,9 @@
-import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
+import { Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
+import { fixedSize } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -74,24 +75,17 @@ export function CustomDetails() {
 
       {/* Navigation Buttons */}
       <View style={styles.navigationContainer}>
-        <View style={styles.navigationButtons}>
-          {/* <Button
-            title="Back"
-            variant="outline"
-            radius="full"
-            color="gray"
-            onPress={previousStep}
-            style={styles.navButton}
-          /> */}
-          <Button
-            symbol="wand.and.sparkles"
-            title="Create Tattoo"
-            variant="solid"
-            radius="full"
-            color="orange"
+        <Host matchContents style={{ alignSelf: "center" }}>
+          <ExpoUIButton
+            systemImage="wand.and.sparkles"
+            controlSize="large"
+            variant="glassProminent"
             onPress={() => router.push("/create-tattoo")}
-          />
-        </View>
+            modifiers={[fixedSize()]}
+          >
+            Create Tattoo
+          </ExpoUIButton>
+        </Host>
       </View>
     </ScrollView>
   );

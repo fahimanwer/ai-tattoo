@@ -1,4 +1,4 @@
-import type { FeaturedTattoo } from "@/lib/featured-tattoos";
+import { featuredTattoos, type FeaturedTattoo } from "@/lib/featured-tattoos";
 import type { Asset } from "expo-media-library";
 import {
   createContext,
@@ -138,7 +138,7 @@ const initialState: TattooCreationState = {
   selectedBodyPartCategory: undefined,
   selectedBodyPartVariant: undefined,
   customUserImage: undefined,
-  selectedTattooImage: undefined,
+  selectedTattooImage: featuredTattoos[0].image,
   existingTattooImage: undefined,
   isUsingCustomImage: false,
   isUsingExistingTattoo: false,
