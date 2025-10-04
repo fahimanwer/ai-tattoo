@@ -3,7 +3,14 @@ import { Text } from "@/components/ui/Text";
 import { bodyParts } from "@/constants/BodyParts";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
-import { ContextMenu, Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
+import {
+  ContextMenu,
+  Button as ExpoUIButton,
+  Image as ExpoUIImage,
+  Text as ExpoUIText,
+  Host,
+  HStack,
+} from "@expo/ui/swift-ui";
 import {
   GlassContainer,
   GlassView,
@@ -12,6 +19,8 @@ import {
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 
+import { theme } from "@/theme/theme";
+import { buttonStyle, fixedSize, frame } from "@expo/ui/swift-ui/modifiers";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { useCallback } from "react";
@@ -132,7 +141,7 @@ export function BodyPartSelection() {
         </Text>
         {/* Context menu for image selection */}
         <Host useViewportSizeMeasurement matchContents>
-          <ContextMenu>
+          <ContextMenu modifiers={[buttonStyle("glass")]}>
             <ContextMenu.Items>
               <ExpoUIButton
                 systemImage="photo.on.rectangle"
@@ -148,9 +157,10 @@ export function BodyPartSelection() {
               </ExpoUIButton>
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <ExpoUIButton
-                systemImage="photo.badge.plus.fill"
-                variant="glass"
+              <ExpoUIImage
+                systemName="photo.badge.plus.fill"
+                size={theme.fontSize20}
+                modifiers={[frame({ width: 30, height: 30 }), fixedSize()]}
                 color="white"
               />
             </ContextMenu.Trigger>
@@ -633,26 +643,37 @@ export function BodyPartSelection() {
 
       {/* Navigation Button */}
       <View style={styles.navigationContainer}>
-        <Button
-          title="Select Tattoo Style"
-          variant="solid"
-          radius="full"
-          color="orange"
-          onPress={nextStep}
-          style={styles.nextButton}
-          disabled={
-            !isUsingCustomImage &&
-            (!selectedBodyPartCategory || !selectedBodyPartVariant)
-          }
-        />
-        <Button
-          style={{ marginTop: 12 }}
-          title="Back"
-          variant="outline"
-          radius="full"
-          color="orange"
-          onPress={() => router.back()}
-        />
+        <Host matchContents style={{ alignSelf: "center" }}>
+          <HStack spacing={theme.space16}>
+            <ExpoUIButton
+              systemImage="chevron.left"
+              controlSize="large"
+              variant="glass"
+              onPress={() => router.back()}
+              modifiers={[fixedSize()]}
+            >
+              Back
+            </ExpoUIButton>
+            <ExpoUIButton
+              controlSize="large"
+              variant="glassProminent"
+              onPress={nextStep}
+              modifiers={[fixedSize()]}
+              disabled={
+                !isUsingCustomImage &&
+                (!selectedBodyPartCategory || !selectedBodyPartVariant)
+              }
+            >
+              <HStack spacing={8}>
+                <ExpoUIText>Next</ExpoUIText>
+                <ExpoUIImage
+                  systemName="chevron.right"
+                  size={theme.fontSize18}
+                />
+              </HStack>
+            </ExpoUIButton>
+          </HStack>
+        </Host>
       </View>
     </ScrollView>
   );

@@ -1,12 +1,20 @@
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
 import { featuredTattoos } from "@/lib/featured-tattoos";
-import { ContextMenu, Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
+import {
+  ContextMenu,
+  Button as ExpoUIButton,
+  Image as ExpoUIImage,
+  Text as ExpoUIText,
+  Host,
+  HStack,
+} from "@expo/ui/swift-ui";
 /* import { BlurView } from "expo-blur"; */
 import { Icon } from "@/components/ui/Icon";
+import { theme } from "@/theme/theme";
+import { buttonStyle, fixedSize, frame } from "@expo/ui/swift-ui/modifiers";
 import { BlurView } from "expo-blur";
 import {
   GlassContainer,
@@ -104,7 +112,7 @@ export function TattooStyleSelection() {
           Select tattoo style or upload photo
         </Text>
         <Host useViewportSizeMeasurement matchContents>
-          <ContextMenu>
+          <ContextMenu modifiers={[buttonStyle("glass")]}>
             <ContextMenu.Items>
               <ExpoUIButton
                 systemImage="photo.on.rectangle"
@@ -120,9 +128,10 @@ export function TattooStyleSelection() {
               </ExpoUIButton>
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <ExpoUIButton
-                systemImage="photo.badge.plus.fill"
-                variant="glass"
+              <ExpoUIImage
+                systemName="photo.badge.plus.fill"
+                size={theme.fontSize20}
+                modifiers={[frame({ width: 30, height: 30 }), fixedSize()]}
                 color="white"
               />
             </ContextMenu.Trigger>
@@ -228,42 +237,33 @@ export function TattooStyleSelection() {
       {!isUsingExistingTattoo && (
         <ScrollView
           horizontal
-          style={{ flex: 1, paddingHorizontal: 16 }}
+          style={{ flex: 1, paddingHorizontal: theme.space16 }}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
             flexDirection: "row",
             flexWrap: "wrap",
-            gap: 12,
-            paddingVertical: 8,
+            gap: theme.space12,
+            paddingVertical: theme.space8,
+            marginBottom: theme.space16,
           }}
         >
           {featuredTattoos.map((tattoo) => (
-            <Pressable
-              key={tattoo.id}
-              onPress={() => {
-                updateOptions({ selectedTattoo: tattoo });
-                setSelectedTattooImage(null); // Reset selected tattoo image when changing style
-              }}
-              style={{ marginBottom: 8 }}
-            >
-              <Badge
-                variant={
-                  options.selectedTattoo?.id === tattoo.id ? "solid" : "outline"
-                }
-                color={
-                  options.selectedTattoo?.id === tattoo.id ? "white" : "neutral"
-                }
-                size="md"
-                radius="full"
-                style={{
-                  borderWidth: options.selectedTattoo?.id === tattoo.id ? 2 : 1,
-                  minWidth: 120,
-                  paddingHorizontal: 16,
+            <Host matchContents key={tattoo.id}>
+              <ExpoUIButton
+                onPress={() => {
+                  updateOptions({ selectedTattoo: tattoo });
+                  setSelectedTattooImage(null); // Reset selected tattoo image when changing style
                 }}
+                variant={
+                  options.selectedTattoo?.id === tattoo.id
+                    ? "glassProminent"
+                    : "glass"
+                }
+                modifiers={[fixedSize()]}
               >
                 {tattoo.title}
-              </Badge>
-            </Pressable>
+              </ExpoUIButton>
+            </Host>
           ))}
         </ScrollView>
       )}
@@ -310,20 +310,23 @@ export function TattooStyleSelection() {
 
       {/* Navigation Buttons */}
       <View style={styles.navigationContainer}>
-        <View style={styles.navigationButtons}>
-          <Button
-            title="Add Details"
-            variant="solid"
-            radius="full"
-            color="orange"
+        <Host matchContents style={{ alignSelf: "center" }}>
+          <ExpoUIButton
+            variant="glassProminent"
             onPress={nextStep}
-            style={styles.navButton}
+            controlSize="large"
+            modifiers={[fixedSize()]}
             disabled={
               !isUsingExistingTattoo &&
               (!options.selectedTattoo || !selectedTattooImage)
             }
-          />
-        </View>
+          >
+            <HStack spacing={8}>
+              <ExpoUIText>Add Details</ExpoUIText>
+              <ExpoUIImage systemName="chevron.right" size={theme.fontSize18} />
+            </HStack>
+          </ExpoUIButton>
+        </Host>
       </View>
     </ScrollView>
   );
