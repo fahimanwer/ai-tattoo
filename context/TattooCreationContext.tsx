@@ -131,7 +131,15 @@ const initialState: TattooCreationState = {
   selectedPhoto: undefined,
   imageIds: [],
   options: {
+    selectedTattoo: featuredTattoos[0], // Default to first featured tattoo (Japanese)
+    colorOption: "color", // Default to color tattoos
     isPrivate: false,
+    placement: {
+      bodyPart: "arm", // Default body part
+      side: "left",
+      size: "medium",
+    },
+    priority: "quality", // Default priority
   },
   currentStep: 1,
   totalSteps: 4, // 1) Body part/Photo, 2) Tattoo style, 3) Details, 4) Creation
