@@ -1,44 +1,11 @@
-import { Icon } from "@/components/ui/Icon";
 import { useLargeHeaderOptions } from "@/constants/navigation-options";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
-import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { authClient } from "@/lib/auth-client";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { useEffect } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Platform } from "react-native";
 import Purchases from "react-native-purchases";
-
-function ButtonToCreateTattoo() {
-  const router = useRouter();
-  const { isLimitReached } = useUsageLimit();
-
-  const goToCreateTattoo = () => {
-    /* router.push("/(new)/select-body-part"); */
-    router.push("/(new)/create-tattoo");
-  };
-
-  console.log("isLimitReached", isLimitReached);
-  // Don't show button if limit is reached
-  if (isLimitReached) {
-    return (
-      <Text style={{ color: "white", marginHorizontal: 8 }}>Limit Reached</Text>
-    );
-  }
-
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-      }}
-    >
-      <Pressable style={{ paddingLeft: 8 }} onPress={goToCreateTattoo}>
-        <Icon symbol="plus" color={"#007AFF"} />
-      </Pressable>
-    </View>
-  );
-}
 
 export default function ProfileLayout() {
   const largeHeaderOptions = useLargeHeaderOptions();
@@ -85,8 +52,6 @@ export default function ProfileLayout() {
           options={{
             title: "Get Inspired",
             headerLargeTitle: true,
-            headerBackButtonDisplayMode: "minimal",
-            headerRight: () => <ButtonToCreateTattoo />,
           }}
         />
         <Stack.Screen
