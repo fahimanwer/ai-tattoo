@@ -65,6 +65,7 @@ export default function ProfileLayout() {
         <Stack.Screen
           name="body-part"
           options={{
+            title: "Body Part",
             headerBackButtonDisplayMode: "minimal",
             headerLargeTitle: false,
           }}
