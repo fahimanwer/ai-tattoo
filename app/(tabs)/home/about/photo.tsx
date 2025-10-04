@@ -1,38 +1,250 @@
-import { NotFound } from "@/components/screens/notFound";
+import { HeaderButton } from "@/components/ui/HeaderButtons/HeaderButton";
+import { Icon } from "@/components/ui/Icon";
+import { Text } from "@/components/ui/Text";
+import { useTattooCreation } from "@/context/TattooCreationContext";
+import { getTattooStyleById } from "@/lib/featured-tattoos";
+import { Button, Host } from "@expo/ui/swift-ui";
+import { fixedSize } from "@expo/ui/swift-ui/modifiers";
+import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
-import { Stack, useLocalSearchParams } from "expo-router";
-import { ScrollView } from "react-native";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Dimensions, StyleSheet, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 export const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+
+function InteractiveImage({ uri }: { uri: string }) {
+  const scale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
+  const offset = useSharedValue({ x: 0, y: 0 });
+  const start = useSharedValue({ x: 0, y: 0 });
+
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: offset.value.x },
+      { translateY: offset.value.y },
+      { scale: scale.value },
+    ],
+  }));
+
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      offset.value = {
+        x: e.translationX + start.value.x,
+        y: e.translationY + start.value.y,
+      };
+    })
+    .onEnd(() => {
+      start.value = {
+        x: offset.value.x,
+        y: offset.value.y,
+      };
+    });
+
+  const pinchGesture = Gesture.Pinch()
+    .onUpdate((e) => {
+      scale.value = savedScale.value * e.scale;
+    })
+    .onEnd(() => {
+      savedScale.value = scale.value;
+    });
+
+  const doubleTapGesture = Gesture.Tap()
+    .numberOfTaps(2)
+    .onEnd(() => {
+      if (scale.value > 1) {
+        // Reset to default
+        scale.value = withTiming(1);
+        savedScale.value = 1;
+        offset.value = withTiming({ x: 0, y: 0 });
+        start.value = { x: 0, y: 0 };
+      } else {
+        // Zoom in
+        scale.value = withTiming(2);
+        savedScale.value = 2;
+      }
+    });
+
+  const composed = Gesture.Simultaneous(
+    doubleTapGesture,
+    Gesture.Simultaneous(pinchGesture, panGesture)
+  );
+
+  return (
+    <GestureDetector gesture={composed}>
+      <Animated.View style={[styles.imageWrapper, animatedStyles]}>
+        <Image
+          source={{ uri }}
+          style={styles.image}
+          contentFit="contain"
+          cachePolicy="memory-disk"
+          placeholder={{ blurhash }}
+          transition={1000}
+        />
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+
 export default function Photo() {
   const params = useLocalSearchParams<{
     imageUrl: string;
+    styleId?: string;
   }>();
 
-  console.log("Image URL:", params.imageUrl);
+  const { updateOptions, setSelectedTattooImage, setCurrentStep } =
+    useTattooCreation();
+
+  const handleUseTattoo = () => {
+    // Get the tattoo style if styleId is provided
+    const tattooStyle = params.styleId
+      ? getTattooStyleById(Number(params.styleId))
+      : null;
+
+    // Update tattoo creation context
+    if (tattooStyle) {
+      updateOptions({ selectedTattoo: tattooStyle });
+    }
+
+    // Set the selected image
+    setSelectedTattooImage({ uri: params.imageUrl });
+
+    // Navigate to body part selection to continue the flow
+    router.dismissTo("/(new)/select-body-part");
+  };
 
   if (!params.imageUrl) {
-    return <NotFound />;
+    return (
+      <View style={styles.errorContainer}>
+        <Text type="lg" weight="bold" style={styles.errorText}>
+          Image not found
+        </Text>
+      </View>
+    );
   }
 
   return (
     <>
-      <Stack.Screen options={{ title: "Photo" }} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 16, gap: 16 }}
-      >
-        <Image
-          source={{ uri: params.imageUrl }}
-          placeholder={{ blurhash }}
-          transition={1000}
-          style={{ width: "100%", height: 420 }}
-          contentFit="contain"
-        />
-      </ScrollView>
+      <Stack.Screen
+        options={{
+          title: "Tattoo Preview",
+          headerLeft: () => (
+            <HeaderButton
+              imageProps={{ systemName: "xmark" }}
+              buttonProps={{
+                onPress: () => router.back(),
+              }}
+            />
+          ),
+        }}
+      />
+      <View style={styles.container}>
+        {/* Interactive Image */}
+        <View style={styles.imageContainer}>
+          <InteractiveImage uri={params.imageUrl} />
+        </View>
+
+        {/* Action Bar */}
+        <GlassView style={styles.actionBar} glassEffectStyle="clear">
+          <View style={styles.actionContent}>
+            <View style={styles.hintContainer}>
+              <Icon
+                symbol="hand.tap.fill"
+                style={styles.hintIcon}
+                color="rgba(255,255,255,0.6)"
+              />
+              <Text type="caption" style={styles.hintText}>
+                Pinch to zoom • Double tap to reset
+              </Text>
+            </View>
+
+            <Host matchContents style={{ width: "100%" }}>
+              <Button
+                systemImage="wand.and.sparkles"
+                controlSize="large"
+                variant="borderedProminent"
+                onPress={handleUseTattoo}
+                modifiers={[fixedSize()]}
+              >
+                Use This Tattoo
+              </Button>
+            </Host>
+          </View>
+        </GlassView>
+      </View>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#000",
+  },
+  imageContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imageWrapper: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT * 0.7,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+  actionBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingBottom: 34,
+    paddingTop: 16,
+    paddingHorizontal: 16,
+  },
+  actionContent: {
+    gap: 12,
+    alignItems: "center",
+  },
+  hintContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 4,
+  },
+  hintIcon: {
+    width: 16,
+    height: 16,
+  },
+  hintText: {
+    color: "rgba(255,255,255,0.6)",
+    fontSize: 12,
+  },
+  closeButton: {
+    padding: 8,
+  },
+  icon: {
+    width: 20,
+    height: 20,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000",
+  },
+  errorText: {
+    color: "white",
+  },
+});

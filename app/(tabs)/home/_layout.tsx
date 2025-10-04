@@ -87,16 +87,8 @@ export default function ProfileLayout() {
         <Stack.Screen
           name="about/photo"
           options={{
-            headerLargeTitle: true,
-            presentation: "formSheet",
-            sheetGrabberVisible: true,
-            sheetAllowedDetents: [0.3, 0.5, 1],
-            sheetInitialDetentIndex: 0,
-            contentStyle: {
-              backgroundColor: isLiquidGlassAvailable()
-                ? "transparent"
-                : "black",
-            },
+            headerLargeTitle: false,
+            presentation: "fullScreenModal",
           }}
         />
       </Stack>

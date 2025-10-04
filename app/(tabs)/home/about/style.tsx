@@ -1,6 +1,7 @@
 import ParallaxScrollView from "@/components/about/ParallaxScrollView";
 import { Button } from "@/components/ui/Button";
 import { VerticalCard } from "@/components/ui/VerticalCard";
+import { useTattooCreation } from "@/context/TattooCreationContext";
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
 import { router, useLocalSearchParams } from "expo-router";
 import {
@@ -12,12 +13,26 @@ import {
 
 export default function AboutStyle() {
   const { style: styleParam } = useLocalSearchParams<{ style: string }>();
+  const { updateOptions, setSelectedTattooImage } = useTattooCreation();
 
   const selectedStyle: FeaturedTattoo | undefined = featuredTattoos.find(
     (tattoo) => tattoo.id.toString() === styleParam
   );
 
   const currentStyle = selectedStyle || featuredTattoos[0];
+
+  const handleCreateTattoo = () => {
+    // Update tattoo creation context with selected style
+    updateOptions({ selectedTattoo: currentStyle });
+
+    // Set the cover image as the initial tattoo image
+    if (currentStyle.image) {
+      setSelectedTattooImage(currentStyle.image);
+    }
+
+    // Navigate to body part selection
+    router.push("/(new)/select-body-part");
+  };
 
   return (
     <ParallaxScrollView
@@ -81,6 +96,7 @@ export default function AboutStyle() {
                           pathname: "/home/about/photo",
                           params: {
                             imageUrl: imageUrl as string,
+                            styleId: currentStyle.id.toString(),
                           },
                         });
                       }}
@@ -94,7 +110,7 @@ export default function AboutStyle() {
           <View style={styles.actionContainer}>
             <Button
               title={`Create ${currentStyle?.title} Tattoo`}
-              onPress={() => {}}
+              onPress={handleCreateTattoo}
               variant="solid"
               color="white"
               symbol="plus.circle.fill"

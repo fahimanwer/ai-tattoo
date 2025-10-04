@@ -16,7 +16,11 @@ export default function BodyPartSelectionScreen() {
               }}
               buttonProps={{
                 onPress: () => {
-                  router.back();
+                  if (!router.canGoBack()) {
+                    router.replace("/(tabs)/home");
+                  } else {
+                    router.back();
+                  }
                 },
               }}
             />
