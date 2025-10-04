@@ -2,6 +2,8 @@ import { Input } from "@/components/ui/Input";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
+import { useUsageLimit } from "@/hooks/useUsageLimit";
+import { presentPaywall } from "@/lib/paywall-utils";
 import { Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
 import { fixedSize } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
@@ -24,6 +26,16 @@ export function CustomDetails() {
   const router = useRouter();
   const [isValidating, setIsValidating] = useState(false);
 
+  // Check usage limits
+  const {
+    canCreateTattoo,
+    isLimitReached,
+    limitMessage,
+    subscriptionTier,
+    used,
+    limit,
+  } = useUsageLimit();
+
   const handleInstructionsChange = useCallback(
     (text: string) => {
       setCustomInstructions(text);
@@ -31,8 +43,52 @@ export function CustomDetails() {
     [setCustomInstructions]
   );
 
+  const handleUpgrade = useCallback(async () => {
+    try {
+      const success = await presentPaywall();
+      if (success) {
+        Alert.alert(
+          "Upgrade Successful! 🎉",
+          "You now have access to more tattoo generations. Thank you for upgrading!",
+          [{ text: "Awesome!", style: "default" }]
+        );
+      }
+    } catch (error) {
+      console.error("Error presenting paywall:", error);
+      // Fallback to profile page
+      router.replace("/(tabs)/profile");
+    }
+  }, [router]);
+
   const handleCreateTattoo = useCallback(() => {
     setIsValidating(true);
+
+    // Check usage limits first
+    if (!canCreateTattoo) {
+      const title = isLimitReached
+        ? "Usage Limit Reached"
+        : "Cannot Create Tattoo";
+      const message =
+        subscriptionTier === "free"
+          ? `You've used ${used}/${limit} generations this month. Upgrade to a paid plan to continue creating tattoos.`
+          : `You've reached your monthly limit of ${limit} generations. Your plan will reset next month.`;
+
+      Alert.alert(
+        title,
+        message,
+        subscriptionTier === "free"
+          ? [
+              {
+                text: "View Plans",
+                onPress: () => router.push("/(tabs)/profile"),
+              },
+              { text: "Cancel", style: "cancel" },
+            ]
+          : [{ text: "OK" }]
+      );
+      setIsValidating(false);
+      return;
+    }
 
     // Validate body part selection
     const hasBodyPart = isUsingCustomImage
@@ -79,6 +135,11 @@ export function CustomDetails() {
     setIsValidating(false);
     router.push("/(new)/create-tattoo");
   }, [
+    canCreateTattoo,
+    isLimitReached,
+    subscriptionTier,
+    used,
+    limit,
     isUsingCustomImage,
     customUserImage,
     selectedBodyPartCategory,
@@ -144,6 +205,61 @@ export function CustomDetails() {
         </View>
       </View> */}
 
+      {/* Usage Display */}
+      <View style={styles.usageContainer}>
+        <View style={styles.usageCard}>
+          <Text type="caption" style={styles.usageLabel}>
+            Usage This Period
+          </Text>
+          <Text
+            type="subtitle"
+            weight="bold"
+            style={[
+              styles.usageText,
+              {
+                color: isLimitReached
+                  ? Color.red[400]
+                  : subscriptionTier === "plus"
+                  ? Color.green[400]
+                  : subscriptionTier === "pro"
+                  ? Color.blue[400]
+                  : subscriptionTier === "starter"
+                  ? Color.orange[400]
+                  : Color.gray[300],
+              },
+            ]}
+          >
+            {used}/{limit}
+          </Text>
+          <Text
+            type="caption"
+            style={[
+              styles.usageMessage,
+              { color: isLimitReached ? Color.red[400] : Color.gray[400] },
+            ]}
+          >
+            {limitMessage}
+          </Text>
+
+          {/* CTA Button for upgrades */}
+          {(isLimitReached || subscriptionTier === "free") && (
+            <Host matchContents style={{ marginTop: 16, width: "100%" }}>
+              <ExpoUIButton
+                systemImage={
+                  isLimitReached ? "crown.fill" : "arrow.up.circle.fill"
+                }
+                controlSize="regular"
+                variant="borderedProminent"
+                onPress={handleUpgrade}
+                modifiers={[fixedSize()]}
+              >
+                {isLimitReached ? "Upgrade Now" : "View Plans"}
+              </ExpoUIButton>
+            </Host>
+          )}
+        </View>
+      </View>
+
       {/* Navigation Buttons */}
       <View style={styles.navigationContainer}>
         <Host matchContents style={{ alignSelf: "center" }}>
@@ -153,9 +269,13 @@ export function CustomDetails() {
             variant="glassProminent"
             onPress={handleCreateTattoo}
             modifiers={[fixedSize()]}
-            disabled={isValidating}
+            disabled={isValidating || isLimitReached}
           >
-            {isValidating ? "Validating..." : "Create Tattoo"}
+            {isValidating
+              ? "Validating..."
+              : isLimitReached
+              ? "Limit Reached"
+              : "Create Tattoo"}
           </ExpoUIButton>
         </Host>
       </View>
@@ -206,6 +326,33 @@ const styles = StyleSheet.create({
     color: Color.gray[400],
     marginBottom: 8,
     lineHeight: 20,
+  },
+  usageContainer: {
+    paddingHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 12,
+  },
+  usageCard: {
+    borderRadius: 12,
+    padding: 20,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "red",
+  },
+  usageLabel: {
+    color: Color.gray[400],
+    marginBottom: 8,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    fontSize: 11,
+  },
+  usageText: {
+    marginBottom: 6,
+    fontSize: 28,
+  },
+  usageMessage: {
+    textAlign: "center",
+    lineHeight: 18,
   },
   navigationContainer: {
     paddingHorizontal: 16,

@@ -1,50 +1,81 @@
-import { fetchUserUsage } from "@/lib/nano";
-import { useQuery } from "@tanstack/react-query";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useUsage } from "@/hooks/useUsage";
+import { DEFAULT_PLAN_LIMITS } from "@/lib/pricing-utils";
 
-export const useUsageLimit = () => {
+export interface UsageLimitResult {
+  used: number;
+  limit: number;
+  remaining: number;
+  isLimitReached: boolean;
+  canCreateTattoo: boolean;
+  subscriptionTier: string;
+  isLoading: boolean;
+  error: Error | null;
+  limitMessage: string;
+}
+
+/**
+ * Hook to check usage limits across all subscription tiers
+ * This abstracts the logic from UsageDisplay and can be used
+ * anywhere we need to check if user can perform actions
+ */
+export const useUsageLimit = (): UsageLimitResult => {
   const {
     data: usageData,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["user", "usage"],
-    queryFn: fetchUserUsage,
-    staleTime: 5 * 60 * 1000, // 5 minutes - data is fresh for 5 minutes
-    retry: (failureCount, error: any) => {
-      // Don't retry on 405 Method Not Allowed errors - it's a deployment issue
-      if (error?.status === 405) {
-        console.warn(
-          "⚠️ API endpoint not properly deployed - skipping retries"
-        );
-        return false;
-      }
-      return failureCount < 1; // Only retry once for other errors
-    },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
-  });
+    isLoading: isUsageLoading,
+    error: usageError,
+  } = useUsage();
 
-  // Get current month usage for "free" entitlement
-  const currentMonthUsage = usageData?.usage?.find((usage) => {
+  const { subscriptionTier, isLoading: isSubscriptionLoading } =
+    useSubscription();
+
+  const totalUsage = usageData?.totalUsage || 0;
+  const usage = usageData?.usage || [];
+
+  // Calculate current usage based on subscription tier and active period
+  const currentLimit =
+    DEFAULT_PLAN_LIMITS[subscriptionTier] || DEFAULT_PLAN_LIMITS.free;
+
+  // Find current period usage for the subscription tier
+  const currentPeriodUsage = usage.find((record) => {
     const now = new Date();
-    const periodStart = new Date(usage.periodStart);
-    const periodEnd = new Date(usage.periodEnd);
+    const periodStart = new Date(record.periodStart);
+    const periodEnd = new Date(record.periodEnd);
 
+    // Check if we're in the current period and it matches the subscription tier
     return (
-      usage.entitlement === "free" && now >= periodStart && now <= periodEnd
+      now >= periodStart &&
+      now <= periodEnd &&
+      (record.entitlement.toLowerCase() === subscriptionTier ||
+        (subscriptionTier === "free" && !record.entitlement))
     );
   });
 
-  const used = currentMonthUsage?.count || 0;
-  const limit = currentMonthUsage?.limit || 5;
-  const remaining = Math.max(0, limit - used);
-  const isLimitReached = used >= limit;
+  const used = currentPeriodUsage?.count || totalUsage || 0;
+  const remaining = Math.max(0, currentLimit - used);
+  const isLimitReached = used >= currentLimit;
+  const canCreateTattoo = !isLimitReached;
+
+  // Generate user-friendly message
+  let limitMessage = "";
+  if (isLimitReached) {
+    limitMessage =
+      subscriptionTier === "free"
+        ? "Monthly limit reached. Upgrade to get more generations."
+        : "Monthly limit reached. Your plan resets next month.";
+  } else {
+    limitMessage = `${remaining} generations remaining this period`;
+  }
 
   return {
     used,
-    limit,
+    limit: currentLimit,
     remaining,
     isLimitReached,
-    isLoading,
-    error,
+    canCreateTattoo,
+    subscriptionTier,
+    isLoading: isUsageLoading || isSubscriptionLoading,
+    error: usageError,
+    limitMessage,
   };
 };
