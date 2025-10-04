@@ -13,7 +13,7 @@ export default function HomeScreen() {
               imageProps={{ systemName: "plus" }}
               buttonProps={{
                 onPress: () => {
-                  router.push("/(new)/create-tattoo");
+                  router.push("/(new)/select-body-part");
                 },
                 variant: "glass",
               }}
