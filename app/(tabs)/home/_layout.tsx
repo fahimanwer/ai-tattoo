@@ -14,7 +14,8 @@ function ButtonToCreateTattoo() {
   const { isLimitReached } = useUsageLimit();
 
   const goToCreateTattoo = () => {
-    router.push("/(new)/select-body-part");
+    /* router.push("/(new)/select-body-part"); */
+    router.push("/(new)/create-tattoo");
   };
 
   console.log("isLimitReached", isLimitReached);

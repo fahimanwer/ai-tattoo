@@ -41,8 +41,6 @@ export function VerticalCard({
     return null;
   }
 
-  // Get display values
-  const displayTitle = title || (asset ? asset.filename : style!.title);
   const displaySubtitle =
     subtitle ||
     (asset ? new Date(asset.creationTime).toLocaleDateString() : style!.style);
@@ -68,24 +66,8 @@ export function VerticalCard({
         />
         {showOverlay && (
           <>
-            {/* Glass View with clear style */}
-            {/* <GlassView
-              style={{
-                position: "absolute",
-                left: "50%",
-                transform: [{ translateX: "-50%" }],
-                bottom: 24,
-                height: 50,
-                width: "95%",
-                borderRadius: 16,
-              }}
-              glassEffectStyle="clear"
-            /> */}
             {isLiquidGlassAvailable() ? (
-              <GlassView
-                style={styles.styleImageContainer}
-                glassEffectStyle="clear"
-              >
+              <GlassView style={styles.glassViewContainer}>
                 <Text type="sm" weight="normal" numberOfLines={1}>
                   {displaySubtitle}
                 </Text>
@@ -124,14 +106,14 @@ const styles = StyleSheet.create({
     height: 280,
     borderRadius: 16,
   },
-  styleImageContainer: {
+  glassViewContainer: {
     position: "absolute",
     width: "95%",
     height: 50,
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
-    alignItems: "flex-start",
+    alignItems: "center",
     left: "50%",
     transform: [{ translateX: "-50%" }],
     bottom: 4,
@@ -139,8 +121,8 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingHorizontal: 16,
     borderRadius: 16,
-    backgroundColor: "transparent",
-    experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
+    /* backgroundColor: "transparent",
+    experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`, */
   },
   blurViewContainer: {
     position: "absolute",
