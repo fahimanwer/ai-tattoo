@@ -5,12 +5,24 @@ import { useTattooCreation } from "@/context/TattooCreationContext";
 import { Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
 import { fixedSize } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
-import { useCallback } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { useCallback, useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 
 export function CustomDetails() {
-  const { customInstructions, setCustomInstructions } = useTattooCreation();
+  const {
+    customInstructions,
+    setCustomInstructions,
+    selectedBodyPartCategory,
+    selectedBodyPartVariant,
+    customUserImage,
+    isUsingCustomImage,
+    selectedTattooImage,
+    existingTattooImage,
+    isUsingExistingTattoo,
+    options,
+  } = useTattooCreation();
   const router = useRouter();
+  const [isValidating, setIsValidating] = useState(false);
 
   const handleInstructionsChange = useCallback(
     (text: string) => {
@@ -18,6 +30,65 @@ export function CustomDetails() {
     },
     [setCustomInstructions]
   );
+
+  const handleCreateTattoo = useCallback(() => {
+    setIsValidating(true);
+
+    // Validate body part selection
+    const hasBodyPart = isUsingCustomImage
+      ? !!customUserImage
+      : !!(selectedBodyPartCategory && selectedBodyPartVariant);
+
+    if (!hasBodyPart) {
+      Alert.alert(
+        "Missing Body Part",
+        "Please select a body part or upload a custom image before creating your tattoo.",
+        [{ text: "OK" }]
+      );
+      setIsValidating(false);
+      return;
+    }
+
+    // Validate tattoo style selection
+    const hasTattooStyle = isUsingExistingTattoo
+      ? !!existingTattooImage
+      : !!selectedTattooImage;
+
+    if (!hasTattooStyle) {
+      Alert.alert(
+        "Missing Tattoo Style",
+        "Please select a tattoo style before creating your tattoo.",
+        [{ text: "OK" }]
+      );
+      setIsValidating(false);
+      return;
+    }
+
+    // Validate tattoo selection in options
+    if (!options.selectedTattoo) {
+      Alert.alert(
+        "Missing Tattoo Selection",
+        "Please select a tattoo style from the options.",
+        [{ text: "OK" }]
+      );
+      setIsValidating(false);
+      return;
+    }
+
+    // All validations passed, navigate to creation screen
+    setIsValidating(false);
+    router.push("/(new)/create-tattoo");
+  }, [
+    isUsingCustomImage,
+    customUserImage,
+    selectedBodyPartCategory,
+    selectedBodyPartVariant,
+    isUsingExistingTattoo,
+    existingTattooImage,
+    selectedTattooImage,
+    options.selectedTattoo,
+    router,
+  ]);
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
@@ -80,10 +151,11 @@ export function CustomDetails() {
             systemImage="wand.and.sparkles"
             controlSize="large"
             variant="glassProminent"
-            onPress={() => router.push("/create-tattoo")}
+            onPress={handleCreateTattoo}
             modifiers={[fixedSize()]}
+            disabled={isValidating}
           >
-            Create Tattoo
+            {isValidating ? "Validating..." : "Create Tattoo"}
           </ExpoUIButton>
         </Host>
       </View>

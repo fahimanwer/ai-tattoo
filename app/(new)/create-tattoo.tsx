@@ -1,5 +1,5 @@
-import { CreateTattoo } from "@/components/screens/CreateTattoo";
+import { TattooCreation } from "@/components/screens/TattooCreation";
 
 export default function CreateTattooScreen() {
-  return <CreateTattoo />;
+  return <TattooCreation />;
 }
