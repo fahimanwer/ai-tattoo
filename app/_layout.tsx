@@ -81,7 +81,7 @@ function AppContent() {
     error: sessionError,
   } = authClient.useSession();
 
-  const isAuthenticated = true; //!!session;
+  const isAuthenticated = !!session;
 
   // const onLayoutRootView = useCallback(async () => {
   //   if (loaded) {
