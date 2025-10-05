@@ -41,7 +41,7 @@ export function Profile() {
       <PlanInfo />
       <UpgradeOptions
         onUpgradeSuccess={() =>
-          alert("Upgrade successful -> Do something here")
+          console.log("Upgrade successful -> Do something here")
         }
       />
     </ScrollView>

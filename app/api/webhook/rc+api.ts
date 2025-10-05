@@ -1,7 +1,5 @@
-import { getPlanLimit } from "@/lib/pricing-utils";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import * as jose from "jose";
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.DATABASE_URL,
@@ -64,26 +62,21 @@ interface RevenueCatWebhookEvent {
 
 export async function POST(request: Request) {
   try {
-    // Verify JWT token using BETTER_AUTH_SECRET
+    // Verify RevenueCat webhook authorization
+    // RevenueCat sends a simple Bearer token in the Authorization header
+    // Using the same secret as Better Auth for simplicity
     const authHeader = request.headers.get("authorization");
     const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
 
     if (betterAuthSecret && authHeader) {
       const token = authHeader.replace("Bearer ", "");
-      const isValidToken = await jose.jwtVerify(
-        token,
-        new TextEncoder().encode(betterAuthSecret),
-        {
-          algorithms: ["HS256"],
-        }
-      );
-
-      if (!isValidToken) {
-        console.error("Invalid JWT token");
+      // Simple string comparison for RevenueCat's authorization token
+      if (token !== betterAuthSecret) {
+        console.error("Invalid RevenueCat webhook authorization token");
         return new Response("Unauthorized", { status: 401 });
       }
     } else if (betterAuthSecret) {
-      console.error("Missing authorization header");
+      console.error("Missing authorization header for RevenueCat webhook");
       return new Response("Unauthorized", { status: 401 });
     }
 
@@ -188,6 +181,26 @@ async function processRevenueCatEvent(
   }
 }
 
+/**
+ * Get generation limit based on entitlement ID
+ * Maps RevenueCat entitlements to their respective generation limits
+ */
+function getLimitForEntitlement(entitlementId: string): number {
+  const normalizedEntitlement = entitlementId.toLowerCase();
+
+  switch (normalizedEntitlement) {
+    case "pro":
+      return 1000;
+    case "plus":
+      return 300;
+    case "starter":
+      return 125;
+    case "free":
+    default:
+      return 5;
+  }
+}
+
 async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
   const revenuecatUserId = event.original_app_user_id;
@@ -202,11 +215,13 @@ async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
   const existingFreeRecord = await prisma.usage.findFirst({
     where: {
       revenuecatUserId: revenuecatUserId,
-    }
+    },
   });
 
   if (!existingFreeRecord) {
-    console.warn(`No existing free usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`);
+    console.warn(
+      `No existing free usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`
+    );
     return;
   }
 
@@ -256,11 +271,13 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
   const existingRecord = await prisma.usage.findFirst({
     where: {
       revenuecatUserId: revenuecatUserId,
-    }
+    },
   });
 
   if (!existingRecord) {
-    console.warn(`No existing usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`);
+    console.warn(
+      `No existing usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`
+    );
     return;
   }
 
@@ -351,17 +368,17 @@ async function resetCurrentPeriodAndCreateNew(
   event: RevenueCatWebhookEvent["event"]
 ) {
   const now = new Date();
-  
+
   // 1. Mark current active period as ended
   await prisma.usage.updateMany({
     where: {
       userId,
       periodStart: { lte: now },
-      periodEnd: { gte: now }
+      periodEnd: { gte: now },
     },
     data: {
-      periodEnd: now
-    }
+      periodEnd: now,
+    },
   });
 
   // 2. Create new usage records for each new entitlement
@@ -401,12 +418,10 @@ async function resetCurrentPeriodAndCreateNew(
   }
 
   console.log(
-    `Reset period and created new usage records for entitlements: ${entitlementIds.join(", ")}`
+    `Reset period and created new usage records for entitlements: ${entitlementIds.join(
+      ", "
+    )}`
   );
-}
-
-function getLimitForEntitlement(entitlement: string): number {
-  return getPlanLimit(entitlement);
 }
 
 async function handleExpiration(event: RevenueCatWebhookEvent["event"]) {
@@ -450,13 +465,101 @@ async function handleRefund(event: RevenueCatWebhookEvent["event"]) {
 }
 
 async function handleTransfer(event: RevenueCatWebhookEvent["event"]) {
-  const userId = event.app_user_id;
-  const originalUserId = event.original_app_user_id;
+  const newUserId = event.app_user_id; // User 2 (receiving the entitlements)
+  const originalUserId = event.original_app_user_id; // User 1 (losing the entitlements)
+  const revenuecatUserId = event.original_app_user_id; // This stays consistent
+  const entitlementIds = event.entitlement_ids || [];
 
-  console.log(`Subscription transferred from ${originalUserId} to ${userId}`);
+  console.log(
+    `Subscription transferred from ${originalUserId} to ${newUserId}. Entitlements: ${entitlementIds.join(
+      ", "
+    )}`
+  );
 
-  // Handle subscription transfer between users
-  // You might need to update usage records or user associations
+  if (entitlementIds.length === 0) {
+    console.warn("No entitlements found for transfer");
+    return;
+  }
+
+  const now = new Date();
+
+  // Step 1: Find and expire all active usage records for the original user (user 1)
+  const originalUserRecords = await prisma.usage.findMany({
+    where: {
+      revenuecatUserId: revenuecatUserId,
+      periodStart: { lte: now },
+      periodEnd: { gte: now },
+    },
+  });
+
+  if (originalUserRecords.length > 0) {
+    // Expire the original user's active records
+    await prisma.usage.updateMany({
+      where: {
+        revenuecatUserId: revenuecatUserId,
+        periodStart: { lte: now },
+        periodEnd: { gte: now },
+      },
+      data: {
+        periodEnd: now,
+      },
+    });
+
+    console.log(
+      `Expired ${originalUserRecords.length} active records for original user ${originalUserId}`
+    );
+  }
+
+  // Step 2: Create new usage records for the new user (user 2) with transferred entitlements
+  for (const entitlementId of entitlementIds) {
+    const periodStart = event.purchased_at_ms
+      ? new Date(event.purchased_at_ms)
+      : now;
+    const periodEnd = event.expiration_at_ms
+      ? new Date(event.expiration_at_ms)
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
+
+    const limit = getLimitForEntitlement(entitlementId);
+
+    // Find if there was a previous record to preserve usage count
+    const previousRecord = originalUserRecords.find(
+      (record) => record.entitlement === entitlementId
+    );
+    const preservedCount = previousRecord ? previousRecord.count : 0;
+
+    await prisma.usage.upsert({
+      where: {
+        userId_entitlement_periodStart: {
+          userId: newUserId,
+          entitlement: entitlementId,
+          periodStart,
+        },
+      },
+      update: {
+        periodEnd,
+        count: preservedCount, // Preserve usage count from original user
+        limit,
+        revenuecatUserId: revenuecatUserId,
+      },
+      create: {
+        userId: newUserId,
+        entitlement: entitlementId,
+        periodStart,
+        periodEnd,
+        count: preservedCount, // Preserve usage count from original user
+        limit,
+        revenuecatUserId: revenuecatUserId,
+      },
+    });
+
+    console.log(
+      `Created/updated ${entitlementId} record for new user ${newUserId} with preserved count: ${preservedCount}`
+    );
+  }
+
+  console.log(
+    `Successfully transferred entitlements from ${originalUserId} to ${newUserId}`
+  );
 }
 
 async function handleNonRenewingPurchase(
@@ -472,4 +575,3 @@ async function handleNonRenewingPurchase(
   // Handle one-time purchase - similar to initial purchase but won't renew
   await handleInitialPurchase(event);
 }
-
