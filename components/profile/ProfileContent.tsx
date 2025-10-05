@@ -1,4 +1,3 @@
-import { View } from "react-native";
 import { ProfileHeader } from "./ProfileHeader";
 
 interface ProfileContentProps {
@@ -9,22 +8,5 @@ interface ProfileContentProps {
 }
 
 export function ProfileContent({ user }: ProfileContentProps) {
-  return (
-    <>
-      <ProfileHeader user={user} />
-      <View
-        style={{
-          backgroundColor: "#FFFFFF10",
-          padding: 20,
-          borderRadius: 12,
-          marginBottom: 16,
-        }}
-      >
-        {/* <SubscriptionActions
-          subscriptionTier={subscription.tier}
-          onSubscriptionChange={refresh}
-        /> */}
-      </View>
-    </>
-  );
+  return <ProfileHeader user={user} />;
 }

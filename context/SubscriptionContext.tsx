@@ -87,11 +87,12 @@ export function SubscriptionProvider({
       setIsPlusUser(hasPlusAccess);
 
       // Determine subscription tier (highest tier takes precedence)
+      // Order: Pro > Plus > Starter > Free
       let tier: SubscriptionTier = "free";
-      if (hasPlusAccess) {
-        tier = "plus";
-      } else if (hasProAccess) {
+      if (hasProAccess) {
         tier = "pro";
+      } else if (hasPlusAccess) {
+        tier = "plus";
       } else if (hasStarterAccess) {
         tier = "starter";
       }
@@ -185,13 +186,14 @@ export function hasPlusAccess(customerInfo: CustomerInfo | null): boolean {
 }
 
 // Utility function to get the highest subscription tier
+// Order: Pro > Plus > Starter > Free
 export function getSubscriptionTier(
   customerInfo: CustomerInfo | null
 ): SubscriptionTier {
   if (!customerInfo) return "free";
 
-  if (hasPlusAccess(customerInfo)) return "plus";
   if (hasProAccess(customerInfo)) return "pro";
+  if (hasPlusAccess(customerInfo)) return "plus";
   if (hasStarterAccess(customerInfo)) return "starter";
 
   return "free";

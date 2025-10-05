@@ -12,6 +12,20 @@ export function PlanInfo() {
     error: subscriptionError,
   } = useSubscription();
 
+  console.log(
+    "subscriptionTier",
+    JSON.stringify(
+      {
+        subscriptionTier,
+        subscriptionLoading,
+        customerInfo,
+        subscriptionError,
+      },
+      null,
+      2
+    )
+  );
+
   // Calculate plan details based on subscription tier
   const planLimit =
     DEFAULT_PLAN_LIMITS[subscriptionTier] || DEFAULT_PLAN_LIMITS.free;
