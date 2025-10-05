@@ -100,8 +100,7 @@ export default function Photo() {
     styleId?: string;
   }>();
 
-  const { updateOptions, setSelectedTattooImage, setCurrentStep } =
-    useTattooCreation();
+  const { updateOptions, setSelectedTattooImage } = useTattooCreation();
 
   const handleUseTattoo = () => {
     // Get the tattoo style if styleId is provided
@@ -112,12 +111,24 @@ export default function Photo() {
     // Update tattoo creation context
     if (tattooStyle) {
       updateOptions({ selectedTattoo: tattooStyle });
+
+      // Find the matching gallery image from the tattoo style
+      const matchingGalleryImage = tattooStyle.gallery.find((img) => {
+        const imgUri = typeof img === "object" && "uri" in img ? img.uri : img;
+        return imgUri === params.imageUrl;
+      });
+
+      // Set the selected image (use the actual gallery reference for proper comparison)
+      if (matchingGalleryImage) {
+        setSelectedTattooImage(matchingGalleryImage);
+      } else {
+        setSelectedTattooImage({ uri: params.imageUrl });
+      }
+    } else {
+      setSelectedTattooImage({ uri: params.imageUrl });
     }
 
-    // Set the selected image
-    setSelectedTattooImage({ uri: params.imageUrl });
-
-    // Navigate to body part selection to continue the flow
+    // Navigate immediately - dismissTo directly to the target screen
     router.dismissTo("/(new)/select-body-part");
   };
 

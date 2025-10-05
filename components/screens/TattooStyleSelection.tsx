@@ -39,6 +39,29 @@ export function TattooStyleSelection() {
     setIsUsingExistingTattoo,
   } = useTattooCreation();
 
+  // Helper function to compare images (handles both direct references and URI objects)
+  const isImageSelected = useCallback(
+    (galleryImage: any) => {
+      if (!selectedTattooImage) return false;
+
+      // Direct reference comparison
+      if (selectedTattooImage === galleryImage) return true;
+
+      // URI comparison for objects
+      const selectedUri =
+        typeof selectedTattooImage === "object" && "uri" in selectedTattooImage
+          ? selectedTattooImage.uri
+          : null;
+      const galleryUri =
+        typeof galleryImage === "object" && "uri" in galleryImage
+          ? galleryImage.uri
+          : null;
+
+      return selectedUri && galleryUri && selectedUri === galleryUri;
+    },
+    [selectedTattooImage]
+  );
+
   // Function to select existing tattoo image from gallery
   const pickExistingTattooFromGallery = useCallback(async () => {
     try {
@@ -281,29 +304,32 @@ export function TattooStyleSelection() {
             style={{ flex: 1, paddingHorizontal: 16, marginBottom: 24 }}
             showsHorizontalScrollIndicator={false}
           >
-            {options.selectedTattoo.gallery.map((galleryImage, index) => (
-              <Pressable
-                key={`${options.selectedTattoo?.id}-${index}`}
-                onPress={() => setSelectedTattooImage(galleryImage)}
-              >
-                <Image
-                  cachePolicy="memory-disk"
-                  source={galleryImage}
-                  style={{
-                    width: 100,
-                    height: 100,
-                    borderWidth: 3,
-                    marginLeft: 8,
-                    borderRadius: 12,
-                    borderColor:
-                      selectedTattooImage === galleryImage
-                        ? Color.grayscale[950]
+            {options.selectedTattoo.gallery.map((galleryImage, index) => {
+              const isSelected = isImageSelected(galleryImage);
+
+              return (
+                <Pressable
+                  key={`${options.selectedTattoo?.id}-${index}`}
+                  onPress={() => setSelectedTattooImage(galleryImage)}
+                >
+                  <Image
+                    cachePolicy="memory-disk"
+                    source={galleryImage}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderWidth: 3,
+                      marginLeft: 8,
+                      borderRadius: 12,
+                      borderColor: isSelected
+                        ? Color.orange[400]
                         : "transparent",
-                  }}
-                  contentFit="cover"
-                />
-              </Pressable>
-            ))}
+                    }}
+                    contentFit="cover"
+                  />
+                </Pressable>
+              );
+            })}
           </ScrollView>
         </>
       )}
