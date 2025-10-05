@@ -384,6 +384,7 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
       },
       data: {
         userId: userId, // Update to current device's userId
+        entitlement: entitlementId, // Update to new entitlement (in case of plan change)
         periodEnd,
         count: 0, // Reset count for renewal
         limit,
@@ -392,7 +393,7 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
     });
 
     console.log(
-      `[RC WEBHOOK] ✅ Updated existing record for renewal: ${entitlementId} for user ${userId}`
+      `[RC WEBHOOK] ✅ Updated existing record for renewal: ${entitlementId} for user ${userId} (previous: ${existingRecord.entitlement})`
     );
   }
 }

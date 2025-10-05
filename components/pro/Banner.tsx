@@ -26,8 +26,8 @@ export function Banner() {
       const success = await presentPaywall();
       if (success) {
         Alert.alert(
-          "Welcome to Premium! 🎉",
-          "You now have access to unlimited tattoo generations and exclusive features.",
+          "Success! 🎉",
+          "Purchase successful. Thank you for supporting us!",
           [{ text: "Awesome!", style: "default" }]
         );
       }

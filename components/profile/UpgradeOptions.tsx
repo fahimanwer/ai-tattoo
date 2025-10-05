@@ -34,16 +34,6 @@ export function UpgradeOptions({
 
         // Call optional success callback if provided
         onUpgradeSuccess?.();
-
-        // Get plan details for the new tier
-        const newPlanLimit =
-          DEFAULT_PLAN_LIMITS[targetTier as keyof typeof DEFAULT_PLAN_LIMITS];
-
-        Alert.alert(
-          `Welcome to ${targetTier.toUpperCase()}! 🎉`,
-          `You now have ${newPlanLimit} generations per month and access to all ${targetTier} features.`,
-          [{ text: "Awesome!", style: "default" }]
-        );
       }
     } catch (error) {
       console.error("Error presenting upgrade paywall:", error);
