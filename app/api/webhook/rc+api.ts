@@ -61,6 +61,10 @@ interface RevenueCatWebhookEvent {
 }
 
 export async function POST(request: Request) {
+  console.log(
+    "\n[RC WEBHOOK] 🔔 ========== REVENUECAT WEBHOOK RECEIVED =========="
+  );
+
   try {
     // Verify RevenueCat webhook authorization
     // RevenueCat sends a simple Bearer token in the Authorization header
@@ -68,16 +72,30 @@ export async function POST(request: Request) {
     const authHeader = request.headers.get("authorization");
     const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
 
+    console.log("[RC WEBHOOK] 🔐 Authorization check:", {
+      hasAuthHeader: !!authHeader,
+      hasSecret: !!betterAuthSecret,
+    });
+
     if (betterAuthSecret && authHeader) {
       const token = authHeader.replace("Bearer ", "");
       // Simple string comparison for RevenueCat's authorization token
       if (token !== betterAuthSecret) {
-        console.error("Invalid RevenueCat webhook authorization token");
+        console.error(
+          "[RC WEBHOOK] ❌ Invalid RevenueCat webhook authorization token"
+        );
         return new Response("Unauthorized", { status: 401 });
       }
+      console.log("[RC WEBHOOK] ✅ Authorization verified");
     } else if (betterAuthSecret) {
-      console.error("Missing authorization header for RevenueCat webhook");
+      console.error(
+        "[RC WEBHOOK] ❌ Missing authorization header for RevenueCat webhook"
+      );
       return new Response("Unauthorized", { status: 401 });
+    } else {
+      console.warn(
+        "[RC WEBHOOK] ⚠️  No BETTER_AUTH_SECRET configured - skipping auth"
+      );
     }
 
     const body: RevenueCatWebhookEvent = await request.json();
@@ -85,21 +103,35 @@ export async function POST(request: Request) {
 
     // Validate required fields
     if (!event || !event.type || !event.id) {
-      console.error("Invalid webhook payload:", body);
+      console.error("[RC WEBHOOK] ❌ Invalid webhook payload:", body);
       return new Response("Invalid payload", { status: 400 });
     }
 
-    console.log(
-      `Processing RevenueCat webhook event: ${event.type} for user: ${event.app_user_id}`
-    );
+    console.log("[RC WEBHOOK] 📦 Event details:", {
+      type: event.type,
+      id: event.id,
+      userId: event.app_user_id,
+      originalUserId: event.original_app_user_id,
+      entitlements: event.entitlement_ids,
+      productId: event.product_id,
+      environment: event.environment,
+      timestamp: new Date(event.event_timestamp_ms).toISOString(),
+    });
 
     // Process event based on type
     await processRevenueCatEvent(event, body.api_version);
 
+    console.log("[RC WEBHOOK] ✅ Webhook processed successfully");
+    console.log("[RC WEBHOOK] ========== END WEBHOOK ==========\n");
+
     // Acknowledge receipt
     return new Response("OK", { status: 200 });
   } catch (error) {
-    console.error("Error processing RevenueCat webhook:", error);
+    console.error(
+      "[RC WEBHOOK] ❌ Error processing RevenueCat webhook:",
+      error
+    );
+    console.log("[RC WEBHOOK] ========== END WEBHOOK (ERROR) ==========\n");
     return new Response("Internal Server Error", { status: 500 });
   }
 }
@@ -111,9 +143,11 @@ async function processRevenueCatEvent(
   const userId = event.app_user_id;
   const eventType = event.type;
 
+  console.log(`[RC WEBHOOK] 🔄 Processing event: ${eventType}`);
+
   // Skip test events in production
   if (eventType === "TEST") {
-    console.log("Skipping test event");
+    console.log("[RC WEBHOOK] ⏭️  Skipping test event");
     return;
   }
 
@@ -168,13 +202,15 @@ async function processRevenueCatEvent(
         break;
 
       default:
-        console.log(`Unhandled event type: ${eventType}`);
+        console.log(`[RC WEBHOOK] ⚠️  Unhandled event type: ${eventType}`);
     }
 
-    console.log(`Successfully processed ${eventType} event for user ${userId}`);
+    console.log(
+      `[RC WEBHOOK] ✅ Successfully processed ${eventType} event for user ${userId}`
+    );
   } catch (error) {
     console.error(
-      `Error processing ${eventType} event for user ${userId}:`,
+      `[RC WEBHOOK] ❌ Error processing ${eventType} event for user ${userId}:`,
       error
     );
     throw error;
@@ -206,8 +242,14 @@ async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
   const revenuecatUserId = event.original_app_user_id;
   const entitlementIds = event.entitlement_ids || [];
 
+  console.log("[RC WEBHOOK] 💰 INITIAL_PURCHASE handler:", {
+    userId,
+    revenuecatUserId,
+    entitlements: entitlementIds,
+  });
+
   if (entitlementIds.length === 0) {
-    console.warn("No entitlements found for initial purchase");
+    console.warn("[RC WEBHOOK] ⚠️  No entitlements found for initial purchase");
     return;
   }
 
@@ -218,9 +260,21 @@ async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
     },
   });
 
+  console.log("[RC WEBHOOK] 🔍 Existing record search:", {
+    found: !!existingFreeRecord,
+    record: existingFreeRecord
+      ? {
+          userId: existingFreeRecord.userId,
+          entitlement: existingFreeRecord.entitlement,
+          count: existingFreeRecord.count,
+          limit: existingFreeRecord.limit,
+        }
+      : null,
+  });
+
   if (!existingFreeRecord) {
     console.warn(
-      `No existing free usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`
+      `[RC WEBHOOK] ⚠️  No existing free usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`
     );
     return;
   }
@@ -232,6 +286,12 @@ async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
 
     const limit = getLimitForEntitlement(entitlementId);
+
+    console.log(`[RC WEBHOOK] 📝 Updating usage record:`, {
+      entitlement: entitlementId,
+      newLimit: limit,
+      periodEnd: periodEnd.toISOString(),
+    });
 
     await prisma.usage.update({
       where: {
@@ -252,7 +312,7 @@ async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
     });
 
     console.log(
-      `Updated existing free record to ${entitlementId} for user ${userId}`
+      `[RC WEBHOOK] ✅ Updated existing free record to ${entitlementId} for user ${userId}`
     );
   }
 }
@@ -262,8 +322,14 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
   const revenuecatUserId = event.original_app_user_id;
   const entitlementIds = event.entitlement_ids || [];
 
+  console.log("[RC WEBHOOK] 🔄 RENEWAL handler:", {
+    userId,
+    revenuecatUserId,
+    entitlements: entitlementIds,
+  });
+
   if (entitlementIds.length === 0) {
-    console.warn("No entitlements found for renewal");
+    console.warn("[RC WEBHOOK] ⚠️  No entitlements found for renewal");
     return;
   }
 
@@ -274,9 +340,21 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
     },
   });
 
+  console.log("[RC WEBHOOK] 🔍 Existing record search:", {
+    found: !!existingRecord,
+    record: existingRecord
+      ? {
+          userId: existingRecord.userId,
+          entitlement: existingRecord.entitlement,
+          count: existingRecord.count,
+          limit: existingRecord.limit,
+        }
+      : null,
+  });
+
   if (!existingRecord) {
     console.warn(
-      `No existing usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`
+      `[RC WEBHOOK] ⚠️  No existing usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`
     );
     return;
   }
@@ -288,6 +366,13 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     const limit = getLimitForEntitlement(entitlementId);
+
+    console.log(`[RC WEBHOOK] 📝 Renewing usage record:`, {
+      entitlement: entitlementId,
+      newLimit: limit,
+      periodEnd: periodEnd.toISOString(),
+      resettingCount: true,
+    });
 
     await prisma.usage.update({
       where: {
@@ -307,7 +392,7 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
     });
 
     console.log(
-      `Updated existing record for renewal: ${entitlementId} for user ${userId}`
+      `[RC WEBHOOK] ✅ Updated existing record for renewal: ${entitlementId} for user ${userId}`
     );
   }
 }
@@ -315,7 +400,7 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
 async function handleCancellation(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
   console.log(
-    `Subscription cancelled for user ${userId}. Expiration: ${
+    `[RC WEBHOOK] ❌ CANCELLATION: Subscription cancelled for user ${userId}. Expiration: ${
       event.expiration_at_ms
         ? new Date(event.expiration_at_ms).toISOString()
         : "immediate"
@@ -328,7 +413,9 @@ async function handleCancellation(event: RevenueCatWebhookEvent["event"]) {
 
 async function handleUncancellation(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
-  console.log(`Subscription uncancelled for user ${userId}`);
+  console.log(
+    `[RC WEBHOOK] ✅ UNCANCELLATION: Subscription uncancelled for user ${userId}`
+  );
 
   // Subscription has been uncancelled, it will continue to renew
   // No immediate action needed as renewal events will handle usage record creation
@@ -337,7 +424,7 @@ async function handleUncancellation(event: RevenueCatWebhookEvent["event"]) {
 async function handleBillingIssue(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
   console.log(
-    `Billing issue for user ${userId}. Grace period ends: ${
+    `[RC WEBHOOK] ⚠️  BILLING_ISSUE: Billing issue for user ${userId}. Grace period ends: ${
       event.grace_period_expiration_at_ms
         ? new Date(event.grace_period_expiration_at_ms).toISOString()
         : "N/A"
@@ -353,7 +440,7 @@ async function handleProductChange(event: RevenueCatWebhookEvent["event"]) {
   const entitlementIds = event.entitlement_ids || [];
 
   console.log(
-    `Product change for user ${userId} to entitlements: ${entitlementIds.join(
+    `[RC WEBHOOK] 🔄 PRODUCT_CHANGE: Product change for user ${userId} to entitlements: ${entitlementIds.join(
       ", "
     )}`
   );
@@ -418,7 +505,7 @@ async function resetCurrentPeriodAndCreateNew(
   }
 
   console.log(
-    `Reset period and created new usage records for entitlements: ${entitlementIds.join(
+    `[RC WEBHOOK] ✅ Reset period and created new usage records for entitlements: ${entitlementIds.join(
       ", "
     )}`
   );
@@ -426,7 +513,9 @@ async function resetCurrentPeriodAndCreateNew(
 
 async function handleExpiration(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
-  console.log(`Subscription expired for user ${userId}`);
+  console.log(
+    `[RC WEBHOOK] ⏱️  EXPIRATION: Subscription expired for user ${userId}`
+  );
 
   // Subscription has expired, user no longer has access
   // Usage records remain for historical purposes
@@ -437,7 +526,7 @@ async function handleSubscriptionPaused(
 ) {
   const userId = event.app_user_id;
   console.log(
-    `Subscription paused for user ${userId}. Auto-resume: ${
+    `[RC WEBHOOK] ⏸️  SUBSCRIPTION_PAUSED: Subscription paused for user ${userId}. Auto-resume: ${
       event.auto_resume_at_ms
         ? new Date(event.auto_resume_at_ms).toISOString()
         : "N/A"
@@ -451,14 +540,16 @@ async function handleSubscriptionResumed(
   event: RevenueCatWebhookEvent["event"]
 ) {
   const userId = event.app_user_id;
-  console.log(`Subscription resumed for user ${userId}`);
+  console.log(
+    `[RC WEBHOOK] ▶️  SUBSCRIPTION_RESUMED: Subscription resumed for user ${userId}`
+  );
 
   // Subscription has been resumed from paused state
 }
 
 async function handleRefund(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
-  console.log(`Refund processed for user ${userId}`);
+  console.log(`[RC WEBHOOK] 💸 REFUND: Refund processed for user ${userId}`);
 
   // Handle refund - user loses access immediately
   // You might want to clean up or mark usage records accordingly
@@ -471,13 +562,13 @@ async function handleTransfer(event: RevenueCatWebhookEvent["event"]) {
   const entitlementIds = event.entitlement_ids || [];
 
   console.log(
-    `Subscription transferred from ${originalUserId} to ${newUserId}. Entitlements: ${entitlementIds.join(
+    `[RC WEBHOOK] 🔄 TRANSFER: Subscription transferred from ${originalUserId} to ${newUserId}. Entitlements: ${entitlementIds.join(
       ", "
     )}`
   );
 
   if (entitlementIds.length === 0) {
-    console.warn("No entitlements found for transfer");
+    console.warn("[RC WEBHOOK] ⚠️  No entitlements found for transfer");
     return;
   }
 
@@ -506,7 +597,7 @@ async function handleTransfer(event: RevenueCatWebhookEvent["event"]) {
     });
 
     console.log(
-      `Expired ${originalUserRecords.length} active records for original user ${originalUserId}`
+      `[RC WEBHOOK] ✅ Expired ${originalUserRecords.length} active records for original user ${originalUserId}`
     );
   }
 
@@ -553,12 +644,12 @@ async function handleTransfer(event: RevenueCatWebhookEvent["event"]) {
     });
 
     console.log(
-      `Created/updated ${entitlementId} record for new user ${newUserId} with preserved count: ${preservedCount}`
+      `[RC WEBHOOK] ✅ Created/updated ${entitlementId} record for new user ${newUserId} with preserved count: ${preservedCount}`
     );
   }
 
   console.log(
-    `Successfully transferred entitlements from ${originalUserId} to ${newUserId}`
+    `[RC WEBHOOK] ✅ Successfully transferred entitlements from ${originalUserId} to ${newUserId}`
   );
 }
 
@@ -569,7 +660,9 @@ async function handleNonRenewingPurchase(
   const entitlementIds = event.entitlement_ids || [];
 
   console.log(
-    `Non-renewing purchase for user ${userId}: ${entitlementIds.join(", ")}`
+    `[RC WEBHOOK] 🛒 NON_RENEWING_PURCHASE: Non-renewing purchase for user ${userId}: ${entitlementIds.join(
+      ", "
+    )}`
   );
 
   // Handle one-time purchase - similar to initial purchase but won't renew
