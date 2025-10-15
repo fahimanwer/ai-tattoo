@@ -11,7 +11,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "dev.codewithbeto.aitattoo",
-      "icon": "./assets/images/ios-tinted.png",
+      "icon": "./assets/tattoo-ios.icon",
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false

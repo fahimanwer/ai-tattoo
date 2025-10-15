@@ -1,6 +1,5 @@
 import { useSubscription } from "@/hooks/useSubscription";
 import { useUsage } from "@/hooks/useUsage";
-import { DEFAULT_PLAN_LIMITS } from "@/lib/pricing-utils";
 
 export interface UsageLimitResult {
   used: number;
@@ -33,8 +32,7 @@ export const useUsageLimit = (): UsageLimitResult => {
   const usage = usageData?.usage || [];
 
   // Calculate current usage based on subscription tier and active period
-  const currentLimit =
-    DEFAULT_PLAN_LIMITS[subscriptionTier] || DEFAULT_PLAN_LIMITS.free;
+  const currentLimit = 5;
 
   // Find current period usage for the subscription tier
   const currentPeriodUsage = usage.find((record) => {

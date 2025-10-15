@@ -148,6 +148,13 @@ function AppContent() {
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="(new)" />
             <Stack.Screen name="+not-found" />
+            <Stack.Screen
+              name="(paywall)"
+              options={{
+                title: "(paywall)",
+                presentation: "fullScreenModal",
+              }}
+            />
           </Stack.Protected>
         </Stack>
         <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />

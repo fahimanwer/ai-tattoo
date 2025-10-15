@@ -1,6 +1,5 @@
 import { Text } from "@/components/ui/Text";
 import { useSubscription } from "@/hooks/useSubscription";
-import { DEFAULT_PLAN_LIMITS, DEFAULT_PLAN_PRICING } from "@/lib/pricing-utils";
 import { View } from "react-native";
 import { UsageDisplay } from "./UsageDisplay";
 
@@ -11,26 +10,6 @@ export function PlanInfo() {
     customerInfo,
     error: subscriptionError,
   } = useSubscription();
-
-  console.log(
-    "subscriptionTier",
-    JSON.stringify(
-      {
-        subscriptionTier,
-        subscriptionLoading,
-        customerInfo,
-        subscriptionError,
-      },
-      null,
-      2
-    )
-  );
-
-  // Calculate plan details based on subscription tier
-  const planLimit =
-    DEFAULT_PLAN_LIMITS[subscriptionTier] || DEFAULT_PLAN_LIMITS.free;
-  const planPrice =
-    DEFAULT_PLAN_PRICING[subscriptionTier] || DEFAULT_PLAN_PRICING.free;
 
   const planText = subscriptionLoading
     ? "LOADING..."
@@ -102,28 +81,6 @@ export function PlanInfo() {
         </Text>
       </View>
 
-      {/* Plan Details */}
-      <View style={{ marginBottom: 16 }}>
-        <Text type="xs" lightColor="#666" style={{ marginBottom: 4 }}>
-          Plan Details:
-        </Text>
-        <Text type="xs" lightColor="#666">
-          • {planPrice.priceString}
-        </Text>
-        <Text type="xs" lightColor="#666">
-          • {planLimit} generations per month
-        </Text>
-        {subscriptionTier === "free" && (
-          <Text type="xs" lightColor="#666">
-            • No credit card required
-          </Text>
-        )}
-        {subscriptionTier !== "free" && customerInfo && (
-          <Text type="xs" lightColor="#666">
-            • Premium support included
-          </Text>
-        )}
-      </View>
       <UsageDisplay />
     </View>
   );

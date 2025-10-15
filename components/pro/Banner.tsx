@@ -1,7 +1,6 @@
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
-import { presentPaywall } from "@/lib/paywall-utils";
 import { BlurView } from "expo-blur";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
@@ -23,7 +22,7 @@ export function Banner() {
 
   const handlePress = async () => {
     try {
-      const success = await presentPaywall();
+      const success = true;
       if (success) {
         Alert.alert(
           "Success! 🎉",

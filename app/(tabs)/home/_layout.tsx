@@ -3,7 +3,7 @@ import { authClient } from "@/lib/auth-client";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import Purchases from "react-native-purchases";
 
 export default function ProfileLayout() {
@@ -20,8 +20,15 @@ export default function ProfileLayout() {
     try {
       Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
       if (Platform.OS === "ios") {
+        if (!process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY) {
+          Alert.alert(
+            "❌ RevenueCat Apple API key is not set",
+            "Please set the RevenueCat Apple API key in the .env.local file"
+          );
+          return;
+        }
         Purchases.configure({
-          apiKey: "appl_TglDpVSpcsiykcYmEbXbHvlMwMG",
+          apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY,
           appUserID: userId || undefined,
         });
         console.log(`✅ RevenueCat configured for iOS with userId: ${userId}`);

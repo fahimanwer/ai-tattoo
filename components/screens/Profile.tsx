@@ -3,10 +3,12 @@ import { Text } from "@/components/ui/Text";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useUsage } from "@/hooks/useUsage";
 import { useUserData } from "@/hooks/useUserData";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
 import { PlanInfo } from "../profile/PlanInfo";
 import { UpgradeOptions } from "../profile/UpgradeOptions";
+import { Button } from "../ui/Button";
 
 export function Profile() {
   const { user, isLoading } = useUserData();
@@ -14,6 +16,7 @@ export function Profile() {
   const { refreshSubscriptionStatus, isLoading: isSubscriptionLoading } =
     useSubscription();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const router = useRouter();
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -63,6 +66,7 @@ export function Profile() {
       <ProfileContent user={user} />
       <PlanInfo />
       <UpgradeOptions onUpgradeSuccess={handleUpgradeSuccess} />
+      <Button title="Paywall" onPress={() => router.push("/(paywall)")} />
     </ScrollView>
   );
 }

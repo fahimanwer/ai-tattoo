@@ -3,7 +3,6 @@ import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { useTattooCreation } from "@/context/TattooCreationContext";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
-import { presentPaywall } from "@/lib/paywall-utils";
 import { Button as ExpoUIButton, Host } from "@expo/ui/swift-ui";
 import { fixedSize } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
@@ -45,7 +44,7 @@ export function CustomDetails() {
 
   const handleUpgrade = useCallback(async () => {
     try {
-      const success = await presentPaywall();
+      const success = true;
       if (success) {
         Alert.alert(
           "Upgrade Successful! 🎉",
