@@ -1,47 +1,242 @@
 # AI Tattoo Try On
 
-Subtitle / Short Description:
-Preview virtual tattoos on your body with AI – arm, leg, face & more
-
-Full Description (SEO-packed):
+Preview virtual tattoos on your body with AI – arm, leg, face & more.
 
 Try on tattoos instantly with AI! Upload a photo of your arm, leg, or face and see how any tattoo design looks on your skin. Choose from thousands of designs or upload your own. AI Tattoo Try On makes tattoo preview easy, realistic, and fun.
 
-🔑 Keywords it hits directly:
+## 🚀 Getting Started
 
-AI tattoo
+### Prerequisites
 
-tattoo try on
+- [Bun](https://bun.sh/) (package manager)
+- [Node.js](https://nodejs.org/) v18 or higher
+- A PostgreSQL database (we recommend [Neon](https://neon.tech/) or [Supabase](https://supabase.com/))
+- [EAS CLI](https://docs.expo.dev/build/setup/) for deployment
 
-virtual tattoo
+### Installation
 
-tattoo preview
+1. **Clone the repository**
 
-tattoo app
+```bash
+git clone <repository-url>
+cd ai-tattoo
+```
 
-# How to use
+2. **Install dependencies**
 
-- Clone, set environments, use bun
-- Better Auth
-- Prisma
-- Expo and EAS
-- Expo UI
+```bash
+bun install
+```
 
-# Docs
+3. **Set up environment variables**
 
-- https://ai.google.dev/gemini-api/docs/image-generation#rest
+This project requires environment variables in two separate files due to Prisma limitations:
 
-# Pricing
+#### Create `.env.local` file
 
-FREE -> 3–5 free generations on signup.
+Copy the example file and configure all required variables:
 
-SUB ->
-STARTER
-• $4.99/month → 125 generations.
-PLUS
-• $9.99/month → 300 generations.
-PRO
-• $29.99/month → 1,000 generations.
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local` with your credentials:
+
+```env
+# Database
+DATABASE_URL="your-postgresql-connection-string"
+
+# Better Auth
+BETTER_AUTH_SECRET="your-secret-key-here"
+
+# Google OAuth (for authentication)
+EXPO_PUBLIC_GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+
+# Gemini AI API
+GEMINI_API_KEY="your-gemini-api-key"
+```
+
+#### Create `.env` file (for Prisma)
+
+⚠️ **Important**: Prisma does not support `.env.local` files, so you need a separate `.env` file with **only** the `DATABASE_URL`:
+
+```bash
+echo 'DATABASE_URL="your-postgresql-connection-string"' > .env
+```
+
+Make sure this matches the `DATABASE_URL` in your `.env.local` file.
+
+### Database Setup with Prisma
+
+4. **Run Prisma migrations**
+
+After setting up your database connection, generate the Prisma client and run migrations:
+
+```bash
+# Generate Prisma client
+bunx prisma generate
+
+# Run database migrations (creates all tables)
+bunx prisma migrate deploy
+
+# For development, you can also use:
+bunx prisma migrate dev
+```
+
+This will:
+
+- Create all necessary tables in your database
+- Set up the schema defined in `prisma/schema.prisma`
+- Generate the Prisma Client for type-safe database queries
+
+5. **Verify database setup**
+
+You can use Prisma Studio to view your database:
+
+```bash
+bunx prisma studio
+```
+
+## 📱 Development
+
+### Running Locally
+
+**Important**: This app uses **Expo UI** which requires a **development build**. You **cannot** use Expo Go.
+
+1. **Create a development build**
+
+```bash
+# For iOS
+npx expo prebuild -p ios && npx expo run:ios
+
+# For Android
+# We haven't tested on Android and is likely this won't work since we are using iOS only components in some parts of the app. We plan to support Android in the future but as of now is not supported.
+```
+
+The first time you run these commands, it will create a development build. This process can take several minutes.
+
+2. **Start the development server**
+
+```bash
+bun start
+```
+
+### RevenueCat Setup (Optional but Recommended)
+
+Currently, RevenueCat is required for the app to run. However, if you want to run the app locally without setting up RevenueCat:
+
+1. Comment out RevenueCat-related code in:
+
+   - `app/api/webhook/rc+api.ts`
+   - Any subscription-related components
+   - Context providers that use RevenueCat
+
+2. You'll need to manually handle subscription logic or use mock data
+
+**Note**: This is a work in progress, and we plan to make RevenueCat optional in future updates.
+
+## 🚀 Deployment
+
+### API Routes (EAS Hosting)
+
+The API routes use EAS hosting. To deploy:
+
+1. **Deploy to production**
+
+```bash
+bun run deploy:web
+```
+
+2. **Configure EAS**
+
+Visit the [EAS dashboard](https://expo.dev/) to:
+
+- Manage your deployments
+- Configure environment variables
+- View build logs
+- Set up webhooks
+
+Refer to the [EAS hosting documentation](https://docs.expo.dev/eas/) for more details.
+
+## 🗂️ Project Structure
+
+```
+├── app/                    # Expo Router routes
+│   ├── (auth)/            # Authentication screens
+│   ├── (tabs)/            # Bottom tab navigation
+│   ├── (new)/             # Tattoo creation flow
+│   └── api/               # API routes (EAS hosted)
+├── components/
+│   ├── screens/           # Screen components
+│   └── ui/                # Reusable UI components
+├── constants/             # App constants & configuration
+├── context/               # React contexts
+├── hooks/                 # Custom hooks
+├── lib/                   # Utilities and API clients
+├── prisma/                # Database schema and migrations
+├── server-utils/          # Server-side utilities
+└── types/                 # TypeScript type definitions
+```
+
+## 🔑 Required Services
+
+### 1. Database (PostgreSQL)
+
+- [Neon](https://neon.tech/) - Recommended, serverless PostgreSQL
+- [Supabase](https://supabase.com/) - PostgreSQL with built-in Auth & Storage
+- Any PostgreSQL provider with connection pooling
+
+### 2. Google OAuth
+
+- Create a project in [Google Cloud Console](https://console.cloud.google.com/)
+- Enable Google+ API
+- Create OAuth 2.0 credentials
+- Add authorized redirect URIs
+
+### 3. Gemini AI API
+
+- Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+- Used for AI image generation
+
+### 4. Better Auth Secret
+
+- Generate a secure random string for `BETTER_AUTH_SECRET`
+- You can use: `openssl rand -base64 32`
+
+## 📚 Tech Stack
+
+- **Framework**: [Expo](https://expo.dev/) with [Expo Router](https://expo.github.io/router/)
+- **UI Library**: [Expo UI](https://ui.expo.dev/) (requires development build)
+- **Authentication**: [Better Auth](https://www.better-auth.com/)
+- **Database**: [Prisma](https://www.prisma.io/) with PostgreSQL
+- **Payments**: [RevenueCat](https://www.revenuecat.com/)
+- **AI**: [Google Gemini API](https://ai.google.dev/)
+- **Hosting**: [EAS Hosting](https://expo.dev/eas)
+
+## 📖 Documentation
+
+- [Gemini Image Generation API](https://ai.google.dev/gemini-api/docs/image-generation#rest)
+- [Expo Router Documentation](https://docs.expo.dev/router/introduction/)
+- [Expo UI Documentation](https://ui.expo.dev/)
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [Better Auth Documentation](https://www.better-auth.com/docs)
+
+## 💰 Pricing Tiers
+
+**FREE** → 3–5 free generations on signup
+
+**STARTER**
+
+- $4.99/month → 125 generations
+
+**PLUS**
+
+- $9.99/month → 300 generations
+
+**PRO**
+
+- $29.99/month → 1,000 generations
 
 You can also:
 • Fair use cap (e.g. “up to 1200 generations/month”).
