@@ -4,6 +4,7 @@ import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { BlurView } from "expo-blur";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import { Alert, Pressable } from "react-native";
 
 export function Banner() {
@@ -22,14 +23,7 @@ export function Banner() {
 
   const handlePress = async () => {
     try {
-      const success = true;
-      if (success) {
-        Alert.alert(
-          "Success! 🎉",
-          "Purchase successful. Thank you for supporting us!",
-          [{ text: "Awesome!", style: "default" }]
-        );
-      }
+      router.push("/(paywall)");
     } catch (error) {
       console.error("Error presenting paywall:", error);
       Alert.alert(

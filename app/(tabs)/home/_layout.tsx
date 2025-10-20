@@ -27,6 +27,7 @@ export default function ProfileLayout() {
           );
           return;
         }
+
         Purchases.configure({
           apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY,
           appUserID: userId || undefined,

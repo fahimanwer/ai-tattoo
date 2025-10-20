@@ -6,28 +6,6 @@ import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
 import { AccentColorProvider } from "@/hooks/useAccentColor";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
-  BodoniModa_400Regular,
-  BodoniModa_400Regular_Italic,
-  BodoniModa_500Medium,
-  BodoniModa_500Medium_Italic,
-  BodoniModa_600SemiBold,
-  BodoniModa_600SemiBold_Italic,
-  BodoniModa_700Bold,
-  BodoniModa_700Bold_Italic,
-  BodoniModa_800ExtraBold,
-  BodoniModa_800ExtraBold_Italic,
-  BodoniModa_900Black,
-  BodoniModa_900Black_Italic,
-} from "@expo-google-fonts/bodoni-moda";
-import {
-  Oswald_200ExtraLight,
-  Oswald_300Light,
-  Oswald_400Regular,
-  Oswald_500Medium,
-  Oswald_600SemiBold,
-  Oswald_700Bold,
-} from "@expo-google-fonts/oswald";
-import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
@@ -43,27 +21,6 @@ import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
-
-const importedFonts = {
-  Oswald_200ExtraLight,
-  Oswald_300Light,
-  Oswald_400Regular,
-  Oswald_500Medium,
-  Oswald_600SemiBold,
-  Oswald_700Bold,
-  BodoniModa_400Regular,
-  BodoniModa_500Medium,
-  BodoniModa_600SemiBold,
-  BodoniModa_700Bold,
-  BodoniModa_800ExtraBold,
-  BodoniModa_900Black,
-  BodoniModa_400Regular_Italic,
-  BodoniModa_500Medium_Italic,
-  BodoniModa_600SemiBold_Italic,
-  BodoniModa_700Bold_Italic,
-  BodoniModa_800ExtraBold_Italic,
-  BodoniModa_900Black_Italic,
-};
 
 SplashScreen.setOptions({
   duration: 1000,
