@@ -26,6 +26,8 @@ export const textAndImageToImage = createJsonMutation<
 /**
  * User Usage API
  */
+import type { PlanTier } from "@/constants/plan-limits";
+
 export interface UsageRecord {
   entitlement: string;
   periodStart: string;
@@ -35,9 +37,25 @@ export interface UsageRecord {
   revenuecatUserId: string;
 }
 
+export interface CurrentPeriodUsage {
+  used: number;
+  limit: number;
+  remaining: number;
+  periodStart: string;
+  periodEnd: string;
+  isLimitReached: boolean;
+}
+
 export interface UsageResponse {
   usage: UsageRecord[];
   totalUsage: number;
+  currentPeriod: CurrentPeriodUsage;
+  subscriptionTier: PlanTier;
+  planInfo: {
+    displayName: string;
+    color: string;
+    features: string[];
+  };
 }
 
 export const fetchUserUsage = (): Promise<UsageResponse> => {

@@ -10,8 +10,11 @@ export function UsageDisplay({ className }: UsageDisplayProps) {
   const {
     used,
     limit,
+    remaining,
     isLimitReached,
-    subscriptionTier,
+    planColor,
+    planDisplayName,
+    usagePercentage,
     isLoading,
     error,
     limitMessage,
@@ -28,27 +31,30 @@ export function UsageDisplay({ className }: UsageDisplayProps) {
   return (
     <View style={{ marginBottom: 16 }} className={className}>
       <Text type="sm" lightColor="#666" style={{ marginBottom: 4 }}>
-        Current Usage
+        Current Usage ({planDisplayName})
       </Text>
 
       <Text
         type="body"
         weight="bold"
         style={{
-          color: isLimitReached
-            ? "#ef4444"
-            : subscriptionTier === "plus"
-            ? "#10b981"
-            : subscriptionTier === "pro"
-            ? "#3b82f6"
-            : subscriptionTier === "starter"
-            ? "#f59e0b"
-            : "#6b7280",
+          color: isLimitReached ? "#ef4444" : planColor,
           marginBottom: 4,
         }}
       >
-        {`${used}/${limit} used`}
+        {`${used}/${limit} used (${usagePercentage}%)`}
       </Text>
+
+      <Text
+        type="xs"
+        style={{
+          color: remaining <= 5 ? "#f59e0b" : "#666",
+          marginBottom: 2,
+        }}
+      >
+        {`${remaining} remaining`}
+      </Text>
+
       <Text
         type="xs"
         style={{

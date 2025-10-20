@@ -1,3 +1,9 @@
+import {
+  entitlementToTier,
+  getMonthlyLimit,
+  getPlanConfig,
+  type PlanTier,
+} from "@/constants/plan-limits";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAuth } from "@/server-utils/auth-middleware";
 import { withAccelerate } from "@prisma/extension-accelerate";
@@ -15,9 +21,25 @@ interface UsageRecord {
   revenuecatUserId: string;
 }
 
+interface CurrentPeriodUsage {
+  used: number;
+  limit: number;
+  remaining: number;
+  periodStart: string;
+  periodEnd: string;
+  isLimitReached: boolean;
+}
+
 interface UsageResponse {
   usage: UsageRecord[];
   totalUsage: number;
+  currentPeriod: CurrentPeriodUsage;
+  subscriptionTier: PlanTier;
+  planInfo: {
+    displayName: string;
+    color: string;
+    features: string[];
+  };
 }
 
 export const POST = withAuth(async (request: Request, session: any) => {
@@ -27,8 +49,6 @@ export const POST = withAuth(async (request: Request, session: any) => {
 
   try {
     const userId = session.user.id;
-
-    console.log("🌐 server", "userId:", userId);
 
     // Fetch all usage records for the user
     const usageRecords = await prisma.usage.findMany({
@@ -49,7 +69,7 @@ export const POST = withAuth(async (request: Request, session: any) => {
       },
     });
 
-    console.log("🌐 server", "raw usage records:", usageRecords);
+    console.log("🌐 server", "raw usage records:", usageRecords.length);
 
     // Calculate total usage across all entitlements and periods
     const totalUsage = usageRecords.reduce(
@@ -67,14 +87,79 @@ export const POST = withAuth(async (request: Request, session: any) => {
       revenuecatUserId: record.revenuecatUserId,
     }));
 
+    // Find current period usage
+    const now = new Date();
+    const currentPeriodRecord = usageRecords.find((record) => {
+      const periodStart = new Date(record.periodStart);
+      const periodEnd = new Date(record.periodEnd);
+      return now >= periodStart && now <= periodEnd;
+    });
+
+    // Determine subscription tier from current period or default to free
+    let subscriptionTier: PlanTier = "free";
+    if (currentPeriodRecord?.entitlement) {
+      subscriptionTier = entitlementToTier(currentPeriodRecord.entitlement);
+    }
+
+    // Get the correct limit for the user's tier
+    const tierLimit = getMonthlyLimit(subscriptionTier);
+    const planConfig = getPlanConfig(subscriptionTier);
+
+    // Calculate current period usage
+    const used = currentPeriodRecord?.count || 0;
+    const limit = tierLimit;
+    const remaining = Math.max(0, limit - used);
+    const isLimitReached = used >= limit;
+
+    // If we have a current period, use its dates, otherwise create a default period
+    let periodStart: Date;
+    let periodEnd: Date;
+
+    if (currentPeriodRecord) {
+      periodStart = new Date(currentPeriodRecord.periodStart);
+      periodEnd = new Date(currentPeriodRecord.periodEnd);
+    } else {
+      // Create a default current period (start of month to end of month)
+      periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      periodEnd = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+        23,
+        59,
+        59
+      );
+    }
+
+    const currentPeriod: CurrentPeriodUsage = {
+      used,
+      limit,
+      remaining,
+      periodStart: periodStart.toISOString(),
+      periodEnd: periodEnd.toISOString(),
+      isLimitReached,
+    };
+
     const response: UsageResponse = {
       usage,
       totalUsage,
+      currentPeriod,
+      subscriptionTier,
+      planInfo: {
+        displayName: planConfig.displayName,
+        color: planConfig.color,
+        features: planConfig.features,
+      },
     };
 
     console.log("🌐 server", "returning usage data:", {
       recordCount: usage.length,
       totalUsage,
+      currentPeriod: {
+        used: currentPeriod.used,
+        limit: currentPeriod.limit,
+        tier: subscriptionTier,
+      },
     });
 
     return new Response(JSON.stringify(response), {

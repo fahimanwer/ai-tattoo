@@ -1,7 +1,7 @@
 import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import { SubscriptionTier, useSubscription } from "./useSubscription";
-import { useUsage } from "./useUsage";
+import { useUsageLimit } from "./useUsageLimit";
 
 export interface UserData {
   // User info from Better Auth
@@ -14,7 +14,7 @@ export interface UserData {
     createdAt: Date;
     updatedAt: Date;
   } | null;
-  
+
   // Usage data
   usage: {
     totalUsage: number;
@@ -29,7 +29,7 @@ export interface UserData {
     isLoading: boolean;
     error: string | null;
   };
-  
+
   // Subscription data
   subscription: {
     tier: SubscriptionTier;
@@ -41,13 +41,13 @@ export interface UserData {
     isLoading: boolean;
     error: string | null;
   };
-  
+
   // Combined loading state
   isLoading: boolean;
-  
+
   // Combined error state
   error: string | null;
-  
+
   // Refresh function
   refresh: () => Promise<void>;
 }
@@ -57,13 +57,19 @@ export function useUserData(): UserData {
   const [isUserLoading, setIsUserLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
 
-  // Get usage data
+  // Get usage data from consolidated hook
   const {
-    data: usageData,
+    used,
+    limit,
+    totalUsage,
+    allUsageRecords,
+    periodStart,
+    periodEnd,
+    subscriptionTier: usageTier,
     isLoading: isUsageLoading,
     error: usageError,
     refetch: refetchUsage,
-  } = useUsage();
+  } = useUsageLimit();
 
   // Get subscription data
   const {
@@ -78,24 +84,28 @@ export function useUserData(): UserData {
     refreshSubscriptionStatus,
   } = useSubscription();
 
-  // Get current period usage
-  const currentPeriodUsage = usageData?.usage.find((usage) => {
-    const now = new Date();
-    const periodStart = new Date(usage.periodStart);
-    const periodEnd = new Date(usage.periodEnd);
+  // Get current period usage from the hook data
+  const currentPeriodUsage =
+    periodStart && periodEnd
+      ? {
+          count: used,
+          limit: limit,
+          entitlement: usageTier,
+          periodStart: periodStart,
+          periodEnd: periodEnd,
+        }
+      : null;
 
-    return now >= periodStart && now <= periodEnd;
-  });
-
-  // Check if user has any active entitlement
-  const hasActiveEntitlement = usageData?.usage.some((usage) => {
+  // Check if user has any active entitlement based on usage records
+  const hasActiveEntitlement = allUsageRecords.some((usage) => {
     const now = new Date();
     const periodEnd = new Date(usage.periodEnd);
     return now <= periodEnd;
-  }) || false;
+  });
 
   // Get session data
-  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
 
   // Update user data when session changes
   useEffect(() => {
@@ -118,10 +128,7 @@ export function useUserData(): UserData {
   // Refresh all data
   const refresh = async () => {
     console.log("🔄 Refreshing user data...");
-    await Promise.all([
-      refetchUsage(),
-      refreshSubscriptionStatus(),
-    ]);
+    await Promise.all([refetchUsage(), refreshSubscriptionStatus()]);
     console.log("✅ User data refreshed");
   };
 
@@ -129,33 +136,30 @@ export function useUserData(): UserData {
   const isLoading = isUserLoading || isUsageLoading || isSubscriptionLoading;
 
   // Combined error state
-  const error = userError || usageError?.message || subscriptionError;
+  const error =
+    userError || (usageError ? usageError.message : null) || subscriptionError;
 
   return {
-    user: user ? {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      image: user.image,
-      emailVerified: user.emailVerified,
-      createdAt: new Date(user.createdAt),
-      updatedAt: new Date(user.updatedAt),
-    } : null,
-    
+    user: user
+      ? {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          emailVerified: user.emailVerified,
+          createdAt: new Date(user.createdAt),
+          updatedAt: new Date(user.updatedAt),
+        }
+      : null,
+
     usage: {
-      totalUsage: usageData?.totalUsage || 0,
-      currentPeriodUsage: currentPeriodUsage ? {
-        count: currentPeriodUsage.count,
-        limit: currentPeriodUsage.limit,
-        entitlement: currentPeriodUsage.entitlement,
-        periodStart: currentPeriodUsage.periodStart,
-        periodEnd: currentPeriodUsage.periodEnd,
-      } : null,
+      totalUsage: totalUsage,
+      currentPeriodUsage: currentPeriodUsage,
       hasActiveEntitlement,
       isLoading: isUsageLoading,
-      error: usageError?.message || null,
+      error: usageError ? usageError.message : null,
     },
-    
+
     subscription: {
       tier: subscriptionTier,
       isProUser,
@@ -166,7 +170,7 @@ export function useUserData(): UserData {
       isLoading: isSubscriptionLoading,
       error: subscriptionError,
     },
-    
+
     isLoading,
     error,
     refresh,

@@ -1,79 +1,168 @@
-import { useSubscription } from "@/hooks/useSubscription";
-import { useUsage } from "@/hooks/useUsage";
+import { getPlanConfig, type PlanTier } from "@/constants/plan-limits";
+import { fetchUserUsage, type UsageResponse } from "@/lib/nano";
+import { useQuery } from "@tanstack/react-query";
+
+/**
+ * Enhanced Usage Limit Hook
+ *
+ * This consolidated hook provides all usage-related data and utilities.
+ * It replaces the previous useUsage and useUsageLimit hooks.
+ */
 
 export interface UsageLimitResult {
+  // Current period data
   used: number;
   limit: number;
   remaining: number;
   isLimitReached: boolean;
   canCreateTattoo: boolean;
-  subscriptionTier: string;
+  periodStart: string | null;
+  periodEnd: string | null;
+
+  // Subscription data
+  subscriptionTier: PlanTier;
+  planDisplayName: string;
+  planColor: string;
+  planFeatures: string[];
+
+  // Historical data
+  totalUsage: number;
+  allUsageRecords: UsageResponse["usage"];
+
+  // UI helpers
+  limitMessage: string;
+  usagePercentage: number;
+
+  // Query state
   isLoading: boolean;
   error: Error | null;
-  limitMessage: string;
+  refetch: () => Promise<any>;
+
+  // Raw data
+  data: UsageResponse | undefined;
 }
 
 /**
- * Hook to check usage limits across all subscription tiers
- * This abstracts the logic from UsageDisplay and can be used
- * anywhere we need to check if user can perform actions
+ * Query Configuration
+ */
+const USAGE_QUERY_CONFIG = {
+  staleTime: 5 * 60 * 1000, // 5 minutes - data doesn't change often
+  gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache
+  retry: (failureCount: number, error: any) => {
+    // Don't retry on 405 Method Not Allowed errors
+    if (error?.status === 405) {
+      console.warn("⚠️ API endpoint not properly deployed - skipping retries");
+      return false;
+    }
+    return failureCount < 2; // Retry twice for other errors
+  },
+  retryDelay: (attemptIndex: number) =>
+    Math.min(1000 * 2 ** attemptIndex, 5000),
+};
+
+/**
+ * Main hook for usage limits and subscription data
  */
 export const useUsageLimit = (): UsageLimitResult => {
-  const {
-    data: usageData,
-    isLoading: isUsageLoading,
-    error: usageError,
-  } = useUsage();
-
-  const { subscriptionTier, isLoading: isSubscriptionLoading } =
-    useSubscription();
-
-  const totalUsage = usageData?.totalUsage || 0;
-  const usage = usageData?.usage || [];
-
-  // Calculate current usage based on subscription tier and active period
-  const currentLimit = 5;
-
-  // Find current period usage for the subscription tier
-  const currentPeriodUsage = usage.find((record) => {
-    const now = new Date();
-    const periodStart = new Date(record.periodStart);
-    const periodEnd = new Date(record.periodEnd);
-
-    // Check if we're in the current period and it matches the subscription tier
-    return (
-      now >= periodStart &&
-      now <= periodEnd &&
-      (record.entitlement.toLowerCase() === subscriptionTier ||
-        (subscriptionTier === "free" && !record.entitlement))
-    );
+  const { data, isLoading, error, refetch } = useQuery<UsageResponse>({
+    queryKey: ["user", "usage"],
+    queryFn: fetchUserUsage,
+    ...USAGE_QUERY_CONFIG,
   });
 
-  const used = currentPeriodUsage?.count || totalUsage || 0;
-  const remaining = Math.max(0, currentLimit - used);
-  const isLimitReached = used >= currentLimit;
-  const canCreateTattoo = !isLimitReached;
+  // Default values when loading or no data
+  if (isLoading || !data) {
+    return {
+      used: 0,
+      limit: 5, // Free tier default
+      remaining: 5,
+      isLimitReached: false,
+      canCreateTattoo: true,
+      periodStart: null,
+      periodEnd: null,
+      subscriptionTier: "free",
+      planDisplayName: "Free",
+      planColor: "#6b7280",
+      planFeatures: [],
+      totalUsage: 0,
+      allUsageRecords: [],
+      limitMessage: "Loading...",
+      usagePercentage: 0,
+      isLoading: true,
+      error: error as Error | null,
+      refetch,
+      data: undefined,
+    };
+  }
+
+  const { currentPeriod, subscriptionTier, planInfo, usage, totalUsage } = data;
+
+  // Get plan configuration
+  const planConfig = getPlanConfig(subscriptionTier);
+
+  // Calculate usage percentage
+  const usagePercentage =
+    currentPeriod.limit > 0
+      ? Math.round((currentPeriod.used / currentPeriod.limit) * 100)
+      : 0;
 
   // Generate user-friendly message
   let limitMessage = "";
-  if (isLimitReached) {
+  if (currentPeriod.isLimitReached) {
     limitMessage =
       subscriptionTier === "free"
         ? "Monthly limit reached. Upgrade to get more generations."
-        : "Monthly limit reached. Your plan resets next month.";
+        : "Monthly limit reached. Your plan resets next period.";
+  } else if (currentPeriod.remaining <= 5 && subscriptionTier !== "free") {
+    limitMessage = `Only ${currentPeriod.remaining} generations remaining!`;
   } else {
-    limitMessage = `${remaining} generations remaining this period`;
+    limitMessage = `${currentPeriod.remaining} of ${currentPeriod.limit} generations remaining`;
   }
 
   return {
-    used,
-    limit: currentLimit,
-    remaining,
-    isLimitReached,
-    canCreateTattoo,
+    // Current period data
+    used: currentPeriod.used,
+    limit: currentPeriod.limit,
+    remaining: currentPeriod.remaining,
+    isLimitReached: currentPeriod.isLimitReached,
+    canCreateTattoo: !currentPeriod.isLimitReached,
+    periodStart: currentPeriod.periodStart,
+    periodEnd: currentPeriod.periodEnd,
+
+    // Subscription data
     subscriptionTier,
-    isLoading: isUsageLoading || isSubscriptionLoading,
-    error: usageError,
+    planDisplayName: planInfo.displayName,
+    planColor: planInfo.color,
+    planFeatures: planInfo.features,
+
+    // Historical data
+    totalUsage,
+    allUsageRecords: usage,
+
+    // UI helpers
     limitMessage,
+    usagePercentage,
+
+    // Query state
+    isLoading: false,
+    error: null,
+    refetch,
+
+    // Raw data
+    data,
+  };
+};
+
+/**
+ * Legacy export for backward compatibility
+ * @deprecated Use useUsageLimit instead
+ */
+export const useUsage = () => {
+  const result = useUsageLimit();
+  return {
+    data: result.data,
+    isLoading: result.isLoading,
+    error: result.error,
+    refetch: result.refetch,
   };
 };

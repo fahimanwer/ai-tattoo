@@ -1,5 +1,4 @@
 import { useSubscription } from "@/hooks/useSubscription";
-import { useUsage } from "@/hooks/useUsage";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { useUserData } from "@/hooks/useUserData";
 import { authClient } from "@/lib/auth-client";
@@ -19,24 +18,20 @@ import { Linking, Share, View } from "react-native";
 
 export function Profile() {
   const { user } = useUserData();
-  const { refetch: refetchUsage } = useUsage();
-  const { subscriptionTier, refreshSubscriptionStatus } = useSubscription();
-  const { used, limit, isLimitReached, isLoading, error, limitMessage } =
-    useUsageLimit();
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const router = useRouter();
-
-  console.log(
-    "usage data",
+  const { refreshSubscriptionStatus } = useSubscription();
+  const {
     used,
     limit,
+    remaining,
     isLimitReached,
-    isLoading,
-    error,
-    limitMessage,
     subscriptionTier,
-    user?.id
-  );
+    planDisplayName,
+    planColor,
+    usagePercentage,
+    refetch: refetchUsage,
+  } = useUsageLimit();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const router = useRouter();
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -137,26 +132,22 @@ export function Profile() {
 
         <Section title="Plan & Usage">
           <LabeledContent label="Current Plan">
-            <Text
-              weight="bold"
-              color={
-                subscriptionTier === "plus"
-                  ? "#10b981"
-                  : subscriptionTier === "pro"
-                  ? "#3b82f6"
-                  : subscriptionTier === "starter"
-                  ? "#f59e0b"
-                  : "#6b7280"
-              }
-            >
-              {subscriptionTier.charAt(0).toUpperCase() +
-                subscriptionTier.slice(1)}
+            <Text weight="bold" color={planColor}>
+              {planDisplayName}
             </Text>
           </LabeledContent>
-          <LabeledContent label="Usage">
-            <Text weight="bold" color={isLimitReached ? "#ef4444" : "#10b981"}>
+          <LabeledContent label="Usage This Period">
+            <Text weight="bold" color={isLimitReached ? "#ef4444" : planColor}>
               {`${used} / ${limit}`}
             </Text>
+          </LabeledContent>
+          <LabeledContent label="Remaining">
+            <Text weight="bold" color={remaining <= 5 ? "#f59e0b" : "#10b981"}>
+              {`${remaining} generations`}
+            </Text>
+          </LabeledContent>
+          <LabeledContent label="Progress">
+            <Text>{`${usagePercentage}%`}</Text>
           </LabeledContent>
           <HStack>
             <Button
@@ -165,7 +156,7 @@ export function Profile() {
               onPress={() => router.push("/(paywall)")}
               modifiers={[foregroundStyle({ type: "color", color: "white" })]}
             >
-              Upgrade Plan
+              {subscriptionTier === "free" ? "Upgrade Plan" : "Change Plan"}
             </Button>
           </HStack>
         </Section>

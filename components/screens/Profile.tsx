@@ -1,7 +1,7 @@
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { Text } from "@/components/ui/Text";
 import { useSubscription } from "@/hooks/useSubscription";
-import { useUsage } from "@/hooks/useUsage";
+import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { useUserData } from "@/hooks/useUserData";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -12,7 +12,7 @@ import { Button } from "../ui/Button";
 
 export function Profile() {
   const { user, isLoading } = useUserData();
-  const { refetch: refetchUsage, isLoading: isUsageLoading } = useUsage();
+  const { refetch: refetchUsage, isLoading: isUsageLoading } = useUsageLimit();
   const { refreshSubscriptionStatus, isLoading: isSubscriptionLoading } =
     useSubscription();
   const [isRefreshing, setIsRefreshing] = useState(false);

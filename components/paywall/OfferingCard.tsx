@@ -1,4 +1,5 @@
 import { Color } from "@/constants/TWPalette";
+import { entitlementToTier, getPlanConfig } from "@/constants/plan-limits";
 import { useState } from "react";
 import { View } from "react-native";
 import { PurchasesPackage } from "react-native-purchases";
@@ -38,6 +39,10 @@ export function OfferingCard({
   const product = pkg.product;
   const buttonDisabled = disabled || isCurrentPlan || isPurchasing;
 
+  // Get plan configuration based on the offering title
+  const tier = entitlementToTier(title);
+  const planConfig = getPlanConfig(tier);
+
   return (
     <View
       style={{
@@ -57,7 +62,7 @@ export function OfferingCard({
         }}
       >
         <View style={{ flexDirection: "column", gap: 4 }}>
-          <Text type="2xl">{title}</Text>
+          <Text type="2xl">{planConfig.displayName}</Text>
           {isCurrentPlan && (
             <View
               style={{
@@ -77,40 +82,35 @@ export function OfferingCard({
         </View>
         <Text type="2xl">{product.priceString} / Month</Text>
       </View>
-      <Text style={{ marginBottom: 16, fontSize: 16 }}>
-        {product.title === "Starter"
-          ? "125"
-          : product.title === "Plus"
-          ? "300"
-          : "1,000"}{" "}
-        Tattoo Generations
+      <Text style={{ marginBottom: 16, fontSize: 16, color: Color.zinc[400] }}>
+        {planConfig.monthlyLimit.toLocaleString()} Tattoo Generations per month
       </Text>
+
+      {/* Features list */}
+      <View style={{ marginBottom: 16 }}>
+        {planConfig.features.map((feature, index) => (
+          <View
+            key={index}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 4,
+            }}
+          >
+            <Text style={{ fontSize: 14, color: Color.zinc[400] }}>
+              • {feature}
+            </Text>
+          </View>
+        ))}
+      </View>
+
       <Button
         title={isCurrentPlan ? "Current Plan" : "Select Plan"}
         onPress={handlePurchase}
         disabled={buttonDisabled}
-        color={product.title === "Pro" ? "orange" : "white"}
+        color={tier === "pro" ? "orange" : "white"}
         variant="solid"
       />
-      {/* <Text style={{ marginBottom: 4, color: Color.zinc[600] }}>
-        Per Month: {product.pricePerMonthString}
-      </Text>
-
-      <Text style={{ marginBottom: 4, color: Color.zinc[600] }}>
-        Per Week: {product.pricePerWeekString}
-      </Text>
-
-      <Text style={{ marginBottom: 8, color: Color.zinc[600] }}>
-        Per Year: {product.pricePerYearString}
-      </Text>
-
-      <Text style={{ marginBottom: 4, fontSize: 10, color: Color.zinc[600] }}>
-        Product ID: {product.identifier}
-      </Text>
-
-      <Text style={{ fontSize: 10, color: Color.zinc[600], marginBottom: 12 }}>
-        Period: {product.subscriptionPeriod}
-      </Text> */}
     </View>
   );
 }
