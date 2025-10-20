@@ -189,20 +189,6 @@ function WebLayout() {
           }}
         />
         <Stack.Screen
-          name="create-tattoo"
-          options={{
-            title: "Creating Your Tattoo",
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="generated-result"
-          options={{
-            title: "Generated Result",
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
           name="privacy-policy"
           options={{
             title: "Privacy Policy",

@@ -130,9 +130,9 @@ export function CustomDetails() {
       return;
     }
 
-    // All validations passed, navigate to creation screen
+    // All validations passed, navigate to generation result screen
     setIsValidating(false);
-    router.push("/(new)/create-tattoo");
+    router.push("/(new)/generation-result");
   }, [
     canCreateTattoo,
     isLimitReached,
@@ -174,35 +174,6 @@ export function CustomDetails() {
           or any other details you want to include.
         </Text>
       </View>
-
-      {/* Color Selection Section */}
-      {/*  <View style={styles.section}>
-        <Text type="subtitle" weight="bold">
-          Choose color
-        </Text>
-      </View>
-
-      <View style={styles.colorSection}>
-        <View style={styles.colorOptions}>
-          <Button
-            title="Color"
-            variant={options.colorOption === "color" ? "solid" : "outline"}
-            color={options.colorOption === "color" ? "white" : "gray"}
-            onPress={() => updateOptions({ colorOption: "color" })}
-            style={styles.colorButton}
-            radius="full"
-          />
-
-          <Button
-            title="Black & White"
-            variant={options.colorOption === "blackwhite" ? "solid" : "outline"}
-            color={options.colorOption === "blackwhite" ? "white" : "gray"}
-            onPress={() => updateOptions({ colorOption: "blackwhite" })}
-            style={styles.colorButton}
-            radius="full"
-          />
-        </View>
-      </View> */}
 
       {/* Usage Display */}
       <View style={styles.usageContainer}>
@@ -305,27 +276,6 @@ const styles = StyleSheet.create({
     color: Color.gray[500],
     fontStyle: "italic",
   },
-  colorSection: {
-    paddingHorizontal: 16,
-    marginBottom: 24,
-  },
-  colorOptions: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 8,
-  },
-  colorButton: {
-    width: "48%",
-  },
-  detailsContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 24,
-  },
-  detailsText: {
-    color: Color.gray[400],
-    marginBottom: 8,
-    lineHeight: 20,
-  },
   usageContainer: {
     paddingHorizontal: 16,
     marginTop: 24,
@@ -335,8 +285,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "red",
   },
   usageLabel: {
     color: Color.gray[400],
@@ -356,12 +304,5 @@ const styles = StyleSheet.create({
   navigationContainer: {
     paddingHorizontal: 16,
     paddingVertical: 24,
-  },
-  navigationButtons: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  navButton: {
-    flex: 1,
   },
 });

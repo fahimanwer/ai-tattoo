@@ -4,7 +4,6 @@ import { useCallback, useEffect } from "react";
 import { BackHandler } from "react-native";
 import { BodyPartSelection } from "./BodyPartSelection";
 import { CustomDetails } from "./CustomDetails";
-import { TattooCreation } from "./TattooCreation";
 import { TattooStyleSelection } from "./TattooStyleSelection";
 
 export function New() {
@@ -43,8 +42,6 @@ export function New() {
       return <TattooStyleSelection />;
     case 3:
       return <CustomDetails />;
-    case 4:
-      return <TattooCreation />;
     default:
       return <BodyPartSelection />;
   }

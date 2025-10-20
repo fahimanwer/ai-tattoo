@@ -1,7 +1,8 @@
 import { listAlbumAssets } from "@/lib/save-to-library";
+import { useFocusEffect } from "@react-navigation/native";
 import * as MediaLibrary from "expo-media-library";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { Text } from "../ui/Text";
 import { VerticalCard } from "../ui/VerticalCard";
@@ -11,9 +12,12 @@ export function TattooHistory() {
   const [loading, setLoading] = useState(true);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
-  useEffect(() => {
-    loadTattoos();
-  }, []);
+  // Reload tattoos when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadTattoos();
+    }, [])
+  );
 
   const loadTattoos = async () => {
     try {
