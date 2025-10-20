@@ -1,4 +1,5 @@
 import { ALBUM_NAME } from "@/lib/save-to-library";
+import { File, Paths } from "expo-file-system";
 import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
@@ -6,8 +7,9 @@ import { router, Stack } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
-  Pressable,
+  Platform,
   Share,
   StyleSheet,
   View,
@@ -18,7 +20,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { Icon } from "../ui/Icon";
+import { Button } from "../ui/Button";
+import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
 import { Text } from "../ui/Text";
 
 interface TattooDetailScreenProps {
@@ -143,22 +146,92 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
     if (!asset) return;
 
     try {
-      await Share.share({
-        url: asset.uri,
-        message: `Check out my AI-generated tattoo design!`,
-      });
+      const shareMessage =
+        "Check out my AI generated tattoo design created with AI tattoo try on.";
+
+      // Get asset info to get the file extension
+      const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
+      const fileUri = assetInfo.localUri || assetInfo.uri;
+
+      // Create source and destination file references
+      const fileExtension = fileUri.split(".").pop() || "jpg";
+      const tempFileName = `tattoo-share-${Date.now()}.${fileExtension}`;
+      const sourceFile = new File(fileUri);
+      const tempFile = new File(Paths.cache, tempFileName);
+
+      // Copy the file to cache directory for sharing
+      await sourceFile.copy(tempFile);
+
+      // Share the file
+      if (Platform.OS === "ios") {
+        await Share.share({
+          url: tempFile.uri,
+          message: shareMessage,
+        });
+      } else {
+        // On Android, we need to use url for files
+        await Share.share({
+          message: shareMessage,
+          url: tempFile.uri,
+        });
+      }
+
+      // Clean up the temporary file after a delay
+      setTimeout(async () => {
+        try {
+          await tempFile.delete();
+        } catch (error) {
+          console.error("Error cleaning up temp file:", error);
+        }
+      }, 5000);
     } catch (error) {
       console.error("Error sharing:", error);
+      Alert.alert("Error", "Unable to share the image. Please try again.");
     }
+  };
+
+  const handleDeletePress = async () => {
+    if (!asset) return;
+
+    Alert.alert(
+      "Delete Tattoo",
+      "Are you sure you want to delete this tattoo design? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await MediaLibrary.deleteAssetsAsync([asset.id]);
+              router.back();
+            } catch (error) {
+              console.error("Error deleting asset:", error);
+              Alert.alert(
+                "Error",
+                "Unable to delete the image. Please try again."
+              );
+            }
+          },
+        },
+      ]
+    );
   };
 
   if (loading) {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.closeButton}>
-            <Icon symbol="xmark" style={styles.closeIcon} color="white" />
-          </Pressable>
+          <HeaderButton
+            imageProps={{ systemName: "xmark" }}
+            buttonProps={{
+              onPress: () => router.back(),
+              variant: "glass",
+            }}
+          />
         </View>
         <View style={styles.errorContainer}>
           <ActivityIndicator size="large" color="white" />
@@ -170,15 +243,16 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
   if (!asset) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.closeButton}>
-            <Icon symbol="xmark" style={styles.closeIcon} color="white" />
-          </Pressable>
-        </View>
         <View style={styles.errorContainer}>
           <Text type="lg" weight="bold" style={styles.errorText}>
             Tattoo not found
           </Text>
+          <Button
+            title="Back to home"
+            onPress={() => router.replace("/")}
+            variant="link"
+            color="white"
+          />
         </View>
       </View>
     );
@@ -189,18 +263,32 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
       <Stack.Screen
         options={{
           headerLeft: () => (
-            <Pressable onPress={() => router.back()} style={styles.closeButton}>
-              <Icon symbol="xmark" style={styles.closeIcon} color="white" />
-            </Pressable>
+            <HeaderButton
+              imageProps={{ systemName: "xmark" }}
+              buttonProps={{
+                onPress: () => router.back(),
+                variant: "glass",
+              }}
+            />
           ),
           headerRight: () => (
-            <Pressable onPress={handleSharePress} style={styles.shareButton}>
-              <Icon
-                symbol="square.and.arrow.up"
-                style={styles.closeIcon}
-                color="white"
+            <>
+              <HeaderButton
+                imageProps={{ systemName: "square.and.arrow.up" }}
+                buttonProps={{
+                  onPress: handleSharePress,
+                  variant: "glass",
+                }}
               />
-            </Pressable>
+              <HeaderButton
+                imageProps={{ systemName: "trash.fill" }}
+                buttonProps={{
+                  onPress: handleDeletePress,
+                  variant: "glass",
+                  role: "destructive",
+                }}
+              />
+            </>
           ),
         }}
       />
@@ -239,15 +327,11 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
   },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    alignItems: "center",
-    justifyContent: "center",
+  headerRightContainer: {
+    flexDirection: "row",
+    gap: 12,
   },
-  shareButton: {
+  closeButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
