@@ -28,6 +28,8 @@ export function Profile() {
     planDisplayName,
     planColor,
     usagePercentage,
+    periodStart,
+    periodEnd,
     refetch: refetchUsage,
   } = useUsageLimit();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -148,6 +150,15 @@ export function Profile() {
           </LabeledContent>
           <LabeledContent label="Progress">
             <Text>{`${usagePercentage}%`}</Text>
+          </LabeledContent>
+          <LabeledContent label="Billing Period">
+            <Text>
+              {`${
+                periodStart ? new Date(periodStart).toLocaleDateString() : "N/A"
+              } - ${
+                periodEnd ? new Date(periodEnd).toLocaleDateString() : "N/A"
+              }`}
+            </Text>
           </LabeledContent>
           <HStack>
             <Button

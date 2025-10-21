@@ -7,6 +7,7 @@ import Purchases, {
   PurchasesPackage,
 } from "react-native-purchases";
 import { OfferingCard } from "../paywall/OfferingCard";
+import { Button } from "../ui/Button";
 import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
 import { Text } from "../ui/Text";
 
@@ -134,6 +135,39 @@ export function Paywall() {
         )}
 
         {!offerings && <Text>Loading offerings...</Text>}
+
+        <Button
+          title="Restore Purchases"
+          onPress={async () => {
+            try {
+              const restore = await Purchases.restorePurchases();
+
+              // Check if any entitlements were restored
+              if (Object.keys(restore.entitlements.active).length > 0) {
+                Alert.alert(
+                  "Success!",
+                  "Your purchases have been restored successfully.",
+                  [{ text: "OK", onPress: () => router.dismissAll() }]
+                );
+              } else {
+                Alert.alert(
+                  "No Purchases Found",
+                  "No previous purchases were found to restore.",
+                  [{ text: "OK" }]
+                );
+              }
+            } catch (e) {
+              console.error("Error restoring purchases:", e);
+              Alert.alert(
+                "Error Restoring Purchases",
+                "Unable to restore purchases. Please try again.",
+                [{ text: "OK" }]
+              );
+            }
+          }}
+          variant="link"
+          color="blue"
+        />
       </ScrollView>
     </>
   );

@@ -44,7 +44,7 @@ const getProfileOptions = (
         action: async () => {
           try {
             await Linking.openURL(
-              "https://apps.apple.com/us/app/shopping-list-sync-share/id6739513017?action=write-review"
+              "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193?action=write-review"
             );
           } catch (error) {
             console.error("Error opening App Store:", error);
