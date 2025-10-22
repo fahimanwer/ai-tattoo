@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
+import { useEffect, useState } from "react";
+import Purchases from "react-native-purchases";
 
 SplashScreen.setOptions({
   duration: 1000,
@@ -28,6 +30,31 @@ SplashScreen.setOptions({
 });
 
 // SplashScreen.preventAutoHideAsync();
+
+// Configure RevenueCat before anything else
+const configureRevenueCat = async () => {
+  try {
+    await Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
+    if (Platform.OS === "ios") {
+      if (!process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY) {
+        console.error("❌ RevenueCat Apple API key is not set");
+        return;
+      }
+
+      await Purchases.configure({
+        apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY,
+      });
+      console.log("✅ RevenueCat configured for iOS");
+    } else if (Platform.OS === "android") {
+      // await Purchases.configure({
+      //   apiKey: "android-api-key",
+      // });
+      console.log("✅ RevenueCat configured for Android");
+    }
+  } catch (error) {
+    console.error("❌ Error configuring RevenueCat:", error);
+  }
+};
 
 function AppContent() {
   const colorScheme = useColorScheme();
@@ -39,6 +66,19 @@ function AppContent() {
   } = authClient.useSession();
 
   const isAuthenticated = !!session;
+
+  // Log in the user to RevenueCat when session is available
+  useEffect(() => {
+    if (session?.user?.id) {
+      Purchases.logIn(session.user.id)
+        .then(() => {
+          console.log(`✅ RevenueCat user logged in: ${session.user.id}`);
+        })
+        .catch((error) => {
+          console.error("❌ Error logging in to RevenueCat:", error);
+        });
+    }
+  }, [session?.user?.id]);
 
   // const onLayoutRootView = useCallback(async () => {
   //   if (loaded) {
@@ -113,6 +153,15 @@ function AppContent() {
               }}
             />
           </Stack.Protected>
+
+          <Stack.Screen
+            name="privacy-policy"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="terms-of-service"
+            options={{ presentation: "modal" }}
+          />
         </Stack>
         <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
       </ThemeProvider>
@@ -165,8 +214,35 @@ function WebLayout() {
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  const [isRevenueCatReady, setIsRevenueCatReady] = useState(false);
+
+  // Configure RevenueCat on mount before rendering SubscriptionProvider
+  useEffect(() => {
+    if (Platform.OS !== "web") {
+      configureRevenueCat().then(() => {
+        setIsRevenueCatReady(true);
+      });
+    }
+  }, []);
+
   if (Platform.OS === "web") {
     return <WebLayout />;
+  }
+
+  // Wait for RevenueCat to be configured before rendering SubscriptionProvider
+  if (!isRevenueCatReady) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#000000",
+        }}
+      >
+        <ActivityIndicator color="#ffffff" />
+      </View>
+    );
   }
 
   return (

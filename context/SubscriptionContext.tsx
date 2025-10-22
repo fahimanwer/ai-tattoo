@@ -44,22 +44,6 @@ export function SubscriptionProvider({
       setIsLoading(true);
       setError(null);
 
-      // Check if RevenueCat is configured before making API calls
-      // try {
-      //   await Purchases.getCustomerInfo();
-      // } catch {
-      //   // If RevenueCat is not configured, return free tier
-      //   console.log("🔒 RevenueCat not configured, using free tier");
-      //   setIsPlusUser(false);
-      //   setIsProUser(false);
-      //   setIsStarterUser(false);
-      //   setSubscriptionTier("free");
-      //   setActiveEntitlements([]);
-      //   setCustomerInfo(null);
-      //   setIsLoading(false);
-      //   return;
-      // }
-
       const customerInfo = await Purchases.getCustomerInfo();
       setCustomerInfo(customerInfo);
 

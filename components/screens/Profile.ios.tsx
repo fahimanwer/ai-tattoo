@@ -83,7 +83,7 @@ export function Profile() {
 
   const handlePrivacyPolicy = async () => {
     try {
-      await Linking.openURL("https://tattoaiapp.com/privacy-policy");
+      router.push("/privacy-policy");
     } catch (error) {
       console.error("Error opening privacy policy:", error);
     }
@@ -91,7 +91,7 @@ export function Profile() {
 
   const handleTermsOfService = async () => {
     try {
-      await Linking.openURL("https://tattoaiapp.com/terms-of-service");
+      router.push("/terms-of-service");
     } catch (error) {
       console.error("Error opening terms of service:", error);
     }
@@ -148,7 +148,7 @@ export function Profile() {
               {`${remaining} generations`}
             </Text>
           </LabeledContent>
-          <LabeledContent label="Progress">
+          <LabeledContent label="Usage Percentage">
             <Text>{`${usagePercentage}%`}</Text>
           </LabeledContent>
           <LabeledContent label="Billing Period">
@@ -168,6 +168,16 @@ export function Profile() {
               modifiers={[foregroundStyle({ type: "color", color: "white" })]}
             >
               {subscriptionTier === "free" ? "Upgrade Plan" : "Change Plan"}
+            </Button>
+          </HStack>
+          <HStack>
+            <Button
+              variant="borderless"
+              systemImage="arrow.clockwise"
+              onPress={handleRefresh}
+              modifiers={[foregroundStyle({ type: "color", color: "white" })]}
+            >
+              {isRefreshing ? "Refreshing..." : "Refresh data"}
             </Button>
           </HStack>
         </Section>
@@ -224,19 +234,6 @@ export function Profile() {
               modifiers={[foregroundStyle({ type: "color", color: "white" })]}
             >
               Terms of Service
-            </Button>
-          </HStack>
-        </Section>
-
-        <Section title="Data">
-          <HStack>
-            <Button
-              variant="borderless"
-              systemImage="arrow.clockwise"
-              onPress={handleRefresh}
-              modifiers={[foregroundStyle({ type: "color", color: "white" })]}
-            >
-              {isRefreshing ? "Refreshing..." : "Refresh data"}
             </Button>
           </HStack>
         </Section>

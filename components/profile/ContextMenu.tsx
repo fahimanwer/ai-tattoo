@@ -60,7 +60,7 @@ const getProfileOptions = (
             await Share.share({
               message:
                 "Check out AI Tattoo - the amazing app for creating custom tattoo designs with AI! Download it now on the App Store.",
-              url: "https://apps.apple.com/us/app/shopping-list-sync-share/id6739513017",
+              url: "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193",
             });
           } catch (error) {
             console.error("Error sharing:", error);

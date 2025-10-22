@@ -44,14 +44,7 @@ export function CustomDetails() {
 
   const handleUpgrade = useCallback(async () => {
     try {
-      const success = true;
-      if (success) {
-        Alert.alert(
-          "Upgrade Successful! 🎉",
-          "You now have access to more tattoo generations. Thank you for upgrading!",
-          [{ text: "Awesome!", style: "default" }]
-        );
-      }
+      router.push("/(paywall)");
     } catch (error) {
       console.error("Error presenting paywall:", error);
       // Fallback to profile page

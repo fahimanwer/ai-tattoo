@@ -253,66 +253,92 @@ async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
     return;
   }
 
-  // Find the existing usage record by revenuecatUserId (consistent across devices)
-  const existingFreeRecord = await prisma.usage.findFirst({
+  const now = new Date();
+
+  // Find all existing active usage records by revenuecatUserId (consistent across devices)
+  const existingRecords = await prisma.usage.findMany({
     where: {
       revenuecatUserId: revenuecatUserId,
+      periodStart: { lte: now },
+      periodEnd: { gte: now },
     },
   });
 
-  console.log("[RC WEBHOOK] 🔍 Existing record search:", {
-    found: !!existingFreeRecord,
-    record: existingFreeRecord
-      ? {
-          userId: existingFreeRecord.userId,
-          entitlement: existingFreeRecord.entitlement,
-          count: existingFreeRecord.count,
-          limit: existingFreeRecord.limit,
-        }
-      : null,
+  console.log("[RC WEBHOOK] 🔍 Existing records search:", {
+    found: existingRecords.length,
+    records: existingRecords.map((r) => ({
+      userId: r.userId,
+      entitlement: r.entitlement,
+      count: r.count,
+      limit: r.limit,
+      periodStart: r.periodStart.toISOString(),
+      periodEnd: r.periodEnd.toISOString(),
+    })),
   });
 
-  if (!existingFreeRecord) {
-    console.warn(
-      `[RC WEBHOOK] ⚠️  No existing free usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`
+  // Expire all existing active records for this user
+  if (existingRecords.length > 0) {
+    await prisma.usage.updateMany({
+      where: {
+        revenuecatUserId: revenuecatUserId,
+        periodStart: { lte: now },
+        periodEnd: { gte: now },
+      },
+      data: {
+        periodEnd: now,
+      },
+    });
+
+    console.log(
+      `[RC WEBHOOK] ✅ Expired ${existingRecords.length} active records for user ${userId}`
     );
-    return;
   }
 
-  // Update the existing free record with the new entitlement
+  // Create new usage records for each new entitlement with fresh billing period
   for (const entitlementId of entitlementIds) {
+    const periodStart = event.purchased_at_ms
+      ? new Date(event.purchased_at_ms)
+      : now;
     const periodEnd = event.expiration_at_ms
       ? new Date(event.expiration_at_ms)
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
 
     const limit = getLimitForEntitlement(entitlementId);
 
-    console.log(`[RC WEBHOOK] 📝 Updating usage record:`, {
+    console.log(`[RC WEBHOOK] 📝 Creating new usage record:`, {
       entitlement: entitlementId,
-      newLimit: limit,
+      limit: limit,
+      periodStart: periodStart.toISOString(),
       periodEnd: periodEnd.toISOString(),
     });
 
-    await prisma.usage.update({
+    await prisma.usage.upsert({
       where: {
         userId_entitlement_periodStart: {
-          userId: existingFreeRecord.userId,
-          entitlement: existingFreeRecord.entitlement,
-          periodStart: existingFreeRecord.periodStart,
+          userId: userId,
+          entitlement: entitlementId,
+          periodStart,
         },
       },
-      data: {
-        userId: userId, // Update to current device's userId
-        entitlement: entitlementId,
+      update: {
         periodEnd,
         count: 0, // Reset count for new subscription
+        limit,
+        revenuecatUserId: revenuecatUserId,
+      },
+      create: {
+        userId: userId,
+        entitlement: entitlementId,
+        periodStart,
+        periodEnd,
+        count: 0,
         limit,
         revenuecatUserId: revenuecatUserId,
       },
     });
 
     console.log(
-      `[RC WEBHOOK] ✅ Updated existing free record to ${entitlementId} for user ${userId}`
+      `[RC WEBHOOK] ✅ Created new ${entitlementId} record for user ${userId}`
     );
   }
 }
@@ -333,67 +359,93 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
     return;
   }
 
-  // Find the existing usage record by revenuecatUserId (consistent across devices)
-  const existingRecord = await prisma.usage.findFirst({
+  const now = new Date();
+
+  // Find all existing active usage records by revenuecatUserId (consistent across devices)
+  const existingRecords = await prisma.usage.findMany({
     where: {
       revenuecatUserId: revenuecatUserId,
+      periodStart: { lte: now },
+      periodEnd: { gte: now },
     },
   });
 
-  console.log("[RC WEBHOOK] 🔍 Existing record search:", {
-    found: !!existingRecord,
-    record: existingRecord
-      ? {
-          userId: existingRecord.userId,
-          entitlement: existingRecord.entitlement,
-          count: existingRecord.count,
-          limit: existingRecord.limit,
-        }
-      : null,
+  console.log("[RC WEBHOOK] 🔍 Existing records search:", {
+    found: existingRecords.length,
+    records: existingRecords.map((r) => ({
+      userId: r.userId,
+      entitlement: r.entitlement,
+      count: r.count,
+      limit: r.limit,
+      periodStart: r.periodStart.toISOString(),
+      periodEnd: r.periodEnd.toISOString(),
+    })),
   });
 
-  if (!existingRecord) {
-    console.warn(
-      `[RC WEBHOOK] ⚠️  No existing usage record found for user ${userId} with revenuecatUserId ${revenuecatUserId}`
+  // Expire all existing active records for this user (preserves historical data)
+  if (existingRecords.length > 0) {
+    await prisma.usage.updateMany({
+      where: {
+        revenuecatUserId: revenuecatUserId,
+        periodStart: { lte: now },
+        periodEnd: { gte: now },
+      },
+      data: {
+        periodEnd: now,
+      },
+    });
+
+    console.log(
+      `[RC WEBHOOK] ✅ Expired ${existingRecords.length} active records for user ${userId}`
     );
-    return;
   }
 
-  // Update the existing record with renewed period
+  // Create new usage records for each entitlement with fresh billing period
   for (const entitlementId of entitlementIds) {
+    const periodStart = event.purchased_at_ms
+      ? new Date(event.purchased_at_ms)
+      : now;
     const periodEnd = event.expiration_at_ms
       ? new Date(event.expiration_at_ms)
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     const limit = getLimitForEntitlement(entitlementId);
 
-    console.log(`[RC WEBHOOK] 📝 Renewing usage record:`, {
+    console.log(`[RC WEBHOOK] 📝 Creating renewed usage record:`, {
       entitlement: entitlementId,
       newLimit: limit,
+      periodStart: periodStart.toISOString(),
       periodEnd: periodEnd.toISOString(),
       resettingCount: true,
     });
 
-    await prisma.usage.update({
+    await prisma.usage.upsert({
       where: {
         userId_entitlement_periodStart: {
-          userId: existingRecord.userId,
-          entitlement: existingRecord.entitlement,
-          periodStart: existingRecord.periodStart,
+          userId: userId,
+          entitlement: entitlementId,
+          periodStart,
         },
       },
-      data: {
-        userId: userId, // Update to current device's userId
-        entitlement: entitlementId, // Update to new entitlement (in case of plan change)
+      update: {
         periodEnd,
         count: 0, // Reset count for renewal
+        limit,
+        revenuecatUserId: revenuecatUserId,
+      },
+      create: {
+        userId: userId,
+        entitlement: entitlementId,
+        periodStart,
+        periodEnd,
+        count: 0,
         limit,
         revenuecatUserId: revenuecatUserId,
       },
     });
 
     console.log(
-      `[RC WEBHOOK] ✅ Updated existing record for renewal: ${entitlementId} for user ${userId} (previous: ${existingRecord.entitlement})`
+      `[RC WEBHOOK] ✅ Created renewed ${entitlementId} record for user ${userId}`
     );
   }
 }
