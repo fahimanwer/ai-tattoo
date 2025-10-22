@@ -62,7 +62,7 @@ export function Profile() {
   const handleRateApp = async () => {
     try {
       await Linking.openURL(
-        "https://apps.apple.com/us/app/shopping-list-sync-share/id6739513017?action=write-review"
+        "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193?action=write-review"
       );
     } catch (error) {
       console.error("Error opening App Store:", error);
@@ -74,7 +74,7 @@ export function Profile() {
       await Share.share({
         message:
           "Check out AI Tattoo - the amazing app for creating custom tattoo designs with AI! Download it now on the App Store.",
-        url: "https://apps.apple.com/us/app/shopping-list-sync-share/id6739513017",
+        url: "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193",
       });
     } catch (error) {
       console.error("Error sharing:", error);
