@@ -94,6 +94,8 @@ export function TattooHistory() {
 
   return (
     <FlatList
+      onRefresh={loadTattoos}
+      refreshing={loading}
       data={tattoos}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (

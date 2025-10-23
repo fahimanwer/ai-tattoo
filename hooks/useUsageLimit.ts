@@ -1,4 +1,4 @@
-import { getPlanConfig, type PlanTier } from "@/constants/plan-limits";
+import type { PlanTier } from "@/constants/plan-limits";
 import { fetchUserUsage, type UsageResponse } from "@/lib/nano";
 import { useQuery } from "@tanstack/react-query";
 
@@ -24,10 +24,6 @@ export interface UsageLimitResult {
   planDisplayName: string;
   planColor: string;
   planFeatures: string[];
-
-  // Historical data
-  totalUsage: number;
-  allUsageRecords: UsageResponse["usage"];
 
   // UI helpers
   limitMessage: string;
@@ -84,8 +80,6 @@ export const useUsageLimit = (): UsageLimitResult => {
       planDisplayName: "Free",
       planColor: "#6b7280",
       planFeatures: [],
-      totalUsage: 0,
-      allUsageRecords: [],
       limitMessage: "Loading...",
       usagePercentage: 0,
       isLoading: true,
@@ -95,49 +89,48 @@ export const useUsageLimit = (): UsageLimitResult => {
     };
   }
 
-  const { currentPeriod, subscriptionTier, planInfo, usage, totalUsage } = data;
-
-  // Get plan configuration
-  const planConfig = getPlanConfig(subscriptionTier);
+  const {
+    used,
+    limit,
+    remaining,
+    isLimitReached,
+    periodStart,
+    periodEnd,
+    subscriptionTier,
+    planInfo,
+  } = data;
 
   // Calculate usage percentage
-  const usagePercentage =
-    currentPeriod.limit > 0
-      ? Math.round((currentPeriod.used / currentPeriod.limit) * 100)
-      : 0;
+  const usagePercentage = limit > 0 ? Math.round((used / limit) * 100) : 0;
 
   // Generate user-friendly message
   let limitMessage = "";
-  if (currentPeriod.isLimitReached) {
+  if (isLimitReached) {
     limitMessage =
       subscriptionTier === "free"
         ? "Monthly limit reached. Upgrade to get more generations."
         : "Monthly limit reached. Your plan resets next period.";
-  } else if (currentPeriod.remaining <= 5 && subscriptionTier !== "free") {
-    limitMessage = `Only ${currentPeriod.remaining} generations remaining!`;
+  } else if (remaining <= 5 && subscriptionTier !== "free") {
+    limitMessage = `Only ${remaining} generations remaining!`;
   } else {
-    limitMessage = `${currentPeriod.remaining} of ${currentPeriod.limit} generations remaining`;
+    limitMessage = `${remaining} of ${limit} generations remaining`;
   }
 
   return {
     // Current period data
-    used: currentPeriod.used,
-    limit: currentPeriod.limit,
-    remaining: currentPeriod.remaining,
-    isLimitReached: currentPeriod.isLimitReached,
-    canCreateTattoo: !currentPeriod.isLimitReached,
-    periodStart: currentPeriod.periodStart,
-    periodEnd: currentPeriod.periodEnd,
+    used,
+    limit,
+    remaining,
+    isLimitReached,
+    canCreateTattoo: !isLimitReached,
+    periodStart,
+    periodEnd,
 
     // Subscription data
     subscriptionTier,
     planDisplayName: planInfo.displayName,
     planColor: planInfo.color,
     planFeatures: planInfo.features,
-
-    // Historical data
-    totalUsage,
-    allUsageRecords: usage,
 
     // UI helpers
     limitMessage,

@@ -17,7 +17,6 @@ export interface UserData {
 
   // Usage data
   usage: {
-    totalUsage: number;
     currentPeriodUsage: {
       count: number;
       limit: number;
@@ -61,8 +60,6 @@ export function useUserData(): UserData {
   const {
     used,
     limit,
-    totalUsage,
-    allUsageRecords,
     periodStart,
     periodEnd,
     subscriptionTier: usageTier,
@@ -96,12 +93,8 @@ export function useUserData(): UserData {
         }
       : null;
 
-  // Check if user has any active entitlement based on usage records
-  const hasActiveEntitlement = allUsageRecords.some((usage) => {
-    const now = new Date();
-    const periodEnd = new Date(usage.periodEnd);
-    return now <= periodEnd;
-  });
+  // Check if user has any active entitlement based on current period
+  const hasActiveEntitlement = currentPeriodUsage !== null;
 
   // Get session data
   const { data: session, isPending: isSessionPending } =
@@ -153,7 +146,6 @@ export function useUserData(): UserData {
       : null,
 
     usage: {
-      totalUsage: totalUsage,
       currentPeriodUsage: currentPeriodUsage,
       hasActiveEntitlement,
       isLoading: isUsageLoading,

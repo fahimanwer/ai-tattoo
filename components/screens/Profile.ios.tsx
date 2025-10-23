@@ -39,6 +39,19 @@ export function Profile() {
     setIsRefreshing(true);
     try {
       await Promise.all([refetchUsage(), refreshSubscriptionStatus()]);
+
+      console.log("usage", {
+        used,
+        limit,
+        remaining,
+        isLimitReached,
+        subscriptionTier,
+        planDisplayName,
+        planColor,
+        usagePercentage,
+        periodStart,
+        periodEnd,
+      });
     } catch (error) {
       console.error("Error refreshing profile data:", error);
     } finally {

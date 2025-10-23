@@ -10,7 +10,7 @@ import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -43,6 +43,7 @@ export function TattooGenerationResult() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { refreshSubscriptionStatus } = useSubscription();
+  const [hasBeenSaved, setHasBeenSaved] = useState(false);
 
   // Mutation for generating tattoo
   const mutation = useMutation({
@@ -136,6 +137,9 @@ export function TattooGenerationResult() {
         const imageUri = `data:image/png;base64,${mutation.data.imageData}`;
         await saveBase64ToAlbum(imageUri, "png");
 
+        // Mark as saved
+        setHasBeenSaved(true);
+
         Alert.alert(
           "Saved!",
           "Your tattoo design has been saved to your photo gallery.",
@@ -160,11 +164,63 @@ export function TattooGenerationResult() {
     }
   }, [mutation.data, resetTattooCreation, setCurrentStep, router]);
 
-  const handleGenerateAnother = useCallback(() => {
-    resetTattooCreation();
-    setCurrentStep(1);
-    router.replace("/(tabs)/home");
-  }, [resetTattooCreation, setCurrentStep, router]);
+  const handleGenerateAnother = useCallback(async () => {
+    // If the tattoo hasn't been saved, show confirmation alert with save option
+    if (!hasBeenSaved) {
+      Alert.alert(
+        "Generate Another?",
+        "You haven't saved this tattoo yet. Would you like to save it before continuing?",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Continue Without Saving",
+            style: "destructive",
+            onPress: () => {
+              resetTattooCreation();
+              setCurrentStep(1);
+              router.replace("/(tabs)/home");
+            },
+          },
+          {
+            text: "Save and Continue",
+            style: "default",
+            onPress: async () => {
+              // Save the tattoo first
+              if (mutation.data?.imageData) {
+                try {
+                  const imageUri = `data:image/png;base64,${mutation.data.imageData}`;
+                  await saveBase64ToAlbum(imageUri, "png");
+                  setHasBeenSaved(true);
+
+                  // Then proceed to generate another
+                  resetTattooCreation();
+                  setCurrentStep(1);
+                  router.replace("/(tabs)/home");
+                } catch (error) {
+                  Alert.alert(
+                    "Error",
+                    "Unable to save image. Please try again."
+                  );
+                  console.error("Error saving to library:", error);
+                }
+              }
+            },
+          },
+        ]
+      );
+    } else {
+      // If already saved, proceed without confirmation
+      resetTattooCreation();
+      setCurrentStep(1);
+      router.replace("/(tabs)/home");
+    }
+  }, [
+    hasBeenSaved,
+    mutation.data,
+    resetTattooCreation,
+    setCurrentStep,
+    router,
+  ]);
 
   const handleCancelGeneration = useCallback(() => {
     Alert.alert(

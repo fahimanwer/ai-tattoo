@@ -12,28 +12,13 @@ const prisma = new PrismaClient({
   datasourceUrl: process.env.DATABASE_URL,
 }).$extends(withAccelerate());
 
-interface UsageRecord {
-  entitlement: string;
-  periodStart: string;
-  periodEnd: string;
-  count: number;
-  limit: number;
-  revenuecatUserId: string;
-}
-
-interface CurrentPeriodUsage {
+interface UsageResponse {
   used: number;
   limit: number;
   remaining: number;
   periodStart: string;
   periodEnd: string;
   isLimitReached: boolean;
-}
-
-interface UsageResponse {
-  usage: UsageRecord[];
-  totalUsage: number;
-  currentPeriod: CurrentPeriodUsage;
   subscriptionTier: PlanTier;
   planInfo: {
     displayName: string;
@@ -43,57 +28,50 @@ interface UsageResponse {
 }
 
 export const POST = withAuth(async (request: Request, session: any) => {
-  console.log("🌐 server", "=== USAGE API CALLED ===");
-  console.log("🌐 server", "fetching usage for user:", session.user.email);
-  console.log("🌐 server", "user id:", session.user.id);
-
   try {
     const userId = session.user.id;
+    const now = new Date();
 
-    // Fetch all usage records for the user
-    const usageRecords = await prisma.usage.findMany({
+    // First, try to find current period records (where now is between periodStart and periodEnd)
+    const currentPeriodRecords = await prisma.usage.findMany({
       where: {
         userId: userId,
+        periodStart: { lte: now },
+        periodEnd: { gte: now },
       },
-      orderBy: {
-        periodStart: "desc",
-      },
+      orderBy: { periodStart: "desc" },
       select: {
-        userId: true,
         entitlement: true,
         periodStart: true,
         periodEnd: true,
         count: true,
         limit: true,
-        revenuecatUserId: true,
       },
+      take: 1, // Only get the most recent one
     });
 
-    console.log("🌐 server", "raw usage records:", usageRecords.length);
+    let currentPeriodRecord: {
+      entitlement: string;
+      periodStart: Date;
+      periodEnd: Date;
+      count: number;
+      limit: number;
+    } | null = currentPeriodRecords[0] || null;
 
-    // Calculate total usage across all entitlements and periods
-    const totalUsage = usageRecords.reduce(
-      (sum, record) => sum + record.count,
-      0
-    );
-
-    // Transform the data for the response
-    const usage: UsageRecord[] = usageRecords.map((record) => ({
-      entitlement: record.entitlement,
-      periodStart: record.periodStart.toISOString(),
-      periodEnd: record.periodEnd.toISOString(),
-      count: record.count,
-      limit: record.limit,
-      revenuecatUserId: record.revenuecatUserId,
-    }));
-
-    // Find current period usage
-    const now = new Date();
-    const currentPeriodRecord = usageRecords.find((record) => {
-      const periodStart = new Date(record.periodStart);
-      const periodEnd = new Date(record.periodEnd);
-      return now >= periodStart && now <= periodEnd;
-    });
+    // If no active period found, fall back to the most recent record (for expired subscriptions)
+    if (!currentPeriodRecord) {
+      currentPeriodRecord = await prisma.usage.findFirst({
+        where: { userId: userId },
+        orderBy: { periodStart: "desc" },
+        select: {
+          entitlement: true,
+          periodStart: true,
+          periodEnd: true,
+          count: true,
+          limit: true,
+        },
+      });
+    }
 
     // Determine subscription tier from current period or default to free
     let subscriptionTier: PlanTier = "free";
@@ -131,19 +109,13 @@ export const POST = withAuth(async (request: Request, session: any) => {
       );
     }
 
-    const currentPeriod: CurrentPeriodUsage = {
+    const response: UsageResponse = {
       used,
       limit,
       remaining,
       periodStart: periodStart.toISOString(),
       periodEnd: periodEnd.toISOString(),
       isLimitReached,
-    };
-
-    const response: UsageResponse = {
-      usage,
-      totalUsage,
-      currentPeriod,
       subscriptionTier,
       planInfo: {
         displayName: planConfig.displayName,
@@ -151,16 +123,6 @@ export const POST = withAuth(async (request: Request, session: any) => {
         features: planConfig.features,
       },
     };
-
-    console.log("🌐 server", "returning usage data:", {
-      recordCount: usage.length,
-      totalUsage,
-      currentPeriod: {
-        used: currentPeriod.used,
-        limit: currentPeriod.limit,
-        tier: subscriptionTier,
-      },
-    });
 
     return new Response(JSON.stringify(response), {
       status: 200,
