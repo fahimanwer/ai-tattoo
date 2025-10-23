@@ -23,6 +23,9 @@ import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import { useEffect, useState } from "react";
 import Purchases from "react-native-purchases";
+import { identifyDevice, vexo } from "vexo-analytics";
+
+vexo(process.env.EXPO_PUBLIC_VEXO!);
 
 SplashScreen.setOptions({
   duration: 1000,
@@ -70,6 +73,12 @@ function AppContent() {
   // Log in the user to RevenueCat when session is available
   useEffect(() => {
     if (session?.user?.id) {
+      if (!__DEV__) {
+        // Vexo log in the user
+        identifyDevice(session.user.email);
+      }
+
+      // Log in the user to RevenueCat
       Purchases.logIn(session.user.id)
         .then(() => {
           console.log(`✅ RevenueCat user logged in: ${session.user.id}`);
@@ -78,7 +87,7 @@ function AppContent() {
           console.error("❌ Error logging in to RevenueCat:", error);
         });
     }
-  }, [session?.user?.id]);
+  }, [session?.user?.id, session?.user?.email]);
 
   // const onLayoutRootView = useCallback(async () => {
   //   if (loaded) {
