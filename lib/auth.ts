@@ -13,6 +13,11 @@ export const auth = betterAuth({
     window: 60,
     max: 100,
   },
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+  },
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -37,5 +42,6 @@ export const auth = betterAuth({
     "https://tattoaiapp.com",
     "http://localhost:8081",
     "https://appleid.apple.com",
+    "https://ai-tattoo.expo.app",
   ],
 });

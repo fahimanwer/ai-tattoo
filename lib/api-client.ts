@@ -19,15 +19,11 @@ type ApiFetchOptions = {
 };
 
 const getBaseURL = () => {
-  if (process.env.EXPO_PUBLIC_BASE_URL) {
-    return process.env.EXPO_PUBLIC_BASE_URL;
+  if (!process.env.EXPO_PUBLIC_BASE_URL) {
+    throw new Error("EXPO_PUBLIC_BASE_URL is not set");
   }
-  // Development fallback
-  if (__DEV__) {
-    return "http://localhost:8081";
-  }
-  // Production fallback
-  return "https://tattoaiapp.com";
+
+  return process.env.EXPO_PUBLIC_BASE_URL;
 };
 
 export async function apiFetch<TResponse>(

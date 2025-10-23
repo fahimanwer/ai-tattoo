@@ -14,7 +14,7 @@ import {
 import { foregroundStyle } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Linking, Share, View } from "react-native";
+import { Alert, Linking, Share, View } from "react-native";
 
 export function Profile() {
   const { user } = useUserData();
@@ -247,6 +247,42 @@ export function Profile() {
               modifiers={[foregroundStyle({ type: "color", color: "white" })]}
             >
               Log out
+            </Button>
+          </HStack>
+        </Section>
+
+        <Section title="Danger Zone">
+          <HStack>
+            <Button
+              variant="borderless"
+              color="gray"
+              systemImage="exclamationmark.triangle"
+              onPress={() =>
+                Alert.alert(
+                  "Delete Account",
+                  "Are you sure you want to delete your account? This action cannot be undone, and all your data will be permanently deleted. Note that deleting your account will NOT cancel any active subscriptions. You can manage or cancel your subscriptions at any time from your iCloud settings.",
+                  [
+                    {
+                      text: "Cancel",
+                      style: "cancel",
+                    },
+                    {
+                      text: "Delete",
+                      style: "destructive",
+                      onPress: async () => {
+                        try {
+                          await authClient.deleteUser();
+                        } catch (error) {
+                          console.error("Error deleting account:", error);
+                        }
+                      },
+                    },
+                  ]
+                )
+              }
+              modifiers={[foregroundStyle({ type: "color", color: "gray" })]}
+            >
+              Delete Account
             </Button>
           </HStack>
         </Section>
