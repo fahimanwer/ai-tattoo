@@ -249,7 +249,7 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
           </Text>
           <Button
             title="Back to home"
-            onPress={() => router.replace("/")}
+            onPress={() => router.back()}
             variant="link"
             color="white"
           />
