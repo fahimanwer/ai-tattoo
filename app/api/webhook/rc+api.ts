@@ -194,7 +194,7 @@ async function processRevenueCatEvent(
         break;
 
       case "TRANSFER":
-        await handleTransfer(event);
+        await handleTransfer(event as unknown as TransferEvent["event"]);
         break;
 
       case "NON_RENEWING_PURCHASE":
@@ -608,101 +608,83 @@ async function handleRefund(event: RevenueCatWebhookEvent["event"]) {
   // You might want to clean up or mark usage records accordingly
 }
 
-async function handleTransfer(event: RevenueCatWebhookEvent["event"]) {
-  const newUserId = event.app_user_id; // User 2 (receiving the entitlements)
-  const originalUserId = event.original_app_user_id; // User 1 (losing the entitlements)
-  const revenuecatUserId = event.original_app_user_id; // This stays consistent
-  const entitlementIds = event.entitlement_ids || [];
+// {
+//   "api_version": "1.0",
+//   "event": {
+//     "app_id": "appca9b5e273d",
+//     "environment": "SANDBOX",
+//     "event_timestamp_ms": 1761344651373,
+//     "id": "977DBD73-81D3-4ED2-A320-B281F6E12201",
+//     "store": "APP_STORE",
+//     "subscriber_attributes": {
+//       "$attConsentStatus": {
+//         "updated_at_ms": 1761344650535,
+//         "value": "restricted"
+//       }
+//     },
+//     "transferred_from": [
+//       "$RCAnonymousID:9244e1acdd7b4589a5af3fcc6a85f078",
+//       "6bHuhQBmkerwSCKRJBDg27QiTjTxmMkV"
+//     ],
+//     "transferred_to": [
+//       "yOOAKM7JU8MdLYE3QgHvZvsKmjY80EKn"
+//     ],
+//     "type": "TRANSFER"
+//   }
+// }
 
-  console.log(
-    `[RC WEBHOOK] 🔄 TRANSFER: Subscription transferred from ${originalUserId} to ${newUserId}. Entitlements: ${entitlementIds.join(
-      ", "
-    )}`
-  );
+interface TransferEvent {
+  api_version: string;
+  event: {
+    app_id: string;
+    environment: "SANDBOX" | "PRODUCTION";
+    event_timestamp_ms: number;
+    id: string;
+    store: string;
+    subscriber_attributes: Record<string, any>;
+    transferred_from: string[];
+    transferred_to: string[];
+    type: "TRANSFER";
+  };
+}
+async function handleTransfer(event: TransferEvent["event"]) {
+  console.log("[RC WEBHOOK] 🔄 TRANSFER event received:", {
+    transferred_to: event.transferred_to,
+    transferred_from: event.transferred_from,
+    eventId: event.id,
+  });
 
-  if (entitlementIds.length === 0) {
-    console.warn("[RC WEBHOOK] ⚠️  No entitlements found for transfer");
+  const newUserId = event.transferred_to?.[0]; // User 2 (receiving the entitlements)
+  const originalUserId = event.transferred_from?.[0]; // User 1 (losing the entitlements)
+
+  if (!newUserId || !originalUserId) {
+    console.error(
+      "[RC WEBHOOK] ❌ new user or original user to transfer from is missing:",
+      {
+        newUserId,
+        originalUserId,
+        transferred_to: event.transferred_to,
+        transferred_from: event.transferred_from,
+        fullEvent: event,
+      }
+    );
     return;
   }
 
-  const now = new Date();
-
-  // Step 1: Find and expire all active usage records for the original user (user 1)
-  const originalUserRecords = await prisma.usage.findMany({
+  const usageRecords = await prisma.usage.updateMany({
+    data: {
+      revenuecatUserId: newUserId,
+    },
     where: {
-      revenuecatUserId: revenuecatUserId,
-      periodStart: { lte: now },
-      periodEnd: { gte: now },
+      revenuecatUserId: { in: event.transferred_from },
     },
   });
 
-  if (originalUserRecords.length > 0) {
-    // Expire the original user's active records
-    await prisma.usage.updateMany({
-      where: {
-        revenuecatUserId: revenuecatUserId,
-        periodStart: { lte: now },
-        periodEnd: { gte: now },
-      },
-      data: {
-        periodEnd: now,
-      },
-    });
-
-    console.log(
-      `[RC WEBHOOK] ✅ Expired ${originalUserRecords.length} active records for original user ${originalUserId}`
-    );
-  }
-
-  // Step 2: Create new usage records for the new user (user 2) with transferred entitlements
-  for (const entitlementId of entitlementIds) {
-    const periodStart = event.purchased_at_ms
-      ? new Date(event.purchased_at_ms)
-      : now;
-    const periodEnd = event.expiration_at_ms
-      ? new Date(event.expiration_at_ms)
-      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
-
-    const limit = getLimitForEntitlement(entitlementId);
-
-    // Find if there was a previous record to preserve usage count
-    const previousRecord = originalUserRecords.find(
-      (record) => record.entitlement === entitlementId
-    );
-    const preservedCount = previousRecord ? previousRecord.count : 0;
-
-    await prisma.usage.upsert({
-      where: {
-        userId_entitlement_periodStart: {
-          userId: newUserId,
-          entitlement: entitlementId,
-          periodStart,
-        },
-      },
-      update: {
-        periodEnd,
-        count: preservedCount, // Preserve usage count from original user
-        limit,
-        revenuecatUserId: revenuecatUserId,
-      },
-      create: {
-        userId: newUserId,
-        entitlement: entitlementId,
-        periodStart,
-        periodEnd,
-        count: preservedCount, // Preserve usage count from original user
-        limit,
-        revenuecatUserId: revenuecatUserId,
-      },
-    });
-
-    console.log(
-      `[RC WEBHOOK] ✅ Created/updated ${entitlementId} record for new user ${newUserId} with preserved count: ${preservedCount}`
-    );
-  }
-
   console.log(
-    `[RC WEBHOOK] ✅ Successfully transferred entitlements from ${originalUserId} to ${newUserId}`
+    `[RC WEBHOOK] 🔄 TRANSFER: Subscription transferred from ${originalUserId} to ${newUserId}`,
+    {
+      usageRecords,
+    }
   );
 }
 

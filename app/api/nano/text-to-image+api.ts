@@ -1,3 +1,4 @@
+import { entitlementToTier, getMonthlyLimit } from "@/constants/plan-limits";
 import { getCurrentUserEntitlement } from "@/lib/entitlement-utils";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAuth } from "@/server-utils/auth-middleware";
@@ -23,49 +24,121 @@ export const POST = withAuth(async (request: Request, session: any) => {
   const now = new Date();
   // Use same logic as database trigger: first day of current month at midnight UTC
   const periodStart = new Date(now.getUTCFullYear(), now.getUTCMonth(), 1);
-  const periodEnd = new Date(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999);
-  
+  const periodEnd = new Date(
+    now.getUTCFullYear(),
+    now.getUTCMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999
+  );
+
   // Get current user entitlement dynamically
   const entitlement = await getCurrentUserEntitlement(session.user.id);
-  
+  console.log("🔍 server", "current user entitlement:", entitlement);
+
   try {
     const body = await request.json();
     const { prompt } = textToImageSchema.parse(body);
     console.log("server", "received prompt", prompt);
 
-    // First, find or create the usage record for this period
+    // First, check if there's an active period record (created by webhook or previous API call)
     let usage = await prisma.usage.findFirst({
       where: {
         userId: session.user.id,
-        revenuecatUserId: session.user.id, // Initially they are the same
+        periodStart: { lte: now },
+        periodEnd: { gte: now },
       },
       orderBy: {
-        periodStart: 'desc', // Get the most recent record
+        periodStart: "desc",
       },
     });
 
-    // If no usage record exists, create one
+    console.log(
+      "🔍 server",
+      "active period usage found:",
+      usage ? "YES" : "NO"
+    );
+    if (usage) {
+      console.log("🔍 server", "usage record details:", {
+        entitlement: usage.entitlement,
+        count: usage.count,
+        limit: usage.limit,
+        periodStart: usage.periodStart.toISOString(),
+        periodEnd: usage.periodEnd.toISOString(),
+        revenuecatUserId: usage.revenuecatUserId,
+      });
+    }
+
+    // If no active record found, create one using upsert to prevent race conditions
     if (!usage) {
-      usage = await prisma.usage.create({
-        data: {
+      console.log(
+        "🔍 server",
+        "creating new usage record with entitlement:",
+        entitlement
+      );
+
+      // Calculate correct limit for the entitlement
+      const tier = entitlementToTier(entitlement);
+      const correctLimit = getMonthlyLimit(tier);
+      console.log(
+        "🔍 server",
+        "calculated limit for",
+        entitlement,
+        ":",
+        correctLimit
+      );
+
+      usage = await prisma.usage.upsert({
+        where: {
+          userId_entitlement_periodStart: {
+            userId: session.user.id,
+            entitlement,
+            periodStart,
+          },
+        },
+        update: {
+          // Record already exists, just return it
+        },
+        create: {
           userId: session.user.id,
           entitlement,
           periodStart,
           periodEnd,
           count: 0,
-          limit: 5, // Default free limit
+          limit: correctLimit,
           revenuecatUserId: session.user.id,
         },
+      });
+      console.log("🔍 server", "new usage record created:", {
+        entitlement: usage.entitlement,
+        count: usage.count,
+        limit: usage.limit,
       });
     }
 
     // Check if user has reached their generation limit
+    console.log("🔍 server", "checking limit:", {
+      currentCount: usage.count,
+      limit: usage.limit,
+      isLimitReached: usage.count >= usage.limit,
+    });
+
     if (usage.count >= usage.limit) {
+      console.log("⚠️ server", "LIMIT REACHED - rejecting request:", {
+        userId: session.user.id,
+        email: session.user.email,
+        entitlement: usage.entitlement,
+        count: usage.count,
+        limit: usage.limit,
+      });
       return Response.json(
-        { 
-          success: false, 
-          message: "Generation limit reached for current period. Please upgrade your plan or wait for the next period.",
-          error: "LIMIT_REACHED"
+        {
+          success: false,
+          message:
+            "Generation limit reached for current period. Please upgrade your plan or wait for the next period.",
+          error: "LIMIT_REACHED",
         },
         { status: 429 }
       );
@@ -125,9 +198,15 @@ export const POST = withAuth(async (request: Request, session: any) => {
       });
     });
 
-    // Invalidate usage cache
-    // Note: In a real app, you'd use a cache invalidation system
-    console.log("🌐 server", "Usage updated successfully");
+    console.log("✅ server", "Usage incremented successfully:", {
+      userId: session.user.id,
+      email: session.user.email,
+      entitlement: usage.entitlement,
+      previousCount: usage.count,
+      newCount: usage.count + 1,
+      limit: usage.limit,
+      remaining: usage.limit - (usage.count + 1),
+    });
 
     return Response.json({ imageData }, { status: 200 });
   } catch (error) {

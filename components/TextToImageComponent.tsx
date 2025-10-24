@@ -126,15 +126,12 @@ export function TextToImage() {
         <View
           style={{
             padding: 16,
-            backgroundColor: "#ffebee",
             borderRadius: 8,
-            borderLeftWidth: 4,
-            borderLeftColor: "#c62828",
           }}
         >
           <Text
             style={{
-              color: "#c62828",
+              color: Color.red[500],
               fontWeight: "bold",
               marginBottom: 4,
             }}
@@ -143,12 +140,21 @@ export function TextToImage() {
               ? "❌ Invalid Request"
               : "⚠️ Generation Failed"}
           </Text>
-          <Text style={{ color: "#c62828", fontSize: 14 }}>
-            {mutation.error?.message || "Failed to generate image"}
+          <Text style={{ color: Color.red[500], fontSize: 14 }}>
+            {mutation.error?.message === "LIMIT_REACHED"
+              ? "You have reached your generation limit for the current period. Please upgrade your plan or wait for the next period."
+              : "Failed to generate image"}
           </Text>
-          <Text style={{ color: "#c62828", fontSize: 14 }}>
-            {JSON.stringify(mutation.error, null, 2)}
-          </Text>
+
+          <Button
+            title="Upgrade Plan"
+            variant="link"
+            color={"blue"}
+            onPress={() => {
+              mutation.reset();
+              router.push("/(paywall)");
+            }}
+          />
         </View>
       )}
 

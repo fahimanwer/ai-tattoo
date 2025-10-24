@@ -15,6 +15,13 @@ export async function getCurrentUserEntitlement(
   try {
     // Get all active usage records for the user
     const now = new Date();
+    console.log(
+      "🔍 entitlement-utils",
+      "checking entitlement for user:",
+      userId
+    );
+    console.log("🔍 entitlement-utils", "current time:", now.toISOString());
+
     const activeUsage = await prisma.usage.findMany({
       where: {
         userId,
@@ -24,13 +31,79 @@ export async function getCurrentUserEntitlement(
       orderBy: { entitlement: "desc" },
     });
 
+    console.log(
+      "🔍 entitlement-utils",
+      "active usage records found:",
+      activeUsage.length
+    );
+    if (activeUsage.length > 0) {
+      console.log(
+        "🔍 entitlement-utils",
+        "active usage records:",
+        activeUsage.map((u) => ({
+          entitlement: u.entitlement,
+          periodStart: u.periodStart.toISOString(),
+          periodEnd: u.periodEnd.toISOString(),
+          count: u.count,
+          limit: u.limit,
+        }))
+      );
+    }
+
     if (activeUsage.length === 0) {
-      // No active entitlements, return free as fallback
+      // No active entitlements found, check for most recent record as fallback
+      console.log(
+        "🔍 entitlement-utils",
+        "no active records, checking most recent"
+      );
+      const mostRecent = await prisma.usage.findFirst({
+        where: { userId },
+        orderBy: { periodStart: "desc" },
+      });
+
+      if (mostRecent) {
+        console.log("🔍 entitlement-utils", "most recent record:", {
+          entitlement: mostRecent.entitlement,
+          periodStart: mostRecent.periodStart.toISOString(),
+          periodEnd: mostRecent.periodEnd.toISOString(),
+          count: mostRecent.count,
+          limit: mostRecent.limit,
+        });
+        console.log(
+          "⚠️ entitlement-utils",
+          "using most recent entitlement as fallback:",
+          mostRecent.entitlement
+        );
+
+        // Use the most recent entitlement
+        const entitlement = mostRecent.entitlement;
+        switch (entitlement.toLowerCase()) {
+          case "pro":
+            return "Pro";
+          case "plus":
+            return "Plus";
+          case "starter":
+            return "Starter";
+          case "free":
+          default:
+            return "free";
+        }
+      }
+
+      console.log(
+        "⚠️ entitlement-utils",
+        "no records found at all, returning free"
+      );
       return "free";
     }
 
     // Return the highest priority entitlement
     const entitlement = activeUsage[0].entitlement;
+    console.log(
+      "✅ entitlement-utils",
+      "active entitlement found:",
+      entitlement
+    );
 
     // Map to standard entitlement names
     switch (entitlement.toLowerCase()) {

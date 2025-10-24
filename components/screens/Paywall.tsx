@@ -1,4 +1,5 @@
 import { useSubscription } from "@/hooks/useSubscription";
+import { useQueryClient } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
@@ -14,6 +15,7 @@ import { Text } from "../ui/Text";
 export function Paywall() {
   const [offerings, setOfferings] = useState<PurchasesOfferings | null>(null);
   const { customerInfo, refreshSubscriptionStatus } = useSubscription();
+  const queryClient = useQueryClient();
 
   const fetchProducts = async () => {
     const offerings = await Purchases.getOfferings();
@@ -33,6 +35,11 @@ export function Paywall() {
 
       // Refresh subscription status
       await refreshSubscriptionStatus();
+
+      // Invalidate usage query to refresh usage data on profile screen
+      await queryClient.invalidateQueries({
+        queryKey: ["user", "usage"],
+      });
 
       // Show success message
       Alert.alert(
@@ -60,6 +67,8 @@ export function Paywall() {
         error.message || "Unable to complete purchase. Please try again.",
         [{ text: "OK" }]
       );
+    } finally {
+      fetchProducts();
     }
   };
 
@@ -149,6 +158,11 @@ export function Paywall() {
                   "Your purchases have been restored successfully.",
                   [{ text: "OK", onPress: () => router.dismissAll() }]
                 );
+                // Invalidate usage query to refresh usage data on profile screen
+                await queryClient.invalidateQueries({
+                  queryKey: ["user", "usage"],
+                });
+                fetchProducts();
               } else {
                 Alert.alert(
                   "No Purchases Found",
