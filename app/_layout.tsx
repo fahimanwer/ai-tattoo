@@ -22,6 +22,7 @@ import { Text } from "@/components/ui/Text";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import { useEffect, useState } from "react";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import Purchases from "react-native-purchases";
 import { identifyDevice, vexo } from "vexo-analytics";
 
@@ -266,7 +267,9 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <SubscriptionProvider>
             <TattooCreationProvider>
-              <AppContent />
+              <KeyboardProvider>
+                <AppContent />
+              </KeyboardProvider>
             </TattooCreationProvider>
           </SubscriptionProvider>
         </QueryClientProvider>

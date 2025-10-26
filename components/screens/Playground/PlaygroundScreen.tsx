@@ -1,12 +1,83 @@
 import { Text } from "@/components/ui/Text";
-import { View } from "react-native";
+import {
+  FlatList,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
+import { useKeyboardHandler } from "react-native-keyboard-controller";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
+
+const PADDING_BOTTOM = 20;
+
+const useGradualAnimation = () => {
+  const height = useSharedValue(PADDING_BOTTOM);
+
+  useKeyboardHandler(
+    {
+      onMove: (e) => {
+        "worklet";
+        // set height to min 10
+        height.value = Math.max(e.height, PADDING_BOTTOM);
+      },
+      onEnd: (e) => {
+        "worklet";
+        height.value = e.height;
+      },
+    },
+    []
+  );
+  return { height };
+};
 
 export function PlaygroundScreen() {
+  const { height } = useGradualAnimation();
+
+  const fakeView = useAnimatedStyle(() => {
+    return {
+      height: Math.abs(height.value),
+      marginBottom: height.value > 0 ? 0 : PADDING_BOTTOM,
+    };
+  }, []);
   return (
-    <>
-      <View>
-        <Text type="title">Not implemented for non iOS platforms</Text>
-      </View>
-    </>
+    <View style={styles.container}>
+      <FlatList
+        data={[]}
+        renderItem={({ item }) => <Text>Message {item}</Text>}
+        keyExtractor={(item) => item}
+        contentContainerStyle={styles.listStyle}
+        keyboardDismissMode="on-drag"
+        inverted
+      />
+      <TextInput placeholder="Type a message..." style={styles.textInput} />
+      <Animated.View style={fakeView} />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  listStyle: {
+    padding: 16,
+    gap: 16,
+  },
+  textInput: {
+    width: "95%",
+    height: 45,
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: "#d8d8d8",
+    backgroundColor: "#fff",
+    padding: 8,
+    alignSelf: "center",
+    marginBottom: 8,
+  },
+});
