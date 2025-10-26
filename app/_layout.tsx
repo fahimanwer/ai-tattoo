@@ -161,6 +161,12 @@ function AppContent() {
                 presentation: "fullScreenModal",
               }}
             />
+            <Stack.Screen
+              name="(playground)"
+              options={{
+                animation: "fade_from_bottom",
+              }}
+            />
           </Stack.Protected>
 
           <Stack.Screen

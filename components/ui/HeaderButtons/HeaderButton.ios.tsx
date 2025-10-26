@@ -6,10 +6,10 @@ import {
   Image,
   ImageProps,
 } from "@expo/ui/swift-ui";
-import { frame } from "@expo/ui/swift-ui/modifiers";
+import { padding } from "@expo/ui/swift-ui/modifiers";
 import { StyleProp, ViewStyle } from "react-native";
 
-const SIZE = theme.fontSize34;
+const SIZE = theme.fontSize20;
 
 export interface HeaderButtonProps {
   imageProps?: ImageProps;
@@ -24,14 +24,19 @@ export function HeaderButton({
 }: HeaderButtonProps) {
   return (
     <Host matchContents style={[{ height: SIZE, width: SIZE }, style]}>
-      <Button {...buttonProps} variant={buttonProps?.variant || "glass"}>
+      <Button
+        {...buttonProps}
+        variant={buttonProps?.variant || "glass"}
+        controlSize="small"
+      >
         <Image
           {...imageProps}
           systemName={imageProps?.systemName || "xmark"}
           color={imageProps?.color || "primary"}
-          size={imageProps?.size || theme.fontSize24}
+          size={imageProps?.size || SIZE}
           modifiers={[
-            frame({ height: SIZE }),
+            padding({ vertical: 5 }),
+            // frame({ height: SIZE, width: SIZE }),
             ...(imageProps?.modifiers || []),
           ]}
         />

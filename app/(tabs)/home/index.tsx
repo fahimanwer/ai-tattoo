@@ -1,24 +1,13 @@
 import { Home } from "@/components/screens/Home";
-import { HeaderButton } from "@/components/ui/HeaderButtons/HeaderButton";
-import { Stack, useRouter } from "expo-router";
+import { HomeContextMenu } from "@/components/ui/HeaderButtons/HomeContextMenu";
+import { Stack } from "expo-router";
 
 export default function HomeScreen() {
-  const router = useRouter();
   return (
     <>
       <Stack.Screen
         options={{
-          headerRight: () => (
-            <HeaderButton
-              imageProps={{ systemName: "plus" }}
-              buttonProps={{
-                onPress: () => {
-                  router.push("/(new)/select-body-part");
-                },
-                variant: "glass",
-              }}
-            />
-          ),
+          headerRight: () => <HomeContextMenu />,
         }}
       />
       <Home />
