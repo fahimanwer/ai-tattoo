@@ -6,12 +6,13 @@ import {
   Image,
   Text,
   TextField,
+  TextFieldRef,
 } from "@expo/ui/swift-ui";
 import { fixedSize, glassEffect, padding } from "@expo/ui/swift-ui/modifiers";
 import { Stack } from "expo-router";
+import { useRef, useState } from "react";
 import {
   Dimensions,
-  Keyboard,
   Platform,
   StatusBar,
   StyleSheet,
@@ -49,6 +50,8 @@ const useGradualAnimation = () => {
 
 export function PlaygroundScreen() {
   const { height } = useGradualAnimation();
+  const textRef = useRef<TextFieldRef>(null);
+  const [inputIsFocused, setInputIsFocused] = useState(false);
 
   const fakeView = useAnimatedStyle(() => {
     return {
@@ -93,7 +96,7 @@ export function PlaygroundScreen() {
         }}
       />
       <View style={styles.container}>
-        <View style={{ flex: 1, backgroundColor: "lightblue" }} />
+        <View style={{ flex: 1 }} />
 
         <View
           style={{
@@ -124,40 +127,60 @@ export function PlaygroundScreen() {
             <Host matchContents style={{ width: WIDTH - 32 }}>
               <HStack spacing={theme.space8} alignment="bottom">
                 <HStack
-                // modifiers={[
-                //   glassEffect({
-                //     glass: {
-                //       variant: "regular",
-                //       interactive: true,
-                //     },
-                //     shape: "capsule",
-                //   }),
-                // ]}
+                  modifiers={[
+                    padding({ horizontal: 16, vertical: 13 }),
+                    glassEffect({
+                      glass: {
+                        variant: "regular",
+                        interactive: true,
+                      },
+                      shape: "capsule",
+                    }),
+                  ]}
                 >
                   <TextField
+                    ref={textRef}
                     placeholder="Type a message..."
                     numberOfLines={2}
                     multiline
-                    onChangeFocus={() => {}}
-                    modifiers={[
-                      padding({ horizontal: 16, vertical: 13 }),
-                      glassEffect({
-                        glass: {
-                          variant: "regular",
-                          interactive: true,
-                        },
-                        shape: "capsule",
-                      }),
-                    ]}
+                    onChangeFocus={() => {
+                      setInputIsFocused(true);
+                    }}
+                    modifiers={
+                      [
+                        // padding({ horizontal: 16, vertical: 13 }),
+                        // glassEffect({
+                        //   glass: {
+                        //     variant: "regular",
+                        //     interactive: true,
+                        //   },
+                        //   shape: "capsule",
+                        // }),
+                      ]
+                    }
                   />
+                  <Button
+                    onPress={() => {
+                      console.log("mic");
+                    }}
+                    controlSize="small"
+                    variant="accessoryBar"
+                  >
+                    <HStack modifiers={[padding({ vertical: 2 })]}>
+                      <Image
+                        systemName="mic.fill"
+                        size={theme.fontSize20}
+                        color="white"
+                      />
+                    </HStack>
+                  </Button>
                 </HStack>
 
                 <Button
                   variant="glass"
                   controlSize="small"
                   onPress={async () => {
-                    Keyboard.dismiss();
-                    console.log("dismissed");
+                    await textRef.current?.blur();
                   }}
                 >
                   <Image
