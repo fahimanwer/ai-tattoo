@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
+import * as Haptics from "expo-haptics";
+import { PressablesConfig } from "pressto";
 import { useEffect, useState } from "react";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import Purchases from "react-native-purchases";
@@ -268,7 +270,15 @@ export default function RootLayout() {
           <SubscriptionProvider>
             <TattooCreationProvider>
               <KeyboardProvider>
-                <AppContent />
+                <PressablesConfig
+                  globalHandlers={{
+                    onPress: () => {
+                      Haptics.selectionAsync();
+                    },
+                  }}
+                >
+                  <AppContent />
+                </PressablesConfig>
               </KeyboardProvider>
             </TattooCreationProvider>
           </SubscriptionProvider>

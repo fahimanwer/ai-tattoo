@@ -1,6 +1,6 @@
 import { Text } from "@/components/ui/Text";
 import { View } from "react-native";
-import { InputControlsProps } from "./InputControls.ios";
+import { InputControlsProps } from "./inputContols.types";
 
 export function InputControls(props: InputControlsProps) {
   return (

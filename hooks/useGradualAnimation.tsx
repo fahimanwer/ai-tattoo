@@ -1,7 +1,7 @@
 import { useKeyboardHandler } from "react-native-keyboard-controller";
 import { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
-const PADDING_BOTTOM = 20;
+const PADDING_BOTTOM = 15;
 
 export const useGradualAnimation = () => {
   const height = useSharedValue(PADDING_BOTTOM);

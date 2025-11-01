@@ -9,15 +9,17 @@ import {
   View,
 } from "react-native";
 import Animated from "react-native-reanimated";
-import { InputControls } from "./InputControls";
+import { InputControls } from "./input-controls/InputControls";
 import { PlaygroundScreenHeaderRight } from "./PlaygroundScreenHeaderRight.ios";
 import { AnimatedText } from "./shared/AnimatedText";
+import { PlaygroundSuggestions } from "./suggestions/PlaygroundSuggestions";
 
 const WIDTH = Dimensions.get("screen").width;
 
 export function PlaygroundScreen() {
   const { fakeView } = useGradualAnimation();
   const [prompt, setPrompt] = useState("");
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [sessionGenerations, setSessionGenerations] = useState<string[]>([]); // array of images
   const lastGeneration = sessionGenerations[sessionGenerations.length - 1];
   const isFirstGeneration = sessionGenerations.length === 0;
@@ -36,11 +38,19 @@ export function PlaygroundScreen() {
         }}
       />
       <View style={styles.container}>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 2 }}>
           <AnimatedText text="Describe your tattoo or choose a suggestion below" />
           {/* <AnimatedText text="Generating your tattoo..." /> */}
         </View>
 
+        {!isKeyboardVisible && (
+          <PlaygroundSuggestions
+            onSelect={(suggestionTitle) => {
+              console.log("suggestion selected", suggestionTitle);
+              setPrompt(suggestionTitle);
+            }}
+          />
+        )}
         <View
           style={{
             flexDirection: "row",
@@ -50,7 +60,10 @@ export function PlaygroundScreen() {
           }}
         >
           <View style={{ width: WIDTH - 32 }}>
-            <InputControls autoFocus onChangeText={setPrompt} />
+            <InputControls
+              onChangeText={setPrompt}
+              onChangeFocus={setIsKeyboardVisible}
+            />
           </View>
         </View>
 

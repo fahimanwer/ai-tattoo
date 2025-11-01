@@ -16,14 +16,9 @@ import {
 } from "@expo/ui/swift-ui/modifiers";
 import { useEffect, useRef, useState } from "react";
 import { Dimensions } from "react-native";
+import { InputControlsProps } from "./inputContols.types";
 const WIDTH = Dimensions.get("screen").width;
 
-export interface InputControlsProps {
-  onChangeFocus?: (focused: boolean) => void;
-  onChangeText?: (text: string) => void;
-  onSubmit?: () => void;
-  autoFocus?: boolean;
-}
 export function InputControls({
   onChangeFocus,
   onChangeText,
