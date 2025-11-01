@@ -1,7 +1,8 @@
 import { Text } from "@/components/ui/Text";
 import { View } from "react-native";
+import { InputControlsProps } from "./InputControls.ios";
 
-export function InputControls() {
+export function InputControls(props: InputControlsProps) {
   return (
     <View>
       <Text>Not implemented for non-iOS platforms</Text>

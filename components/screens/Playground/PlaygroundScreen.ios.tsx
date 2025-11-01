@@ -1,8 +1,6 @@
 import { useGradualAnimation } from "@/hooks/useGradualAnimation";
-import { theme } from "@/theme/theme";
-import { Button, Host, HStack, Image, Text } from "@expo/ui/swift-ui";
-import { fixedSize, padding } from "@expo/ui/swift-ui/modifiers";
 import { Stack } from "expo-router";
+import { useState } from "react";
 import {
   Dimensions,
   Platform,
@@ -12,50 +10,35 @@ import {
 } from "react-native";
 import Animated from "react-native-reanimated";
 import { InputControls } from "./InputControls";
+import { PlaygroundScreenHeaderRight } from "./PlaygroundScreenHeaderRight.ios";
+import { AnimatedText } from "./shared/AnimatedText";
 
 const WIDTH = Dimensions.get("screen").width;
 
 export function PlaygroundScreen() {
   const { fakeView } = useGradualAnimation();
+  const [prompt, setPrompt] = useState("");
+  const [sessionGenerations, setSessionGenerations] = useState<string[]>([]); // array of images
+  const lastGeneration = sessionGenerations[sessionGenerations.length - 1];
+  const isFirstGeneration = sessionGenerations.length === 0;
 
   return (
     <>
       <Stack.Screen
         options={{
           headerRight: () => (
-            <View style={{ flexDirection: "row", gap: 10 }}>
-              <Host matchContents>
-                <HStack spacing={theme.space8}>
-                  <Button
-                    variant="glass"
-                    controlSize="small"
-                    onPress={() => {}}
-                  >
-                    <Image
-                      systemName="square.and.arrow.up"
-                      size={theme.fontSize20}
-                      color="white"
-                      modifiers={[padding({ vertical: 2 })]}
-                    />
-                  </Button>
-                  <Button
-                    variant="glassProminent"
-                    controlSize="mini"
-                    onPress={() => {}}
-                    modifiers={[fixedSize()]}
-                  >
-                    <HStack modifiers={[padding({ vertical: 4 })]}>
-                      <Text>Save</Text>
-                    </HStack>
-                  </Button>
-                </HStack>
-              </Host>
-            </View>
+            <PlaygroundScreenHeaderRight
+              onSave={() => {}}
+              onShare={() => {}}
+              isSaveDisabled={!lastGeneration}
+            />
           ),
         }}
       />
       <View style={styles.container}>
-        <View style={{ flex: 1 }} />
+        <View style={{ flex: 1 }}>
+          <AnimatedText />
+        </View>
 
         <View
           style={{
@@ -66,7 +49,7 @@ export function PlaygroundScreen() {
           }}
         >
           <View style={{ width: WIDTH - 32 }}>
-            <InputControls />
+            <InputControls autoFocus onChangeText={setPrompt} />
           </View>
         </View>
 

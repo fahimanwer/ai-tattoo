@@ -7,13 +7,51 @@ import {
   TextField,
   TextFieldRef,
 } from "@expo/ui/swift-ui";
-import { fixedSize, glassEffect, padding } from "@expo/ui/swift-ui/modifiers";
-import { useRef } from "react";
+import {
+  buttonStyle,
+  clipShape,
+  fixedSize,
+  glassEffect,
+  padding,
+} from "@expo/ui/swift-ui/modifiers";
+import { useEffect, useRef, useState } from "react";
 import { Dimensions } from "react-native";
 const WIDTH = Dimensions.get("screen").width;
 
-export function InputControls() {
+export interface InputControlsProps {
+  onChangeFocus?: (focused: boolean) => void;
+  onChangeText?: (text: string) => void;
+  onSubmit?: () => void;
+  autoFocus?: boolean;
+}
+export function InputControls({
+  onChangeFocus,
+  onChangeText,
+  onSubmit,
+  autoFocus,
+}: InputControlsProps) {
   const textFieldRef = useRef<TextFieldRef>(null);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    if (autoFocus) {
+      const timer = setTimeout(() => {
+        if (textFieldRef.current) {
+          focusTextField();
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [autoFocus]);
+
+  async function focusTextField() {
+    try {
+      await textFieldRef.current?.focus();
+    } catch (error) {
+      console.log("Failed to focus text field:", error);
+    }
+  }
 
   return (
     <Host matchContents style={{ width: WIDTH - 32 }}>
@@ -32,36 +70,40 @@ export function InputControls() {
         >
           <TextField
             ref={textFieldRef}
-            placeholder="Type a message..."
+            placeholder="Generate a realistic tattoo..."
             numberOfLines={2}
-            multiline
-          />
-          <Button
-            onPress={() => {
-              console.log("mic");
+            onChangeFocus={(focused: boolean) => {
+              if (focused) {
+                onChangeFocus?.(true);
+                setIsKeyboardVisible(true);
+              } else {
+                onChangeFocus?.(false);
+                setIsKeyboardVisible(false);
+              }
             }}
-            controlSize="small"
-            variant="accessoryBar"
-          >
-            <HStack modifiers={[padding({ vertical: 2 })]}>
-              <Image
-                systemName="mic.fill"
-                size={theme.fontSize20}
-                color="white"
-              />
-            </HStack>
-          </Button>
+            multiline
+            onChangeText={(text) => {
+              onChangeText?.(text);
+            }}
+          />
         </HStack>
 
         <Button
-          variant="glass"
-          controlSize="small"
+          modifiers={[clipShape("circle"), buttonStyle("glass")]}
           onPress={async () => {
-            await textFieldRef?.current?.blur();
+            if (isKeyboardVisible) {
+              await textFieldRef?.current?.blur();
+            } else {
+              await textFieldRef?.current?.focus();
+            }
           }}
         >
           <Image
-            systemName="keyboard.chevron.compact.down.fill"
+            systemName={
+              isKeyboardVisible
+                ? "keyboard.chevron.compact.down.fill"
+                : "keyboard"
+            }
             size={theme.fontSize20}
             color="white"
             modifiers={[padding({ vertical: 7 })]}
@@ -70,7 +112,9 @@ export function InputControls() {
         <Button
           variant="glassProminent"
           controlSize="mini"
-          onPress={() => {}}
+          onPress={() => {
+            onSubmit?.();
+          }}
           modifiers={[fixedSize()]}
         >
           <HStack modifiers={[padding({ vertical: 4 })]}>
