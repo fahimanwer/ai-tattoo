@@ -12,6 +12,7 @@ import {
   Alert,
   Dimensions,
   FlatList,
+  Keyboard,
   Platform,
   StatusBar,
   StyleSheet,
@@ -38,8 +39,10 @@ export function PlaygroundScreen() {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [sessionGenerations, setSessionGenerations] = useState<string[]>([]); // array of images
 
-  // Derived state
-  const lastGeneration = sessionGenerations[sessionGenerations.length - 1];
+  // Track the active generation by index instead of full base64 string
+  const [activeGenerationIndex, setActiveGenerationIndex] = useState<
+    number | undefined
+  >(undefined);
 
   /**
    * Text to image mutation
@@ -55,10 +58,12 @@ export function PlaygroundScreen() {
         toast.success("Tattoo generated successfully!", {
           description: "Your tattoo has been generated successfully!",
         });
-        setSessionGenerations([
+        const newGenerations = [
           ...sessionGenerations,
           `data:image/png;base64,${data.imageData}`,
-        ]);
+        ];
+        setSessionGenerations(newGenerations);
+        setActiveGenerationIndex(newGenerations.length - 1);
         queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
       }
     },
@@ -85,10 +90,12 @@ export function PlaygroundScreen() {
         toast.success("Tattoo generated successfully!", {
           description: "Your tattoo has been generated successfully!",
         });
-        setSessionGenerations([
+        const newGenerations = [
           ...sessionGenerations,
           `data:image/png;base64,${data.imageData}`,
-        ]);
+        ];
+        setSessionGenerations(newGenerations);
+        setActiveGenerationIndex(newGenerations.length - 1);
         queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
       }
     },
@@ -101,6 +108,11 @@ export function PlaygroundScreen() {
   });
 
   function handlePressSuggestion(suggestionTitle: string) {
+    // Clear the active selection since we're starting a fresh generation
+    setActiveGenerationIndex(undefined);
+    // Clear any text in the prompt input
+    setPrompt("");
+
     toast.info("Generating tattoo...", {
       description: "Please wait while we generate your tattoo...",
     });
@@ -110,29 +122,41 @@ export function PlaygroundScreen() {
     );
   }
 
-  function handleNormalTattooGeneration() {
+  function handleTattooGeneration() {
     if (prompt.trim().length === 0) {
       toast.info("Please enter a prompt!", {});
       return;
     }
 
-    const lastGenerationBase64 =
-      sessionGenerations[sessionGenerations.length - 1];
+    const activeImage =
+      activeGenerationIndex !== undefined
+        ? sessionGenerations[activeGenerationIndex]
+        : undefined;
 
+    setPrompt("");
+    Keyboard.dismiss();
     // Normal tattoo generation
     // Text to image generation
-    if (!lastGenerationBase64) {
+    if (!activeImage) {
+      // Clear active selection when starting a fresh generation
+      setActiveGenerationIndex(undefined);
+      toast.info("Generating tattoo...", {
+        description: "Please wait while we generate your tattoo...",
+      });
       textToImageMutation.mutate(prompt);
     } else {
+      toast.info("Updating tattoo...", {
+        description: "Please wait while we update your tattoo...",
+      });
       // Text and image to image generation
       textAndImageToImageMutation.mutate({
         prompt,
-        images_base64: [lastGenerationBase64],
+        images_base64: [activeImage],
       });
     }
   }
 
-  async function handleShare(base64Image: string) {
+  async function handleShare(base64Image?: string) {
     if (!base64Image) {
       toast.info("No tattoo to share!", {
         description: "Please generate a tattoo first.",
@@ -146,7 +170,7 @@ export function PlaygroundScreen() {
     });
   }
 
-  async function handleSave(base64Image: string) {
+  async function handleSave(base64Image?: string) {
     if (!base64Image) return;
     await saveBase64ToAlbum(base64Image, "png");
     Alert.alert(
@@ -168,13 +192,33 @@ export function PlaygroundScreen() {
           isPreferred: true,
           onPress: () => {
             setSessionGenerations([]);
+            setActiveGenerationIndex(undefined);
             textToImageMutation.reset();
+            textAndImageToImageMutation.reset();
             setPrompt("");
           },
         },
       ]
     );
   }
+
+  // Compute the active generation base64 from the index
+  const activeGenerationBase64 =
+    activeGenerationIndex !== undefined
+      ? sessionGenerations[activeGenerationIndex]
+      : undefined;
+
+  // Determine which mutation is currently active based on their actual states
+  // If either mutation is pending, use that one. Otherwise, fall back to
+  // the default logic based on whether we have a generation
+  const activeMutation = textToImageMutation.isPending
+    ? textToImageMutation
+    : textAndImageToImageMutation.isPending
+    ? textAndImageToImageMutation
+    : activeGenerationBase64
+    ? textAndImageToImageMutation
+    : textToImageMutation;
+
   return (
     <>
       <Stack.Screen
@@ -183,12 +227,12 @@ export function PlaygroundScreen() {
             <PlaygroundScreenHeaderRight
               onReset={handleReset}
               onSave={async () => {
-                await handleSave(lastGeneration);
+                await handleSave(activeGenerationBase64);
               }}
               onShare={async () => {
-                await handleShare(lastGeneration);
+                await handleShare(activeGenerationBase64);
               }}
-              isSaveDisabled={!lastGeneration}
+              isSaveDisabled={!activeGenerationBase64}
             />
           ),
         }}
@@ -199,19 +243,32 @@ export function PlaygroundScreen() {
           <View style={{}}>
             <FlatList
               data={sessionGenerations}
-              renderItem={({ item }) => (
+              renderItem={({ item, index }) => (
                 <SessionHistoryItem
                   uri={item}
                   onSave={() => handleSave(item)}
                   onShare={() => handleShare(item)}
                   onDelete={() => {
-                    setSessionGenerations(
-                      sessionGenerations.filter((_, index) => index !== index)
+                    const newGenerations = sessionGenerations.filter(
+                      (_, i) => i !== index
                     );
+                    setSessionGenerations(newGenerations);
+                    // Update active index if needed
+                    if (activeGenerationIndex === index) {
+                      setActiveGenerationIndex(undefined);
+                    } else if (
+                      activeGenerationIndex !== undefined &&
+                      activeGenerationIndex > index
+                    ) {
+                      setActiveGenerationIndex(activeGenerationIndex - 1);
+                    }
                   }}
+                  onSelect={() => setActiveGenerationIndex(index)}
+                  isActive={activeGenerationIndex === index}
                 />
               )}
-              keyExtractor={(item) => item}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => `${index}-${item.slice(0, 50)}`}
               contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
               horizontal
             />
@@ -220,11 +277,10 @@ export function PlaygroundScreen() {
 
         {/* Text to image result */}
         <View style={{ flex: 1 }}>
-          {!lastGeneration ? (
-            <TextToImageResult mutation={textToImageMutation} />
-          ) : (
-            <TextToImageResult mutation={textAndImageToImageMutation} />
-          )}
+          <TextToImageResult
+            mutation={activeMutation}
+            lastGenerationBase64={activeGenerationBase64}
+          />
         </View>
 
         {!isKeyboardVisible && (
@@ -246,7 +302,7 @@ export function PlaygroundScreen() {
             <InputControls
               onChangeText={setPrompt}
               onChangeFocus={setIsKeyboardVisible}
-              onSubmit={handleNormalTattooGeneration}
+              onSubmit={handleTattooGeneration}
               isSubmitDisabled={prompt.length === 0}
             />
           </View>

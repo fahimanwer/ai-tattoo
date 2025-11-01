@@ -1,3 +1,4 @@
+import { Color } from "@/constants/TWPalette";
 import { Button, ContextMenu, Host } from "@expo/ui/swift-ui";
 import { frame } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
@@ -10,6 +11,8 @@ export function SessionHistoryItem({
   onSave,
   onShare,
   onDelete,
+  onSelect,
+  isActive,
 }: SessionHistoryItemProps) {
   return (
     <Host style={styles.container} matchContents>
@@ -23,6 +26,15 @@ export function SessionHistoryItem({
             }}
           >
             Save to Library
+          </Button>
+          <Button
+            systemImage="circle"
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              onSelect();
+            }}
+          >
+            Select as Current
           </Button>
           <Button
             systemImage="square.and.arrow.up"
@@ -51,6 +63,8 @@ export function SessionHistoryItem({
               width: 50,
               height: 50,
               borderRadius: 25,
+              borderWidth: 3,
+              borderColor: isActive ? Color.yellow[500] : "transparent",
             }}
           />
         </ContextMenu.Trigger>

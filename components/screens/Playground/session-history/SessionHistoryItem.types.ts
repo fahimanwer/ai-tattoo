@@ -3,4 +3,6 @@ export type SessionHistoryItemProps = {
   onSave: () => void;
   onShare: () => void;
   onDelete: () => void;
+  onSelect: () => void;
+  isActive: boolean;
 };

@@ -1,11 +1,7 @@
 import { Text } from "@/components/ui/Text";
 import { blurhash } from "@/components/ui/VerticalCard";
 import { Color } from "@/constants/TWPalette";
-import {
-  TextAndImageToImageInput,
-  TextAndImageToImageResponse,
-  TextToImageResponse,
-} from "@/lib/nano";
+import { TextAndImageToImageResponse, TextToImageResponse } from "@/lib/nano";
 import { UseMutationResult } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -14,22 +10,25 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { AnimatedText } from "./AnimatedText";
 
+// Union type that accepts either mutation type
+type ImageGenerationMutation =
+  | UseMutationResult<TextToImageResponse | undefined, Error, string, unknown>
+  | UseMutationResult<
+      TextAndImageToImageResponse | undefined,
+      Error,
+      any,
+      unknown
+    >;
+
 interface TextToImageResultProps {
-  mutation: UseMutationResult<
-    TextToImageResponse | undefined,
-    Error,
-    string,
-    | unknown
-    | UseMutationResult<
-        TextAndImageToImageResponse,
-        Error,
-        TextAndImageToImageInput,
-        unknown
-      >
-  >;
+  mutation: ImageGenerationMutation;
+  lastGenerationBase64?: string;
 }
 
-export function TextToImageResult({ mutation }: TextToImageResultProps) {
+export function TextToImageResult({
+  mutation,
+  lastGenerationBase64,
+}: TextToImageResultProps) {
   const router = useRouter();
 
   if (mutation.isError) {
@@ -80,26 +79,23 @@ export function TextToImageResult({ mutation }: TextToImageResultProps) {
   if (mutation.isPending) {
     return <LoadingChangingText />;
   }
-  if (mutation.isSuccess && mutation.data?.imageData) {
-    return (
-      <View
-        style={{
-          height: 400,
-          marginTop: 16,
-          borderColor: "red",
-        }}
-      >
-        <Image
-          source={{ uri: `data:image/png;base64,${mutation.data.imageData}` }}
-          placeholder={{ blurhash }}
-          style={{ width: "100%", height: "100%", borderRadius: 8 }}
-          contentFit="contain"
-          transition={500}
-        />
-      </View>
-    );
-  }
-  return (
+  return lastGenerationBase64 ? (
+    <View
+      style={{
+        height: 400,
+        marginTop: 16,
+        borderColor: "red",
+      }}
+    >
+      <Image
+        source={{ uri: lastGenerationBase64 }}
+        placeholder={{ blurhash }}
+        style={{ width: "100%", height: "100%", borderRadius: 8 }}
+        contentFit="contain"
+        transition={500}
+      />
+    </View>
+  ) : (
     <AnimatedText text="Describe your tattoo or choose a suggestion below" />
   );
 }

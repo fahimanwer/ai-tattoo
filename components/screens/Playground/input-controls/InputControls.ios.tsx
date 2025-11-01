@@ -52,7 +52,7 @@ export function InputControls({
             padding({ horizontal: 16, vertical: 13 }),
             glassEffect({
               glass: {
-                variant: "clear",
+                variant: "regular",
                 interactive: true,
               },
               shape: "capsule",
@@ -100,6 +100,7 @@ export function InputControls({
           controlSize="mini"
           disabled={isSubmitDisabled}
           onPress={() => {
+            textFieldRef?.current?.blur();
             onSubmit?.();
           }}
           modifiers={[fixedSize()]}
