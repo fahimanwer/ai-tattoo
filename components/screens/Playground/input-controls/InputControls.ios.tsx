@@ -24,6 +24,7 @@ export function InputControls({
   onChangeText,
   onSubmit,
   autoFocus,
+  isSubmitDisabled = false,
 }: InputControlsProps) {
   const textFieldRef = useRef<TextFieldRef>(null);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -107,6 +108,7 @@ export function InputControls({
         <Button
           variant="glassProminent"
           controlSize="mini"
+          disabled={isSubmitDisabled}
           onPress={() => {
             onSubmit?.();
           }}

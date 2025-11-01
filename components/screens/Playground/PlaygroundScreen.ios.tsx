@@ -1,4 +1,6 @@
 import { useGradualAnimation } from "@/hooks/useGradualAnimation";
+import { textToImage } from "@/lib/nano";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useState } from "react";
 import {
@@ -11,18 +13,45 @@ import {
 import Animated from "react-native-reanimated";
 import { InputControls } from "./input-controls/InputControls";
 import { PlaygroundScreenHeaderRight } from "./PlaygroundScreenHeaderRight.ios";
-import { AnimatedText } from "./shared/AnimatedText";
-import { PlaygroundSuggestions } from "./suggestions/PlaygroundSuggestions";
+import { PlaygroundSuggestions } from "./shared/suggestions/PlaygroundSuggestions";
+import { TextToImageResult } from "./shared/TextToImageResult";
 
 const WIDTH = Dimensions.get("screen").width;
 
 export function PlaygroundScreen() {
+  // Hooks
+  const queryClient = useQueryClient();
   const { fakeView } = useGradualAnimation();
+
+  // State
   const [prompt, setPrompt] = useState("");
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [sessionGenerations, setSessionGenerations] = useState<string[]>([]); // array of images
+
+  // Derived state
   const lastGeneration = sessionGenerations[sessionGenerations.length - 1];
   const isFirstGeneration = sessionGenerations.length === 0;
+
+  /**
+   * Text to image mutation
+   */
+  const textToImageMutation = useMutation({
+    mutationFn: async (prompt: string) => {
+      return textToImage({
+        prompt: prompt,
+      });
+    },
+    onSuccess: (data) => {
+      if (data?.imageData) {
+        setSessionGenerations([
+          ...sessionGenerations,
+          `data:image/png;base64,${data.imageData}`,
+        ]);
+        queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
+      }
+    },
+    onError: (error) => console.log("text to image error", error),
+  });
 
   return (
     <>
@@ -38,10 +67,8 @@ export function PlaygroundScreen() {
         }}
       />
       <View style={styles.container}>
-        <View style={{ flex: 2 }}>
-          <AnimatedText text="Describe your tattoo or choose a suggestion below" />
-          {/* <AnimatedText text="Generating your tattoo..." /> */}
-        </View>
+        {/* Text to image result */}
+        <TextToImageResult mutation={textToImageMutation} />
 
         {!isKeyboardVisible && (
           <PlaygroundSuggestions
@@ -63,6 +90,7 @@ export function PlaygroundScreen() {
             <InputControls
               onChangeText={setPrompt}
               onChangeFocus={setIsKeyboardVisible}
+              isSubmitDisabled={prompt.length === 0}
             />
           </View>
         </View>

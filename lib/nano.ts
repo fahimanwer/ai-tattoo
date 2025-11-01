@@ -2,8 +2,8 @@ import type { PlanTier } from "@/constants/plan-limits";
 import { apiFetch } from "./api-client";
 import { createJsonMutation } from "./mutations";
 
-type TextToImageInput = { prompt: string };
-type TextToImageResponse = { imageData: string };
+export type TextToImageInput = { prompt: string };
+export type TextToImageResponse = { imageData: string };
 
 export const textToImage = createJsonMutation<
   TextToImageInput,
