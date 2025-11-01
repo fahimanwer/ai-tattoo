@@ -37,7 +37,8 @@ export function PlaygroundScreen() {
       />
       <View style={styles.container}>
         <View style={{ flex: 1 }}>
-          <AnimatedText />
+          <AnimatedText text="Describe your tattoo or choose a suggestion below" />
+          {/* <AnimatedText text="Generating your tattoo..." /> */}
         </View>
 
         <View

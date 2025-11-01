@@ -1,6 +1,11 @@
+import { Color } from "@/constants/TWPalette";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { Dimensions, StyleSheet, View } from "react-native";
-import Animated, { cubicBezier } from "react-native-reanimated";
+import Animated, {
+  cubicBezier,
+  FadeIn,
+  FadeOut,
+} from "react-native-reanimated";
 
 const startFactory = (x: number, y: number, rotate: number, scale: number) => ({
   "60%": {
@@ -25,16 +30,21 @@ const startFactory = (x: number, y: number, rotate: number, scale: number) => ({
   },
 });
 
-export function AnimatedText() {
+interface AnimatedTextProps {
+  text: string;
+}
+export function AnimatedText({ text }: AnimatedTextProps) {
   return (
-    <Animated.View style={styles.container}>
+    <Animated.View
+      style={styles.container}
+      entering={FadeIn.duration(1000)}
+      exiting={FadeOut.duration(1000)}
+    >
       <View>
         <MaskedView
           style={styles.mask}
           maskElement={
-            <Animated.Text style={styles.label}>
-              Describe your tattoo or choose a style below
-            </Animated.Text>
+            <Animated.Text style={styles.label}>{text}</Animated.Text>
           }
         >
           <Animated.View
@@ -43,15 +53,15 @@ export function AnimatedText() {
               {
                 animationName: {
                   from: {
-                    transform: [{ translateX: "-25%" }],
+                    transform: [{ translateX: "-30%" }],
                   },
                   to: {
-                    transform: [{ translateX: "25%" }],
+                    transform: [{ translateX: "30%" }],
                   },
                 },
-                animationDuration: "3s",
+                animationDuration: "4.5s",
                 animationIterationCount: "infinite",
-                animationTimingFunction: "linear",
+                animationTimingFunction: "ease-in-out",
               } as any,
             ]}
           />
@@ -63,10 +73,10 @@ export function AnimatedText() {
             styles.star,
             styles.star1,
             {
-              animationDelay: "0.1s",
-              animationDuration: "2.1s",
+              animationDelay: "0.5s",
+              animationDuration: "3s",
               animationFillMode: "forwards",
-              animationName: startFactory(-5, 8, 20, 1.1),
+              animationName: startFactory(-10, 12, 15, 1.1),
               animationTimingFunction: cubicBezier(0.42, 0, 0.58, 1),
               animationIterationCount: "infinite",
             } as any,
@@ -79,10 +89,11 @@ export function AnimatedText() {
             styles.star,
             styles.star2,
             {
-              animationDuration: "2.8s",
+              animationDelay: "1.2s",
+              animationDuration: "3.5s",
               animationFillMode: "forwards",
-              animationName: startFactory(-8, -8, 10, 1.2),
-              animationTimingFunction: "ease-in",
+              animationName: startFactory(15, 10, 20, 0.9),
+              animationTimingFunction: "ease-in-out",
               animationIterationCount: "infinite",
             } as any,
           ]}
@@ -94,11 +105,11 @@ export function AnimatedText() {
             styles.star,
             styles.star3,
             {
-              animationDelay: "0.2s",
-              animationDuration: "2.4s",
+              animationDelay: "0.8s",
+              animationDuration: "3.2s",
               animationFillMode: "forwards",
-              animationName: startFactory(5, 8, 30, 0.8),
-              animationTimingFunction: "ease-in",
+              animationName: startFactory(-8, -10, 25, 1.0),
+              animationTimingFunction: "ease-in-out",
               animationIterationCount: "infinite",
             } as any,
           ]}
@@ -110,10 +121,11 @@ export function AnimatedText() {
             styles.star,
             styles.star4,
             {
-              animationDuration: "2.2s",
+              animationDelay: "1.5s",
+              animationDuration: "3.8s",
               animationFillMode: "forwards",
-              animationName: startFactory(10, -5, 40, 1.3),
-              animationTimingFunction: "ease-in",
+              animationName: startFactory(12, -8, 18, 0.95),
+              animationTimingFunction: cubicBezier(0.42, 0, 0.58, 1),
               animationIterationCount: "infinite",
             } as any,
           ]}
@@ -140,8 +152,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   mask: {
-    height: 60,
-    width: 235,
+    height: 70,
+    width: width * 0.85,
+    maxWidth: 450,
   },
   gradient: {
     flex: 1,
@@ -149,40 +162,39 @@ const styles = StyleSheet.create({
     marginHorizontal: "-100%",
     [process.env.EXPO_OS === "web"
       ? "backgroundImage"
-      : "experimental_backgroundImage"]:
-      "linear-gradient(100deg, #422006 46%, #facc15 50%, #422006 54%)",
+      : "experimental_backgroundImage"]: `linear-gradient(100deg, ${Color.yellow[800]} 30%, ${Color.yellow[500]} 40%, ${Color.yellow[800]} 50%)`,
   },
   label: {
-    color: "#422006",
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "600",
     textAlign: "center",
+    lineHeight: 26,
+    paddingHorizontal: 8,
   },
   star: {
     color: "#facc15",
     opacity: 0,
-    position: "relative",
+    position: "absolute",
   },
   star1: {
-    bottom: -20,
-    fontSize: 32,
-    left: -110,
+    bottom: 70,
+    fontSize: 26,
+    left: 80,
   },
   star2: {
-    fontSize: 26,
-    left: -130,
-    top: -10,
+    fontSize: 22,
+    right: 100,
+    top: 40,
   },
   star3: {
-    bottom: 20,
-    fontSize: 30,
-    right: -130,
-    top: 15,
+    fontSize: 20,
+    left: 100,
+    top: 35,
   },
   star4: {
-    bottom: 18,
-    fontSize: 28,
-    right: -105,
+    fontSize: 26,
+    right: 100,
+    bottom: 40,
   },
   starWrapper: {
     flexDirection: "row",
