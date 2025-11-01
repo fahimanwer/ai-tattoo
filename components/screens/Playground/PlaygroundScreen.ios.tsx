@@ -1,5 +1,9 @@
 import { useGradualAnimation } from "@/hooks/useGradualAnimation";
-import { textToImage } from "@/lib/nano";
+import {
+  textAndImageToImage,
+  TextAndImageToImageInput,
+  textToImage,
+} from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Stack } from "expo-router";
@@ -15,6 +19,7 @@ import {
 } from "react-native";
 import Animated from "react-native-reanimated";
 import Share from "react-native-share";
+import { toast } from "sonner-native";
 import { InputControls } from "./input-controls/InputControls";
 import { PlaygroundScreenHeaderRight } from "./PlaygroundScreenHeaderRight.ios";
 import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
@@ -35,7 +40,6 @@ export function PlaygroundScreen() {
 
   // Derived state
   const lastGeneration = sessionGenerations[sessionGenerations.length - 1];
-  const isFirstGeneration = sessionGenerations.length === 0;
 
   /**
    * Text to image mutation
@@ -48,6 +52,9 @@ export function PlaygroundScreen() {
     },
     onSuccess: (data) => {
       if (data?.imageData) {
+        toast.success("Tattoo generated successfully!", {
+          description: "Your tattoo has been generated successfully!",
+        });
         setSessionGenerations([
           ...sessionGenerations,
           `data:image/png;base64,${data.imageData}`,
@@ -55,16 +62,84 @@ export function PlaygroundScreen() {
         queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
       }
     },
-    onError: (error) => console.log("text to image error", error),
+    onError: (error) => {
+      toast.error("Failed to generate tattoo!", {
+        dismissible: true,
+        duration: 5000,
+      });
+    },
+  });
+
+  /**
+   * Text to image mutation
+   */
+  const textAndImageToImageMutation = useMutation({
+    mutationFn: async ({ prompt, images_base64 }: TextAndImageToImageInput) => {
+      return textAndImageToImage({
+        prompt,
+        images_base64,
+      });
+    },
+    onSuccess: (data) => {
+      if (data?.imageData) {
+        toast.success("Tattoo generated successfully!", {
+          description: "Your tattoo has been generated successfully!",
+        });
+        setSessionGenerations([
+          ...sessionGenerations,
+          `data:image/png;base64,${data.imageData}`,
+        ]);
+        queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
+      }
+    },
+    onError: (error) => {
+      toast.error("Failed to generate tattoo!", {
+        dismissible: true,
+        duration: 5000,
+      });
+    },
   });
 
   function handlePressSuggestion(suggestionTitle: string) {
+    toast.info("Generating tattoo...", {
+      description: "Please wait while we generate your tattoo...",
+    });
+
     textToImageMutation.mutate(
       `Generate a realistic ${suggestionTitle} tattoo`
     );
   }
 
+  function handleNormalTattooGeneration() {
+    if (prompt.trim().length === 0) {
+      toast.info("Please enter a prompt!", {});
+      return;
+    }
+
+    const lastGenerationBase64 =
+      sessionGenerations[sessionGenerations.length - 1];
+
+    // Normal tattoo generation
+    // Text to image generation
+    if (!lastGenerationBase64) {
+      textToImageMutation.mutate(prompt);
+    } else {
+      // Text and image to image generation
+      textAndImageToImageMutation.mutate({
+        prompt,
+        images_base64: [lastGenerationBase64],
+      });
+    }
+  }
+
   async function handleShare(base64Image: string) {
+    if (!base64Image) {
+      toast.info("No tattoo to share!", {
+        description: "Please generate a tattoo first.",
+      });
+      return;
+    }
+
     await Share.open({
       message: "Check out my tattoo design!",
       url: base64Image,
@@ -80,12 +155,33 @@ export function PlaygroundScreen() {
     );
   }
 
+  function handleReset() {
+    if (sessionGenerations.length === 0) return;
+    Alert.alert(
+      "Reset Session?",
+      "Are you sure you want to reset the session? This will clear all generated tattoos and start a new session.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Reset",
+          style: "default",
+          isPreferred: true,
+          onPress: () => {
+            setSessionGenerations([]);
+            textToImageMutation.reset();
+            setPrompt("");
+          },
+        },
+      ]
+    );
+  }
   return (
     <>
       <Stack.Screen
         options={{
           headerRight: () => (
             <PlaygroundScreenHeaderRight
+              onReset={handleReset}
               onSave={async () => {
                 await handleSave(lastGeneration);
               }}
@@ -124,7 +220,11 @@ export function PlaygroundScreen() {
 
         {/* Text to image result */}
         <View style={{ flex: 1 }}>
-          <TextToImageResult mutation={textToImageMutation} />
+          {!lastGeneration ? (
+            <TextToImageResult mutation={textToImageMutation} />
+          ) : (
+            <TextToImageResult mutation={textAndImageToImageMutation} />
+          )}
         </View>
 
         {!isKeyboardVisible && (
@@ -146,6 +246,7 @@ export function PlaygroundScreen() {
             <InputControls
               onChangeText={setPrompt}
               onChangeFocus={setIsKeyboardVisible}
+              onSubmit={handleNormalTattooGeneration}
               isSubmitDisabled={prompt.length === 0}
             />
           </View>

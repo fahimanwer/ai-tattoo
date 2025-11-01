@@ -13,8 +13,11 @@ export const textToImage = createJsonMutation<
 /**
  * Text and Image to Image
  */
-type TextAndImageToImageInput = { prompt: string; images_base64: string[] };
-type TextAndImageToImageResponse = { imageData: string };
+export type TextAndImageToImageInput = {
+  prompt: string;
+  images_base64: string[];
+};
+export type TextAndImageToImageResponse = { imageData: string };
 
 export const textAndImageToImage = createJsonMutation<
   TextAndImageToImageInput,

@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
+import { Toaster } from "sonner-native";
 
 // Native imports
 import { AccentColorProvider } from "@/hooks/useAccentColor";
@@ -278,6 +279,7 @@ export default function RootLayout() {
                   }}
                 >
                   <AppContent />
+                  <Toaster />
                 </PressablesConfig>
               </KeyboardProvider>
             </TattooCreationProvider>

@@ -1,7 +1,11 @@
 import { Text } from "@/components/ui/Text";
 import { blurhash } from "@/components/ui/VerticalCard";
 import { Color } from "@/constants/TWPalette";
-import { TextToImageResponse } from "@/lib/nano";
+import {
+  TextAndImageToImageInput,
+  TextAndImageToImageResponse,
+  TextToImageResponse,
+} from "@/lib/nano";
 import { UseMutationResult } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -15,7 +19,13 @@ interface TextToImageResultProps {
     TextToImageResponse | undefined,
     Error,
     string,
-    unknown
+    | unknown
+    | UseMutationResult<
+        TextAndImageToImageResponse,
+        Error,
+        TextAndImageToImageInput,
+        unknown
+      >
   >;
 }
 

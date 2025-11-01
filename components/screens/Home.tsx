@@ -3,7 +3,6 @@ import { GetInspiration } from "@/components/home/GetInspiration";
 import { Banner } from "@/components/pro/Banner";
 import { useUserData } from "@/hooks/useUserData";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { TextToImage } from "../TextToImageComponent";
 
 export function Home() {
   const { isLoading, refresh } = useUserData();
@@ -22,7 +21,6 @@ export function Home() {
     >
       <View style={styles.section}>
         <Banner />
-        <TextToImage />
         <GetInspiration />
         <BodyPartsInspiration />
       </View>
