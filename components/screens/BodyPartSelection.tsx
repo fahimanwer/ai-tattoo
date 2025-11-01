@@ -51,8 +51,8 @@ export function BodyPartSelection() {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
-        allowsEditing: true,
-        aspect: [1, 1],
+        allowsEditing: false,
+        aspect: [3, 2],
         quality: 0.5,
         allowsMultipleSelection: false,
         base64: true,
@@ -99,7 +99,7 @@ export function BodyPartSelection() {
 
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ["images"],
-        allowsEditing: true,
+        allowsEditing: false,
         aspect: [1, 1],
         quality: 0.5,
         base64: true,

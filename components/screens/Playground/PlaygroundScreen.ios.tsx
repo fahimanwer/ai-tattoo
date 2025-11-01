@@ -226,6 +226,13 @@ export function PlaygroundScreen() {
           headerRight: () => (
             <PlaygroundScreenHeaderRight
               onReset={handleReset}
+              onSelectImageFromGallery={async (imageBase64: string) => {
+                setSessionGenerations((prev) => [
+                  ...prev,
+                  `data:image/png;base64,${imageBase64}`,
+                ]);
+                setActiveGenerationIndex(() => sessionGenerations.length);
+              }}
               onSave={async () => {
                 await handleSave(activeGenerationBase64);
               }}
