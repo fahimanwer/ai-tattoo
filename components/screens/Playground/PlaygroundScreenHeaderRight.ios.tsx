@@ -39,7 +39,7 @@ export function PlaygroundScreenHeaderRight({
             modifiers={[fixedSize()]}
           >
             <HStack modifiers={[padding({ vertical: 4 })]}>
-              <SwiftUIText>Save</SwiftUIText>
+              <SwiftUIText color="white">Save</SwiftUIText>
             </HStack>
           </Button>
         </HStack>

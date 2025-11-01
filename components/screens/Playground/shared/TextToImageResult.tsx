@@ -76,7 +76,7 @@ export function TextToImageResult({ mutation }: TextToImageResultProps) {
         <Image
           source={{ uri: `data:image/png;base64,${mutation.data.imageData}` }}
           placeholder={{ blurhash }}
-          style={{ width: 300, height: 300, borderRadius: 8 }}
+          style={{ width: "100%", height: "100%", borderRadius: 8 }}
           contentFit="contain"
           transition={200}
         />
