@@ -6,7 +6,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { PressableScale } from "pressto";
 import { View } from "react-native";
-import Animated, { FadeInDown, FadeOut } from "react-native-reanimated";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { PlaygroundSuggestionProps } from "./PlaygroundSuggestions.types";
 
 export function PlaygroundSuggestions({
@@ -18,7 +18,6 @@ export function PlaygroundSuggestions({
   return (
     <Animated.View
       entering={FadeInDown.duration(1000)}
-      exiting={FadeOut}
       style={[
         {
           paddingHorizontal: 16,

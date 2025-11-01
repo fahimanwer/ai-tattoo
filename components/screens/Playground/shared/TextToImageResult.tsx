@@ -72,13 +72,19 @@ export function TextToImageResult({ mutation }: TextToImageResultProps) {
   }
   if (mutation.isSuccess && mutation.data?.imageData) {
     return (
-      <View style={{ alignItems: "center" }}>
+      <View
+        style={{
+          height: 400,
+          marginTop: 16,
+          borderColor: "red",
+        }}
+      >
         <Image
           source={{ uri: `data:image/png;base64,${mutation.data.imageData}` }}
           placeholder={{ blurhash }}
           style={{ width: "100%", height: "100%", borderRadius: 8 }}
           contentFit="contain"
-          transition={200}
+          transition={500}
         />
       </View>
     );

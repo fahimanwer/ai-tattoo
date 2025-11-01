@@ -7,13 +7,7 @@ import {
   TextField,
   TextFieldRef,
 } from "@expo/ui/swift-ui";
-import {
-  buttonStyle,
-  clipShape,
-  fixedSize,
-  glassEffect,
-  padding,
-} from "@expo/ui/swift-ui/modifiers";
+import { fixedSize, glassEffect, padding } from "@expo/ui/swift-ui/modifiers";
 import { useEffect, useRef, useState } from "react";
 import { Dimensions } from "react-native";
 import { InputControlsProps } from "./inputContols.types";
@@ -53,11 +47,12 @@ export function InputControls({
     <Host matchContents style={{ width: WIDTH - 32 }}>
       <HStack spacing={theme.space8} alignment="bottom">
         <HStack
+          spacing={theme.space8}
           modifiers={[
             padding({ horizontal: 16, vertical: 13 }),
             glassEffect({
               glass: {
-                variant: "regular",
+                variant: "clear",
                 interactive: true,
               },
               shape: "capsule",
@@ -82,29 +77,24 @@ export function InputControls({
               onChangeText?.(text);
             }}
           />
-        </HStack>
-
-        <Button
-          modifiers={[clipShape("circle"), buttonStyle("glass")]}
-          onPress={async () => {
-            if (isKeyboardVisible) {
-              await textFieldRef?.current?.blur();
-            } else {
-              await textFieldRef?.current?.focus();
-            }
-          }}
-        >
-          <Image
-            systemName={
+          <Button
+            variant="plain"
+            systemImage={
               isKeyboardVisible
                 ? "keyboard.chevron.compact.down.fill"
                 : "keyboard"
             }
-            size={theme.fontSize20}
             color="white"
-            modifiers={[padding({ vertical: 7 })]}
+            onPress={async () => {
+              if (isKeyboardVisible) {
+                await textFieldRef?.current?.blur();
+              } else {
+                await textFieldRef?.current?.focus();
+              }
+            }}
           />
-        </Button>
+        </HStack>
+
         <Button
           variant="glassProminent"
           controlSize="mini"
