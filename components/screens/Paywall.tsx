@@ -1,20 +1,21 @@
 import { Color } from "@/constants/TWPalette";
+import { entitlementToTier, getPlanConfig } from "@/constants/plan-limits";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, router, Stack } from "expo-router";
-import { useEffect, useState } from "react";
-import { Alert, ScrollView, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Purchases, {
   PurchasesOfferings,
   PurchasesPackage,
 } from "react-native-purchases";
-import { OfferingCard } from "../paywall/OfferingCard";
 import { Button } from "../ui/Button";
 import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
 import { Text } from "../ui/Text";
 
 export function Paywall() {
   const [offerings, setOfferings] = useState<PurchasesOfferings | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const { customerInfo, refreshSubscriptionStatus } = useSubscription();
   const queryClient = useQueryClient();
 
@@ -23,8 +24,12 @@ export function Paywall() {
     setOfferings(offerings);
   };
 
-  const handlePurchase = async (pkg: PurchasesPackage) => {
+  const handlePurchase = async (
+    pkg: PurchasesPackage,
+    offeringIdentifier: string
+  ) => {
     try {
+      setSelectedPlan(offeringIdentifier);
       console.log("Attempting to purchase:", pkg.identifier);
 
       // Make the purchase
@@ -69,6 +74,7 @@ export function Paywall() {
         [{ text: "OK" }]
       );
     } finally {
+      setSelectedPlan(null);
       fetchProducts();
     }
   };
@@ -95,6 +101,19 @@ export function Paywall() {
     fetchProducts();
   }, []);
 
+  const availableOfferings = useMemo(() => {
+    if (!offerings?.all) return [];
+
+    return Object.entries(offerings.all)
+      .filter(([, offering]) => offering?.monthly)
+      .sort(([, a], [, b]) => {
+        const aTier = entitlementToTier(a.identifier);
+        const bTier = entitlementToTier(b.identifier);
+        const tierRank = { free: 0, starter: 1, plus: 2, pro: 3 } as const;
+        return tierRank[aTier] - tierRank[bTier];
+      });
+  }, [offerings]);
+
   return (
     <>
       <Stack.Screen
@@ -109,40 +128,110 @@ export function Paywall() {
         }}
       />
       <ScrollView
-        contentContainerStyle={{ padding: 16 }}
+        style={styles.scroll}
+        contentContainerStyle={styles.container}
         contentInsetAdjustmentBehavior="automatic"
       >
-        <View style={{ marginBottom: 16 }}>
+        <View style={styles.heroContainer}>
+          <View style={styles.heroBadge}>
+            <Text type="xs" weight="semibold" style={styles.heroBadgeText}>
+              Premium Access
+            </Text>
+          </View>
           <Text
             variant="poster"
             type="2xl"
             weight="bold"
-            style={{ marginBottom: 8 }}
+            style={styles.heroTitle}
           >
-            Choose Your Plan
+            Unlock Limitless Tattoo Inspiration
           </Text>
-          <Text style={{ color: "#666", marginBottom: 16 }}>
-            Subscribe or change your subscription anytime. Downgrades take
-            effect at the end of your current billing period.
+          <Text type="sm" style={styles.heroSubtitle}>
+            Choose the plan that matches your creative flow and get priority
+            access to the freshest designs, higher fidelity renders, and faster
+            turnarounds.
           </Text>
         </View>
-        {offerings?.all && (
-          <View>
-            {Object.entries(offerings.all).map(([key, offering]) => (
-              <View key={key} style={{ marginBottom: 16 }}>
-                {offering.monthly && (
-                  <OfferingCard
-                    title={offering.identifier}
-                    package={offering.monthly}
-                    onPurchase={handlePurchase}
-                    isCurrentPlan={isCurrentPlan(offering.identifier)}
-                  />
-                )}
-              </View>
-            ))}
+        {availableOfferings.length > 0 ? (
+          <View style={styles.planList}>
+            {availableOfferings.map(([key, offering]) => {
+              const pkg = offering.monthly!;
+              const tier = entitlementToTier(offering.identifier);
+              const planConfig = getPlanConfig(tier);
+              const isCurrent = isCurrentPlan(offering.identifier);
+              const isBestValue = tier === "plus";
+              const isSelected = selectedPlan === offering.identifier;
+
+              return (
+                <Pressable
+                  key={key}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Choose the ${planConfig.displayName} plan`}
+                  disabled={isCurrent}
+                  onPress={() => handlePurchase(pkg, offering.identifier)}
+                  style={({ pressed }) => [
+                    styles.planCard,
+                    isBestValue && styles.planCardFeatured,
+                    isCurrent && styles.planCardCurrent,
+                    (pressed || isSelected) && styles.planCardPressed,
+                  ]}
+                >
+                  <View style={styles.planHeader}>
+                    <View style={styles.planTitleRow}>
+                      <Text type="xl" weight="bold" style={styles.planTitle}>
+                        {planConfig.displayName}
+                      </Text>
+                      <View style={styles.planBadges}>
+                        {isBestValue && (
+                          <View
+                            style={[styles.planBadge, styles.featuredBadge]}
+                          >
+                            <Text
+                              type="xs"
+                              weight="semibold"
+                              style={styles.featuredBadgeText}
+                            >
+                              Best Value
+                            </Text>
+                          </View>
+                        )}
+                        {isCurrent && (
+                          <View style={[styles.planBadge, styles.currentBadge]}>
+                            <Text
+                              type="xs"
+                              weight="semibold"
+                              style={styles.currentBadgeText}
+                            >
+                              Current Plan
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                    <Text type="lg" weight="semibold" style={styles.priceText}>
+                      {pkg.product.priceString}
+                      <Text type="xs" style={styles.priceSuffix}>
+                        {" "}
+                        / month
+                      </Text>
+                    </Text>
+                  </View>
+
+                  <Text type="base" style={styles.planLimit}>
+                    <Text type="xl" weight="semibold">
+                      {planConfig.monthlyLimit.toLocaleString()}
+                    </Text>{" "}
+                    tattoo generations each month
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
+        ) : (
+          <Text type="sm" style={styles.loadingText}>
+            Loading plans…
+          </Text>
         )}
-        {!offerings && <Text>Loading offerings...</Text>}
         <Button
           title="Restore Subscription"
           onPress={async () => {
@@ -206,3 +295,145 @@ export function Paywall() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  scroll: {
+    flex: 1,
+  },
+  container: {
+    padding: 20,
+    gap: 32,
+  },
+  heroContainer: {
+    borderRadius: 24,
+    gap: 16,
+  },
+  heroBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: Color.blue[800],
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  heroBadgeText: {
+    color: Color.blue[200],
+    letterSpacing: 0.4,
+  },
+  heroTitle: {
+    color: Color.zinc[50],
+  },
+  heroSubtitle: {
+    color: Color.zinc[300],
+    lineHeight: 20,
+  },
+  heroBenefits: {
+    gap: 8,
+  },
+  heroBenefitItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  bullet: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Color.blue[400],
+  },
+  heroBenefitText: {
+    color: Color.zinc[200],
+  },
+  planList: {
+    gap: 20,
+  },
+  planCard: {
+    backgroundColor: Color.zinc[900],
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: Color.zinc[800],
+    padding: 20,
+    gap: 16,
+  },
+  planCardFeatured: {},
+  planCardCurrent: {
+    borderColor: Color.green[500],
+  },
+  planCardPressed: {
+    borderColor: Color.blue[400],
+  },
+  planHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 16,
+  },
+  planTitleRow: {
+    flex: 1,
+    gap: 8,
+  },
+  planTitle: {
+    color: Color.zinc[50],
+  },
+  planBadges: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  planBadge: {
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+  },
+  featuredBadge: {
+    backgroundColor: Color.blue[600],
+    borderColor: Color.blue[500],
+  },
+  featuredBadgeText: {
+    color: Color.zinc[50],
+  },
+  currentBadge: {
+    backgroundColor: Color.green[600],
+    borderColor: Color.green[500],
+  },
+  currentBadgeText: {
+    color: Color.zinc[50],
+  },
+  priceText: {
+    color: Color.zinc[50],
+  },
+  priceSuffix: {
+    color: Color.zinc[400],
+  },
+  planLimit: {
+    color: Color.zinc[200],
+  },
+  planFeatures: {
+    gap: 10,
+  },
+  planFeatureItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  featureDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Color.blue[500],
+  },
+  planFeatureText: {
+    color: Color.zinc[200],
+  },
+  ctaRow: {
+    gap: 4,
+  },
+  ctaText: {
+    color: Color.zinc[50],
+  },
+  ctaHint: {
+    color: Color.zinc[500],
+  },
+  loadingText: {
+    color: Color.zinc[300],
+  },
+});
