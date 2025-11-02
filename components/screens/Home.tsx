@@ -18,6 +18,7 @@ export function Home() {
           tintColor="#007AFF"
         />
       }
+      showsVerticalScrollIndicator={false}
     >
       <View style={styles.section}>
         <Banner />

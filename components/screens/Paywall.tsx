@@ -1,6 +1,7 @@
+import { Color } from "@/constants/TWPalette";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useQueryClient } from "@tanstack/react-query";
-import { router, Stack } from "expo-router";
+import { Link, router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import Purchases, {
@@ -125,7 +126,6 @@ export function Paywall() {
             effect at the end of your current billing period.
           </Text>
         </View>
-
         {offerings?.all && (
           <View>
             {Object.entries(offerings.all).map(([key, offering]) => (
@@ -142,11 +142,9 @@ export function Paywall() {
             ))}
           </View>
         )}
-
         {!offerings && <Text>Loading offerings...</Text>}
-
         <Button
-          title="Restore Purchases"
+          title="Restore Subscription"
           onPress={async () => {
             try {
               const restore = await Purchases.restorePurchases();
@@ -182,6 +180,28 @@ export function Paywall() {
           variant="link"
           color="blue"
         />
+
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Link href="/terms-of-service" asChild>
+            <Text type="xs" style={{ color: Color.blue[500] }}>
+              Terms of Service
+            </Text>
+          </Link>
+          <Text type="xs" style={{ color: Color.gray[500] }}>
+            {` `}and{` `}
+          </Text>
+          <Link href="/privacy-policy" asChild>
+            <Text type="xs" style={{ color: Color.blue[500] }}>
+              Privacy Policy
+            </Text>
+          </Link>
+        </View>
       </ScrollView>
     </>
   );
