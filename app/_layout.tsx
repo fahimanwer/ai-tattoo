@@ -160,10 +160,7 @@ function AppContent() {
             <Stack.Screen name="+not-found" />
             <Stack.Screen
               name="(paywall)"
-              options={{
-                title: "(paywall)",
-                presentation: "fullScreenModal",
-              }}
+              options={{ presentation: "modal" }}
             />
             <Stack.Screen
               name="(playground)"

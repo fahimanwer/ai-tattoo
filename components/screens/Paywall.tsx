@@ -2,13 +2,16 @@ import { Color } from "@/constants/TWPalette";
 import { entitlementToTier, getPlanConfig } from "@/constants/plan-limits";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useQueryClient } from "@tanstack/react-query";
+import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { Link, router, Stack } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
 import Purchases, {
   PurchasesOfferings,
   PurchasesPackage,
 } from "react-native-purchases";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "../ui/Button";
 import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
 import { Text } from "../ui/Text";
@@ -18,6 +21,8 @@ export function Paywall() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const { customerInfo, refreshSubscriptionStatus } = useSubscription();
   const queryClient = useQueryClient();
+
+  const { top } = useSafeAreaInsets();
 
   const fetchProducts = async () => {
     const offerings = await Purchases.getOfferings();
@@ -118,182 +123,295 @@ export function Paywall() {
     <>
       <Stack.Screen
         options={{
-          title: "Subscription",
+          title: "",
           headerLeft: () => (
             <HeaderButton
               imageProps={{ systemName: "xmark" }}
               buttonProps={{ onPress: () => router.back() }}
             />
           ),
+          headerTransparent: true,
         }}
       />
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.container}
-        contentInsetAdjustmentBehavior="automatic"
+      <Image
+        source={require("@/assets/images/AITattooHome.png")}
+        style={styles.heroBackground}
+        contentFit="cover"
+      />
+      <View
+        style={{
+          padding: 16,
+          paddingTop: top + 16,
+        }}
       >
         <View style={styles.heroContainer}>
           <View style={styles.heroBadge}>
-            <Text type="xs" weight="semibold" style={styles.heroBadgeText}>
-              Premium Access
-            </Text>
+            <LinearGradient
+              colors={[Color.violet[600], Color.fuchsia[600]]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.heroBadgeGradient}
+            >
+              <Text type="xs" weight="bold" style={styles.heroBadgeText}>
+                ✨ PREMIUM ACCESS
+              </Text>
+            </LinearGradient>
           </View>
           <Text
             variant="poster"
-            type="2xl"
+            type="4xl"
             weight="bold"
             style={styles.heroTitle}
           >
-            Unlock Limitless Tattoo Inspiration
+            Unlock Your{"\n"}Creative Vision
           </Text>
-          <Text type="sm" style={styles.heroSubtitle}>
-            Choose the plan that matches your creative flow and get priority
-            access to the freshest designs, higher fidelity renders, and faster
-            turnarounds.
+          <Text type="base" weight="medium" style={styles.heroSubtitle}>
+            Transform ideas into stunning tattoo designs with unlimited
+            possibilities
           </Text>
         </View>
-        {availableOfferings.length > 0 ? (
-          <View style={styles.planList}>
-            {availableOfferings.map(([key, offering]) => {
-              const pkg = offering.monthly!;
-              const tier = entitlementToTier(offering.identifier);
-              const planConfig = getPlanConfig(tier);
-              const isCurrent = isCurrentPlan(offering.identifier);
-              const isBestValue = tier === "plus";
-              const isSelected = selectedPlan === offering.identifier;
 
-              return (
-                <Pressable
-                  key={key}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Choose the ${planConfig.displayName} plan`}
-                  disabled={isCurrent}
-                  onPress={() => handlePurchase(pkg, offering.identifier)}
-                  style={({ pressed }) => [
-                    styles.planCard,
-                    isBestValue && styles.planCardFeatured,
-                    isCurrent && styles.planCardCurrent,
-                    (pressed || isSelected) && styles.planCardPressed,
-                  ]}
-                >
-                  <View style={styles.planHeader}>
-                    <View style={styles.planTitleRow}>
-                      <Text type="xl" weight="bold" style={styles.planTitle}>
-                        {planConfig.displayName}
-                      </Text>
-                      <View style={styles.planBadges}>
-                        {isBestValue && (
-                          <View
-                            style={[styles.planBadge, styles.featuredBadge]}
-                          >
-                            <Text
-                              type="xs"
-                              weight="semibold"
-                              style={styles.featuredBadgeText}
-                            >
-                              Best Value
-                            </Text>
-                          </View>
-                        )}
-                        {isCurrent && (
-                          <View style={[styles.planBadge, styles.currentBadge]}>
-                            <Text
-                              type="xs"
-                              weight="semibold"
-                              style={styles.currentBadgeText}
-                            >
-                              Current Plan
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                    <Text type="lg" weight="semibold" style={styles.priceText}>
-                      {pkg.product.priceString}
-                      <Text type="xs" style={styles.priceSuffix}>
-                        {" "}
-                        / month
-                      </Text>
-                    </Text>
-                  </View>
-
-                  <Text type="base" style={styles.planLimit}>
-                    <Text type="xl" weight="semibold">
-                      {planConfig.monthlyLimit.toLocaleString()}
-                    </Text>{" "}
-                    tattoo generations each month
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ) : (
-          <Text type="sm" style={styles.loadingText}>
-            Loading plans…
+        <View style={styles.plansSection}>
+          <Text type="sm" weight="semibold" style={styles.plansSectionTitle}>
+            CHOOSE YOUR PLAN
           </Text>
-        )}
-        <Button
-          title="Restore Subscription"
-          onPress={async () => {
-            try {
-              const restore = await Purchases.restorePurchases();
 
-              // Check if any entitlements were restored
-              if (Object.keys(restore.entitlements.active).length > 0) {
-                Alert.alert(
-                  "Success!",
-                  "Your purchases have been restored successfully.",
-                  [{ text: "OK", onPress: () => router.dismissAll() }]
+          {availableOfferings.length > 0 ? (
+            <View style={styles.planList}>
+              {availableOfferings.map(([key, offering]) => {
+                const pkg = offering.monthly!;
+                const tier = entitlementToTier(offering.identifier);
+                const planConfig = getPlanConfig(tier);
+                const isCurrent = isCurrentPlan(offering.identifier);
+                const isBestValue = tier === "plus";
+                const isSelected = selectedPlan === offering.identifier;
+                const tierColors = getTierColors(tier);
+
+                return (
+                  <Pressable
+                    key={key}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Choose the ${planConfig.displayName} plan`}
+                    disabled={isCurrent}
+                    onPress={() => handlePurchase(pkg, offering.identifier)}
+                    style={({ pressed }) => [
+                      styles.planCard,
+                      isBestValue && styles.planCardFeatured,
+                      isCurrent && styles.planCardCurrent,
+                      (pressed || isSelected) && styles.planCardPressed,
+                    ]}
+                  >
+                    {isBestValue && (
+                      <View style={styles.ribbonContainer}>
+                        <LinearGradient
+                          colors={[Color.emerald[500], Color.teal[500]]}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          style={styles.ribbon}
+                        >
+                          <Text
+                            type="xs"
+                            weight="bold"
+                            style={styles.ribbonText}
+                          >
+                            BEST VALUE
+                          </Text>
+                        </LinearGradient>
+                      </View>
+                    )}
+
+                    <LinearGradient
+                      colors={
+                        isBestValue
+                          ? [Color.zinc[900], Color.zinc[950]]
+                          : [Color.zinc[900], Color.zinc[900]]
+                      }
+                      style={styles.planCardGradient}
+                    >
+                      <View style={styles.planHeader}>
+                        <View style={styles.planTitleRow}>
+                          <Text
+                            type="2xl"
+                            weight="bold"
+                            style={[
+                              styles.planTitle,
+                              { color: tierColors.primary },
+                            ]}
+                          >
+                            {planConfig.displayName}
+                          </Text>
+                          {isCurrent && (
+                            <View
+                              style={[
+                                styles.planBadge,
+                                styles.currentBadge,
+                                { backgroundColor: tierColors.badge },
+                              ]}
+                            >
+                              <Text
+                                type="xs"
+                                weight="bold"
+                                style={styles.currentBadgeText}
+                              >
+                                ✓ CURRENT
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+
+                        <View style={styles.priceContainer}>
+                          <Text
+                            type="4xl"
+                            weight="bold"
+                            style={styles.priceText}
+                          >
+                            {pkg.product.priceString}
+                          </Text>
+                          <Text type="sm" style={styles.priceSuffix}>
+                            per month
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View
+                        style={[
+                          styles.limitContainer,
+                          { backgroundColor: tierColors.background },
+                        ]}
+                      >
+                        <Text
+                          type="5xl"
+                          weight="bold"
+                          style={[
+                            styles.limitNumber,
+                            { color: tierColors.primary },
+                          ]}
+                        >
+                          {planConfig.monthlyLimit.toLocaleString()}
+                        </Text>
+                        <Text
+                          type="sm"
+                          weight="medium"
+                          style={styles.limitText}
+                        >
+                          tattoo generations every month
+                        </Text>
+                      </View>
+
+                      {/* <View style={styles.planFeatures}>
+                        {planConfig.features.map((feature, index) => (
+                          <View key={index} style={styles.planFeatureItem}>
+                            <View
+                              style={[
+                                styles.featureDot,
+                                { backgroundColor: tierColors.primary },
+                              ]}
+                            />
+                            <Text type="sm" style={styles.planFeatureText}>
+                              {feature}
+                            </Text>
+                          </View>
+                        ))}
+                      </View> */}
+                    </LinearGradient>
+                  </Pressable>
                 );
-                // Invalidate usage query to refresh usage data on profile screen
-                await queryClient.invalidateQueries({
-                  queryKey: ["user", "usage"],
-                });
-                fetchProducts();
-              } else {
+              })}
+            </View>
+          ) : (
+            <View style={styles.loadingContainer}>
+              <Text type="base" style={styles.loadingText}>
+                Loading plans…
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.footer}>
+          <Button
+            title="Restore Subscription"
+            onPress={async () => {
+              try {
+                const restore = await Purchases.restorePurchases();
+
+                if (Object.keys(restore.entitlements.active).length > 0) {
+                  Alert.alert(
+                    "Success!",
+                    "Your purchases have been restored successfully.",
+                    [{ text: "OK", onPress: () => router.dismissAll() }]
+                  );
+                  await queryClient.invalidateQueries({
+                    queryKey: ["user", "usage"],
+                  });
+                  fetchProducts();
+                } else {
+                  Alert.alert(
+                    "No Purchases Found",
+                    "No previous purchases were found to restore.",
+                    [{ text: "OK" }]
+                  );
+                }
+              } catch (e) {
+                console.error("Error restoring purchases:", e);
                 Alert.alert(
-                  "No Purchases Found",
-                  "No previous purchases were found to restore.",
+                  "Error Restoring Purchases",
+                  "Unable to restore purchases. Please try again.",
                   [{ text: "OK" }]
                 );
               }
-            } catch (e) {
-              console.error("Error restoring purchases:", e);
-              Alert.alert(
-                "Error Restoring Purchases",
-                "Unable to restore purchases. Please try again.",
-                [{ text: "OK" }]
-              );
-            }
-          }}
-          variant="link"
-          color="blue"
-        />
+            }}
+            variant="link"
+            color="blue"
+          />
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Link href="/terms-of-service" asChild>
-            <Text type="xs" style={{ color: Color.blue[500] }}>
-              Terms of Service
+          <View style={styles.legalLinks}>
+            <Link href="/terms-of-service" asChild>
+              <Text type="xs" style={styles.legalLinkText}>
+                Terms of Service
+              </Text>
+            </Link>
+            <Text type="xs" style={styles.legalSeparator}>
+              {` `}•{` `}
             </Text>
-          </Link>
-          <Text type="xs" style={{ color: Color.gray[500] }}>
-            {` `}and{` `}
-          </Text>
-          <Link href="/privacy-policy" asChild>
-            <Text type="xs" style={{ color: Color.blue[500] }}>
-              Privacy Policy
-            </Text>
-          </Link>
+            <Link href="/privacy-policy" asChild>
+              <Text type="xs" style={styles.legalLinkText}>
+                Privacy Policy
+              </Text>
+            </Link>
+          </View>
         </View>
-      </ScrollView>
+      </View>
     </>
   );
+}
+
+function getTierColors(tier: string) {
+  switch (tier) {
+    case "starter":
+      return {
+        primary: Color.amber[400],
+        background: Color.amber[950] + "40",
+        badge: Color.amber[600],
+      };
+    case "plus":
+      return {
+        primary: Color.emerald[400],
+        background: Color.emerald[950] + "40",
+        badge: Color.emerald[600],
+      };
+    case "pro":
+      return {
+        primary: Color.violet[400],
+        background: Color.violet[950] + "40",
+        badge: Color.violet[600],
+      };
+    default:
+      return {
+        primary: Color.zinc[400],
+        background: Color.zinc[800] + "40",
+        badge: Color.zinc[600],
+      };
+  }
 }
 
 const styles = StyleSheet.create({
@@ -301,139 +419,226 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    padding: 20,
-    gap: 32,
+    paddingBottom: 40,
+  },
+  heroBackground: {
+    width: "100%",
+    height: 340,
+    position: "absolute",
+    top: 0,
+  },
+  heroBackgroundImage: {
+    opacity: 0.3,
+    resizeMode: "cover",
+  },
+  heroGradient: {
+    flex: 1,
+    paddingTop: 100,
+    paddingHorizontal: 24,
+    paddingBottom: 40,
   },
   heroContainer: {
-    borderRadius: 24,
-    gap: 16,
+    gap: 20,
   },
   heroBadge: {
     alignSelf: "flex-start",
-    backgroundColor: Color.blue[800],
     borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+    overflow: "hidden",
+    shadowColor: Color.violet[500],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  heroBadgeGradient: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   heroBadgeText: {
-    color: Color.blue[200],
-    letterSpacing: 0.4,
+    color: Color.zinc[50],
+    letterSpacing: 1,
   },
   heroTitle: {
     color: Color.zinc[50],
+    letterSpacing: -1,
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
   },
   heroSubtitle: {
     color: Color.zinc[300],
-    lineHeight: 20,
+    lineHeight: 24,
   },
-  heroBenefits: {
-    gap: 8,
-  },
-  heroBenefitItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  bullet: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Color.blue[400],
-  },
-  heroBenefitText: {
-    color: Color.zinc[200],
-  },
-  planList: {
+  plansSection: {
+    paddingHorizontal: 20,
+    paddingTop: 32,
     gap: 20,
   },
+  plansSectionTitle: {
+    color: Color.zinc[500],
+    letterSpacing: 2,
+    textAlign: "center",
+  },
+  planList: {
+    gap: 24,
+  },
   planCard: {
-    backgroundColor: Color.zinc[900],
-    borderRadius: 20,
+    borderRadius: 24,
+    overflow: "hidden",
     borderWidth: 2,
     borderColor: Color.zinc[800],
-    padding: 20,
-    gap: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
   },
-  planCardFeatured: {},
+  planCardFeatured: {
+    borderColor: Color.emerald[500],
+    borderWidth: 2,
+    shadowColor: Color.emerald[500],
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 12,
+  },
   planCardCurrent: {
-    borderColor: Color.green[500],
+    borderColor: Color.violet[500],
+    opacity: 0.7,
   },
   planCardPressed: {
+    transform: [{ scale: 0.98 }],
     borderColor: Color.blue[400],
   },
+  planCardGradient: {
+    padding: 24,
+    gap: 20,
+  },
+  ribbonContainer: {
+    position: "absolute",
+    top: 16,
+    right: -32,
+    zIndex: 10,
+    transform: [{ rotate: "45deg" }],
+  },
+  ribbon: {
+    paddingVertical: 6,
+    paddingHorizontal: 40,
+    shadowColor: Color.emerald[500],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+  },
+  ribbonText: {
+    color: Color.zinc[50],
+    letterSpacing: 1.5,
+    textAlign: "center",
+  },
   planHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
     gap: 16,
   },
   planTitleRow: {
-    flex: 1,
-    gap: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
   },
   planTitle: {
-    color: Color.zinc[50],
-  },
-  planBadges: {
-    flexDirection: "row",
-    gap: 8,
+    flex: 1,
+    letterSpacing: 0.5,
   },
   planBadge: {
     borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
-  featuredBadge: {
-    backgroundColor: Color.blue[600],
-    borderColor: Color.blue[500],
-  },
-  featuredBadgeText: {
-    color: Color.zinc[50],
-  },
-  currentBadge: {
-    backgroundColor: Color.green[600],
-    borderColor: Color.green[500],
-  },
+  currentBadge: {},
   currentBadgeText: {
     color: Color.zinc[50],
+    letterSpacing: 0.5,
+  },
+  priceContainer: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 8,
   },
   priceText: {
     color: Color.zinc[50],
+    letterSpacing: -1,
   },
   priceSuffix: {
-    color: Color.zinc[400],
+    color: Color.zinc[500],
   },
-  planLimit: {
-    color: Color.zinc[200],
+  limitContainer: {
+    borderRadius: 16,
+    padding: 20,
+    alignItems: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+  },
+  limitNumber: {
+    letterSpacing: -2,
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  limitText: {
+    color: Color.zinc[400],
+    textAlign: "center",
   },
   planFeatures: {
-    gap: 10,
+    gap: 12,
+    paddingTop: 4,
   },
   planFeatureItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
   },
   featureDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: Color.blue[500],
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   planFeatureText: {
-    color: Color.zinc[200],
+    color: Color.zinc[300],
+    flex: 1,
   },
-  ctaRow: {
-    gap: 4,
+  ctaIndicator: {
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: Color.zinc[800],
+    alignItems: "center",
   },
   ctaText: {
-    color: Color.zinc[50],
+    color: Color.zinc[400],
+    letterSpacing: 0.5,
   },
-  ctaHint: {
-    color: Color.zinc[500],
+  loadingContainer: {
+    paddingVertical: 40,
+    alignItems: "center",
   },
   loadingText: {
-    color: Color.zinc[300],
+    color: Color.zinc[500],
+  },
+  footer: {
+    paddingHorizontal: 20,
+    paddingTop: 32,
+    gap: 20,
+    alignItems: "center",
+  },
+  legalLinks: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    flexWrap: "wrap",
+  },
+  legalLinkText: {
+    color: Color.zinc[500],
+    textDecorationLine: "underline",
+  },
+  legalSeparator: {
+    color: Color.zinc[700],
   },
 });
