@@ -360,6 +360,28 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
   }
 
   const now = new Date();
+  const periodStart = event.purchased_at_ms
+    ? new Date(event.purchased_at_ms)
+    : now;
+  const periodEnd = event.expiration_at_ms
+    ? new Date(event.expiration_at_ms)
+    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
+
+  // Check if this webhook is for a period in the past (out-of-order webhook)
+  if (periodEnd < now) {
+    console.warn(
+      "[RC WEBHOOK] ⚠️  SKIPPING: Renewal period already expired (out-of-order webhook)",
+      {
+        periodStart: periodStart.toISOString(),
+        periodEnd: periodEnd.toISOString(),
+        currentTime: now.toISOString(),
+        expiredMinutesAgo: Math.floor(
+          (now.getTime() - periodEnd.getTime()) / (1000 * 60)
+        ),
+      }
+    );
+    return;
+  }
 
   // Find all existing active usage records by revenuecatUserId (consistent across devices)
   const existingRecords = await prisma.usage.findMany({
@@ -382,8 +404,26 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
     })),
   });
 
-  // Expire all existing active records for this user (preserves historical data)
+  // Only expire existing records if the new period is actually newer
   if (existingRecords.length > 0) {
+    // Check if any existing record has a later period than this webhook
+    const hasNewerPeriod = existingRecords.some(
+      (r) => r.periodStart > periodStart
+    );
+
+    if (hasNewerPeriod) {
+      console.warn(
+        "[RC WEBHOOK] ⚠️  SKIPPING: Already have a newer period (out-of-order webhook)",
+        {
+          webhookPeriodStart: periodStart.toISOString(),
+          existingPeriodStarts: existingRecords.map((r) =>
+            r.periodStart.toISOString()
+          ),
+        }
+      );
+      return;
+    }
+
     await prisma.usage.updateMany({
       where: {
         revenuecatUserId: revenuecatUserId,
@@ -402,13 +442,6 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
 
   // Create new usage records for each entitlement with fresh billing period
   for (const entitlementId of entitlementIds) {
-    const periodStart = event.purchased_at_ms
-      ? new Date(event.purchased_at_ms)
-      : now;
-    const periodEnd = event.expiration_at_ms
-      ? new Date(event.expiration_at_ms)
-      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
     const limit = getLimitForEntitlement(entitlementId);
 
     console.log(`[RC WEBHOOK] 📝 Creating renewed usage record:`, {

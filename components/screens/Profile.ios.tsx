@@ -166,69 +166,85 @@ export function Profile() {
           </LabeledContent>
         </Section>
 
-        {(hasActiveSubscription || hasActiveUsagePeriod) &&
-          lastSubscription && (
-            <Section
-              title={
-                hasActiveSubscription ? "Plan & Usage" : "Active Usage Period"
-              }
-            >
-              <LabeledContent label="Plan">
-                <Text weight="bold" color={planColor}>
-                  {lastSubscription.productName || "Unknown"}
+        {(hasActiveSubscription || hasActiveUsagePeriod) && (
+          <Section
+            title={
+              hasActiveSubscription
+                ? lastSubscription?.unsubscribeDetectedAt
+                  ? "Active Until Expiration"
+                  : "Plan & Usage"
+                : "Active Usage Period"
+            }
+          >
+            <LabeledContent label="Plan">
+              <Text weight="bold" color={planColor}>
+                {hasActiveSubscription && lastSubscription
+                  ? lastSubscription.productName || "Unknown"
+                  : "Free"}
+              </Text>
+            </LabeledContent>
+            {hasActiveSubscription && lastSubscription && (
+              <LabeledContent label="Status">
+                <Text weight="bold" color={getStatusDisplay().color}>
+                  {lastSubscription.unsubscribeDetectedAt
+                    ? "Cancelled (Active Until Expiration)"
+                    : getStatusDisplay().text}
                 </Text>
               </LabeledContent>
-              {hasActiveSubscription && (
-                <LabeledContent label="Status">
-                  <Text weight="bold" color={getStatusDisplay().color}>
-                    {getStatusDisplay().text}
-                  </Text>
-                </LabeledContent>
-              )}
-              <LabeledContent label="Usage This Period">
+            )}
+            <LabeledContent label="Usage This Period">
+              <Text
+                weight="bold"
+                color={isLimitReached ? "#ef4444" : planColor}
+              >
+                {`${used} / ${limit}`}
+              </Text>
+            </LabeledContent>
+            <LabeledContent label="Remaining">
+              <Text
+                weight="bold"
+                color={remaining <= 5 ? "#f59e0b" : "#10b981"}
+              >
+                {`${remaining} generations`}
+              </Text>
+            </LabeledContent>
+            {hasActiveSubscription && lastSubscription?.expiresDate && (
+              <LabeledContent
+                label={
+                  lastSubscription.unsubscribeDetectedAt
+                    ? "Access Ends On"
+                    : lastSubscription.willRenew
+                    ? "Renews On"
+                    : "Expires On"
+                }
+              >
                 <Text
-                  weight="bold"
-                  color={isLimitReached ? "#ef4444" : planColor}
-                >
-                  {`${used} / ${limit}`}
-                </Text>
-              </LabeledContent>
-              <LabeledContent label="Remaining">
-                <Text
-                  weight="bold"
-                  color={remaining <= 5 ? "#f59e0b" : "#10b981"}
-                >
-                  {`${remaining} generations`}
-                </Text>
-              </LabeledContent>
-              {lastSubscription.expiresDate && (
-                <LabeledContent
-                  label={
-                    lastSubscription.willRenew ? "Renews On" : "Expires On"
+                  weight={
+                    lastSubscription.unsubscribeDetectedAt ? "bold" : "regular"
                   }
                 >
-                  <Text>
-                    {new Date(
-                      lastSubscription.expiresDate
-                    ).toLocaleDateString()}
+                  {new Date(lastSubscription.expiresDate).toLocaleDateString()}
+                </Text>
+              </LabeledContent>
+            )}
+            {hasActiveSubscription &&
+              lastSubscription &&
+              lastSubscription.daysRemaining !== null &&
+              lastSubscription.daysRemaining > 0 && (
+                <LabeledContent label="Days Remaining">
+                  <Text
+                    weight="bold"
+                    color={
+                      lastSubscription.daysRemaining <= 3
+                        ? "#f59e0b"
+                        : "#10b981"
+                    }
+                  >
+                    {`${lastSubscription.daysRemaining} days`}
                   </Text>
                 </LabeledContent>
               )}
-              {lastSubscription.daysRemaining !== null &&
-                lastSubscription.daysRemaining > 0 && (
-                  <LabeledContent label="Days Remaining">
-                    <Text
-                      weight="bold"
-                      color={
-                        lastSubscription.daysRemaining <= 3
-                          ? "#f59e0b"
-                          : "#10b981"
-                      }
-                    >
-                      {`${lastSubscription.daysRemaining} days`}
-                    </Text>
-                  </LabeledContent>
-                )}
+            {hasActiveSubscription && lastSubscription && (
               <LabeledContent label="Auto-Renew">
                 <Text
                   color={lastSubscription.willRenew ? "#10b981" : "#ef4444"}
@@ -236,7 +252,9 @@ export function Profile() {
                   {lastSubscription.willRenew ? "On" : "Off"}
                 </Text>
               </LabeledContent>
-              {lastSubscription.unsubscribeDetectedAt && (
+            )}
+            {hasActiveSubscription &&
+              lastSubscription?.unsubscribeDetectedAt && (
                 <LabeledContent label="Cancelled At">
                   <Text weight="bold" color="#f59e0b">
                     {new Date(
@@ -252,50 +270,46 @@ export function Profile() {
                   </Text>
                 </LabeledContent>
               )}
-              {lastSubscription.price && (
-                <LabeledContent label="Price">
-                  <Text>
-                    {`${lastSubscription.price.currency} $${lastSubscription.price.amount}`}
-                  </Text>
-                </LabeledContent>
-              )}
-              <LabeledContent label="Billing Period">
+            {hasActiveSubscription && lastSubscription?.price && (
+              <LabeledContent label="Price">
                 <Text>
-                  {`${
-                    periodStart
-                      ? new Date(periodStart).toLocaleDateString()
-                      : "N/A"
-                  } - ${
-                    periodEnd ? new Date(periodEnd).toLocaleDateString() : "N/A"
-                  }`}
+                  {`${lastSubscription.price.currency} $${lastSubscription.price.amount}`}
                 </Text>
               </LabeledContent>
-              <HStack>
-                <Button
-                  variant="borderless"
-                  systemImage="arrow.up.circle"
-                  onPress={() => router.push("/(paywall)")}
-                  modifiers={[
-                    foregroundStyle({ type: "color", color: "white" }),
-                  ]}
-                >
-                  {hasActiveSubscription ? "Change Plan" : "Upgrade Plan"}
-                </Button>
-              </HStack>
-              <HStack>
-                <Button
-                  variant="borderless"
-                  systemImage="arrow.clockwise"
-                  onPress={handleRefresh}
-                  modifiers={[
-                    foregroundStyle({ type: "color", color: "white" }),
-                  ]}
-                >
-                  {isRefreshing ? "Refreshing..." : "Refresh data"}
-                </Button>
-              </HStack>
-            </Section>
-          )}
+            )}
+            <LabeledContent label="Billing Period">
+              <Text>
+                {`${
+                  periodStart
+                    ? new Date(periodStart).toLocaleDateString()
+                    : "N/A"
+                } - ${
+                  periodEnd ? new Date(periodEnd).toLocaleDateString() : "N/A"
+                }`}
+              </Text>
+            </LabeledContent>
+            <HStack>
+              <Button
+                variant="borderless"
+                systemImage="arrow.up.circle"
+                onPress={() => router.push("/(paywall)")}
+                modifiers={[foregroundStyle({ type: "color", color: "white" })]}
+              >
+                {hasActiveSubscription ? "Change Plan" : "Upgrade Plan"}
+              </Button>
+            </HStack>
+            <HStack>
+              <Button
+                variant="borderless"
+                systemImage="arrow.clockwise"
+                onPress={handleRefresh}
+                modifiers={[foregroundStyle({ type: "color", color: "white" })]}
+              >
+                {isRefreshing ? "Refreshing..." : "Refresh data"}
+              </Button>
+            </HStack>
+          </Section>
+        )}
 
         {!hasActiveSubscription &&
           !hasActiveUsagePeriod &&

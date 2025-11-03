@@ -51,49 +51,30 @@ export async function getCurrentUserEntitlement(
     }
 
     if (activeUsage.length === 0) {
-      // No active entitlements found, check for most recent record as fallback
+      // No active entitlements found, return free tier
       console.log(
-        "🔍 entitlement-utils",
-        "no active records, checking most recent"
+        "⚠️ entitlement-utils",
+        "no active records found, returning free tier"
       );
+
+      // Log most recent for debugging but don't use it
       const mostRecent = await prisma.usage.findFirst({
         where: { userId },
         orderBy: { periodStart: "desc" },
       });
 
       if (mostRecent) {
-        console.log("🔍 entitlement-utils", "most recent record:", {
-          entitlement: mostRecent.entitlement,
-          periodStart: mostRecent.periodStart.toISOString(),
-          periodEnd: mostRecent.periodEnd.toISOString(),
-          count: mostRecent.count,
-          limit: mostRecent.limit,
-        });
-        console.log(
-          "⚠️ entitlement-utils",
-          "using most recent entitlement as fallback:",
-          mostRecent.entitlement
+        const minutesSinceExpired = Math.floor(
+          (now.getTime() - mostRecent.periodEnd.getTime()) / (1000 * 60)
         );
-
-        // Use the most recent entitlement
-        const entitlement = mostRecent.entitlement;
-        switch (entitlement.toLowerCase()) {
-          case "pro":
-            return "Pro";
-          case "plus":
-            return "Plus";
-          case "starter":
-            return "Starter";
-          case "free":
-          default:
-            return "free";
-        }
+        console.log("🔍 entitlement-utils", "most recent record (expired):", {
+          entitlement: mostRecent.entitlement,
+          periodEnd: mostRecent.periodEnd.toISOString(),
+          expiredMinutesAgo: minutesSinceExpired,
+        });
       }
 
-      console.log(
-        "⚠️ entitlement-utils",
-        "no records found at all, returning free"
-      );
+      // Always return free when no active period
       return "free";
     }
 
