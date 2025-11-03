@@ -19,22 +19,22 @@ export function SessionHistoryItem({
       <ContextMenu modifiers={[frame({ width: 50, height: 50 })]}>
         <ContextMenu.Items>
           <Button
+            systemImage="eye"
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              onSelect();
+            }}
+          >
+            Preview
+          </Button>
+          <Button
             systemImage="square.and.arrow.down"
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               onSave();
             }}
           >
-            Save to Library
-          </Button>
-          <Button
-            systemImage="circle"
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              onSelect();
-            }}
-          >
-            Select as Current
+            Save to Gallery
           </Button>
           <Button
             systemImage="square.and.arrow.up"

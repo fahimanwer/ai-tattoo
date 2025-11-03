@@ -7,9 +7,10 @@ import {
   Text as SwiftUIText,
 } from "@expo/ui/swift-ui";
 import { fixedSize, padding } from "@expo/ui/swift-ui/modifiers";
+import { GlassContainer, GlassView } from "expo-glass-effect";
 import * as ImagePicker from "expo-image-picker";
 import React, { useCallback } from "react";
-import { Alert, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 
 interface PlaygroundScreenHeaderRightProps {
   onSave: () => void;
@@ -52,49 +53,70 @@ export function PlaygroundScreenHeaderRight({
 
   return (
     <View style={{ flexDirection: "row", gap: 10 }}>
+      <GlassContainer spacing={10} style={styles.containerStyle}>
+        <GlassView style={styles.glass} isInteractive>
+          <Host matchContents>
+            <Button controlSize="small" onPress={onReset}>
+              <Image
+                systemName="arrow.counterclockwise"
+                size={theme.fontSize20}
+                color="white"
+              />
+            </Button>
+          </Host>
+        </GlassView>
+        <GlassView style={styles.glass} isInteractive>
+          <Host matchContents>
+            <Button controlSize="small" onPress={pickImageFromGallery}>
+              <Image
+                systemName="photo.on.rectangle"
+                size={theme.fontSize18}
+                color="white"
+              />
+            </Button>
+          </Host>
+        </GlassView>
+        <GlassView style={styles.glass} isInteractive>
+          <Host matchContents>
+            <Button controlSize="small" onPress={onShare}>
+              <Image
+                systemName="square.and.arrow.up"
+                size={theme.fontSize20}
+                color="white"
+              />
+            </Button>
+          </Host>
+        </GlassView>
+      </GlassContainer>
       <Host matchContents>
-        <HStack spacing={theme.space8}>
-          <Button variant="glass" controlSize="small" onPress={onReset}>
-            <Image
-              systemName="arrow.counterclockwise"
-              size={theme.fontSize20}
-              color="white"
-              modifiers={[padding({ vertical: 2 })]}
-            />
-          </Button>
-          <Button
-            variant="glass"
-            controlSize="small"
-            onPress={pickImageFromGallery}
-          >
-            <Image
-              systemName="photo.on.rectangle"
-              size={theme.fontSize18}
-              color="white"
-              modifiers={[padding({ vertical: 4 })]}
-            />
-          </Button>
-          <Button variant="glass" controlSize="small" onPress={onShare}>
-            <Image
-              systemName="square.and.arrow.up"
-              size={theme.fontSize20}
-              color="white"
-              modifiers={[padding({ vertical: 2 })]}
-            />
-          </Button>
-          <Button
-            variant="glassProminent"
-            controlSize="mini"
-            onPress={onSave}
-            disabled={isSaveDisabled}
-            modifiers={[fixedSize()]}
-          >
-            <HStack modifiers={[padding({ vertical: 4 })]}>
-              <SwiftUIText color="white">Save</SwiftUIText>
-            </HStack>
-          </Button>
-        </HStack>
+        <Button
+          variant="glassProminent"
+          controlSize="mini"
+          onPress={onSave}
+          disabled={isSaveDisabled}
+          modifiers={[fixedSize()]}
+        >
+          <HStack modifiers={[padding({ vertical: 4 })]}>
+            <SwiftUIText color="white">Save</SwiftUIText>
+          </HStack>
+        </Button>
       </Host>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  containerStyle: {
+    position: "relative",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  glass: {
+    width: 42,
+    height: 42,
+    borderRadius: 30,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

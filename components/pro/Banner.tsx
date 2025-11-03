@@ -53,42 +53,14 @@ export function Banner() {
         },
       ]}
     >
-      {/*   <GlassView
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          borderRadius: 16,
-          height: "100%",
-          width: "100%",
-          zIndex: 1,
-        }}
-      >
-        <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.8)"]}
-          style={{ height: "100%", width: "100%", borderRadius: 16 }}
-        />
-        <GlassView
-          style={{
-            position: "absolute",
-            left: 0,
-            bottom: 0,
-            height: "100%",
-            width: "100%",
-          }}
-          glassEffectStyle="clear"
-        />
-      </GlassView> */}
       {isLiquidGlassAvailable() ? (
         <GlassView
           style={{
             position: "absolute",
-            width: "98%",
+            width: "95%",
             left: "50%",
             transform: [{ translateX: "-50%" }],
-            bottom: 4,
+            bottom: 8,
             zIndex: 2,
             flex: 1,
             borderRadius: 16,
@@ -144,8 +116,16 @@ export function Banner() {
       <Image
         cachePolicy="memory-disk"
         source={require("@/assets/images/banner-pro.png")}
-        style={{ width: "100%", height: "100%", borderRadius: 16 }}
+        style={{
+          width: "100%",
+          height: "100%",
+          borderRadius: 16,
+          position: "absolute",
+          top: 0,
+          left: 0,
+        }}
         contentFit="cover"
+        contentPosition="top"
       />
     </Pressable>
   );

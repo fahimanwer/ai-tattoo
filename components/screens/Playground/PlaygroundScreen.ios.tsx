@@ -1,3 +1,4 @@
+import { HeaderButton } from "@/components/ui/HeaderButtons/HeaderButton.ios";
 import { useGradualAnimation } from "@/hooks/useGradualAnimation";
 import {
   textAndImageToImage,
@@ -6,7 +7,7 @@ import {
 } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -202,6 +203,10 @@ export function PlaygroundScreen() {
     );
   }
 
+  function handleGoBack() {
+    router.dismissTo("/(tabs)/home");
+  }
+
   // Compute the active generation base64 from the index
   const activeGenerationBase64 =
     activeGenerationIndex !== undefined
@@ -223,6 +228,13 @@ export function PlaygroundScreen() {
     <>
       <Stack.Screen
         options={{
+          headerTitle: "AI Tattoo Try On",
+          headerLeft: () => (
+            <HeaderButton
+              imageProps={{ systemName: "chevron.left" }}
+              buttonProps={{ onPress: handleGoBack }}
+            />
+          ),
           headerRight: () => (
             <PlaygroundScreenHeaderRight
               onReset={handleReset}

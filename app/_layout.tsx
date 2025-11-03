@@ -165,7 +165,8 @@ function AppContent() {
             <Stack.Screen
               name="(playground)"
               options={{
-                animation: "fade_from_bottom",
+                presentation: "card",
+                animation: "slide_from_right",
               }}
             />
           </Stack.Protected>

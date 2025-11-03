@@ -112,8 +112,8 @@ export function CustomDetails() {
       return;
     }
 
-    // Validate tattoo selection in options
-    if (!options.selectedTattoo) {
+    // Validate tattoo selection in options (only when not using existing tattoo from gallery)
+    if (!isUsingExistingTattoo && !options.selectedTattoo) {
       Alert.alert(
         "Missing Tattoo Selection",
         "Please select a tattoo style from the options.",

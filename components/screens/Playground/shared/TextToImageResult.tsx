@@ -3,6 +3,7 @@ import { blurhash } from "@/components/ui/VerticalCard";
 import { Color } from "@/constants/TWPalette";
 import { TextAndImageToImageResponse, TextToImageResponse } from "@/lib/nano";
 import { UseMutationResult } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { PressableScale } from "pressto";
@@ -31,6 +32,10 @@ export function TextToImageResult({
 }: TextToImageResultProps) {
   const router = useRouter();
 
+  function simulateTattoMachineVibrations() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }
+
   if (mutation.isError) {
     return (
       <View
@@ -41,28 +46,13 @@ export function TextToImageResult({
           gap: 16,
         }}
       >
-        <Text style={{ color: Color.red[500] }}>
+        <Text type="sm" style={{ color: Color.red[600], textAlign: "center" }}>
           {mutation.error?.message === "LIMIT_REACHED"
             ? "You have reached your generation limit for the current period. Please upgrade your plan or wait for the next period."
             : "Something went wrong: " + mutation.error?.message ||
               "Unknown error"}
         </Text>
-        <PressableScale
-          onPress={() => {
-            mutation.reset();
-            router.dismissTo("/(tabs)/home");
-          }}
-        >
-          <Text style={{ color: Color.blue[500] }}>Try Again Later</Text>
-        </PressableScale>
-        <PressableScale
-          onPress={() => {
-            mutation.reset();
-            router.dismissTo("/profile");
-          }}
-        >
-          <Text style={{ color: Color.blue[500] }}>Review Plan</Text>
-        </PressableScale>
+
         {mutation.error?.message === "LIMIT_REACHED" && (
           <PressableScale
             onPress={() => {
@@ -70,29 +60,40 @@ export function TextToImageResult({
               router.push("/(paywall)");
             }}
           >
-            <Text style={{ color: Color.yellow[500] }}>Upgrade Plan</Text>
+            <Text type="default" style={{ color: Color.yellow[400] }}>
+              Upgrade Plan
+            </Text>
           </PressableScale>
         )}
       </View>
     );
   }
   if (mutation.isPending) {
+    simulateTattoMachineVibrations();
     return <LoadingChangingText />;
   }
   return lastGenerationBase64 ? (
     <View
       style={{
-        height: 400,
-        marginTop: 16,
-        borderColor: "red",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <Image
         source={{ uri: lastGenerationBase64 }}
         placeholder={{ blurhash }}
-        style={{ width: "100%", height: "100%", borderRadius: 8 }}
-        contentFit="contain"
-        transition={500}
+        style={{
+          width: "100%",
+          height: "95%",
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: Color.gray[500] + "30",
+        }}
+        contentFit="cover"
+        contentPosition="center"
+        transition={350}
       />
     </View>
   ) : (

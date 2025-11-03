@@ -101,7 +101,7 @@ export function TattooHistory() {
       renderItem={({ item }) => (
         <VerticalCard asset={item} onPress={() => handleTattooPress(item)} />
       )}
-      numColumns={2}
+      numColumns={3}
       columnWrapperStyle={styles.row}
       contentContainerStyle={styles.listContainer}
       contentInsetAdjustmentBehavior="automatic"

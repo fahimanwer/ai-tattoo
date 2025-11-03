@@ -68,7 +68,7 @@ export function VerticalCard({
           <>
             {isLiquidGlassAvailable() ? (
               <GlassView style={styles.glassViewContainer}>
-                <Text type="sm" weight="normal" numberOfLines={1}>
+                <Text type="sm" weight="medium" numberOfLines={1}>
                   {displaySubtitle}
                 </Text>
               </GlassView>

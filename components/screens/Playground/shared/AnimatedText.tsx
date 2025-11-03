@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     marginHorizontal: "-100%",
     [process.env.EXPO_OS === "web"
       ? "backgroundImage"
-      : "experimental_backgroundImage"]: `linear-gradient(100deg, ${Color.yellow[800]} 30%, ${Color.yellow[500]} 40%, ${Color.yellow[800]} 50%)`,
+      : "experimental_backgroundImage"]: `linear-gradient(100deg, ${Color.yellow[700]} 30%, ${Color.yellow[400]} 40%, ${Color.yellow[700]} 50%)`,
   },
   label: {
     fontSize: 18,
@@ -172,24 +172,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   star: {
-    color: "#facc15",
+    color: Color.yellow[400],
     opacity: 0,
     position: "absolute",
   },
   star1: {
-    bottom: 70,
+    bottom: 40,
     fontSize: 26,
     left: 80,
   },
   star2: {
     fontSize: 22,
-    right: 100,
-    top: 40,
+    right: 80,
+    top: 0,
   },
   star3: {
     fontSize: 20,
-    left: 100,
-    top: 35,
+    left: 80,
+    top: 15,
   },
   star4: {
     fontSize: 26,
