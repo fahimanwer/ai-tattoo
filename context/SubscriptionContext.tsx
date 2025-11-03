@@ -198,3 +198,95 @@ export function getActiveEntitlements(
   if (!customerInfo) return [];
   return Object.keys(customerInfo.entitlements.active);
 }
+
+// Interface for last subscription info
+export interface LastSubscriptionInfo {
+  productIdentifier: string | null;
+  productName: string | null;
+  expiresDate: string | null;
+  isActive: boolean;
+  willRenew: boolean;
+  status: "active" | "expired" | "cancelled";
+  daysRemaining: number | null;
+  daysSinceExpired: number | null;
+  price: { currency: string; amount: number } | null;
+  unsubscribeDetectedAt: string | null;
+}
+
+// Utility function to get the last subscription (active or most recently expired)
+export function getLastSubscription(
+  customerInfo: CustomerInfo | null
+): LastSubscriptionInfo | null {
+  if (!customerInfo) return null;
+
+  // Get all subscriptions from subscriptionsByProductIdentifier
+  const allSubscriptions = customerInfo.subscriptionsByProductIdentifier || {};
+
+  if (Object.keys(allSubscriptions).length === 0) {
+    return null;
+  }
+
+  // Find the most recent subscription (by expiresDate)
+  let mostRecentSub = null;
+  let mostRecentDate: Date | null = null;
+
+  for (const [productId, subscription] of Object.entries(allSubscriptions)) {
+    const expiresDate = subscription.expiresDate
+      ? new Date(subscription.expiresDate)
+      : null;
+
+    if (!mostRecentDate || (expiresDate && expiresDate > mostRecentDate)) {
+      mostRecentDate = expiresDate;
+      mostRecentSub = { productId, ...subscription };
+    }
+  }
+
+  if (!mostRecentSub) return null;
+
+  const sub: any = mostRecentSub;
+  const expiresDate = sub.expiresDate ? new Date(sub.expiresDate) : null;
+  const now = new Date();
+
+  // Calculate days remaining or days since expired
+  let daysRemaining: number | null = null;
+  let daysSinceExpired: number | null = null;
+
+  if (expiresDate) {
+    const diffMs = expiresDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays > 0) {
+      daysRemaining = diffDays;
+    } else {
+      daysSinceExpired = Math.abs(diffDays);
+    }
+  }
+
+  // Determine status
+  let status: "active" | "expired" | "cancelled" = "expired";
+  if (sub.isActive) {
+    status = "active";
+  } else if (sub.unsubscribeDetectedAt) {
+    status = "cancelled";
+  }
+
+  // Map product identifier to friendly name
+  const productNameMap: Record<string, string> = {
+    main_ai_tattoo_starter: "Starter",
+    main_ai_tattoo_plus: "Plus",
+    main_ai_tattoo_pro: "Pro",
+  };
+
+  return {
+    productIdentifier: sub.productId || null,
+    productName: productNameMap[sub.productId] || sub.productId || null,
+    expiresDate: sub.expiresDate || null,
+    isActive: sub.isActive || false,
+    willRenew: sub.willRenew || false,
+    status,
+    daysRemaining,
+    daysSinceExpired,
+    price: sub.price || null,
+    unsubscribeDetectedAt: sub.unsubscribeDetectedAt || null,
+  };
+}

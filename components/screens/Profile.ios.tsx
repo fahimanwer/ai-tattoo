@@ -1,3 +1,4 @@
+import { getLastSubscription } from "@/context/SubscriptionContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
 import { useUserData } from "@/hooks/useUserData";
@@ -13,21 +14,18 @@ import {
 } from "@expo/ui/swift-ui";
 import { foregroundStyle } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Alert, Linking, Share, View } from "react-native";
 
 export function Profile() {
   const { user } = useUserData();
-  const { refreshSubscriptionStatus } = useSubscription();
+  const { refreshSubscriptionStatus, customerInfo } = useSubscription();
   const {
     used,
     limit,
     remaining,
     isLimitReached,
-    subscriptionTier,
-    planDisplayName,
     planColor,
-    usagePercentage,
     periodStart,
     periodEnd,
     refetch: refetchUsage,
@@ -35,23 +33,37 @@ export function Profile() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
 
+  // Get last subscription info
+  const lastSubscription = useMemo(
+    () => getLastSubscription(customerInfo),
+    [customerInfo]
+  );
+
+  // Determine if there's an active subscription
+  const hasActiveSubscription = useMemo(() => {
+    return lastSubscription?.isActive === true;
+  }, [lastSubscription]);
+
+  // Helper function to format status display
+  const getStatusDisplay = () => {
+    if (!lastSubscription) return { text: "No subscription", color: "#9ca3af" };
+
+    switch (lastSubscription.status) {
+      case "active":
+        return { text: "Active", color: "#10b981" };
+      case "expired":
+        return { text: "Expired", color: "#ef4444" };
+      case "cancelled":
+        return { text: "Cancelled", color: "#f59e0b" };
+      default:
+        return { text: "Unknown", color: "#9ca3af" };
+    }
+  };
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
       await Promise.all([refetchUsage(), refreshSubscriptionStatus()]);
-
-      console.log("usage", {
-        used,
-        limit,
-        remaining,
-        isLimitReached,
-        subscriptionTier,
-        planDisplayName,
-        planColor,
-        usagePercentage,
-        periodStart,
-        periodEnd,
-      });
     } catch (error) {
       console.error("Error refreshing profile data:", error);
     } finally {
@@ -145,55 +157,172 @@ export function Profile() {
           </LabeledContent>
         </Section>
 
-        <Section title="Plan & Usage">
-          <LabeledContent label="Current Plan">
-            <Text weight="bold" color={planColor}>
-              {planDisplayName}
-            </Text>
-          </LabeledContent>
-          <LabeledContent label="Usage This Period">
-            <Text weight="bold" color={isLimitReached ? "#ef4444" : planColor}>
-              {`${used} / ${limit}`}
-            </Text>
-          </LabeledContent>
-          <LabeledContent label="Remaining">
-            <Text weight="bold" color={remaining <= 5 ? "#f59e0b" : "#10b981"}>
-              {`${remaining} generations`}
-            </Text>
-          </LabeledContent>
-          <LabeledContent label="Usage Percentage">
-            <Text>{`${usagePercentage}%`}</Text>
-          </LabeledContent>
-          <LabeledContent label="Billing Period">
-            <Text>
-              {`${
-                periodStart ? new Date(periodStart).toLocaleDateString() : "N/A"
-              } - ${
-                periodEnd ? new Date(periodEnd).toLocaleDateString() : "N/A"
-              }`}
-            </Text>
-          </LabeledContent>
-          <HStack>
-            <Button
-              variant="borderless"
-              systemImage="arrow.up.circle"
-              onPress={() => router.push("/(paywall)")}
-              modifiers={[foregroundStyle({ type: "color", color: "white" })]}
-            >
-              {subscriptionTier === "free" ? "Upgrade Plan" : "Change Plan"}
-            </Button>
-          </HStack>
-          <HStack>
-            <Button
-              variant="borderless"
-              systemImage="arrow.clockwise"
-              onPress={handleRefresh}
-              modifiers={[foregroundStyle({ type: "color", color: "white" })]}
-            >
-              {isRefreshing ? "Refreshing..." : "Refresh data"}
-            </Button>
-          </HStack>
-        </Section>
+        {hasActiveSubscription && lastSubscription && (
+          <Section title="Current Subscription">
+            <LabeledContent label="Plan">
+              <Text weight="bold" color={planColor}>
+                {lastSubscription.productName || "Unknown"}
+              </Text>
+            </LabeledContent>
+            <LabeledContent label="Status">
+              <Text weight="bold" color={getStatusDisplay().color}>
+                {getStatusDisplay().text}
+              </Text>
+            </LabeledContent>
+            <LabeledContent label="Usage This Period">
+              <Text
+                weight="bold"
+                color={isLimitReached ? "#ef4444" : planColor}
+              >
+                {`${used} / ${limit}`}
+              </Text>
+            </LabeledContent>
+            <LabeledContent label="Remaining">
+              <Text
+                weight="bold"
+                color={remaining <= 5 ? "#f59e0b" : "#10b981"}
+              >
+                {`${remaining} generations`}
+              </Text>
+            </LabeledContent>
+            {lastSubscription.expiresDate && (
+              <LabeledContent label="Renews On">
+                <Text>
+                  {new Date(lastSubscription.expiresDate).toLocaleDateString()}
+                </Text>
+              </LabeledContent>
+            )}
+            {lastSubscription.daysRemaining !== null &&
+              lastSubscription.daysRemaining > 0 && (
+                <LabeledContent label="Days Remaining">
+                  <Text
+                    weight="bold"
+                    color={
+                      lastSubscription.daysRemaining <= 3
+                        ? "#f59e0b"
+                        : "#10b981"
+                    }
+                  >
+                    {`${lastSubscription.daysRemaining} days`}
+                  </Text>
+                </LabeledContent>
+              )}
+            <LabeledContent label="Auto-Renew">
+              <Text color={lastSubscription.willRenew ? "#10b981" : "#ef4444"}>
+                {lastSubscription.willRenew ? "On" : "Off"}
+              </Text>
+            </LabeledContent>
+            {lastSubscription.price && (
+              <LabeledContent label="Price">
+                <Text>
+                  {`${lastSubscription.price.currency} $${lastSubscription.price.amount}`}
+                </Text>
+              </LabeledContent>
+            )}
+            <LabeledContent label="Billing Period">
+              <Text>
+                {`${
+                  periodStart
+                    ? new Date(periodStart).toLocaleDateString()
+                    : "N/A"
+                } - ${
+                  periodEnd ? new Date(periodEnd).toLocaleDateString() : "N/A"
+                }`}
+              </Text>
+            </LabeledContent>
+            <HStack>
+              <Button
+                variant="borderless"
+                systemImage="arrow.up.circle"
+                onPress={() => router.push("/(paywall)")}
+                modifiers={[foregroundStyle({ type: "color", color: "white" })]}
+              >
+                Change Plan
+              </Button>
+            </HStack>
+            <HStack>
+              <Button
+                variant="borderless"
+                systemImage="arrow.clockwise"
+                onPress={handleRefresh}
+                modifiers={[foregroundStyle({ type: "color", color: "white" })]}
+              >
+                {isRefreshing ? "Refreshing..." : "Refresh data"}
+              </Button>
+            </HStack>
+          </Section>
+        )}
+
+        {!hasActiveSubscription && lastSubscription && (
+          <Section title="Last Subscription">
+            <LabeledContent label="Plan">
+              <Text weight="bold" color={planColor}>
+                {lastSubscription.productName || "Unknown"}
+              </Text>
+            </LabeledContent>
+            <LabeledContent label="Status">
+              <Text weight="bold" color={getStatusDisplay().color}>
+                {getStatusDisplay().text}
+              </Text>
+            </LabeledContent>
+            {lastSubscription.expiresDate && (
+              <LabeledContent label="Expired On">
+                <Text>
+                  {new Date(lastSubscription.expiresDate).toLocaleDateString()}
+                </Text>
+              </LabeledContent>
+            )}
+            {lastSubscription.daysSinceExpired !== null &&
+              lastSubscription.daysSinceExpired > 0 && (
+                <LabeledContent label="Expired">
+                  <Text weight="bold" color="#ef4444">
+                    {`${lastSubscription.daysSinceExpired} days ago`}
+                  </Text>
+                </LabeledContent>
+              )}
+            <LabeledContent label="Auto-Renew">
+              <Text color={lastSubscription.willRenew ? "#10b981" : "#ef4444"}>
+                {lastSubscription.willRenew ? "Was On" : "Was Off"}
+              </Text>
+            </LabeledContent>
+            {lastSubscription.price && (
+              <LabeledContent label="Price">
+                <Text>
+                  {`${lastSubscription.price.currency} $${lastSubscription.price.amount}`}
+                </Text>
+              </LabeledContent>
+            )}
+            {lastSubscription.unsubscribeDetectedAt && (
+              <LabeledContent label="Cancelled On">
+                <Text>
+                  {new Date(
+                    lastSubscription.unsubscribeDetectedAt
+                  ).toLocaleDateString()}
+                </Text>
+              </LabeledContent>
+            )}
+            <HStack>
+              <Button
+                variant="borderless"
+                systemImage="arrow.up.circle"
+                onPress={() => router.push("/(paywall)")}
+                modifiers={[foregroundStyle({ type: "color", color: "white" })]}
+              >
+                Subscribe Again
+              </Button>
+            </HStack>
+            <HStack>
+              <Button
+                variant="borderless"
+                systemImage="arrow.clockwise"
+                onPress={handleRefresh}
+                modifiers={[foregroundStyle({ type: "color", color: "white" })]}
+              >
+                {isRefreshing ? "Refreshing..." : "Refresh data"}
+              </Button>
+            </HStack>
+          </Section>
+        )}
 
         <Section title="Support & Feedback">
           <HStack>
@@ -303,3 +432,133 @@ export function Profile() {
     </Host>
   );
 }
+
+// LOG  customerInfo {
+//   "allExpirationDates": {
+//     "main_ai_tattoo_starter": "2025-10-25T00:16:25Z",
+//     "main_ai_tattoo_plus": "2025-10-25T00:13:25Z"
+//   },
+//   "firstSeenMillis": 1761096272000,
+//   "originalAppUserId": "yOOAKM7JU8MdLYE3QgHvZvsKmjY80EKn",
+//   "subscriptionsByProductIdentifier": {
+//     "main_ai_tattoo_plus": {
+//       "productIdentifier": "main_ai_tattoo_plus",
+//       "billingIssuesDetectedAt": null,
+//       "purchaseDate": "2025-10-25T00:10:25Z",
+//       "expiresDate": "2025-10-25T00:13:25Z",
+//       "periodType": "NORMAL",
+//       "gracePeriodExpiresDate": null,
+//       "isActive": false,
+//       "isSandbox": true,
+//       "willRenew": true,
+//       "ownershipType": "PURCHASED",
+//       "originalPurchaseDate": "2025-10-22T01:28:55Z",
+//       "unsubscribeDetectedAt": null,
+//       "storeTransactionId": "2000001042009045",
+//       "store": "APP_STORE",
+//       "refundedAt": null,
+//       "price": {
+//         "currency": "USD",
+//         "amount": 9.99
+//       }
+//     },
+//     "main_ai_tattoo_starter": {
+//       "periodType": "NORMAL",
+//       "isActive": false,
+//       "ownershipType": "PURCHASED",
+//       "storeTransactionId": "2000001042010123",
+//       "refundedAt": null,
+//       "originalPurchaseDate": "2025-10-22T01:28:55Z",
+//       "productIdentifier": "main_ai_tattoo_starter",
+//       "willRenew": false,
+//       "price": {
+//         "currency": "USD",
+//         "amount": 4.99
+//       },
+//       "gracePeriodExpiresDate": null,
+//       "purchaseDate": "2025-10-25T00:13:25Z",
+//       "store": "APP_STORE",
+//       "expiresDate": "2025-10-25T00:16:25Z",
+//       "unsubscribeDetectedAt": "2025-10-25T00:12:59Z",
+//       "isSandbox": true,
+//       "billingIssuesDetectedAt": null
+//     }
+//   },
+//   "latestExpirationDate": "2025-10-25T00:16:25Z",
+//   "allExpirationDatesMillis": {
+//     "main_ai_tattoo_plus": 1761351205000,
+//     "main_ai_tattoo_starter": 1761351385000
+//   },
+//   "allPurchasedProductIdentifiers": [
+//     "main_ai_tattoo_starter",
+//     "main_ai_tattoo_plus"
+//   ],
+//   "originalPurchaseDate": "2013-08-01T07:00:00Z",
+//   "originalApplicationVersion": "1.0",
+//   "entitlements": {
+//     "verification": "NOT_REQUESTED",
+//     "active": {},
+//     "all": {
+//       "Plus": {
+//         "store": "APP_STORE",
+//         "ownershipType": "PURCHASED",
+//         "latestPurchaseDateMillis": 1761351025000,
+//         "identifier": "Plus",
+//         "productPlanIdentifier": null,
+//         "billingIssueDetectedAt": null,
+//         "verification": "NOT_REQUESTED",
+//         "expirationDateMillis": 1761351205000,
+//         "productIdentifier": "main_ai_tattoo_plus",
+//         "isActive": false,
+//         "willRenew": true,
+//         "originalPurchaseDate": "2025-10-22T01:28:55Z",
+//         "expirationDate": "2025-10-25T00:13:25Z",
+//         "unsubscribeDetectedAtMillis": null,
+//         "latestPurchaseDate": "2025-10-25T00:10:25Z",
+//         "periodType": "NORMAL",
+//         "originalPurchaseDateMillis": 1761096535000,
+//         "isSandbox": true,
+//         "unsubscribeDetectedAt": null,
+//         "billingIssueDetectedAtMillis": null
+//       },
+//       "Starter": {
+//         "productIdentifier": "main_ai_tattoo_starter",
+//         "billingIssueDetectedAt": null,
+//         "periodType": "NORMAL",
+//         "identifier": "Starter",
+//         "originalPurchaseDateMillis": 1761096535000,
+//         "unsubscribeDetectedAtMillis": 1761351179000,
+//         "isActive": false,
+//         "store": "APP_STORE",
+//         "originalPurchaseDate": "2025-10-22T01:28:55Z",
+//         "latestPurchaseDate": "2025-10-25T00:13:25Z",
+//         "expirationDateMillis": 1761351385000,
+//         "willRenew": false,
+//         "unsubscribeDetectedAt": "2025-10-25T00:12:59Z",
+//         "ownershipType": "PURCHASED",
+//         "billingIssueDetectedAtMillis": null,
+//         "verification": "NOT_REQUESTED",
+//         "expirationDate": "2025-10-25T00:16:25Z",
+//         "isSandbox": true,
+//         "productPlanIdentifier": null,
+//         "latestPurchaseDateMillis": 1761351205000
+//       }
+//     }
+//   },
+//   "allPurchaseDates": {
+//     "main_ai_tattoo_starter": "2025-10-25T00:13:25Z",
+//     "main_ai_tattoo_plus": "2025-10-25T00:10:25Z"
+//   },
+//   "nonSubscriptionTransactions": [],
+//   "originalPurchaseDateMillis": 1375340400000,
+//   "managementURL": null,
+//   "firstSeen": "2025-10-22T01:24:32Z",
+//   "latestExpirationDateMillis": 1761351385000,
+//   "requestDate": "2025-11-03T01:02:27Z",
+//   "allPurchaseDatesMillis": {
+//     "main_ai_tattoo_plus": 1761351025000,
+//     "main_ai_tattoo_starter": 1761351205000
+//   },
+//   "requestDateMillis": 1762131747000,
+//   "activeSubscriptions": []
+// }
