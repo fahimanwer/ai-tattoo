@@ -33,8 +33,23 @@ export function TextToImageResult({
   const router = useRouter();
 
   function simulateTattoMachineVibrations() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
   }
+
+  // Vibrate periodically while generation is pending
+  useEffect(() => {
+    if (!mutation.isPending) return;
+
+    // Initial vibration when loading starts
+    simulateTattoMachineVibrations();
+
+    // Continue vibrating periodically to simulate tattoo machine
+    const vibrationInterval = setInterval(() => {
+      simulateTattoMachineVibrations();
+    }, 2000); // Vibrate every 2 seconds
+
+    return () => clearInterval(vibrationInterval);
+  }, [mutation.isPending]);
 
   if (mutation.isError) {
     return (
@@ -69,7 +84,6 @@ export function TextToImageResult({
     );
   }
   if (mutation.isPending) {
-    simulateTattoMachineVibrations();
     return <LoadingChangingText />;
   }
   return lastGenerationBase64 ? (

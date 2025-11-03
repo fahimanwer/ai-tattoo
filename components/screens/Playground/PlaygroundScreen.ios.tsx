@@ -114,9 +114,9 @@ export function PlaygroundScreen() {
     // Clear any text in the prompt input
     setPrompt("");
 
-    toast.info("Generating tattoo...", {
+    /* toast.info("Generating tattoo...", {
       description: "Please wait while we generate your tattoo...",
-    });
+    }); */
 
     textToImageMutation.mutate(
       `Generate a realistic ${suggestionTitle} tattoo`
@@ -228,7 +228,7 @@ export function PlaygroundScreen() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: "AI Tattoo Try On",
+          headerTitle: "AI Tattoo Playground",
           headerLeft: () => (
             <HeaderButton
               imageProps={{ systemName: "chevron.left" }}

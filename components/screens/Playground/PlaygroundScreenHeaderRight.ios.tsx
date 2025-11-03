@@ -53,7 +53,7 @@ export function PlaygroundScreenHeaderRight({
 
   return (
     <View style={{ flexDirection: "row", gap: 10 }}>
-      <GlassContainer spacing={10} style={styles.containerStyle}>
+      <GlassContainer spacing={65} style={styles.containerStyle}>
         <GlassView style={styles.glass} isInteractive>
           <Host matchContents>
             <Button controlSize="small" onPress={onReset}>
@@ -64,8 +64,6 @@ export function PlaygroundScreenHeaderRight({
               />
             </Button>
           </Host>
-        </GlassView>
-        <GlassView style={styles.glass} isInteractive>
           <Host matchContents>
             <Button controlSize="small" onPress={pickImageFromGallery}>
               <Image
@@ -75,8 +73,6 @@ export function PlaygroundScreenHeaderRight({
               />
             </Button>
           </Host>
-        </GlassView>
-        <GlassView style={styles.glass} isInteractive>
           <Host matchContents>
             <Button controlSize="small" onPress={onShare}>
               <Image
@@ -112,10 +108,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   glass: {
-    width: 42,
+    width: "auto",
+    paddingHorizontal: 16,
     height: 42,
     borderRadius: 30,
     display: "flex",
+    flexDirection: "row",
+    gap: 14,
     justifyContent: "center",
     alignItems: "center",
   },
