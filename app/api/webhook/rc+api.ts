@@ -566,12 +566,31 @@ async function resetCurrentPeriodAndCreateNew(
 
 async function handleExpiration(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
+  const revenuecatUserId = event.original_app_user_id;
+  const expirationDate = event.expiration_at_ms
+    ? new Date(event.expiration_at_ms)
+    : new Date();
+
   console.log(
-    `[RC WEBHOOK] ⏱️  EXPIRATION: Subscription expired for user ${userId}`
+    `[RC WEBHOOK] ⏱️  EXPIRATION: Subscription expired for user ${userId} at ${expirationDate.toISOString()}`
   );
 
-  // Subscription has expired, user no longer has access
-  // Usage records remain for historical purposes
+  // Close any active usage periods for this user by setting periodEnd to expiration time
+  const now = new Date();
+  const result = await prisma.usage.updateMany({
+    where: {
+      revenuecatUserId: revenuecatUserId,
+      periodStart: { lte: now },
+      periodEnd: { gte: now }, // Only update records that are currently active
+    },
+    data: {
+      periodEnd: expirationDate,
+    },
+  });
+
+  console.log(
+    `[RC WEBHOOK] ✅ Closed ${result.count} active usage period(s) for user ${userId}`
+  );
 }
 
 async function handleSubscriptionPaused(
