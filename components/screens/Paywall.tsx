@@ -321,8 +321,8 @@ function getTierColors(tier: string) {
   switch (tier) {
     case "starter":
       return {
-        primary: Color.amber[400],
-        badge: Color.amber[600],
+        primary: Color.yellow[400],
+        badge: Color.yellow[600],
       };
     case "plus":
       return {

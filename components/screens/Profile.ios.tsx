@@ -1,3 +1,4 @@
+import { Color } from "@/constants/TWPalette";
 import { getLastSubscription } from "@/context/SubscriptionContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
@@ -203,7 +204,7 @@ export function Profile() {
             <LabeledContent label="Remaining">
               <Text
                 weight="bold"
-                color={remaining <= 5 ? "#f59e0b" : "#10b981"}
+                color={remaining <= 5 ? Color.yellow[500] : Color.green[500]}
               >
                 {`${remaining} generations`}
               </Text>
@@ -236,8 +237,8 @@ export function Profile() {
                     weight="bold"
                     color={
                       lastSubscription.daysRemaining <= 3
-                        ? "#f59e0b"
-                        : "#10b981"
+                        ? Color.yellow[500]
+                        : Color.green[500]
                     }
                   >
                     {`${lastSubscription.daysRemaining} days`}
@@ -247,7 +248,11 @@ export function Profile() {
             {hasActiveSubscription && lastSubscription && (
               <LabeledContent label="Auto-Renew">
                 <Text
-                  color={lastSubscription.willRenew ? "#10b981" : "#ef4444"}
+                  color={
+                    lastSubscription.willRenew
+                      ? Color.green[500]
+                      : Color.red[500]
+                  }
                 >
                   {lastSubscription.willRenew ? "On" : "Off"}
                 </Text>
@@ -256,7 +261,7 @@ export function Profile() {
             {hasActiveSubscription &&
               lastSubscription?.unsubscribeDetectedAt && (
                 <LabeledContent label="Cancelled At">
-                  <Text weight="bold" color="#f59e0b">
+                  <Text weight="bold" color={Color.yellow[500]}>
                     {new Date(
                       lastSubscription.unsubscribeDetectedAt
                     ).toLocaleString(undefined, {
@@ -293,7 +298,12 @@ export function Profile() {
                 variant="borderless"
                 systemImage="arrow.up.circle"
                 onPress={() => router.push("/(paywall)")}
-                modifiers={[foregroundStyle({ type: "color", color: "white" })]}
+                modifiers={[
+                  foregroundStyle({
+                    type: "color",
+                    color: hasActiveSubscription ? "white" : Color.yellow[500],
+                  }),
+                ]}
               >
                 {hasActiveSubscription ? "Change Plan" : "Upgrade Plan"}
               </Button>
@@ -337,14 +347,18 @@ export function Profile() {
               {lastSubscription.daysSinceExpired !== null &&
                 lastSubscription.daysSinceExpired > 0 && (
                   <LabeledContent label="Expired">
-                    <Text weight="bold" color="#ef4444">
+                    <Text weight="bold" color={Color.red[500]}>
                       {`${lastSubscription.daysSinceExpired} days ago`}
                     </Text>
                   </LabeledContent>
                 )}
               <LabeledContent label="Auto-Renew">
                 <Text
-                  color={lastSubscription.willRenew ? "#10b981" : "#ef4444"}
+                  color={
+                    lastSubscription.willRenew
+                      ? Color.green[500]
+                      : Color.red[500]
+                  }
                 >
                   {lastSubscription.willRenew ? "Was On" : "Was Off"}
                 </Text>
@@ -358,7 +372,7 @@ export function Profile() {
               )}
               {lastSubscription.unsubscribeDetectedAt && (
                 <LabeledContent label="Cancelled At">
-                  <Text weight="bold" color="#f59e0b">
+                  <Text weight="bold" color={Color.yellow[500]}>
                     {new Date(
                       lastSubscription.unsubscribeDetectedAt
                     ).toLocaleString(undefined, {
