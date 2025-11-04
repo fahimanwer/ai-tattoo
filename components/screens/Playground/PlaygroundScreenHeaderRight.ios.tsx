@@ -87,7 +87,6 @@ export function PlaygroundScreenHeaderRight({
       <Host matchContents>
         <Button
           variant="glassProminent"
-          controlSize="mini"
           onPress={onSave}
           disabled={isSaveDisabled}
           modifiers={[fixedSize()]}

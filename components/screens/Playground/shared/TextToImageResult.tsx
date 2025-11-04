@@ -111,12 +111,17 @@ export function TextToImageResult({
       />
     </View>
   ) : (
-    <AnimatedText text="Describe your tattoo or choose a suggestion below" />
+    <AnimatedText
+      text="Describe your tattoo or choose a suggestion below"
+      color={Color.zinc[400]}
+      colorDark={Color.zinc[700]}
+    />
   );
 }
 
 function LoadingChangingText() {
   const messages = [
+    "Starting new tattoo...",
     "Tattoo machine is warming up...",
     "Summoning the ink spirits...",
     "Drawing inspiration from the universe...",
@@ -134,7 +139,7 @@ function LoadingChangingText() {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const showDuration = 3000; // how long the text stays visible
+    const showDuration = 1500; // how long the text stays visible
     const transitionDuration = 1000; // matches AnimatedText exit duration
 
     const interval = setInterval(() => {

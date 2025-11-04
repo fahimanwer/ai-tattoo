@@ -26,7 +26,11 @@ export function PlaygroundSuggestions({
       <Text type="sm" weight="bold">
         Suggestions
       </Text>
-      <ScrollView horizontal snapToAlignment="center">
+      <ScrollView
+        horizontal
+        snapToAlignment="center"
+        showsHorizontalScrollIndicator={false}
+      >
         {featuredTattoos.map((item) => (
           <PressableScale
             key={item.title}

@@ -32,8 +32,14 @@ const startFactory = (x: number, y: number, rotate: number, scale: number) => ({
 
 interface AnimatedTextProps {
   text: string;
+  color?: string;
+  colorDark?: string;
 }
-export function AnimatedText({ text }: AnimatedTextProps) {
+export function AnimatedText({
+  text,
+  color = Color.yellow[400],
+  colorDark = Color.yellow[700],
+}: AnimatedTextProps) {
   return (
     <Animated.View
       style={styles.container}
@@ -51,6 +57,9 @@ export function AnimatedText({ text }: AnimatedTextProps) {
             style={[
               styles.gradient,
               {
+                [process.env.EXPO_OS === "web"
+                  ? "backgroundImage"
+                  : "experimental_backgroundImage"]: `linear-gradient(100deg, ${colorDark} 30%, ${color} 40%, ${colorDark} 50%)`,
                 animationName: {
                   from: {
                     transform: [{ translateX: "-30%" }],
@@ -59,7 +68,7 @@ export function AnimatedText({ text }: AnimatedTextProps) {
                     transform: [{ translateX: "30%" }],
                   },
                 },
-                animationDuration: "4.5s",
+                animationDuration: "1.5s",
                 animationIterationCount: "infinite",
                 animationTimingFunction: "ease-in-out",
               } as any,
@@ -73,6 +82,7 @@ export function AnimatedText({ text }: AnimatedTextProps) {
             styles.star,
             styles.star1,
             {
+              color: color,
               animationDelay: "0.5s",
               animationDuration: "3s",
               animationFillMode: "forwards",
@@ -89,6 +99,7 @@ export function AnimatedText({ text }: AnimatedTextProps) {
             styles.star,
             styles.star2,
             {
+              color: color,
               animationDelay: "1.2s",
               animationDuration: "3.5s",
               animationFillMode: "forwards",
@@ -105,6 +116,7 @@ export function AnimatedText({ text }: AnimatedTextProps) {
             styles.star,
             styles.star3,
             {
+              color: color,
               animationDelay: "0.8s",
               animationDuration: "3.2s",
               animationFillMode: "forwards",
@@ -121,6 +133,7 @@ export function AnimatedText({ text }: AnimatedTextProps) {
             styles.star,
             styles.star4,
             {
+              color: color,
               animationDelay: "1.5s",
               animationDuration: "3.8s",
               animationFillMode: "forwards",
@@ -160,9 +173,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "300%",
     marginHorizontal: "-100%",
-    [process.env.EXPO_OS === "web"
-      ? "backgroundImage"
-      : "experimental_backgroundImage"]: `linear-gradient(100deg, ${Color.yellow[700]} 30%, ${Color.yellow[400]} 40%, ${Color.yellow[700]} 50%)`,
   },
   label: {
     fontSize: 18,
@@ -172,7 +182,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   star: {
-    color: Color.yellow[400],
     opacity: 0,
     position: "absolute",
   },
