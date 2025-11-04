@@ -26,10 +26,10 @@ export const PLAN_LIMITS: Record<PlanTier, PlanConfig> = {
   starter: {
     tier: "starter",
     displayName: "Starter",
-    monthlyLimit: 125,
+    monthlyLimit: 75,
     color: "#f59e0b", // orange
     features: [
-      "125 generations per month",
+      "75 generations per month",
       "All tattoo styles",
       "High quality output",
     ],
@@ -37,10 +37,10 @@ export const PLAN_LIMITS: Record<PlanTier, PlanConfig> = {
   plus: {
     tier: "plus",
     displayName: "Plus",
-    monthlyLimit: 300,
+    monthlyLimit: 200,
     color: "#10b981", // green
     features: [
-      "300 generations per month",
+      "200 generations per month",
       "All tattoo styles",
       "Premium quality output",
       "Priority support",
@@ -49,10 +49,10 @@ export const PLAN_LIMITS: Record<PlanTier, PlanConfig> = {
   pro: {
     tier: "pro",
     displayName: "Pro",
-    monthlyLimit: 1000,
+    monthlyLimit: 600,
     color: "#3b82f6", // blue
     features: [
-      "1000 generations per month",
+      "600 generations per month",
       "All tattoo styles",
       "Ultra quality output",
       "Priority support",

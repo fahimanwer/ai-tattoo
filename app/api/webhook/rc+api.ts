@@ -1,3 +1,4 @@
+import { entitlementToTier, getMonthlyLimit } from "@/constants/plan-limits";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
@@ -217,26 +218,6 @@ async function processRevenueCatEvent(
   }
 }
 
-/**
- * Get generation limit based on entitlement ID
- * Maps RevenueCat entitlements to their respective generation limits
- */
-function getLimitForEntitlement(entitlementId: string): number {
-  const normalizedEntitlement = entitlementId.toLowerCase();
-
-  switch (normalizedEntitlement) {
-    case "pro":
-      return 1000;
-    case "plus":
-      return 300;
-    case "starter":
-      return 125;
-    case "free":
-    default:
-      return 5;
-  }
-}
-
 async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
   const revenuecatUserId = event.original_app_user_id;
@@ -303,7 +284,7 @@ async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
       ? new Date(event.expiration_at_ms)
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
 
-    const limit = getLimitForEntitlement(entitlementId);
+    const limit = getMonthlyLimit(entitlementToTier(entitlementId));
 
     console.log(`[RC WEBHOOK] 📝 Creating new usage record:`, {
       entitlement: entitlementId,
@@ -442,7 +423,7 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
 
   // Create new usage records for each entitlement with fresh billing period
   for (const entitlementId of entitlementIds) {
-    const limit = getLimitForEntitlement(entitlementId);
+    const limit = getMonthlyLimit(entitlementToTier(entitlementId));
 
     console.log(`[RC WEBHOOK] 📝 Creating renewed usage record:`, {
       entitlement: entitlementId,
@@ -562,7 +543,7 @@ async function resetCurrentPeriodAndCreateNew(
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
 
     // Get appropriate limit based on entitlement
-    const limit = getLimitForEntitlement(entitlementId);
+    const limit = getMonthlyLimit(entitlementToTier(entitlementId));
 
     await prisma.usage.upsert({
       where: {

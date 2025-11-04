@@ -228,15 +228,23 @@ Refer to the [EAS hosting documentation](https://docs.expo.dev/eas/) for more de
 
 **STARTER**
 
-- $4.99/month → 125 generations
+- $4.99/month → 75 generations
 
 **PLUS**
 
-- $9.99/month → 300 generations
+- $9.99/month → 200 generations
 
 **PRO**
 
-- $29.99/month → 1,000 generations
+- $29.99/month → 600 generations
+
+**Example**
+
+| Plan    | Price  | Generations | Approx. Cost @ $0.039/img | Margin | Users |
+| ------- | ------ | ----------- | ------------------------- | ------ | ----- |
+| Starter | $4.99  | 75          | ~$2.93                    | ~40%   | 100   |
+| Plus    | $9.99  | 200         | ~$7.80                    | ~22%   | 10    |
+| Pro     | $29.99 | 600         | ~$23.40                   | ~22%   | 1     |
 
 You can also:
 • Fair use cap (e.g. “up to 1200 generations/month”).
