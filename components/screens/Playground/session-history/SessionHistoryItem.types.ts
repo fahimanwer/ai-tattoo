@@ -5,4 +5,5 @@ export type SessionHistoryItemProps = {
   onDelete: () => void;
   onSelect: () => void;
   isActive: boolean;
+  onPress: () => void;
 };

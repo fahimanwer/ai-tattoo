@@ -1,9 +1,8 @@
 import { Color } from "@/constants/TWPalette";
 import { Button, ContextMenu, Host } from "@expo/ui/swift-ui";
-import { frame } from "@expo/ui/swift-ui/modifiers";
+import { frame, padding } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
 import { Image as ExpoImage } from "expo-image";
-import { StyleSheet } from "react-native";
 import { SessionHistoryItemProps } from "./SessionHistoryItem.types";
 
 export function SessionHistoryItem({
@@ -13,10 +12,14 @@ export function SessionHistoryItem({
   onDelete,
   onSelect,
   isActive,
+  onPress,
 }: SessionHistoryItemProps) {
   return (
-    <Host style={styles.container} matchContents>
-      <ContextMenu modifiers={[frame({ width: 50, height: 50 })]}>
+    <Host matchContents>
+      <ContextMenu
+        modifiers={[frame({ width: 50, height: 50 }), padding({ all: 9 })]}
+        activationMethod="longPress"
+      >
         <ContextMenu.Items>
           <Button
             systemImage="eye"
@@ -57,25 +60,20 @@ export function SessionHistoryItem({
           </Button>
         </ContextMenu.Items>
         <ContextMenu.Trigger>
-          <ExpoImage
-            source={{ uri }}
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 25,
-              borderWidth: 3,
-              borderColor: isActive ? Color.yellow[500] : "transparent",
-            }}
-          />
+          <Button onPress={onPress}>
+            <ExpoImage
+              source={{ uri }}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                borderWidth: 3,
+                borderColor: isActive ? Color.yellow[500] : "transparent",
+              }}
+            />
+          </Button>
         </ContextMenu.Trigger>
       </ContextMenu>
     </Host>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    height: 34,
-    width: 94,
-  },
-});

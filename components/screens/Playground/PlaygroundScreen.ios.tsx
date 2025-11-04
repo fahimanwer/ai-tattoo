@@ -28,6 +28,7 @@ import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
 import { PlaygroundSuggestions } from "./shared/suggestions/PlaygroundSuggestions";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
+import * as Haptics from "expo-haptics";
 const WIDTH = Dimensions.get("screen").width;
 
 export function PlaygroundScreen() {
@@ -109,6 +110,10 @@ export function PlaygroundScreen() {
   });
 
   function handlePressSuggestion(suggestionTitle: string) {
+    if (textToImageMutation.isPending) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
     // Clear the active selection since we're starting a fresh generation
     setActiveGenerationIndex(undefined);
     // Clear any text in the prompt input
@@ -267,6 +272,7 @@ export function PlaygroundScreen() {
                   uri={item}
                   onSave={() => handleSave(item)}
                   onShare={() => handleShare(item)}
+                  onPress={() => setActiveGenerationIndex(() => index)}
                   onDelete={() => {
                     const newGenerations = sessionGenerations.filter(
                       (_, i) => i !== index
@@ -288,7 +294,7 @@ export function PlaygroundScreen() {
               )}
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item, index) => `${index}-${item.slice(0, 50)}`}
-              contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
+              contentContainerStyle={{ paddingHorizontal: 16 }}
               horizontal
             />
           </View>

@@ -89,10 +89,8 @@ export function TextToImageResult({
   return lastGenerationBase64 ? (
     <View
       style={{
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        flex: 1,
+        padding: 16,
       }}
     >
       <Image
@@ -100,7 +98,7 @@ export function TextToImageResult({
         placeholder={{ blurhash }}
         style={{
           width: "100%",
-          height: "95%",
+          height: 400,
           borderRadius: 16,
           borderWidth: 1,
           borderColor: Color.gray[500] + "30",
