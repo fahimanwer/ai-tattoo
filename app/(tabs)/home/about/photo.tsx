@@ -1,4 +1,3 @@
-import { HeaderButton } from "@/components/ui/HeaderButtons/HeaderButton";
 import { Icon } from "@/components/ui/Icon";
 import { Text } from "@/components/ui/Text";
 import { useTattooCreation } from "@/context/TattooCreationContext";
@@ -147,14 +146,18 @@ export default function Photo() {
       <Stack.Screen
         options={{
           title: "Tattoo Preview",
-          headerLeft: () => (
-            <HeaderButton
-              imageProps={{ systemName: "xmark" }}
-              buttonProps={{
-                onPress: () => router.back(),
-              }}
-            />
-          ),
+          unstable_headerLeftItems: () => [
+            {
+              type: "button",
+              label: "Close",
+              icon: {
+                name: "xmark",
+                type: "sfSymbol",
+              },
+              onPress: () => router.back(),
+              selected: false,
+            },
+          ],
         }}
       />
       <View style={styles.container}>
