@@ -84,6 +84,9 @@ export default function AboutStyle() {
                     <VerticalCard
                       key={index}
                       style={galleryItem}
+                      imageStyle={{
+                        width: 160,
+                      }}
                       showOverlay={false}
                       onPress={() => {
                         const imageUrl =

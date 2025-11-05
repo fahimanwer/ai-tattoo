@@ -125,6 +125,9 @@ export function BodyPartsInspiration() {
             title={
               image.bodyPart.charAt(0).toUpperCase() + image.bodyPart.slice(1)
             }
+            imageStyle={{
+              width: 160,
+            }}
             subtitle={
               image.gender.charAt(0).toUpperCase() +
               image.gender.slice(1) +

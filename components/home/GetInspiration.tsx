@@ -23,6 +23,9 @@ export function GetInspiration() {
           <VerticalCard
             key={style.id}
             style={style}
+            imageStyle={{
+              width: 160,
+            }}
             onPress={() =>
               router.push({
                 pathname: "/home/about/style",

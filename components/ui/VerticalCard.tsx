@@ -5,7 +5,14 @@ import { BlurView } from "expo-blur";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
-import { ImageSourcePropType, Pressable, StyleSheet } from "react-native";
+import { PressableScale } from "pressto";
+import {
+  Dimensions,
+  ImageSourcePropType,
+  ImageStyle,
+  StyleProp,
+  StyleSheet,
+} from "react-native";
 
 interface VerticalCardProps {
   style?: FeaturedTattoo;
@@ -14,11 +21,13 @@ interface VerticalCardProps {
   showOverlay?: boolean; // Controls visibility of title, description, and blur
   title?: string; // Override title from style object
   subtitle?: string; // Override subtitle from style object
+  imageStyle?: StyleProp<ImageStyle>;
 }
 
 export const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
+const IMAGE_WIDTH = Dimensions.get("window").width / 2 - 16;
 export function VerticalCard({
   style,
   asset,
@@ -26,6 +35,7 @@ export function VerticalCard({
   showOverlay = true,
   title,
   subtitle,
+  imageStyle,
 }: VerticalCardProps) {
   // Determine which data source to use
   const data = asset || style;
@@ -47,18 +57,22 @@ export function VerticalCard({
 
   return (
     <>
-      <Pressable
+      <PressableScale
         key={asset?.id || style?.id}
         onPress={() => onPress(data)}
-        style={({ pressed }) => [
-          styles.styleContainer,
-          { transform: [{ scale: pressed ? 0.99 : 1 }] },
-        ]}
+        style={styles.styleContainer}
       >
         <Image
           cachePolicy="memory-disk"
           source={imageSource}
-          style={[styles.styleImage]}
+          style={[
+            {
+              width: IMAGE_WIDTH,
+              height: 280,
+              borderRadius: 16,
+            },
+            imageStyle,
+          ]}
           contentFit="cover"
           contentPosition="center"
           placeholder={{ blurhash }}
@@ -86,7 +100,7 @@ export function VerticalCard({
             )}
           </>
         )}
-      </Pressable>
+      </PressableScale>
     </>
   );
 }
@@ -100,11 +114,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderBottomEndRadius: 16,
     borderBottomStartRadius: 16,
-  },
-  styleImage: {
-    width: 160,
-    height: 280,
-    borderRadius: 16,
   },
   glassViewContainer: {
     position: "absolute",

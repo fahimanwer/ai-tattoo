@@ -233,7 +233,8 @@ export function PlaygroundScreen() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: "AI Tattoo Playground",
+          headerTitle: "",
+          headerShadowVisible: false,
           headerLeft: () => (
             <HeaderButton
               imageProps={{ systemName: "chevron.left" }}
