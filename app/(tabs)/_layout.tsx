@@ -1,8 +1,27 @@
 import { Color } from "@/constants/TWPalette";
-import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 import React from "react";
+import { Platform } from "react-native";
+
+// Conditionally import NativeTabs only on native platforms
+// undo this crap later haha
+let NativeTabs: any;
+let Icon: any;
+let Label: any;
+
+if (Platform.OS !== "web") {
+  const nativeTabs = require("expo-router/unstable-native-tabs");
+  NativeTabs = nativeTabs.NativeTabs;
+  Icon = nativeTabs.Icon;
+  Label = nativeTabs.Label;
+}
 
 export default function TabLayout() {
+  // Use standard Tabs for web
+  if (Platform.OS === "web") {
+    return <></>;
+  }
+
+  // Use NativeTabs for iOS/Android
   return (
     <NativeTabs
       disableTransparentOnScrollEdge={true}

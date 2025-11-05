@@ -391,6 +391,8 @@ const styles = StyleSheet.create({
   currentBadgeText: {
     color: Color.zinc[50],
     letterSpacing: 0.5,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
   },
   priceContainer: {
     flexDirection: "row",
