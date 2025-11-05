@@ -1,4 +1,3 @@
-import { HeaderButton } from "@/components/ui/HeaderButtons/HeaderButton.ios";
 import { useGradualAnimation } from "@/hooks/useGradualAnimation";
 import {
   textAndImageToImage,
@@ -8,7 +7,7 @@ import {
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -23,12 +22,12 @@ import Animated from "react-native-reanimated";
 import Share from "react-native-share";
 import { toast } from "sonner-native";
 import { InputControls } from "./input-controls/InputControls";
-import { PlaygroundScreenHeaderRight } from "./PlaygroundScreenHeaderRight.ios";
 import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
 import { PlaygroundSuggestions } from "./shared/suggestions/PlaygroundSuggestions";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
 import * as Haptics from "expo-haptics";
+import * as ImagePicker from "expo-image-picker";
 const WIDTH = Dimensions.get("screen").width;
 
 export function PlaygroundScreen() {
@@ -212,6 +211,35 @@ export function PlaygroundScreen() {
     router.dismissTo("/(tabs)/home");
   }
 
+  const pickImageFromGallery = useCallback(async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: false,
+        aspect: [3, 2],
+        quality: 0.3,
+        allowsMultipleSelection: false,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        const selectedImage = result.assets[0];
+        if (selectedImage.base64) {
+          setSessionGenerations((prev) => [
+            ...prev,
+            `data:image/png;base64,${selectedImage.base64}`,
+          ]);
+          setActiveGenerationIndex(() => sessionGenerations.length);
+        } else {
+          Alert.alert("Error", "Failed to get image data");
+        }
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "Failed to pick image from gallery");
+    }
+  }, [sessionGenerations.length]);
+
   // Compute the active generation base64 from the index
   const activeGenerationBase64 =
     activeGenerationIndex !== undefined
@@ -235,31 +263,68 @@ export function PlaygroundScreen() {
         options={{
           headerTitle: "",
           headerShadowVisible: false,
-          headerLeft: () => (
-            <HeaderButton
-              imageProps={{ systemName: "chevron.left" }}
-              buttonProps={{ onPress: handleGoBack }}
-            />
-          ),
-          headerRight: () => (
-            <PlaygroundScreenHeaderRight
-              onReset={handleReset}
-              onSelectImageFromGallery={async (imageBase64: string) => {
-                setSessionGenerations((prev) => [
-                  ...prev,
-                  `data:image/png;base64,${imageBase64}`,
-                ]);
-                setActiveGenerationIndex(() => sessionGenerations.length);
-              }}
-              onSave={async () => {
-                await handleSave(activeGenerationBase64);
-              }}
-              onShare={async () => {
+          unstable_headerLeftItems: (props) => [
+            {
+              type: "button",
+              onPress: () => {
+                handleGoBack();
+              },
+              label: "Go Back",
+              icon: {
+                name: "xmark",
+                type: "sfSymbol",
+              },
+              selected: false,
+            },
+          ],
+          unstable_headerRightItems: (props) => [
+            {
+              type: "button",
+              label: "Reset",
+              icon: {
+                name: "arrow.counterclockwise",
+                type: "sfSymbol",
+              },
+              onPress: handleReset,
+              selected: false,
+            },
+            {
+              type: "button",
+              label: "Pick Image",
+              icon: {
+                name: "photo.on.rectangle",
+                type: "sfSymbol",
+              },
+              onPress: pickImageFromGallery,
+              selected: false,
+            },
+            {
+              type: "button",
+              label: "Share",
+              icon: {
+                name: "square.and.arrow.up",
+                type: "sfSymbol",
+              },
+              onPress: async () => {
                 await handleShare(activeGenerationBase64);
-              }}
-              isSaveDisabled={!activeGenerationBase64}
-            />
-          ),
+              },
+              selected: false,
+            },
+            {
+              type: "button",
+              label: "Save",
+              variant: "prominent",
+              tintColor: "yellow",
+              labelStyle: {
+                fontWeight: "bold",
+              },
+              onPress: async () => {
+                await handleSave(activeGenerationBase64);
+              },
+              disabled: !activeGenerationBase64,
+              selected: false,
+            },
+          ],
         }}
       />
       <View style={styles.container}>

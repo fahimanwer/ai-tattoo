@@ -262,34 +262,40 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
     <>
       <Stack.Screen
         options={{
-          headerLeft: () => (
-            <HeaderButton
-              imageProps={{ systemName: "xmark" }}
-              buttonProps={{
-                onPress: () => router.back(),
-                variant: "glass",
-              }}
-            />
-          ),
-          headerRight: () => (
-            <>
-              <HeaderButton
-                imageProps={{ systemName: "square.and.arrow.up" }}
-                buttonProps={{
-                  onPress: handleSharePress,
-                  variant: "glass",
-                }}
-              />
-              <HeaderButton
-                imageProps={{ systemName: "trash.fill" }}
-                buttonProps={{
-                  onPress: handleDeletePress,
-                  variant: "glass",
-                  role: "destructive",
-                }}
-              />
-            </>
-          ),
+          unstable_headerLeftItems: () => [
+            {
+              type: "button",
+              label: "Close",
+              icon: {
+                name: "xmark",
+                type: "sfSymbol",
+              },
+              onPress: () => router.back(),
+              selected: false,
+            },
+          ],
+          unstable_headerRightItems: () => [
+            {
+              type: "button",
+              label: "Share",
+              icon: {
+                name: "square.and.arrow.up",
+                type: "sfSymbol",
+              },
+              onPress: handleSharePress,
+              selected: false,
+            },
+            {
+              type: "button",
+              label: "Delete",
+              icon: {
+                name: "trash.fill",
+                type: "sfSymbol",
+              },
+              onPress: handleDeletePress,
+              selected: false,
+            },
+          ],
         }}
       />
       <View style={styles.container}>

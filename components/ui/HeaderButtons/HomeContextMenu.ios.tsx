@@ -1,3 +1,5 @@
+import { Color } from "@/constants/TWPalette";
+import { useTattooCreation } from "@/context/TattooCreationContext";
 import { theme } from "@/theme/theme";
 import {
   Button,
@@ -7,14 +9,12 @@ import {
   Image,
   Text,
 } from "@expo/ui/swift-ui";
-import { buttonStyle, fixedSize } from "@expo/ui/swift-ui/modifiers";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
+import { fixedSize, padding } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
-import { useRouter } from "expo-router";
-import { StyleSheet, Alert, Linking } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { useTattooCreation } from "@/context/TattooCreationContext";
+import { useRouter } from "expo-router";
 import { useCallback } from "react";
+import { Alert, Linking, StyleSheet } from "react-native";
 
 export function HomeContextMenu() {
   const router = useRouter();
@@ -73,16 +73,9 @@ export function HomeContextMenu() {
 
   return (
     <Host style={styles.container}>
-      <ContextMenu
-        modifiers={[
-          buttonStyle(isLiquidGlassAvailable() ? "glass" : "bordered"),
-        ]}
-      >
+      <ContextMenu>
         <ContextMenu.Items>
-          <Button
-            systemImage="person.crop.square"
-            onPress={handleTryOnTattoo}
-          >
+          <Button systemImage="person.crop.square" onPress={handleTryOnTattoo}>
             Try On Tattoo
           </Button>
           <Button
@@ -96,12 +89,18 @@ export function HomeContextMenu() {
           </Button>
         </ContextMenu.Items>
         <ContextMenu.Trigger>
-          <HStack modifiers={[fixedSize()]} spacing={theme.space8}>
-            <Image systemName="plus" size={theme.fontSize16} color="white" />
-            <Text weight="semibold" size={theme.fontSize16} color={"white"}>
-              Tattoo
-            </Text>
-          </HStack>
+          <Button
+            variant="glassProminent"
+            color={Color.yellow[300]}
+            modifiers={[padding({ all: 10 })]}
+          >
+            <HStack modifiers={[fixedSize()]} spacing={theme.space8}>
+              <Image systemName="plus" size={theme.fontSize20} color="black" />
+              <Text weight="semibold" size={theme.fontSize16} color={"black"}>
+                Tattoo
+              </Text>
+            </HStack>
+          </Button>
         </ContextMenu.Trigger>
       </ContextMenu>
     </Host>

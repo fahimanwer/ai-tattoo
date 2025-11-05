@@ -12,11 +12,7 @@ export function Home() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ paddingHorizontal: 16 }}
       refreshControl={
-        <RefreshControl
-          refreshing={isLoading}
-          onRefresh={refresh}
-          tintColor="#007AFF"
-        />
+        <RefreshControl refreshing={isLoading} onRefresh={refresh} />
       }
       showsVerticalScrollIndicator={false}
     >
