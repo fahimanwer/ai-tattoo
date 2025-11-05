@@ -1,5 +1,4 @@
 import { useLargeHeaderOptions } from "@/constants/navigation-options";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack } from "expo-router";
 
 export default function ProfileLayout() {
@@ -38,13 +37,13 @@ export default function ProfileLayout() {
         name="about/learn-more"
         options={{
           headerLargeTitle: true,
-          presentation: "formSheet",
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.3, 0.5, 1],
-          sheetInitialDetentIndex: 0,
-          contentStyle: {
-            backgroundColor: isLiquidGlassAvailable() ? "transparent" : "black",
-          },
+          presentation: "modal",
+          // this is crashing when dismissing the sheet. no idea why maybe re-enable later
+          // sheetGrabberVisible: true,
+          // sheetAllowedDetents: [0.8],
+          // contentStyle: {
+          //   backgroundColor: isLiquidGlassAvailable() ? "transparent" : "black",
+          // },
         }}
       />
       <Stack.Screen

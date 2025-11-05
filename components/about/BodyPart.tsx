@@ -142,12 +142,6 @@ export default function BodyPartParallaxView({
                   style={convertToVerticalCardFormat(image)}
                   onPress={() => handleImagePress(image)}
                   title={image.styleTitle}
-                  imageStyle={{
-                    width: 160,
-                  }}
-                  subtitle={
-                    image.gender.charAt(0).toUpperCase() + image.gender.slice(1)
-                  }
                 />
               </View>
             ))}

@@ -1,7 +1,5 @@
-import { Icon } from "@/components/ui/Icon";
 import { Text } from "@/components/ui/Text";
 import { VerticalCard } from "@/components/ui/VerticalCard";
-import { Button, ContextMenu, Host } from "@/lib/expo-ui-web";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import {
   GalleryImage,
@@ -12,6 +10,7 @@ import {
 } from "@/utils/bodyPartsUtils";
 import { GlassView } from "expo-glass-effect";
 import { router } from "expo-router";
+import { PressableScale } from "pressto";
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
@@ -74,42 +73,44 @@ export function BodyPartsInspiration() {
         <Text type="subtitle" weight="bold">
           Discover by body part
         </Text>
+      </View>
 
-        <Host style={styles.contextMenuHost}>
-          {/* <GlassContainer spacing={10} style={{ height: 40, width: 100 }}>
-            <GlassView style={{ height: 40, width: 100 }} isInteractive />
-            <GlassView style={{ height: 40, width: 100 }} isInteractive />
-          </GlassContainer> */}
-          <ContextMenu>
-            <ContextMenu.Items>
-              {bodyPartOptions.map((option, index) => (
-                <Button
-                  key={index}
-                  onPress={() => {
-                    option.action();
-                  }}
+      <ScrollView
+        horizontal
+        style={styles.filterScrollView}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.filterContainer}
+      >
+        {bodyPartOptions.map((option, index) => {
+          const isSelected =
+            option.title === "All"
+              ? selectedBodyPart === "all"
+              : selectedBodyPart === allBodyParts[index - 1];
+
+          return (
+            <PressableScale key={index} onPress={option.action}>
+              <GlassView
+                style={[
+                  styles.filterChip,
+                  isSelected && styles.filterChipSelected,
+                ]}
+                isInteractive={false}
+              >
+                <Text
+                  type="body"
+                  weight={isSelected ? "bold" : "normal"}
+                  style={[
+                    styles.filterText,
+                    isSelected && styles.filterTextSelected,
+                  ]}
                 >
                   {option.title}
-                </Button>
-              ))}
-            </ContextMenu.Items>
-            <ContextMenu.Trigger>
-              <GlassView
-                style={{
-                  height: 40,
-                  width: 40,
-                  borderRadius: 99,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Icon symbol="ellipsis" size={20} color="white" />
+                </Text>
               </GlassView>
-            </ContextMenu.Trigger>
-          </ContextMenu>
-        </Host>
-      </View>
+            </PressableScale>
+          );
+        })}
+      </ScrollView>
 
       <ScrollView
         horizontal
@@ -128,12 +129,7 @@ export function BodyPartsInspiration() {
             imageStyle={{
               width: 160,
             }}
-            subtitle={
-              image.gender.charAt(0).toUpperCase() +
-              image.gender.slice(1) +
-              " | " +
-              image.styleTitle
-            }
+            subtitle={image.styleTitle}
           />
         ))}
       </ScrollView>
@@ -151,14 +147,29 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  contextMenuHost: {
-    borderRadius: 8,
+  filterScrollView: {
+    height: "auto",
   },
-  contextMenuTrigger: {
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
+  filterContainer: {
+    gap: 8,
+    paddingHorizontal: 4,
+  },
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    height: 36,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  filterChipSelected: {
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+  },
+  filterText: {
+    color: "white",
+  },
+  filterTextSelected: {
+    color: "white",
   },
   scrollView: {
     height: "auto",
