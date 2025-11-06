@@ -167,6 +167,7 @@ function AppContent() {
               options={{
                 presentation: "card",
                 animation: "slide_from_right",
+                gestureEnabled: false,
               }}
             />
           </Stack.Protected>

@@ -273,6 +273,7 @@ export function PlaygroundScreen() {
         options={{
           headerTitle: "",
           headerShadowVisible: false,
+          gestureEnabled: false,
           unstable_headerLeftItems: (props) => [
             {
               type: "button",
@@ -384,12 +385,16 @@ export function PlaygroundScreen() {
           />
         </View>
 
-        {!isKeyboardVisible && (
+        {!isKeyboardVisible ? (
           <PlaygroundSuggestions
             onSelect={(suggestionTitle) => {
               handlePressSuggestion(suggestionTitle);
             }}
           />
+        ) : (
+          // Empty space for suggestions when keyboard is visible
+          // Prevents layout shift when keyboard is dismissed
+          <View style={{ height: 116 }} />
         )}
         <View
           style={{

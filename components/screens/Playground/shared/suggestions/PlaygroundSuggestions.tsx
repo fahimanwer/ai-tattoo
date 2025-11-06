@@ -5,7 +5,7 @@ import { featuredTattoos } from "@/lib/featured-tattoos";
 import { Image } from "expo-image";
 import { PressableScale } from "pressto";
 import { ScrollView } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeInDown, FadeOut } from "react-native-reanimated";
 import { PlaygroundSuggestionProps } from "./PlaygroundSuggestions.types";
 
 export function PlaygroundSuggestions({
@@ -15,6 +15,7 @@ export function PlaygroundSuggestions({
   return (
     <Animated.View
       entering={FadeInDown.duration(1000)}
+      exiting={FadeOut.duration(1000)}
       style={[
         {
           paddingHorizontal: 16,

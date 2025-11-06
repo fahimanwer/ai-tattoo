@@ -8,7 +8,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { PressableScale } from "pressto";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Keyboard, View } from "react-native";
 import { AnimatedText } from "./AnimatedText";
 
 // Union type that accepts either mutation type
@@ -31,10 +31,24 @@ export function TextToImageResult({
   lastGenerationBase64,
 }: TextToImageResultProps) {
   const router = useRouter();
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   function simulateTattoMachineVibrations() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
   }
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setIsKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setIsKeyboardVisible(false);
+    });
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, [Keyboard.addListener, setIsKeyboardVisible]);
 
   // Vibrate periodically while generation is pending
   useEffect(() => {
@@ -111,8 +125,8 @@ export function TextToImageResult({
   ) : (
     <AnimatedText
       text="Describe your tattoo or choose a suggestion below"
-      color={Color.zinc[400]}
-      colorDark={Color.zinc[700]}
+      color={isKeyboardVisible ? Color.orange[400] : Color.zinc[400]}
+      colorDark={isKeyboardVisible ? Color.orange[700] : Color.zinc[700]}
     />
   );
 }

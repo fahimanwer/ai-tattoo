@@ -285,20 +285,10 @@ export const inputFocusFanfareHaptic: HapticPatternData = {
         { parameterID: "hapticSharpness", value: 0.7 },
       ],
     },
-    // Fourth "TU!!!" - The epic finale!
     {
       eventType: "hapticTransient",
-      time: 0.3,
-      parameters: [
-        { parameterID: "hapticIntensity", value: 0.9 },
-        { parameterID: "hapticSharpness", value: 0.8 },
-      ],
-    },
-    // Slow, satisfying settle - Like a warm embrace
-    {
-      eventType: "hapticContinuous",
       time: 0.35,
-      eventDuration: 0.45,
+      eventDuration: 0.2,
       parameters: [
         { parameterID: "hapticIntensity", value: 0.6 },
         { parameterID: "hapticSharpness", value: 0.15 },
