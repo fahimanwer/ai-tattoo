@@ -1,6 +1,12 @@
 import { Color } from "@/constants/TWPalette";
 import MaskedView from "@react-native-masked-view/masked-view";
-import { Dimensions, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 import Animated, {
   cubicBezier,
   FadeIn,
@@ -34,15 +40,17 @@ interface AnimatedTextProps {
   text: string;
   color?: string;
   colorDark?: string;
+  style?: StyleProp<ViewStyle>;
 }
 export function AnimatedText({
   text,
   color = Color.yellow[400],
   colorDark = Color.yellow[700],
+  style,
 }: AnimatedTextProps) {
   return (
     <Animated.View
-      style={styles.container}
+      style={[styles.container, style]}
       entering={FadeIn.duration(1000)}
       exiting={FadeOut.duration(1000)}
     >

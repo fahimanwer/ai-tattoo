@@ -11,13 +11,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { AnimatedText } from "./Playground/shared/AnimatedText";
 
 // Constants
 const MIX_TWO_PHOTOS_PROMPT = `Apply the tattoo design from the second image onto the body part from the first image. Create a hyper-realistic integration where the tattoo design follows the exact curvature and natural folds of the skin from the first image, adapting seamlessly to the anatomy. IMPORTANT: Preserve the exact natural skin tone, color, and texture from the original body part photo - do not alter or change the skin color in any way. The tattoo ink must look authentically healed into the skin: slightly diffused in pores, with natural wear, subtle fading in areas of tension, and matte tones rather than excessive shine. Shading and lines should curve and flow with the muscles and skin surface, never floating above it. Show fine details of skin texture such as pores, wrinkles, and light imperfections, blending with the tattoo ink while maintaining the original skin coloring. Lighting should remain soft and realistic, avoiding glossy or artificial effects, so the tattoo looks fully integrated and aged naturally. The final result should be the body part from the first image with the tattoo design applied, keeping all original skin characteristics intact. No background, only the tattooed body part in ultra-high resolution.`;
@@ -227,7 +222,7 @@ export function TattooGenerationResult() {
       "Cancel Generation?",
       "Your tattoo is still being generated. If you cancel now, this generation will still count towards your usage limit. Are you sure you want to cancel?",
       [
-        { text: "Keep Generating", style: "cancel" },
+        { text: "Keep Generating", style: "cancel", isPreferred: true },
         {
           text: "Cancel",
           style: "destructive",
@@ -246,20 +241,25 @@ export function TattooGenerationResult() {
   // Show loading state
   if (mutation.isPending) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator />
-        <Text type="subtitle" weight="bold">
-          Creating your tattoo design...
-        </Text>
-        <Text type="body">This may take a while</Text>
-        <Text type="caption">Please keep the application open</Text>
-
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 30,
+        }}
+      >
+        <AnimatedText
+          text="Applying your tattoo design..."
+          color={Color.orange[400]}
+          colorDark={Color.orange[700]}
+          style={{ flex: 0 }}
+        />
         <Button
           title="Cancel"
           variant="link"
           color="red"
           onPress={handleCancelGeneration}
-          style={{ marginTop: 24 }}
         />
       </View>
     );

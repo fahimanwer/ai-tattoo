@@ -37,9 +37,8 @@ export default function ProfileLayout() {
       <Stack.Screen
         name="generation-result"
         options={{
-          title: "Result",
           headerBackButtonDisplayMode: "minimal",
-          headerLargeTitle: false,
+          headerShown: false,
           presentation: "fullScreenModal",
         }}
       />
