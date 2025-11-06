@@ -7,7 +7,7 @@ import {
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -26,6 +26,8 @@ import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
 import { PlaygroundSuggestions } from "./shared/suggestions/PlaygroundSuggestions";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
+import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
+import CoreHaptics from "@/modules/native-core-haptics";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 const WIDTH = Dimensions.get("screen").width;
@@ -44,6 +46,14 @@ export function PlaygroundScreen() {
   const [activeGenerationIndex, setActiveGenerationIndex] = useState<
     number | undefined
   >(undefined);
+
+  // Play playful entrance haptic on first load
+  useEffect(() => {
+    // Play the playful AI playground entrance haptic
+    CoreHaptics.playPattern(playgroundEntranceHaptic).catch((error) => {
+      console.error("Failed to play playground entrance haptic:", error);
+    });
+  }, []); // Empty dependency array means this runs once on mount
 
   /**
    * Text to image mutation

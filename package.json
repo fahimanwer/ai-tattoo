@@ -80,5 +80,8 @@
     "eslint-config-expo": "10.0.1-canary-20251031-b135dff",
     "typescript": "~5.9.2"
   },
-  "private": true
+  "private": true,
+  "patchedDependencies": {
+    "expo-router@7.0.0-canary-20251031-b135dff": "patches/expo-router@7.0.0-canary-20251031-b135dff.patch"
+  }
 }

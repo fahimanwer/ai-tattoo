@@ -1,3 +1,5 @@
+import { successHaptic } from "@/lib/haptics-patterns.ios";
+import CoreHaptics from "@/modules/native-core-haptics";
 import { theme } from "@/theme/theme";
 import {
   Button,
@@ -11,6 +13,7 @@ import { fixedSize, glassEffect, padding } from "@expo/ui/swift-ui/modifiers";
 import { useEffect, useRef, useState } from "react";
 import { Dimensions } from "react-native";
 import { InputControlsProps } from "./inputContols.types";
+
 const WIDTH = Dimensions.get("screen").width;
 
 export function InputControls({
@@ -67,6 +70,7 @@ export function InputControls({
               if (focused) {
                 onChangeFocus?.(true);
                 setIsKeyboardVisible(true);
+                CoreHaptics.playPattern(successHaptic);
               } else {
                 onChangeFocus?.(false);
                 setIsKeyboardVisible(false);
