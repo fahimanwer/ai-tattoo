@@ -1,4 +1,6 @@
-# AI Tattoo Try On
+# 🐉 AI Tattoo
+
+<img width="1920" height="400" alt="AI Tattoo Cover" src="https://github.com/user-attachments/assets/291f931a-d6a4-4440-a4cc-42655da23231" />
 
 Preview virtual tattoos on your body with AI – arm, leg, face & more.
 
