@@ -251,6 +251,85 @@ export const playgroundEntranceHaptic: HapticPatternData = {
 };
 
 /**
+ * Input focus fanfare haptic
+ * Fun, energetic pattern when focusing the input field
+ * Like a playful trumpet fanfare - "tu tu tu tu!" 🎺
+ * Signals: "Let's create something epic!"
+ */
+export const inputFocusFanfareHaptic: HapticPatternData = {
+  events: [
+    // First "tu!" - Quick upbeat tap
+    {
+      eventType: "hapticTransient",
+      time: 0.0,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.55 },
+        { parameterID: "hapticSharpness", value: 0.6 },
+      ],
+    },
+    // Second "tu!" - Slightly stronger
+    {
+      eventType: "hapticTransient",
+      time: 0.1,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.65 },
+        { parameterID: "hapticSharpness", value: 0.65 },
+      ],
+    },
+    // Third "tu!" - Even stronger
+    {
+      eventType: "hapticTransient",
+      time: 0.2,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.75 },
+        { parameterID: "hapticSharpness", value: 0.7 },
+      ],
+    },
+    // Fourth "TU!!!" - The epic finale!
+    {
+      eventType: "hapticTransient",
+      time: 0.3,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.9 },
+        { parameterID: "hapticSharpness", value: 0.8 },
+      ],
+    },
+    // Slow, satisfying settle - Like a warm embrace
+    {
+      eventType: "hapticContinuous",
+      time: 0.35,
+      eventDuration: 0.45,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.6 },
+        { parameterID: "hapticSharpness", value: 0.15 },
+      ],
+    },
+  ],
+  parameterCurves: [
+    // Slow, gentle fade - very satisfying
+    {
+      parameterID: "hapticIntensityControl",
+      controlPoints: [
+        { relativeTime: 0, value: 1.0 },
+        { relativeTime: 0.2, value: 0.7 },
+        { relativeTime: 0.35, value: 0.4 },
+        { relativeTime: 0.45, value: 0.0 },
+      ],
+      relativeTime: 0.35,
+    },
+    // Sharpness stays soft throughout
+    {
+      parameterID: "hapticSharpnessControl",
+      controlPoints: [
+        { relativeTime: 0, value: 0.3 },
+        { relativeTime: 0.45, value: 0.05 },
+      ],
+      relativeTime: 0.35,
+    },
+  ],
+};
+
+/**
  * Success/completion haptic
  * Satisfying pattern when something finishes successfully
  */

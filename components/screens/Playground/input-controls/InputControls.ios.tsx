@@ -1,4 +1,4 @@
-import { successHaptic } from "@/lib/haptics-patterns.ios";
+import { inputFocusFanfareHaptic } from "@/lib/haptics-patterns.ios";
 import CoreHaptics from "@/modules/native-core-haptics";
 import { theme } from "@/theme/theme";
 import {
@@ -70,7 +70,10 @@ export function InputControls({
               if (focused) {
                 onChangeFocus?.(true);
                 setIsKeyboardVisible(true);
-                CoreHaptics.playPattern(successHaptic);
+                CoreHaptics.playPattern(inputFocusFanfareHaptic).catch(
+                  (error) =>
+                    console.error("Failed to play input focus haptic:", error)
+                );
               } else {
                 onChangeFocus?.(false);
                 setIsKeyboardVisible(false);
