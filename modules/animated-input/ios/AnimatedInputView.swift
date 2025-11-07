@@ -110,7 +110,7 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         }
         .padding(.bottom, 8)
         .opacity(isFocused ? 0 : 1)
-        .animation(.easeInOut(duration: 0.1), value: isFocused)
+        .animation(isFocused ? .linear(duration: 0.0) : .easeOut(duration: 0.5), value: isFocused)
       }
       
       let fillColor = Color.gray.opacity(0.15)

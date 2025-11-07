@@ -403,7 +403,6 @@ export function PlaygroundScreen() {
             bottom: 0,
             left: 0,
             right: 0,
-            backgroundColor: "#ffffff50",
           }}
         >
           <InputControls

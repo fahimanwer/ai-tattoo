@@ -70,9 +70,8 @@ export function TextToImageResult({
       <View
         style={{
           flex: 1,
-          justifyContent: "center",
           alignItems: "center",
-          gap: 16,
+          gap: 8,
         }}
       >
         <Text type="sm" style={{ color: Color.red[600], textAlign: "center" }}>
