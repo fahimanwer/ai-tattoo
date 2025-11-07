@@ -1,38 +1,88 @@
 import ExpoModulesCore
-import WebKit
+import SwiftUI
 
-// This view will be used as a native component. Make sure to inherit from `ExpoView`
-// to apply the proper styling (e.g. border radius and shadows).
-class AnimatedInputView: ExpoView {
-  let webView = WKWebView()
-  let onLoad = EventDispatcher()
-  var delegate: WebViewDelegate?
-
-  required init(appContext: AppContext? = nil) {
-    super.init(appContext: appContext)
-    clipsToBounds = true
-    delegate = WebViewDelegate { url in
-      self.onLoad(["url": url])
-    }
-    webView.navigationDelegate = delegate
-    addSubview(webView)
-  }
-
-  override func layoutSubviews() {
-    webView.frame = bounds
-  }
+final class AnimatedInputViewProps: ExpoSwiftUI.ViewProps {
+  @Field var title: String?
+  @Field var systemImage: String?
+  @Field var color: Color?
 }
 
-class WebViewDelegate: NSObject, WKNavigationDelegate {
-  let onUrlChange: (String) -> Void
-
-  init(onUrlChange: @escaping (String) -> Void) {
-    self.onUrlChange = onUrlChange
+struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  init(props: AnimatedInputViewProps) {
+    self.props = props
   }
+  
+  @ObservedObject var props: AnimatedInputViewProps
+  @State var text: String = ""
+  @FocusState private var isFocused: Bool
+  
+  var body: some View {
+   
+    VStack {
+      Spacer(minLength: 0)
+      
+      let fillColor = Color.gray.opacity(0.15)
+      
+      if #available(iOS 17.0, *) {
+        AnimatedBottomBar(hint: "hint", text: $text, isFocused: $isFocused) {
+          Button {
+            
+          } label: {
+            Image(systemName: "plus")
+              .fontWeight(.medium)
+              .foregroundStyle(Color.primary)
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .background(fillColor, in: .circle)
+            
+          }
+          Button {
+            
+          } label: {
+            Image(systemName: "magnifyingglass")
+              .fontWeight(.medium)
+              .foregroundStyle(Color.primary)
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .background(fillColor, in: .circle)
+            
+          }
+          Button {
+            
+          } label: {
+            Image(systemName: "mic.fill")
+              .fontWeight(.medium)
+              .foregroundStyle(Color.primary)
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .background(fillColor, in: .circle)
+            
+          }
+        } trailingAction: {
+          //        Button {
+          //          isFocused.toggle()
+          //        } label: {
+          //          Image(systemName: "keyboard")
+          //            .fontWeight(.medium)
+          //            .foregroundStyle(Color.primary)
+          //            .frame(maxWidth: .infinity, maxHeight: .infinity)
+          //            .background(fillColor, in: .circle)
+          //
+          //        }
+        } mainAction: {
+          Button {
+            isFocused.toggle()
+          } label: {
+            Image(systemName: "checkmark")
+              .fontWeight(.medium)
+              .foregroundStyle(Color.primary)
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .background(fillColor, in: .circle)
+            
+          }
+        }
+      } else {
+        // Fallback on earlier versions
+      }
 
-  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation) {
-    if let url = webView.url {
-      onUrlChange(url.absoluteString)
     }
+    .padding()
   }
 }

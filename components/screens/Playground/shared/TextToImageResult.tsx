@@ -124,6 +124,7 @@ export function TextToImageResult({
     </View>
   ) : (
     <AnimatedText
+      style={{ flex: 0.6 }}
       text="Describe your tattoo or choose a suggestion below"
       color={isKeyboardVisible ? Color.orange[400] : Color.zinc[400]}
       colorDark={isKeyboardVisible ? Color.orange[700] : Color.zinc[700]}

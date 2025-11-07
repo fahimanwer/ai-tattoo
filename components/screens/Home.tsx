@@ -1,8 +1,8 @@
-import { BodyPartsInspiration } from "@/components/home/BodyPartsInspiration";
-import { GetInspiration } from "@/components/home/GetInspiration";
-import { Banner } from "@/components/pro/Banner";
 import { useUserData } from "@/hooks/useUserData";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { BodyPartsInspiration } from "../home/BodyPartsInspiration";
+import { GetInspiration } from "../home/GetInspiration";
+import { Banner } from "../pro/Banner";
 
 export function Home() {
   const { isLoading, refresh } = useUserData();

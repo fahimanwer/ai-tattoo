@@ -18,18 +18,18 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import Animated from "react-native-reanimated";
 import Share from "react-native-share";
 import { toast } from "sonner-native";
 import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
-import { PlaygroundSuggestions } from "./shared/suggestions/PlaygroundSuggestions";
-import { TextToImageResult } from "./shared/TextToImageResult";
 
 import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
 import CoreHaptics from "@/modules/native-core-haptics";
+import { Host } from "@expo/ui/swift-ui";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
+import { TextToImageResult } from "./shared/TextToImageResult";
+import { PlaygroundSuggestions } from "./shared/suggestions/PlaygroundSuggestions";
 const WIDTH = Dimensions.get("screen").width;
 
 export function PlaygroundScreen() {
@@ -387,6 +387,7 @@ export function PlaygroundScreen() {
 
         {!isKeyboardVisible ? (
           <PlaygroundSuggestions
+            style={{ paddingBottom: 120 }}
             onSelect={(suggestionTitle) => {
               handlePressSuggestion(suggestionTitle);
             }}
@@ -396,7 +397,24 @@ export function PlaygroundScreen() {
           // Prevents layout shift when keyboard is dismissed
           <View style={{ height: 116 }} />
         )}
-        <View
+
+        <Host
+          style={{
+            height: "75%",
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
+        >
+          <InputControls
+            onChangeText={setPrompt}
+            onChangeFocus={setIsKeyboardVisible}
+            onSubmit={handleTattooGeneration}
+            isSubmitDisabled={prompt.length === 0}
+          />
+        </Host>
+        {/* <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
@@ -412,9 +430,9 @@ export function PlaygroundScreen() {
               isSubmitDisabled={prompt.length === 0}
             />
           </View>
-        </View>
+        </View> */}
 
-        <Animated.View style={fakeView} />
+        {/* <Animated.View style={fakeView} /> */}
       </View>
     </>
   );
