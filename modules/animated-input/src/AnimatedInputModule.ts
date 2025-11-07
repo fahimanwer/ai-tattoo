@@ -1,12 +1,8 @@
-import { NativeModule, requireNativeModule } from 'expo';
+import { NativeModule, requireNativeModule } from "expo";
 
-import { AnimatedInputModuleEvents } from './AnimatedInput.types';
-
-declare class AnimatedInputModule extends NativeModule<AnimatedInputModuleEvents> {
-  PI: number;
-  hello(): string;
-  setValueAsync(value: string): Promise<void>;
+declare class AnimatedInputModule extends NativeModule {
+  // Add any module-level methods here if needed
 }
 
 // This call loads the native module object from the JSI.
-export default requireNativeModule<AnimatedInputModule>('AnimatedInput');
+export default requireNativeModule<AnimatedInputModule>("AnimatedInput");

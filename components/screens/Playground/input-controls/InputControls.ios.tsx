@@ -1,10 +1,5 @@
 import { AnimatedInputView } from "@/modules/animated-input";
-import { TextFieldRef } from "@expo/ui/swift-ui";
-import { useEffect, useRef, useState } from "react";
-import { Dimensions } from "react-native";
 import { InputControlsProps } from "./inputContols.types";
-
-const WIDTH = Dimensions.get("screen").width;
 
 export function InputControls({
   onChangeFocus,
@@ -13,30 +8,32 @@ export function InputControls({
   autoFocus,
   isSubmitDisabled = false,
 }: InputControlsProps) {
-  const textFieldRef = useRef<TextFieldRef>(null);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const handleImageGalleryPress = () => {
+    console.log("Image gallery button pressed - handle with Expo image picker");
+    // TODO: Implement image picker using Expo
+    // Example: ImagePicker.launchImageLibraryAsync(...)
+  };
 
-  useEffect(() => {
-    if (autoFocus) {
-      const timer = setTimeout(() => {
-        if (textFieldRef.current) {
-          focusTextField();
-        }
-      }, 100);
+  const handleMainActionPress = () => {
+    console.log("Main action button pressed - submit the prompt");
+    onSubmit?.();
+  };
 
-      return () => clearTimeout(timer);
-    }
-  }, [autoFocus]);
-
-  async function focusTextField() {
-    try {
-      await textFieldRef.current?.focus();
-    } catch (error) {
-      console.log("Failed to focus text field:", error);
-    }
-  }
-
-  return <AnimatedInputView url="https://www.google.com" onLoad={() => {}} />;
+  return (
+    <AnimatedInputView
+      placeholder="Generate a realistic tattoo..."
+      autoFocus={autoFocus}
+      disableMainAction={isSubmitDisabled}
+      onValueChanged={(event) => {
+        onChangeText?.(event.nativeEvent.value);
+      }}
+      onFocusChanged={(event) => {
+        onChangeFocus?.(event.nativeEvent.isFocused);
+      }}
+      onPressImageGallery={handleImageGalleryPress}
+      onPressMainAction={handleMainActionPress}
+    />
+  );
   // return (
   //   <Host matchContents style={{ width: WIDTH - 32, backgroundColor: "red" }}>
   //     <HStack spacing={theme.space8} alignment="bottom">

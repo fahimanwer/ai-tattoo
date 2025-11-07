@@ -1,19 +1,21 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from "react-native";
 
-export type OnLoadEventPayload = {
-  url: string;
-};
-
-export type AnimatedInputModuleEvents = {
-  onChange: (params: ChangeEventPayload) => void;
-};
-
-export type ChangeEventPayload = {
+export type OnValueChangedEventPayload = {
   value: string;
 };
 
+export type OnFocusChangedEventPayload = {
+  isFocused: boolean;
+};
+
 export type AnimatedInputViewProps = {
-  url: string;
-  onLoad: (event: { nativeEvent: OnLoadEventPayload }) => void;
+  placeholder?: string;
+  defaultValue?: string;
+  autoFocus?: boolean;
+  disableMainAction?: boolean;
+  onValueChanged?: (event: { nativeEvent: OnValueChangedEventPayload }) => void;
+  onFocusChanged?: (event: { nativeEvent: OnFocusChangedEventPayload }) => void;
+  onPressImageGallery?: () => void;
+  onPressMainAction?: () => void;
   style?: StyleProp<ViewStyle>;
 };

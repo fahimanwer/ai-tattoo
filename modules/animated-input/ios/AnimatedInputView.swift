@@ -8,23 +8,29 @@ import Foundation
 private let model = SystemLanguageModel.default
 
 final class AnimatedInputViewProps: ExpoSwiftUI.ViewProps {
-  @Field var title: String?
-  @Field var systemImage: String?
-  @Field var color: Color?
+  @Field var defaultValue: String = ""
+  @Field var placeholder: String = ""
+  @Field var autoFocus: Bool = false
+  @Field var disableMainAction: Bool = false
+  var onValueChanged = EventDispatcher()
+  var onFocusChanged = EventDispatcher()
+  var onPressImageGallery = EventDispatcher()
+  var onPressMainAction = EventDispatcher()
 }
 
 struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
-  init(props: AnimatedInputViewProps) {
-    self.props = props
-  }
-  
   @ObservedObject var props: AnimatedInputViewProps
+  @FocusState private var isFocused: Bool
+  
   @State var text: String = ""
   @State var isGenerating: Bool = false
   
   let generatorHaptic = UISelectionFeedbackGenerator()
   
-  @FocusState private var isFocused: Bool
+  init(props: AnimatedInputViewProps) {
+    self.props = props
+  }
+  
   
   var body: some View {
     
@@ -34,10 +40,10 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       let fillColor = Color.gray.opacity(0.15)
       
       if #available(iOS 17.0, *) {
-        AnimatedBottomBar(hint: "hint", text: $text, isFocused: $isFocused) {
+        AnimatedBottomBar(hint: props.placeholder, text: $text, isFocused: $isFocused) {
           Button {
             generatorHaptic.selectionChanged()
-            
+            props.onPressImageGallery([:])
           } label: {
             Image(systemName: "photo.badge.plus")
               .fontWeight(.medium)
@@ -116,7 +122,9 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
           if #available(iOS 26.0, *) {
             Button {
               generatorHaptic.selectionChanged()
-              
+              isFocused.toggle()
+              text = ""
+              props.onPressMainAction([:])
             } label: {
               Image(systemName: "arrow.up")
                 .fontWeight(.medium)
@@ -126,7 +134,7 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
               
             }
             .buttonStyle(.glassProminent)
-            .disabled(text.isEmpty || isGenerating)
+            .disabled(text.isEmpty || isGenerating || props.disableMainAction)
           } else {
             // Fallback on earlier versions
           }
@@ -137,6 +145,18 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       
     }
     .padding()
+    .onAppear {
+      text = props.defaultValue
+      if props.autoFocus {
+        isFocused = true
+      }
+    }
+    .onChange(of: text) { newValue in
+      props.onValueChanged(["value": newValue])
+    }
+    .onChange(of: isFocused) { newValue in
+      props.onFocusChanged(["isFocused": newValue])
+    }
   }
 }
 
