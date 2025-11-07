@@ -410,6 +410,7 @@ export function PlaygroundScreen() {
           <InputControls
             onChangeText={setPrompt}
             onChangeFocus={setIsKeyboardVisible}
+            onPressImageGallery={pickImageFromGallery}
             onSubmit={handleTattooGeneration}
             isSubmitDisabled={prompt.length === 0}
           />
