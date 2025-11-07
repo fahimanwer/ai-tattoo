@@ -2,18 +2,13 @@ import { AnimatedInputView } from "@/modules/animated-input";
 import { InputControlsProps } from "./inputContols.types";
 
 export function InputControls({
+  onPressImageGallery,
   onChangeFocus,
   onChangeText,
   onSubmit,
   autoFocus,
   isSubmitDisabled = false,
 }: InputControlsProps) {
-  const handleImageGalleryPress = () => {
-    console.log("Image gallery button pressed - handle with Expo image picker");
-    // TODO: Implement image picker using Expo
-    // Example: ImagePicker.launchImageLibraryAsync(...)
-  };
-
   const handleMainActionPress = () => {
     console.log("Main action button pressed - submit the prompt");
     onSubmit?.();
@@ -30,7 +25,7 @@ export function InputControls({
       onFocusChanged={(event) => {
         onChangeFocus?.(event.nativeEvent.isFocused);
       }}
-      onPressImageGallery={handleImageGalleryPress}
+      onPressImageGallery={onPressImageGallery}
       onPressMainAction={handleMainActionPress}
     />
   );
