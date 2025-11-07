@@ -7,15 +7,31 @@ import Foundation
 @available(iOS 26.0, *)
 private let model = SystemLanguageModel.default
 
+struct FeaturedSuggestion {
+  let title: String
+  let imageUrl: String
+  
+  init?(from dict: [String: Any]) {
+    guard let title = dict["title"] as? String,
+          let imageUrl = dict["imageUrl"] as? String else {
+      return nil
+    }
+    self.title = title
+    self.imageUrl = imageUrl
+  }
+}
+
 final class AnimatedInputViewProps: ExpoSwiftUI.ViewProps {
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
   @Field var autoFocus: Bool = false
   @Field var disableMainAction: Bool = false
+  @Field var suggestions: [[String: Any]] = []
   var onValueChanged = EventDispatcher()
   var onFocusChanged = EventDispatcher()
   var onPressImageGallery = EventDispatcher()
   var onPressMainAction = EventDispatcher()
+  var onSelectSuggestion = EventDispatcher()
 }
 
 struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
@@ -36,6 +52,66 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
     
     VStack {
       Spacer(minLength: 0)
+      
+      // Suggestions view - shown when not focused
+      if !props.suggestions.isEmpty {
+        let suggestions = props.suggestions.compactMap { FeaturedSuggestion(from: $0) }
+        
+        VStack(alignment: .leading, spacing: 8) {
+          Text("Suggestions")
+            .font(.system(size: 14, weight: .bold))
+            .foregroundColor(.primary)
+            .padding(.horizontal, 16)
+          
+          ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 16) {
+              ForEach(Array(suggestions.enumerated()), id: \.offset) { index, suggestion in
+                Button {
+                  generatorHaptic.selectionChanged()
+                  props.onSelectSuggestion(["title": suggestion.title])
+                } label: {
+                  VStack(alignment: .center, spacing: 4) {
+                    AsyncImage(url: URL(string: suggestion.imageUrl)) { phase in
+                      switch phase {
+                      case .empty:
+                        ProgressView()
+                          .frame(width: 40, height: 40)
+                      case .success(let image):
+                        image
+                          .resizable()
+                          .aspectRatio(contentMode: .fill)
+                          .frame(width: 40, height: 40)
+                          .clipShape(Circle())
+                      case .failure:
+                        Image(systemName: "photo")
+                          .frame(width: 40, height: 40)
+                      @unknown default:
+                        EmptyView()
+                      }
+                    }
+                    
+                    Text(suggestion.title)
+                      .font(.system(size: 12))
+                      .foregroundColor(.secondary)
+                      .lineLimit(1)
+                  }
+                }
+                .buttonStyle(.plain)
+              }
+            }
+            .padding(.horizontal, 16)
+          }
+          
+          Text("Note: AI Tattoo may create unexpected results.")
+            .font(.system(size: 10))
+            .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.horizontal, 16)
+        }
+        .padding(.bottom, 8)
+        .opacity(isFocused ? 0 : 1)
+        .animation(.easeInOut(duration: 0.1), value: isFocused)
+      }
       
       let fillColor = Color.gray.opacity(0.15)
       
@@ -98,7 +174,7 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
           }
           Button {
             generatorHaptic.selectionChanged()
-            isFocused.toggle()
+            isFocused = false
           } label: {
             Image(systemName: "keyboard.chevron.compact.down")
               .fontWeight(.medium)
@@ -122,7 +198,7 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
           if #available(iOS 26.0, *) {
             Button {
               generatorHaptic.selectionChanged()
-              isFocused.toggle()
+              isFocused = false
               text = ""
               props.onPressMainAction([:])
             } label: {

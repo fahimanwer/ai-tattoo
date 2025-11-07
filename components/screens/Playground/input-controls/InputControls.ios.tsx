@@ -6,12 +6,21 @@ export function InputControls({
   onChangeFocus,
   onChangeText,
   onSubmit,
+  onSelectSuggestion,
   autoFocus,
   isSubmitDisabled = false,
+  suggestions = [],
 }: InputControlsProps) {
   const handleMainActionPress = () => {
     console.log("Main action button pressed - submit the prompt");
     onSubmit?.();
+  };
+
+  const handleSelectSuggestion = (event: {
+    nativeEvent: { title: string };
+  }) => {
+    console.log("Suggestion selected:", event.nativeEvent.title);
+    onSelectSuggestion?.(event.nativeEvent.title);
   };
 
   return (
@@ -19,6 +28,7 @@ export function InputControls({
       placeholder="Generate a realistic tattoo..."
       autoFocus={autoFocus}
       disableMainAction={isSubmitDisabled}
+      suggestions={suggestions}
       onValueChanged={(event) => {
         onChangeText?.(event.nativeEvent.value);
       }}
@@ -27,6 +37,7 @@ export function InputControls({
       }}
       onPressImageGallery={onPressImageGallery}
       onPressMainAction={handleMainActionPress}
+      onSelectSuggestion={handleSelectSuggestion}
     />
   );
   // return (

@@ -8,14 +8,27 @@ export type OnFocusChangedEventPayload = {
   isFocused: boolean;
 };
 
+export type OnSelectSuggestionEventPayload = {
+  title: string;
+};
+
+export type FeaturedSuggestion = {
+  title: string;
+  imageUrl: string;
+};
+
 export type AnimatedInputViewProps = {
   placeholder?: string;
   defaultValue?: string;
   autoFocus?: boolean;
   disableMainAction?: boolean;
+  suggestions?: FeaturedSuggestion[];
   onValueChanged?: (event: { nativeEvent: OnValueChangedEventPayload }) => void;
   onFocusChanged?: (event: { nativeEvent: OnFocusChangedEventPayload }) => void;
   onPressImageGallery?: () => void;
   onPressMainAction?: () => void;
+  onSelectSuggestion?: (event: {
+    nativeEvent: OnSelectSuggestionEventPayload;
+  }) => void;
   style?: StyleProp<ViewStyle>;
 };

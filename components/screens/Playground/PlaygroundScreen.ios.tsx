@@ -1,4 +1,3 @@
-import { useGradualAnimation } from "@/hooks/useGradualAnimation";
 import {
   textAndImageToImage,
   TextAndImageToImageInput,
@@ -7,10 +6,9 @@ import {
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
-  Dimensions,
   FlatList,
   Keyboard,
   Platform,
@@ -23,29 +21,42 @@ import { toast } from "sonner-native";
 import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
 
+import { featuredTattoos } from "@/lib/featured-tattoos";
 import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
+import { FeaturedSuggestion } from "@/modules/animated-input/src/AnimatedInput.types";
 import CoreHaptics from "@/modules/native-core-haptics";
 import { Host } from "@expo/ui/swift-ui";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import { TextToImageResult } from "./shared/TextToImageResult";
-import { PlaygroundSuggestions } from "./shared/suggestions/PlaygroundSuggestions";
-const WIDTH = Dimensions.get("screen").width;
 
 export function PlaygroundScreen() {
   // Hooks
   const queryClient = useQueryClient();
-  const { fakeView } = useGradualAnimation();
 
   // State
   const [prompt, setPrompt] = useState("");
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [sessionGenerations, setSessionGenerations] = useState<string[]>([]); // array of images
 
   // Track the active generation by index instead of full base64 string
   const [activeGenerationIndex, setActiveGenerationIndex] = useState<
     number | undefined
   >(undefined);
+
+  // Prepare suggestions for native view
+  const suggestions: FeaturedSuggestion[] = useMemo(
+    () =>
+      featuredTattoos.map((tattoo) => ({
+        title: tattoo.title,
+        imageUrl:
+          (typeof tattoo.image === "object" &&
+          tattoo.image !== null &&
+          "uri" in tattoo.image
+            ? tattoo.image.uri
+            : "") || "",
+      })),
+    []
+  );
 
   // Play playful entrance haptic on first load
   useEffect(() => {
@@ -385,34 +396,23 @@ export function PlaygroundScreen() {
           />
         </View>
 
-        {!isKeyboardVisible ? (
-          <PlaygroundSuggestions
-            style={{ paddingBottom: 120 }}
-            onSelect={(suggestionTitle) => {
-              handlePressSuggestion(suggestionTitle);
-            }}
-          />
-        ) : (
-          // Empty space for suggestions when keyboard is visible
-          // Prevents layout shift when keyboard is dismissed
-          <View style={{ height: 116 }} />
-        )}
-
         <Host
           style={{
-            height: "75%",
+            height: "90%",
             position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
+            backgroundColor: "#ffffff50",
           }}
         >
           <InputControls
             onChangeText={setPrompt}
-            onChangeFocus={setIsKeyboardVisible}
             onPressImageGallery={pickImageFromGallery}
             onSubmit={handleTattooGeneration}
+            onSelectSuggestion={handlePressSuggestion}
             isSubmitDisabled={prompt.length === 0}
+            suggestions={suggestions}
           />
         </Host>
         {/* <View
