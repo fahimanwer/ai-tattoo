@@ -16,6 +16,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
+      "buildNumber": "72",
       "appleTeamId": "T2A8YY9YDW"
     },
     "android": {
@@ -63,12 +64,7 @@
       [
         "react-native-share",
         {
-          "ios": [
-            "fb",
-            "instagram",
-            "twitter",
-            "tiktoksharesdk"
-          ],
+          "ios": ["fb", "instagram", "twitter", "tiktoksharesdk"],
           "android": [
             "com.facebook.katana",
             "com.instagram.android",

@@ -123,7 +123,7 @@ export function TextToImageResult({
     </View>
   ) : (
     <AnimatedText
-      style={{ flex: 0.6 }}
+      style={{ flex: 0.5 }}
       text="Describe your tattoo or choose a suggestion below"
       color={isKeyboardVisible ? Color.orange[400] : Color.zinc[400]}
       colorDark={isKeyboardVisible ? Color.orange[700] : Color.zinc[700]}
@@ -166,5 +166,9 @@ function LoadingChangingText() {
     return () => clearInterval(interval);
   }, [messages.length]);
 
-  return visible ? <AnimatedText key={index} text={messages[index]} /> : null;
+  if (visible) {
+    return (
+      <AnimatedText key={index} style={{ flex: 0.5 }} text={messages[index]} />
+    );
+  }
 }
