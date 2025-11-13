@@ -80,21 +80,20 @@ struct AnimatedBottomBar<LeadingAction: View, TrailingAction: View, MainAction: 
         mainAction()
           .frame(width: 50, height: 50)
           .clipShape(.circle)
-          .background {
-           Circle()
-              .fill(.bar )
-          }
+        //            .background {
+        //              Circle()
+        //                .fill(.bar )
+        //            }
           .padding(.bottom, isFocused ? 10 : 0)
           .padding(.trailing, isFocused ? 10 : 0)
-//          .visualEffect { [isFocused] content, proxy in
-//            content
-//              .offset(x: isFocused ? (proxy.size.width - 10) : 0)
-//          }
-
+        //          .visualEffect { [isFocused] content, proxy in
+        //            content
+        //              .offset(x: isFocused ? (proxy.size.width - 10) : 0)
+        //          }
+        
       }
     }
     .geometryGroup()
-//    .animation(.linear(duration: 1), value: isFocused)
     .animation(.easeInOut(duration: animationDuration), value: isFocused)
   }
   

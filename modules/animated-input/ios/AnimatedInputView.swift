@@ -195,24 +195,24 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
           //
           //        }
         } mainAction: {
-          if #available(iOS 26.0, *) {
-            Button {
-              generatorHaptic.selectionChanged()
-              isFocused = false
-              text = ""
-              props.onPressMainAction([:])
-            } label: {
-              Image(systemName: "arrow.up")
-                .fontWeight(.medium)
-                .foregroundStyle(Color.primary)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(fillColor, in: .circle)
-              
-            }
-            .buttonStyle(.glassProminent)
+          let button = Button {
+            generatorHaptic.selectionChanged()
+            isFocused = false
+            text = ""
+            props.onPressMainAction([:])
+          } label: {
+            Image(systemName: "arrow.up")
+              .fontWeight(.medium)
+              .foregroundStyle(Color.primary)
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .background(fillColor, in: .circle)
+          }
             .disabled(text.isEmpty || isGenerating || props.disableMainAction)
+          
+          if #available(iOS 26.0, *) {
+            button.buttonStyle(.glassProminent)
           } else {
-            // Fallback on earlier versions
+            button
           }
         }
       } else {
