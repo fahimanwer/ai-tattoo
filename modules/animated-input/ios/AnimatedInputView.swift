@@ -68,6 +68,10 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
               ForEach(Array(suggestions.enumerated()), id: \.offset) { index, suggestion in
                 Button {
                   generatorHaptic.selectionChanged()
+                  let newPrompt = "Generate a realistic \(suggestion.title.lowercased()) tattoo"
+                  text = newPrompt
+                  isFocused = true
+                  props.onValueChanged(["value": newPrompt])
                   props.onSelectSuggestion(["title": suggestion.title])
                 } label: {
                   VStack(alignment: .center, spacing: 4) {

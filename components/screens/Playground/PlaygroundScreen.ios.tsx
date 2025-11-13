@@ -26,7 +26,6 @@ import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
 import { FeaturedSuggestion } from "@/modules/animated-input/src/AnimatedInput.types";
 import CoreHaptics from "@/modules/native-core-haptics";
 import { Host } from "@expo/ui/swift-ui";
-import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
@@ -77,9 +76,6 @@ export function PlaygroundScreen() {
     },
     onSuccess: (data) => {
       if (data?.imageData) {
-        toast.success("Tattoo generated successfully!", {
-          description: "Your tattoo has been generated successfully!",
-        });
         const newGenerations = [
           ...sessionGenerations,
           `data:image/png;base64,${data.imageData}`,
@@ -109,9 +105,6 @@ export function PlaygroundScreen() {
     },
     onSuccess: (data) => {
       if (data?.imageData) {
-        toast.success("Tattoo generated successfully!", {
-          description: "Your tattoo has been generated successfully!",
-        });
         const newGenerations = [
           ...sessionGenerations,
           `data:image/png;base64,${data.imageData}`,
@@ -130,27 +123,21 @@ export function PlaygroundScreen() {
   });
 
   function handlePressSuggestion(suggestionTitle: string) {
-    if (textToImageMutation.isPending) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return;
-    }
-    // Clear the active selection since we're starting a fresh generation
-    setActiveGenerationIndex(undefined);
-    // Clear any text in the prompt input
-    setPrompt("");
-
-    /* toast.info("Generating tattoo...", {
-      description: "Please wait while we generate your tattoo...",
-    }); */
-
-    textToImageMutation.mutate(
-      `Generate a realistic ${suggestionTitle} tattoo`
-    );
+    // if (textToImageMutation.isPending) {
+    //   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    //   return;
+    // }
+    // // Clear the active selection since we're starting a fresh generation
+    // setActiveGenerationIndex(undefined);
+    // // Clear any text in the prompt input
+    // setPrompt( `Generate a realistic ${suggestionTitle} tattoo`);
+    // textToImageMutation.mutate(
+    //   `Generate a realistic ${suggestionTitle} tattoo`
+    // );
   }
 
   function handleTattooGeneration() {
     if (prompt.trim().length === 0) {
-      toast.info("Please enter a prompt!", {});
       return;
     }
 
@@ -166,14 +153,8 @@ export function PlaygroundScreen() {
     if (!activeImage) {
       // Clear active selection when starting a fresh generation
       setActiveGenerationIndex(undefined);
-      toast.info("Generating tattoo...", {
-        description: "Please wait while we generate your tattoo...",
-      });
       textToImageMutation.mutate(prompt);
     } else {
-      toast.info("Updating tattoo...", {
-        description: "Please wait while we update your tattoo...",
-      });
       // Text and image to image generation
       textAndImageToImageMutation.mutate({
         prompt,
@@ -184,9 +165,6 @@ export function PlaygroundScreen() {
 
   async function handleShare(base64Image?: string) {
     if (!base64Image) {
-      toast.info("No tattoo to share!", {
-        description: "Please generate a tattoo first.",
-      });
       return;
     }
 
@@ -308,11 +286,13 @@ export function PlaygroundScreen() {
                 type: "sfSymbol",
               },
               onPress: handleReset,
+              disabled: sessionGenerations.length === 0,
               selected: false,
             },
             {
               type: "button",
               label: "Pick Image",
+              disabled: sessionGenerations.length === 0,
               icon: {
                 name: "photo.on.rectangle",
                 type: "sfSymbol",
@@ -331,6 +311,7 @@ export function PlaygroundScreen() {
                 await handleShare(activeGenerationBase64);
               },
               selected: false,
+              disabled: !activeGenerationBase64,
             },
             {
               type: "button",
