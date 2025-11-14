@@ -2,7 +2,7 @@ import { listAlbumAssets } from "@/lib/save-to-library";
 import * as MediaLibrary from "expo-media-library";
 import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -19,12 +19,7 @@ export function TattooHistory() {
   const [loading, setLoading] = useState(true);
   const [permission, requestPermission] = MediaLibrary.usePermissions();
 
-  // Load tattoos only on initial mount
-  useEffect(() => {
-    loadTattoos();
-  }, []);
-
-  const loadTattoos = async () => {
+  const loadTattoos = useCallback(async () => {
     try {
       setLoading(true);
       if (permission?.status === MediaLibrary.PermissionStatus.GRANTED) {
@@ -36,7 +31,12 @@ export function TattooHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [permission]);
+
+  // Load tattoos when permission is granted
+  useEffect(() => {
+    loadTattoos();
+  }, [loadTattoos]);
 
   const handleTattooPress = (tattoo: MediaLibrary.Asset) => {
     router.push(`/(tabs)/tattoos/details?id=${tattoo.id}`);
@@ -95,11 +95,12 @@ export function TattooHistory() {
     }
     return (
       <View style={styles.emptyContainer}>
+        <SymbolView name="photo.fill.on.rectangle.fill" size={60} />
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
           No tattoos saved yet
         </Text>
         <Text style={styles.emptyDescription}>
-          Create and save your first tattoo design!
+          Create and save your first tattoo design! Swipe down to refresh.
         </Text>
       </View>
     );
