@@ -155,9 +155,8 @@ function AppContent() {
             />
           </Stack.Protected>
           <Stack.Protected guard={isAuthenticated}>
-            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(tabs)" options={{}} />
             <Stack.Screen name="(new)" />
-            <Stack.Screen name="+not-found" />
             <Stack.Screen
               name="(paywall)"
               options={{ presentation: "modal" }}

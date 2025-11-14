@@ -1,15 +1,23 @@
 import { listAlbumAssets } from "@/lib/save-to-library";
 import * as MediaLibrary from "expo-media-library";
 import { router } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Linking,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 import { VerticalCard } from "../ui/VerticalCard";
 
 export function TattooHistory() {
   const [tattoos, setTattoos] = useState<MediaLibrary.Asset[]>([]);
   const [loading, setLoading] = useState(true);
-  const [permissionGranted, setPermissionGranted] = useState(false);
+  const [permission, requestPermission] = MediaLibrary.usePermissions();
 
   // Load tattoos only on initial mount
   useEffect(() => {
@@ -19,20 +27,10 @@ export function TattooHistory() {
   const loadTattoos = async () => {
     try {
       setLoading(true);
-
-      // Check permissions
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== "granted") {
-        setPermissionGranted(false);
-        setLoading(false);
-        return;
+      if (permission?.status === MediaLibrary.PermissionStatus.GRANTED) {
+        const assets = await listAlbumAssets(100);
+        setTattoos(assets);
       }
-
-      setPermissionGranted(true);
-
-      // Load tattoos from album
-      const assets = await listAlbumAssets(100);
-      setTattoos(assets);
     } catch (error) {
       console.error("Error loading tattoos from album:", error);
     } finally {
@@ -49,32 +47,58 @@ export function TattooHistory() {
       return (
         <View style={styles.emptyContainer}>
           <ActivityIndicator size="large" />
-          <Text type="sm" style={styles.emptyDescription}>
-            Loading tattoos...
-          </Text>
+          <Text style={styles.emptyDescription}>Loading tattoos...</Text>
         </View>
       );
     }
 
-    if (!permissionGranted) {
+    if (permission?.status === MediaLibrary.PermissionStatus.UNDETERMINED) {
+      return (
+        <View style={styles.emptyContainer}>
+          <SymbolView name="photo.fill.on.rectangle.fill" size={60} />
+          <Text type="lg" weight="semibold" style={styles.emptyTitle}>
+            Let&apos;s Access Your Photos
+          </Text>
+          <Text style={styles.emptyDescription}>
+            To help you view and save your tattoos, we&apos;ll need access to
+            your photo library. You can enable it below whenever you&apos;re
+            ready.
+          </Text>
+          <Button
+            onPress={requestPermission}
+            title="Enable Photo Access"
+            variant="link"
+            color="yellow"
+          />
+        </View>
+      );
+    }
+
+    if (permission?.status === MediaLibrary.PermissionStatus.DENIED) {
       return (
         <View style={styles.emptyContainer}>
           <Text type="lg" weight="semibold" style={styles.emptyTitle}>
-            Permission Required
+            Photo Library Permission Denied
           </Text>
-          <Text type="sm" style={styles.emptyDescription}>
-            Please grant photo library access to view your saved tattoos.
+          <Text style={styles.emptyDescription}>
+            We need your permission to access your photo library to view and
+            save your tattoos. Please grant permission in settings to continue.
           </Text>
+          <Button
+            onPress={() => Linking.openURL("app-settings:")}
+            title="Open Settings to grant permission"
+            variant="link"
+            color="yellow"
+          />
         </View>
       );
     }
-
     return (
       <View style={styles.emptyContainer}>
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
           No tattoos saved yet
         </Text>
-        <Text type="sm" style={styles.emptyDescription}>
+        <Text style={styles.emptyDescription}>
           Create and save your first tattoo design!
         </Text>
       </View>
@@ -139,8 +163,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 40,
-    minHeight: 300,
+    minHeight: 400,
   },
   emptyTitle: {
     marginBottom: 8,

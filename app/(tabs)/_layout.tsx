@@ -58,7 +58,7 @@ export default function TabLayout() {
       disableTransparentOnScrollEdge={true}
       tintColor={Color.slate[50]}
     >
-      <NativeTabs.Trigger name="home">
+      <NativeTabs.Trigger name="(home)">
         <Label>Home</Label>
         <Icon sf="house.fill" />
       </NativeTabs.Trigger>

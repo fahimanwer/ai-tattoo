@@ -14,7 +14,7 @@ export default function HomeLayout() {
       <Stack.Screen
         name="index"
         options={{
-          title: "Try On Tattoo",
+          title: "",
         }}
       />
     </Stack>
