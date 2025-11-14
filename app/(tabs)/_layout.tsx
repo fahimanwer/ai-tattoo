@@ -62,13 +62,13 @@ export default function TabLayout() {
         <Label>Home</Label>
         <Icon sf="house.fill" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="camera-view">
+        <Label>Try On Tattoo</Label>
+        <Icon sf="camera.fill" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="tattoos">
         <Label>My Tattoos</Label>
         <Icon sf="photo.fill.on.rectangle.fill" />
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile" role="search">
-        <Label>Profile</Label>
-        <Icon sf="person.fill" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );

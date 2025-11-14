@@ -68,7 +68,7 @@ export function SessionHistoryItem({
                 height: 50,
                 borderRadius: 25,
                 borderWidth: 3,
-                borderColor: isActive ? Color.yellow[500] : "transparent",
+                borderColor: isActive ? Color.yellow[300] : "transparent",
               }}
             />
           </Button>

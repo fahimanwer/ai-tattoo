@@ -8,10 +8,15 @@ export default function HomeLayout() {
     <Stack
       screenOptions={{
         ...largeHeaderOptions,
-        title: "Profile",
+        headerLargeTitle: false,
       }}
     >
-      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "Try On Tattoo",
+        }}
+      />
     </Stack>
   );
 }

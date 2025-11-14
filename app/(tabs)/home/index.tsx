@@ -66,22 +66,35 @@ export default function HomeScreen() {
       <Stack.Screen
         options={{
           // headerRight: () => <HomeContextMenu />,
+          unstable_headerLeftItems: (props) => [
+            {
+              type: "button",
+              label: "Profile",
+              icon: {
+                name: "person.fill",
+                type: "sfSymbol",
+              },
+              onPress: () => {
+                router.push("/profile");
+              },
+            },
+          ],
           unstable_headerRightItems: (props) => [
             {
               type: "menu",
               variant: "prominent",
-              icon: {
-                name: "plus",
-                type: "sfSymbol",
-              },
-              label: "Tattoo",
-              tintColor: "yellow",
-              // labelStyle: {
-              //   color: "yellow",
-              //   fontWeight: "bold",
+              // icon: {
+              //   name: "plus",
+              //   type: "sfSymbol",
               // },
+              label: "New Tattoo",
+              tintColor: "yellow",
+              labelStyle: {
+                // color: "yellow",
+                fontWeight: "bold",
+              },
               menu: {
-                // title: "Select ",
+                // title: "New Tattoo",
                 items: [
                   {
                     type: "action",
