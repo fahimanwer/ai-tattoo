@@ -179,10 +179,7 @@ function AppContent() {
             name="terms-of-service"
             options={{ presentation: "modal" }}
           />
-          <Stack.Screen
-            name="profile"
-            options={{ animation: "ios_from_left" }}
-          />
+          <Stack.Screen name="profile" options={{ presentation: "modal" }} />
         </Stack>
         <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
       </ThemeProvider>

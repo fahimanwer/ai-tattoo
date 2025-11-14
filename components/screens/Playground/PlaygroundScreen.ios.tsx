@@ -207,7 +207,7 @@ export function PlaygroundScreen() {
   }
 
   function handleGoBack() {
-    router.dismissTo("/(tabs)/home");
+    router.dismissAll();
   }
 
   const pickImageFromGallery = useCallback(async () => {
