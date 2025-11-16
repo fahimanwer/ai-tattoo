@@ -153,9 +153,7 @@ export function CameraViewScreen() {
         />
       )}
 
-      {!isCameraReady && (
-        <View style={{ flex: 1, backgroundColor: "red" }}></View>
-      )}
+      {!isCameraReady || (!isFocused && <View style={{ flex: 1 }} />)}
 
       {/* Camera controls */}
       <Animated.View
