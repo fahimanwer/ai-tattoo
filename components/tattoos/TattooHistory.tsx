@@ -1,15 +1,10 @@
 import { listAlbumAssets } from "@/lib/save-to-library";
+import { LegendList } from "@legendapp/list";
 import * as MediaLibrary from "expo-media-library";
 import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useCallback, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Linking,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ActivityIndicator, Linking, StyleSheet, View } from "react-native";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 import { VerticalCard } from "../ui/VerticalCard";
@@ -115,7 +110,7 @@ export function TattooHistory() {
   }
 
   return (
-    <FlatList
+    <LegendList
       onRefresh={loadTattoos}
       refreshing={loading}
       data={tattoos}
@@ -124,11 +119,12 @@ export function TattooHistory() {
         <VerticalCard asset={item} onPress={() => handleTattooPress(item)} />
       )}
       numColumns={2}
-      columnWrapperStyle={styles.row}
       contentContainerStyle={styles.listContainer}
+      columnWrapperStyle={{ gap: 16 }}
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       ListEmptyComponent={renderEmpty}
+      recycleItems
     />
   );
 }
@@ -149,10 +145,6 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingHorizontal: 16,
     paddingBottom: 20,
-  },
-  row: {
-    justifyContent: "space-between",
-    marginBottom: 16,
   },
   loadingContainer: {
     flex: 1,

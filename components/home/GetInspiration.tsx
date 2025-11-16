@@ -1,8 +1,9 @@
 import { Text } from "@/components/ui/Text";
 import { VerticalCard } from "@/components/ui/VerticalCard";
 import { featuredTattoos } from "@/lib/featured-tattoos";
+import { LegendList } from "@legendapp/list";
 import { router } from "expo-router";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 export function GetInspiration() {
   const inspirationStyles = featuredTattoos.slice(0, 8);
@@ -13,15 +14,12 @@ export function GetInspiration() {
         Discover new styles
       </Text>
       {/* <GlassContainerDemo /> */}
-      <ScrollView
+      <LegendList
         horizontal
-        style={styles.scrollView}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}
-      >
-        {inspirationStyles.map((style) => (
+        data={inspirationStyles}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item: style }) => (
           <VerticalCard
-            key={style.id}
             style={style}
             imageStyle={{
               width: 160,
@@ -35,8 +33,12 @@ export function GetInspiration() {
               })
             }
           />
-        ))}
-      </ScrollView>
+        )}
+        style={styles.scrollView}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContainer}
+        recycleItems
+      />
     </View>
   );
 }
