@@ -20,6 +20,7 @@ import "react-native-reanimated";
 
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
+import { PlaygroundProvider } from "@/context/PlaygroundContext";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import * as Haptics from "expo-haptics";
@@ -269,18 +270,20 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <SubscriptionProvider>
             <TattooCreationProvider>
-              <KeyboardProvider>
-                <PressablesConfig
-                  globalHandlers={{
-                    onPress: () => {
-                      Haptics.selectionAsync();
-                    },
-                  }}
-                >
-                  <AppContent />
-                  <Toaster />
-                </PressablesConfig>
-              </KeyboardProvider>
+              <PlaygroundProvider>
+                <KeyboardProvider>
+                  <PressablesConfig
+                    globalHandlers={{
+                      onPress: () => {
+                        Haptics.selectionAsync();
+                      },
+                    }}
+                  >
+                    <AppContent />
+                    <Toaster />
+                  </PressablesConfig>
+                </KeyboardProvider>
+              </PlaygroundProvider>
             </TattooCreationProvider>
           </SubscriptionProvider>
         </QueryClientProvider>

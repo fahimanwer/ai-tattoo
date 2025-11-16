@@ -1,61 +1,53 @@
-import {
-  textAndImageToImage,
-  TextAndImageToImageInput,
-  textToImage,
-} from "@/lib/nano";
-import { saveBase64ToAlbum } from "@/lib/save-to-library";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Alert,
-  FlatList,
-  Keyboard,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  View,
-} from "react-native";
-import Share from "react-native-share";
-import { toast } from "sonner-native";
+import { use, useEffect } from "react";
+import { FlatList, Platform, StatusBar, StyleSheet, View } from "react-native";
 import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
 
-import { featuredTattoos } from "@/lib/featured-tattoos";
+import { PlaygroundContext } from "@/context/PlaygroundContext";
+import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
 import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
 import { FeaturedSuggestion } from "@/modules/animated-input/src/AnimatedInput.types";
 import CoreHaptics from "@/modules/native-core-haptics";
 import { Host } from "@expo/ui/swift-ui";
-import * as ImagePicker from "expo-image-picker";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
+// Prepare suggestions for native view
+const suggestions = formattedSuggestions(featuredTattoos);
+
+function formattedSuggestions(tattoos: FeaturedTattoo[]) {
+  let suggestions: FeaturedSuggestion[] = [];
+
+  for (const tattoo of tattoos) {
+    suggestions.push({
+      title: tattoo.title,
+      imageUrl:
+        (typeof tattoo.image === "object" &&
+        tattoo.image !== null &&
+        "uri" in tattoo.image
+          ? tattoo.image.uri
+          : "") || "",
+    });
+  }
+  return suggestions;
+}
+
 export function PlaygroundScreen() {
-  // Hooks
-  const queryClient = useQueryClient();
-
-  // State
-  const [prompt, setPrompt] = useState("");
-  const [sessionGenerations, setSessionGenerations] = useState<string[]>([]); // array of images
-
-  // Track the active generation by index instead of full base64 string
-  const [activeGenerationIndex, setActiveGenerationIndex] = useState<
-    number | undefined
-  >(undefined);
-
-  // Prepare suggestions for native view
-  const suggestions: FeaturedSuggestion[] = useMemo(
-    () =>
-      featuredTattoos.map((tattoo) => ({
-        title: tattoo.title,
-        imageUrl:
-          (typeof tattoo.image === "object" &&
-          tattoo.image !== null &&
-          "uri" in tattoo.image
-            ? tattoo.image.uri
-            : "") || "",
-      })),
-    []
-  );
+  const {
+    prompt,
+    setPrompt,
+    sessionGenerations,
+    setSessionGenerations,
+    activeGenerationIndex,
+    setActiveGenerationIndex,
+    handleReset,
+    pickImageFromGallery,
+    handleShare,
+    handleSave,
+    activeGenerationBase64,
+    activeMutation,
+    handleTattooGeneration,
+  } = use(PlaygroundContext);
 
   // Play playful entrance haptic on first load
   useEffect(() => {
@@ -64,189 +56,6 @@ export function PlaygroundScreen() {
       console.error("Failed to play playground entrance haptic:", error);
     });
   }, []); // Empty dependency array means this runs once on mount
-
-  /**
-   * Text to image mutation
-   */
-  const textToImageMutation = useMutation({
-    mutationFn: async (prompt: string) => {
-      return textToImage({
-        prompt: prompt,
-      });
-    },
-    onSuccess: (data) => {
-      if (data?.imageData) {
-        const newGenerations = [
-          ...sessionGenerations,
-          `data:image/png;base64,${data.imageData}`,
-        ];
-        setSessionGenerations(newGenerations);
-        setActiveGenerationIndex(newGenerations.length - 1);
-        queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
-      }
-    },
-    onError: (error) => {
-      toast.error("Failed to generate tattoo!", {
-        dismissible: true,
-        duration: 5000,
-      });
-    },
-  });
-
-  /**
-   * Text to image mutation
-   */
-  const textAndImageToImageMutation = useMutation({
-    mutationFn: async ({ prompt, images_base64 }: TextAndImageToImageInput) => {
-      return textAndImageToImage({
-        prompt,
-        images_base64,
-      });
-    },
-    onSuccess: (data) => {
-      if (data?.imageData) {
-        const newGenerations = [
-          ...sessionGenerations,
-          `data:image/png;base64,${data.imageData}`,
-        ];
-        setSessionGenerations(newGenerations);
-        setActiveGenerationIndex(newGenerations.length - 1);
-        queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
-      }
-    },
-    onError: (error) => {
-      toast.error("Failed to generate tattoo!", {
-        dismissible: true,
-        duration: 5000,
-      });
-    },
-  });
-
-  function handlePressSuggestion(suggestionTitle: string) {
-    // Note:
-    // We are handling this in the native view now
-    // But you can still use this function if you want to
-  }
-
-  function handleTattooGeneration() {
-    if (prompt.trim().length === 0) {
-      return;
-    }
-
-    const activeImage =
-      activeGenerationIndex !== undefined
-        ? sessionGenerations[activeGenerationIndex]
-        : undefined;
-
-    setPrompt("");
-    Keyboard.dismiss();
-    // Normal tattoo generation
-    // Text to image generation
-    if (!activeImage) {
-      // Clear active selection when starting a fresh generation
-      setActiveGenerationIndex(undefined);
-      textToImageMutation.mutate(prompt);
-    } else {
-      // Text and image to image generation
-      textAndImageToImageMutation.mutate({
-        prompt,
-        images_base64: [activeImage],
-      });
-    }
-  }
-
-  async function handleShare(base64Image?: string) {
-    if (!base64Image) {
-      return;
-    }
-
-    await Share.open({
-      message: "Check out my tattoo design!",
-      url: base64Image,
-    });
-  }
-
-  async function handleSave(base64Image?: string) {
-    if (!base64Image) return;
-    await saveBase64ToAlbum(base64Image, "png");
-    Alert.alert(
-      "Saved!",
-      "Your tattoo design has been saved to your photo gallery."
-    );
-  }
-
-  function handleReset() {
-    if (sessionGenerations.length === 0) return;
-    Alert.alert(
-      "Reset Session?",
-      "Are you sure you want to reset the session? This will clear all generated tattoos and start a new session.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Reset",
-          style: "default",
-          isPreferred: true,
-          onPress: () => {
-            setSessionGenerations([]);
-            setActiveGenerationIndex(undefined);
-            textToImageMutation.reset();
-            textAndImageToImageMutation.reset();
-            setPrompt("");
-          },
-        },
-      ]
-    );
-  }
-
-  function handleGoBack() {
-    router.dismissAll();
-  }
-
-  const pickImageFromGallery = useCallback(async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
-        allowsEditing: false,
-        aspect: [3, 2],
-        quality: 0.3,
-        allowsMultipleSelection: false,
-        base64: true,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const selectedImage = result.assets[0];
-        if (selectedImage.base64) {
-          setSessionGenerations((prev) => [
-            ...prev,
-            `data:image/png;base64,${selectedImage.base64}`,
-          ]);
-          setActiveGenerationIndex(() => sessionGenerations.length);
-        } else {
-          Alert.alert("Error", "Failed to get image data");
-        }
-      }
-    } catch (error) {
-      console.error("Error picking image:", error);
-      Alert.alert("Error", "Failed to pick image from gallery");
-    }
-  }, [sessionGenerations.length]);
-
-  // Compute the active generation base64 from the index
-  const activeGenerationBase64 =
-    activeGenerationIndex !== undefined
-      ? sessionGenerations[activeGenerationIndex]
-      : undefined;
-
-  // Determine which mutation is currently active based on their actual states
-  // If either mutation is pending, use that one. Otherwise, fall back to
-  // the default logic based on whether we have a generation
-  const activeMutation = textToImageMutation.isPending
-    ? textToImageMutation
-    : textAndImageToImageMutation.isPending
-    ? textAndImageToImageMutation
-    : activeGenerationBase64
-    ? textAndImageToImageMutation
-    : textToImageMutation;
 
   return (
     <>
@@ -258,9 +67,7 @@ export function PlaygroundScreen() {
           unstable_headerLeftItems: (props) => [
             {
               type: "button",
-              onPress: () => {
-                handleGoBack();
-              },
+              onPress: () => router.dismissAll(),
               label: "Go Back",
               icon: {
                 name: "xmark",
@@ -382,7 +189,7 @@ export function PlaygroundScreen() {
             onChangeText={setPrompt}
             onPressImageGallery={pickImageFromGallery}
             onSubmit={handleTattooGeneration}
-            onSelectSuggestion={handlePressSuggestion}
+            onSelectSuggestion={() => {}}
             isSubmitDisabled={prompt.length === 0}
             suggestions={suggestions}
           />
