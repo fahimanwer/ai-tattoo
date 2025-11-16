@@ -70,7 +70,13 @@ export function PlaygroundScreen() {
           unstable_headerLeftItems: (props) => [
             {
               type: "button",
-              onPress: () => router.dismissAll(),
+              onPress: () => {
+                if (router.canGoBack()) {
+                  router.dismissAll();
+                } else {
+                  router.replace("/(tabs)/(home)");
+                }
+              },
               label: "Go Back",
               icon: {
                 name: "xmark",

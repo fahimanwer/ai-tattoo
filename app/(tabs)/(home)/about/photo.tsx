@@ -1,12 +1,14 @@
 import { Icon } from "@/components/ui/Icon";
 import { Text } from "@/components/ui/Text";
+import { PlaygroundContext } from "@/context/PlaygroundContext";
 import { useTattooCreation } from "@/context/TattooCreationContext";
-import { getTattooStyleById } from "@/lib/featured-tattoos";
+import { urlToBase64 } from "@/lib/base64-utils";
 import { Button, Host } from "@expo/ui/swift-ui";
 import { fixedSize } from "@expo/ui/swift-ui/modifiers";
 import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { router, Stack, useLocalSearchParams } from "expo-router";
+import { use, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -100,35 +102,27 @@ export default function Photo() {
   }>();
 
   const { updateOptions, setSelectedTattooImage } = useTattooCreation();
+  const {
+    setSessionGenerations,
+    setActiveGenerationIndex,
+    sessionGenerations,
+  } = use(PlaygroundContext);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleUseTattoo = () => {
-    // Get the tattoo style if styleId is provided
-    const tattooStyle = params.styleId
-      ? getTattooStyleById(Number(params.styleId))
-      : null;
-
-    // Update tattoo creation context
-    if (tattooStyle) {
-      updateOptions({ selectedTattoo: tattooStyle });
-
-      // Find the matching gallery image from the tattoo style
-      const matchingGalleryImage = tattooStyle.gallery.find((img) => {
-        const imgUri = typeof img === "object" && "uri" in img ? img.uri : img;
-        return imgUri === params.imageUrl;
-      });
-
-      // Set the selected image (use the actual gallery reference for proper comparison)
-      if (matchingGalleryImage) {
-        setSelectedTattooImage(matchingGalleryImage);
-      } else {
-        setSelectedTattooImage({ uri: params.imageUrl });
-      }
-    } else {
-      setSelectedTattooImage({ uri: params.imageUrl });
+  const handleUseTattoo = async () => {
+    setIsLoading(true);
+    const base64 = await urlToBase64(params.imageUrl);
+    if (!base64) {
+      setIsLoading(false);
+      return;
     }
-
-    // Navigate immediately - dismissTo directly to the target screen
-    router.dismissTo("/(new)/select-body-part");
+    setSessionGenerations((prev) => [
+      ...prev,
+      `data:image/jpeg;base64,${base64}`,
+    ]);
+    setActiveGenerationIndex(sessionGenerations.length);
+    setIsLoading(false);
+    router.dismissTo("/(playground)");
   };
 
   if (!params.imageUrl) {
@@ -188,7 +182,7 @@ export default function Photo() {
                 onPress={handleUseTattoo}
                 modifiers={[fixedSize()]}
               >
-                Use This Tattoo
+                {isLoading ? "Loading..." : "Use This Tattoo"}
               </Button>
             </Host>
           </View>

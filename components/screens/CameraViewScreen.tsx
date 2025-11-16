@@ -31,6 +31,7 @@ export function CameraViewScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const { top } = useSafeAreaInsets();
   const ref = useRef<CameraView>(null);
+  const [isCameraReady, setIsCameraReady] = useState(false);
   const isFocused = useIsFocused();
   const {
     pickImageFromGallery,
@@ -137,19 +138,27 @@ export function CameraViewScreen() {
           />
         </View>
       )}
+
       {isFocused && !photoBase64 && (
         <AnimatedCameraView
           entering={FadeIn.duration(1000)}
           exiting={FadeOut.duration(1000)}
           mirror={facing === "front"}
+          onCameraReady={() => {
+            setIsCameraReady(true);
+          }}
           style={{ flex: 1 }}
           facing={facing}
           ref={ref}
         />
       )}
 
+      {!isCameraReady && (
+        <View style={{ flex: 1, backgroundColor: "red" }}></View>
+      )}
+
       {/* Camera controls */}
-      <View
+      <Animated.View
         style={{
           height: 100,
           flexDirection: "row",
@@ -157,6 +166,8 @@ export function CameraViewScreen() {
           alignItems: "center",
           paddingHorizontal: 16,
         }}
+        entering={FadeIn.duration(1000)}
+        exiting={FadeOut.duration(1000)}
       >
         <CameraControlButton
           onPress={async () => {
@@ -200,7 +211,7 @@ export function CameraViewScreen() {
             icon="arrow.trianglehead.2.clockwise.rotate.90.camera"
           />
         )}
-      </View>
+      </Animated.View>
 
       {/* Bottom tabs height */}
       <View style={{ height: 100 }} />
