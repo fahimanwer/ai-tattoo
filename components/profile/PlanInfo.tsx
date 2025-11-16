@@ -7,7 +7,6 @@ export function PlanInfo() {
   const {
     subscriptionTier,
     isLoading: subscriptionLoading,
-    customerInfo,
     error: subscriptionError,
   } = useSubscription();
 

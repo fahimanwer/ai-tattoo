@@ -28,7 +28,7 @@ export function GetInspiration() {
             }}
             onPress={() =>
               router.push({
-                pathname: "/home/about/style",
+                pathname: "/(tabs)/(home)/about/style",
                 params: {
                   style: style.id,
                 },

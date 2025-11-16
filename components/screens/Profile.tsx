@@ -7,7 +7,6 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
 import { PlanInfo } from "../profile/PlanInfo";
-import { UpgradeOptions } from "../profile/UpgradeOptions";
 import { Button } from "../ui/Button";
 
 export function Profile() {
@@ -27,11 +26,6 @@ export function Profile() {
     } finally {
       setIsRefreshing(false);
     }
-  };
-
-  const handleUpgradeSuccess = async () => {
-    console.log("Upgrade successful -> Refreshing all data");
-    await handleRefresh();
   };
 
   if (!user) {
@@ -65,7 +59,6 @@ export function Profile() {
     >
       <ProfileContent user={user} />
       <PlanInfo />
-      <UpgradeOptions onUpgradeSuccess={handleUpgradeSuccess} />
       <Button title="Paywall" onPress={() => router.push("/(paywall)")} />
     </ScrollView>
   );

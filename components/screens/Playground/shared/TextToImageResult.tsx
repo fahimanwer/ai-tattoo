@@ -37,7 +37,7 @@ export function TextToImageResult({
       showSubscription.remove();
       hideSubscription.remove();
     };
-  }, [Keyboard.addListener, setIsKeyboardVisible]);
+  }, [setIsKeyboardVisible]);
 
   // Vibrate periodically while generation is pending
   useEffect(() => {
