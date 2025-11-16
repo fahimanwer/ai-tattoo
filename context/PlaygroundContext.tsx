@@ -1,15 +1,31 @@
 import {
   textAndImageToImage,
   TextAndImageToImageInput,
+  TextAndImageToImageResponse,
   textToImage,
+  TextToImageResponse,
 } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationResult,
+  useQueryClient,
+} from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import * as React from "react";
 import { Alert, Keyboard } from "react-native";
 import Share from "react-native-share";
 import { toast } from "sonner-native";
+
+// Union type that accepts either mutation type
+export type ImageGenerationMutation =
+  | UseMutationResult<TextToImageResponse | undefined, Error, string, unknown>
+  | UseMutationResult<
+      TextAndImageToImageResponse | undefined,
+      Error,
+      any,
+      unknown
+    >;
 
 export interface PlaygroundContextValue {
   prompt: string;
@@ -25,7 +41,7 @@ export interface PlaygroundContextValue {
   handleShare: (base64Image?: string) => Promise<void>;
   handleSave: (base64Image?: string) => Promise<void>;
   activeGenerationBase64: string | undefined;
-  activeMutation: any;
+  activeMutation: ImageGenerationMutation;
   handleTattooGeneration: () => void;
 }
 
@@ -41,7 +57,7 @@ export const PlaygroundContext = React.createContext<PlaygroundContextValue>({
   handleShare: () => Promise.resolve(),
   handleSave: () => Promise.resolve(),
   activeGenerationBase64: undefined,
-  activeMutation: undefined,
+  activeMutation: undefined as unknown as ImageGenerationMutation,
   handleTattooGeneration: () => {},
 });
 

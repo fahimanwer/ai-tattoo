@@ -1,8 +1,7 @@
 import { Text } from "@/components/ui/Text";
 import { blurhash } from "@/components/ui/VerticalCard";
 import { Color } from "@/constants/TWPalette";
-import { TextAndImageToImageResponse, TextToImageResponse } from "@/lib/nano";
-import { UseMutationResult } from "@tanstack/react-query";
+import { ImageGenerationMutation } from "@/context/PlaygroundContext";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -10,16 +9,6 @@ import { PressableScale } from "pressto";
 import { useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import { AnimatedText } from "./AnimatedText";
-
-// Union type that accepts either mutation type
-type ImageGenerationMutation =
-  | UseMutationResult<TextToImageResponse | undefined, Error, string, unknown>
-  | UseMutationResult<
-      TextAndImageToImageResponse | undefined,
-      Error,
-      any,
-      unknown
-    >;
 
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
@@ -81,7 +70,7 @@ export function TextToImageResult({
               "Unknown error"}
         </Text>
 
-        {mutation.error?.message === "LIMIT_REACHED" && (
+        {mutation.error?.message === "LIMIT_REACHED" ? (
           <PressableScale
             onPress={() => {
               mutation.reset();
@@ -92,12 +81,22 @@ export function TextToImageResult({
               Upgrade Plan
             </Text>
           </PressableScale>
+        ) : (
+          <PressableScale
+            onPress={() => {
+              mutation.reset();
+            }}
+          >
+            <Text type="default" style={{ color: Color.yellow[400] }}>
+              Try Again
+            </Text>
+          </PressableScale>
         )}
       </View>
     );
   }
   if (mutation.isPending) {
-    return <LoadingChangingText />;
+    return <LoadingChangingText lastGenerationBase64={lastGenerationBase64} />;
   }
   return lastGenerationBase64 ? (
     <View
@@ -131,9 +130,16 @@ export function TextToImageResult({
   );
 }
 
-function LoadingChangingText() {
+function LoadingChangingText({
+  lastGenerationBase64,
+}: {
+  lastGenerationBase64?: string;
+}) {
+  const firstMessage = lastGenerationBase64
+    ? "Updating your tattoo..."
+    : "Starting new tattoo...";
   const messages = [
-    "Starting new tattoo...",
+    firstMessage,
     "Tattoo machine is warming up...",
     "Summoning the ink spirits...",
     "Drawing inspiration from the universe...",
@@ -151,7 +157,7 @@ function LoadingChangingText() {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const showDuration = 1500; // how long the text stays visible
+    const showDuration = 2000; // how long the text stays visible
     const transitionDuration = 1000; // matches AnimatedText exit duration
 
     const interval = setInterval(() => {
@@ -166,9 +172,35 @@ function LoadingChangingText() {
     return () => clearInterval(interval);
   }, [messages.length]);
 
-  if (visible) {
-    return (
-      <AnimatedText key={index} style={{ flex: 0.5 }} text={messages[index]} />
-    );
-  }
+  return (
+    <View
+      style={{
+        flex: 1,
+        padding: 16,
+      }}
+    >
+      {lastGenerationBase64 && (
+        <Image
+          source={{ uri: lastGenerationBase64 }}
+          placeholder={{ blurhash }}
+          style={{
+            width: 100,
+            height: 100,
+            borderRadius: 50,
+            alignSelf: "center",
+          }}
+          contentFit="cover"
+          contentPosition="center"
+          transition={350}
+        />
+      )}
+      {visible && (
+        <AnimatedText
+          key={index}
+          style={{ flex: lastGenerationBase64 ? 0.2 : 0.5 }}
+          text={messages[index]}
+        />
+      )}
+    </View>
+  );
 }

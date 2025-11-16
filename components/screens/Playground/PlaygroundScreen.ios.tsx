@@ -202,11 +202,12 @@ export function PlaygroundScreen() {
 
         <Host
           style={{
-            height: "90%",
+            height: activeMutation.isError ? "70%" : "90%",
             position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
+            backgroundColor: "#FFFFFF50",
           }}
         >
           <InputControls
