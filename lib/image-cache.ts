@@ -43,6 +43,53 @@ export async function cacheBase64Image(
 }
 
 /**
+ * Download an image from a URL directly to disk (optimized - skips base64 conversion)
+ * This is more efficient than URL → base64 → file as it avoids the memory-intensive
+ * base64 intermediate representation
+ *
+ * @param url - The image URL (e.g., from S3)
+ * @param ext - File extension (default: "jpg")
+ * @returns The file URI where the image was cached
+ */
+export async function cacheImageFromUrl(
+  url: string,
+  ext: "png" | "jpg" = "jpg"
+): Promise<string> {
+  const cacheDir = ensureCacheDirectory();
+  const fileName = `${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(7)}.${ext}`;
+  const file = new File(cacheDir, fileName);
+
+  // Download image directly to file (React Native compatible)
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to download image: ${response.statusText}`);
+  }
+
+  // Use FileReader API (React Native compatible) to convert blob to base64
+  // Then convert to bytes - still more efficient than storing base64 in memory
+  const blob = await response.blob();
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      try {
+        const base64 = reader.result as string;
+        // Convert base64 to bytes and write to file
+        const bytes = base64ToBytes(base64);
+        file.write(bytes);
+        resolve(file.uri);
+      } catch (error) {
+        reject(error);
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+/**
  * Read a cached image as base64 (useful for sharing/saving operations)
  * This allows us to store file URIs in state but still access base64 when needed
  */

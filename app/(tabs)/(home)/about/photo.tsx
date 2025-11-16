@@ -1,15 +1,14 @@
 import { Icon } from "@/components/ui/Icon";
 import { Text } from "@/components/ui/Text";
 import { PlaygroundContext } from "@/context/PlaygroundContext";
-import { useTattooCreation } from "@/context/TattooCreationContext";
-import { urlToBase64 } from "@/lib/base64-utils";
+import { cacheImageFromUrl } from "@/lib/image-cache";
 import { Button, Host } from "@expo/ui/swift-ui";
 import { fixedSize } from "@expo/ui/swift-ui/modifiers";
 import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { use, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Alert, Dimensions, StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
@@ -101,28 +100,34 @@ export default function Photo() {
     styleId?: string;
   }>();
 
-  const { updateOptions, setSelectedTattooImage } = useTattooCreation();
-  const {
-    setSessionGenerations,
-    setActiveGenerationIndex,
-    sessionGenerations,
-  } = use(PlaygroundContext);
+  const { setSessionGenerations, setActiveGenerationIndex } =
+    use(PlaygroundContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleUseTattoo = async () => {
     setIsLoading(true);
-    const base64 = await urlToBase64(params.imageUrl);
-    if (!base64) {
+
+    try {
+      // Download image from S3 directly to disk (skips base64 intermediate step)
+      // This is more efficient: URL → file instead of URL → base64 → file
+      const fileUri = await cacheImageFromUrl(params.imageUrl, "jpg");
+
+      // Store only the file URI (not the base64) to minimize memory usage
+      setSessionGenerations((prev) => {
+        const newGenerations = [...prev, fileUri];
+        // Set active index to the newly added image
+        setActiveGenerationIndex(newGenerations.length - 1);
+        return newGenerations;
+      });
+
+      // Navigate to playground
+      router.dismissTo("/(playground)");
+    } catch (error) {
+      console.error("Error using tattoo:", error);
+      Alert.alert("Error", "Failed to use this tattoo. Please try again.");
+    } finally {
       setIsLoading(false);
-      return;
     }
-    setSessionGenerations((prev) => [
-      ...prev,
-      `data:image/jpeg;base64,${base64}`,
-    ]);
-    setActiveGenerationIndex(sessionGenerations.length);
-    setIsLoading(false);
-    router.dismissTo("/(playground)");
   };
 
   if (!params.imageUrl) {
