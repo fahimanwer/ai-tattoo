@@ -123,17 +123,9 @@ export function PlaygroundScreen() {
   });
 
   function handlePressSuggestion(suggestionTitle: string) {
-    // if (textToImageMutation.isPending) {
-    //   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    //   return;
-    // }
-    // // Clear the active selection since we're starting a fresh generation
-    // setActiveGenerationIndex(undefined);
-    // // Clear any text in the prompt input
-    // setPrompt( `Generate a realistic ${suggestionTitle} tattoo`);
-    // textToImageMutation.mutate(
-    //   `Generate a realistic ${suggestionTitle} tattoo`
-    // );
+    // Note:
+    // We are handling this in the native view now
+    // But you can still use this function if you want to
   }
 
   function handleTattooGeneration() {
