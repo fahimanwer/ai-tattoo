@@ -1,3 +1,7 @@
+import { Color } from "@/constants/TWPalette";
+import { PlaygroundContext } from "@/context/PlaygroundContext";
+import { failureHaptic, successHaptic } from "@/lib/haptics-patterns.ios";
+import CoreHaptics from "@/modules/native-core-haptics";
 import { useIsFocused } from "@react-navigation/native";
 import {
   CameraType,
@@ -6,26 +10,34 @@ import {
   useCameraPermissions,
 } from "expo-camera";
 import { GlassView } from "expo-glass-effect";
-import * as ImagePicker from "expo-image-picker";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { SFSymbol, SymbolView } from "expo-symbols";
 import { PressableWithoutFeedback } from "pressto";
-import { useRef, useState } from "react";
-import { Alert, Linking, StyleSheet, View } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
+import { use, useRef, useState } from "react";
+import { Linking, StyleSheet, View } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 
 const AnimatedCameraView = Animated.createAnimatedComponent(CameraView);
+const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 export function CameraViewScreen() {
   const router = useRouter();
   const [facing, setFacing] = useState<CameraType>("back");
+  const [photoBase64, setPhotoBase64] = useState<string | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
-  const { bottom, top } = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
   const ref = useRef<CameraView>(null);
   const isFocused = useIsFocused();
+  const {
+    pickImageFromGallery,
+    setSessionGenerations,
+    setActiveGenerationIndex,
+    sessionGenerations,
+  } = use(PlaygroundContext);
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -86,48 +98,50 @@ export function CameraViewScreen() {
     setFacing((current) => (current === "back" ? "front" : "back"));
   }
 
-  function takePhoto() {
-    // ref.current?.takePictureAsync();
-    console.log("takePhoto");
+  async function takePhoto() {
+    if (!ref.current?._onCameraReady) {
+      return;
+    }
+    const photo = await ref.current?.takePictureAsync({
+      base64: true,
+      quality: 0.3,
+    });
+
+    if (photo.base64) {
+      CoreHaptics.playPattern(successHaptic);
+      setPhotoBase64(photo.base64);
+    }
   }
 
-  async function pickImageFromGallery() {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
-        allowsEditing: false,
-        aspect: [3, 2],
-        quality: 0.3,
-        allowsMultipleSelection: false,
-        base64: true,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const selectedImage = result.assets[0];
-        if (selectedImage.base64) {
-          // This makes navigating slow, we need to lift sessions state, set it here and navigate to the playground screen
-          // router.push({
-          //   pathname: "/(playground)",
-          //   params: {
-          //     imageBase64: `data:image/png;base64,${selectedImage.base64}`,
-          //   },
-          // });
-        } else {
-          Alert.alert("Error", "Failed to get image data");
-        }
-      }
-    } catch (error) {
-      console.error("Error picking image:", error);
-      Alert.alert("Error", "Failed to pick image from gallery");
-    }
+  function handleConfirmPhoto() {
+    if (!photoBase64) return;
+    setSessionGenerations((prev) => [
+      ...prev,
+      `data:image/jpeg;base64,${photoBase64}`,
+    ]);
+    setActiveGenerationIndex(sessionGenerations.length);
+    setPhotoBase64(null);
+    router.push("/(playground)");
   }
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
       {/* Only render camera when screen is focused */}
-      {isFocused && (
+      {photoBase64 && (
+        <View style={{ flex: 1 }}>
+          <AnimatedImage
+            source={{ uri: `data:image/jpeg;base64,${photoBase64}` }}
+            style={{ width: "100%", height: "100%" }}
+            entering={FadeIn.duration(500)}
+            exiting={FadeOut.duration(500)}
+          />
+        </View>
+      )}
+      {isFocused && !photoBase64 && (
         <AnimatedCameraView
           entering={FadeIn.duration(1000)}
+          exiting={FadeOut.duration(1000)}
+          mirror={facing === "front"}
           style={{ flex: 1 }}
           facing={facing}
           ref={ref}
@@ -145,19 +159,47 @@ export function CameraViewScreen() {
         }}
       >
         <CameraControlButton
-          onPress={pickImageFromGallery}
+          onPress={async () => {
+            const result = await pickImageFromGallery();
+            if (result) {
+              router.push("/(playground)");
+            }
+          }}
           icon="photo.on.rectangle"
         />
-        <CameraControlButton
-          onPress={takePhoto}
-          icon="circle"
-          glassSize={70}
-          symbolSize={50}
-        />
-        <CameraControlButton
-          onPress={toggleCameraFacing}
-          icon="arrow.trianglehead.2.clockwise.rotate.90.camera"
-        />
+
+        {photoBase64 ? (
+          <CameraControlButton
+            onPress={handleConfirmPhoto}
+            icon="checkmark"
+            color={Color.green[500]}
+            glassSize={70}
+            symbolSize={50}
+          />
+        ) : (
+          <CameraControlButton
+            onPress={takePhoto}
+            icon="circle"
+            glassSize={70}
+            symbolSize={50}
+          />
+        )}
+
+        {photoBase64 ? (
+          <CameraControlButton
+            onPress={() => {
+              setPhotoBase64(null);
+              CoreHaptics.playPattern(failureHaptic);
+            }}
+            icon="trash"
+            color={Color.red[500]}
+          />
+        ) : (
+          <CameraControlButton
+            onPress={toggleCameraFacing}
+            icon="arrow.trianglehead.2.clockwise.rotate.90.camera"
+          />
+        )}
       </View>
 
       {/* Bottom tabs height */}
@@ -171,9 +213,11 @@ const CameraControlButton = ({
   icon,
   glassSize = 50,
   symbolSize = 30,
+  color = "white",
 }: {
   onPress: () => void;
   icon: SFSymbol;
+  color?: string;
   glassSize?: number;
   symbolSize?: number;
 }) => {
@@ -189,7 +233,7 @@ const CameraControlButton = ({
       isInteractive={true}
     >
       <PressableWithoutFeedback onPress={onPress}>
-        <SymbolView name={icon} size={symbolSize} />
+        <SymbolView name={icon} size={symbolSize} tintColor={color} />
       </PressableWithoutFeedback>
     </GlassView>
   );

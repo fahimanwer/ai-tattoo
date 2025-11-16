@@ -78,27 +78,51 @@ export function PlaygroundScreen() {
           ],
           unstable_headerRightItems: (props) => [
             {
-              type: "button",
-              label: "Reset",
+              type: "menu",
               icon: {
-                name: "arrow.counterclockwise",
+                name: "ellipsis",
                 type: "sfSymbol",
               },
-              onPress: handleReset,
-              disabled: sessionGenerations.length === 0,
-              selected: false,
-            },
-            {
-              type: "button",
-              label: "Pick Image",
-              disabled: sessionGenerations.length === 0,
-              icon: {
-                name: "photo.on.rectangle",
-                type: "sfSymbol",
+              label: "Actions",
+              menu: {
+                title: "Actions",
+                items: [
+                  {
+                    type: "action",
+                    label: "Reset Session",
+                    icon: {
+                      name: "arrow.counterclockwise",
+                      type: "sfSymbol",
+                    },
+                    destructive: true,
+                    onPress: handleReset,
+                    disabled: sessionGenerations.length === 0,
+                    selected: false,
+                  },
+                  {
+                    type: "action",
+                    label: "Pick Image",
+                    icon: {
+                      name: "photo.on.rectangle",
+                      type: "sfSymbol",
+                    },
+                    onPress: pickImageFromGallery,
+                    selected: false,
+                  },
+                  {
+                    type: "action",
+                    label: "Take Photo",
+                    icon: {
+                      name: "camera",
+                      type: "sfSymbol",
+                    },
+                    onPress: () => router.dismissTo("/camera-view"),
+                    selected: false,
+                  },
+                ],
               },
-              onPress: pickImageFromGallery,
-              selected: false,
             },
+
             {
               type: "button",
               label: "Share",

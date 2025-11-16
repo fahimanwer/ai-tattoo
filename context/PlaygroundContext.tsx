@@ -21,7 +21,7 @@ export interface PlaygroundContextValue {
     React.SetStateAction<number | undefined>
   >;
   handleReset: () => void;
-  pickImageFromGallery: () => Promise<void>;
+  pickImageFromGallery: () => Promise<boolean>;
   handleShare: (base64Image?: string) => Promise<void>;
   handleSave: (base64Image?: string) => Promise<void>;
   activeGenerationBase64: string | undefined;
@@ -37,7 +37,7 @@ export const PlaygroundContext = React.createContext<PlaygroundContextValue>({
   activeGenerationIndex: undefined,
   setActiveGenerationIndex: () => {},
   handleReset: () => {},
-  pickImageFromGallery: () => Promise.resolve(),
+  pickImageFromGallery: () => Promise.resolve(false),
   handleShare: () => Promise.resolve(),
   handleSave: () => Promise.resolve(),
   activeGenerationBase64: undefined,
@@ -150,10 +150,18 @@ export function PlaygroundProvider({
       return;
     }
 
-    await Share.open({
-      message: "Check out my tattoo design!",
-      url: base64Image,
-    });
+    try {
+      const shareResult = await Share.open({
+        message: "Check out my tattoo design!",
+        url: base64Image,
+      });
+
+      if (shareResult.dismissedAction) {
+        return;
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
   }
 
   async function handleSave(base64Image?: string) {
@@ -188,7 +196,13 @@ export function PlaygroundProvider({
     );
   }
 
-  const pickImageFromGallery = React.useCallback(async () => {
+  /**
+   * Pick image from gallery
+   * return false if the user cancels the picker
+   * return true if the user selects an image
+   * return false if there is an error
+   */
+  const pickImageFromGallery = React.useCallback(async (): Promise<boolean> => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
@@ -207,13 +221,17 @@ export function PlaygroundProvider({
             `data:image/png;base64,${selectedImage.base64}`,
           ]);
           setActiveGenerationIndex(() => sessionGenerations.length);
+          return true;
         } else {
           Alert.alert("Error", "Failed to get image data");
+          return false;
         }
       }
+      return false;
     } catch (error) {
       console.error("Error picking image:", error);
       Alert.alert("Error", "Failed to pick image from gallery");
+      return false;
     }
   }, [sessionGenerations.length]);
 

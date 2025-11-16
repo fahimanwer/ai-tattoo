@@ -325,40 +325,88 @@ export const inputFocusFanfareHaptic: HapticPatternData = {
  */
 export const successHaptic: HapticPatternData = {
   events: [
+    // Soft initial tap
     {
       eventType: "hapticTransient",
       time: 0.0,
       parameters: [
-        { parameterID: "hapticIntensity", value: 0.7 },
-        { parameterID: "hapticSharpness", value: 0.5 },
+        { parameterID: "hapticIntensity", value: 0.45 },
+        { parameterID: "hapticSharpness", value: 0.25 },
       ],
     },
+    // Slightly fuller second tap (classic success double-tap)
     {
       eventType: "hapticTransient",
-      time: 0.1,
+      time: 0.08,
       parameters: [
-        { parameterID: "hapticIntensity", value: 0.9 },
-        { parameterID: "hapticSharpness", value: 0.3 },
+        { parameterID: "hapticIntensity", value: 0.55 },
+        { parameterID: "hapticSharpness", value: 0.2 },
       ],
     },
+    // Gentle, very short “satisfying tail”
     {
       eventType: "hapticContinuous",
-      time: 0.15,
-      eventDuration: 0.2,
+      time: 0.12,
+      eventDuration: 0.12,
       parameters: [
-        { parameterID: "hapticIntensity", value: 0.5 },
-        { parameterID: "hapticSharpness", value: 0.1 },
+        { parameterID: "hapticIntensity", value: 0.25 },
+        { parameterID: "hapticSharpness", value: 0.05 },
       ],
     },
   ],
   parameterCurves: [
     {
       parameterID: "hapticIntensityControl",
+      relativeTime: 0.12,
       controlPoints: [
-        { relativeTime: 0, value: 1.0 },
-        { relativeTime: 0.2, value: 0.0 },
+        { relativeTime: 0.0, value: 0.3 },
+        { relativeTime: 1.0, value: 0.0 },
       ],
-      relativeTime: 0.15,
+    },
+  ],
+};
+
+export const failureHaptic: HapticPatternData = {
+  events: [
+    // First sharp tap (not too strong)
+    {
+      eventType: "hapticTransient",
+      time: 0.0,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.55 },
+        { parameterID: "hapticSharpness", value: 0.45 },
+      ],
+    },
+
+    // Slightly weaker "echo" tap
+    {
+      eventType: "hapticTransient",
+      time: 0.1,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.4 },
+        { parameterID: "hapticSharpness", value: 0.35 },
+      ],
+    },
+
+    // Quick rumble tail (gives error tone without being aggressive)
+    {
+      eventType: "hapticContinuous",
+      time: 0.13,
+      eventDuration: 0.15,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.25 },
+        { parameterID: "hapticSharpness", value: 0.2 },
+      ],
+    },
+  ],
+  parameterCurves: [
+    {
+      parameterID: "hapticIntensityControl",
+      relativeTime: 0.13,
+      controlPoints: [
+        { relativeTime: 0.0, value: 0.4 },
+        { relativeTime: 1.0, value: 0.0 },
+      ],
     },
   ],
 };

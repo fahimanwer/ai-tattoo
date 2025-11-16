@@ -209,14 +209,13 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
               .fontWeight(.medium)
               .foregroundStyle(Color.primary)
               .frame(maxWidth: .infinity, maxHeight: .infinity)
-              .background(fillColor, in: .circle)
           }
             .disabled(text.isEmpty || isGenerating || props.disableMainAction)
           
           if #available(iOS 26.0, *) {
             button.buttonStyle(.glassProminent)
           } else {
-            button
+            button.background(fillColor, in: .circle)
           }
         }
       } else {
