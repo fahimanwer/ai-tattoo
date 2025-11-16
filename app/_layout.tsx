@@ -270,20 +270,20 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <SubscriptionProvider>
             <TattooCreationProvider>
-              <PlaygroundProvider>
-                <KeyboardProvider>
-                  <PressablesConfig
-                    globalHandlers={{
-                      onPress: () => {
-                        Haptics.selectionAsync();
-                      },
-                    }}
-                  >
+              <KeyboardProvider>
+                <PressablesConfig
+                  globalHandlers={{
+                    onPress: () => {
+                      Haptics.selectionAsync();
+                    },
+                  }}
+                >
+                  <PlaygroundProvider>
                     <AppContent />
-                    <Toaster />
-                  </PressablesConfig>
-                </KeyboardProvider>
-              </PlaygroundProvider>
+                  </PlaygroundProvider>
+                  <Toaster />
+                </PressablesConfig>
+              </KeyboardProvider>
             </TattooCreationProvider>
           </SubscriptionProvider>
         </QueryClientProvider>

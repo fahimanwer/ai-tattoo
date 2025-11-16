@@ -8,16 +8,17 @@ import { useRouter } from "expo-router";
 import { PressableScale } from "pressto";
 import { useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AnimatedText } from "./AnimatedText";
 
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
-  lastGenerationBase64?: string;
+  lastGenerationUri?: string; // Now accepts file URI instead of base64
 }
 
 export function TextToImageResult({
   mutation,
-  lastGenerationBase64,
+  lastGenerationUri,
 }: TextToImageResultProps) {
   const router = useRouter();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -96,18 +97,21 @@ export function TextToImageResult({
     );
   }
   if (mutation.isPending) {
-    return <LoadingChangingText lastGenerationBase64={lastGenerationBase64} />;
+    return <LoadingChangingText lastGenerationUri={lastGenerationUri} />;
   }
-  return lastGenerationBase64 ? (
-    <View
+  return lastGenerationUri ? (
+    <Animated.View
       style={{
         flex: 1,
-        padding: 16,
+        paddingHorizontal: 16,
       }}
+      entering={FadeIn.duration(1000)}
+      exiting={FadeOut.duration(1000)}
     >
       <Image
-        source={{ uri: lastGenerationBase64 }}
+        source={{ uri: lastGenerationUri }}
         placeholder={{ blurhash }}
+        cachePolicy="memory-disk"
         style={{
           width: "100%",
           height: 400,
@@ -119,10 +123,10 @@ export function TextToImageResult({
         contentPosition="center"
         transition={350}
       />
-    </View>
+    </Animated.View>
   ) : (
     <AnimatedText
-      style={{ flex: 0.4 }}
+      style={{ flex: 0.3 }}
       text="Describe your tattoo or choose a suggestion below"
       color={isKeyboardVisible ? Color.pink[400] : Color.zinc[400]}
       colorDark={isKeyboardVisible ? Color.purple[700] : Color.zinc[700]}
@@ -131,11 +135,11 @@ export function TextToImageResult({
 }
 
 function LoadingChangingText({
-  lastGenerationBase64,
+  lastGenerationUri,
 }: {
-  lastGenerationBase64?: string;
+  lastGenerationUri?: string;
 }) {
-  const firstMessage = lastGenerationBase64
+  const firstMessage = lastGenerationUri
     ? "Updating your tattoo..."
     : "Starting new tattoo...";
   const messages = [
@@ -179,10 +183,11 @@ function LoadingChangingText({
         padding: 16,
       }}
     >
-      {lastGenerationBase64 && (
+      {lastGenerationUri && (
         <Image
-          source={{ uri: lastGenerationBase64 }}
+          source={{ uri: lastGenerationUri }}
           placeholder={{ blurhash }}
+          cachePolicy="memory-disk"
           style={{
             width: 100,
             height: 100,
@@ -197,7 +202,7 @@ function LoadingChangingText({
       {visible && (
         <AnimatedText
           key={index}
-          style={{ flex: lastGenerationBase64 ? 0.2 : 0.5 }}
+          style={{ flex: lastGenerationUri ? 0.2 : 0.5 }}
           text={messages[index]}
         />
       )}

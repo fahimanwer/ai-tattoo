@@ -1,9 +1,18 @@
 import { router, Stack } from "expo-router";
 import { use, useEffect } from "react";
-import { FlatList, Platform, StatusBar, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+} from "react-native";
 import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
 
+import { Text } from "@/components/ui/Text";
+import { Color } from "@/constants/TWPalette";
 import { PlaygroundContext } from "@/context/PlaygroundContext";
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
 import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
@@ -11,6 +20,7 @@ import { FeaturedSuggestion } from "@/modules/animated-input/src/AnimatedInput.t
 import CoreHaptics from "@/modules/native-core-haptics";
 import { Host } from "@expo/ui/swift-ui";
 import { GlassView } from "expo-glass-effect";
+import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
 import { TextToImageResult } from "./shared/TextToImageResult";
@@ -47,7 +57,7 @@ export function PlaygroundScreen() {
     pickImageFromGallery,
     handleShare,
     handleSave,
-    activeGenerationBase64,
+    activeGenerationUri,
     activeMutation,
     handleTattooGeneration,
   } = use(PlaygroundContext);
@@ -60,6 +70,13 @@ export function PlaygroundScreen() {
     });
   }, []); // Empty dependency array means this runs once on mount
 
+  function dismissToHome() {
+    if (router.canGoBack()) {
+      router.dismissAll();
+    } else {
+      router.replace("/(tabs)/(home)");
+    }
+  }
   return (
     <>
       <Stack.Screen
@@ -71,10 +88,27 @@ export function PlaygroundScreen() {
             {
               type: "button",
               onPress: () => {
-                if (router.canGoBack()) {
-                  router.dismissAll();
+                if (sessionGenerations.length > 0) {
+                  Alert.alert(
+                    "Clear Everything?",
+                    "You're about to clear this session. This will remove all generated tattoos. Save anything you want to keep before continuing.",
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      {
+                        text: "Clear Everything",
+                        style: "destructive",
+                        isPreferred: true,
+                        onPress: () => {
+                          setSessionGenerations([]);
+                          setActiveGenerationIndex(undefined);
+                          setPrompt("");
+                          dismissToHome();
+                        },
+                      },
+                    ]
+                  );
                 } else {
-                  router.replace("/(tabs)/(home)");
+                  dismissToHome();
                 }
               },
               label: "Go Back",
@@ -140,10 +174,10 @@ export function PlaygroundScreen() {
                 type: "sfSymbol",
               },
               onPress: async () => {
-                await handleShare(activeGenerationBase64);
+                await handleShare(activeGenerationUri);
               },
               selected: false,
-              disabled: !activeGenerationBase64,
+              disabled: !activeGenerationUri,
             },
             {
               type: "button",
@@ -154,9 +188,9 @@ export function PlaygroundScreen() {
                 fontWeight: "bold",
               },
               onPress: async () => {
-                await handleSave(activeGenerationBase64);
+                await handleSave(activeGenerationUri);
               },
-              disabled: !activeGenerationBase64,
+              disabled: !activeGenerationUri,
               selected: false,
             },
           ],
@@ -165,7 +199,23 @@ export function PlaygroundScreen() {
       <View style={styles.container}>
         {/* Session generations list */}
         {sessionGenerations.length > 0 && (
-          <View style={{}}>
+          <View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderWidth: 1,
+                paddingHorizontal: 16,
+              }}
+            >
+              <Text type="sm" weight="bold">
+                Your Generations
+              </Text>
+              <PressableScale onPress={handleReset}>
+                <Text type="sm">Clear All</Text>
+              </PressableScale>
+            </View>
             <FlatList
               data={sessionGenerations}
               renderItem={({ item, index }) => (
@@ -173,7 +223,10 @@ export function PlaygroundScreen() {
                   uri={item}
                   onSave={() => handleSave(item)}
                   onShare={() => handleShare(item)}
-                  onPress={() => setActiveGenerationIndex(() => index)}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    setActiveGenerationIndex(() => index);
+                  }}
                   onDelete={() => {
                     const newGenerations = sessionGenerations.filter(
                       (_, i) => i !== index
@@ -194,8 +247,18 @@ export function PlaygroundScreen() {
                 />
               )}
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => `${index}-${item.slice(0, 50)}`}
-              contentContainerStyle={{ paddingHorizontal: 16 }}
+              keyExtractor={(item, index) => `generation-${index}-${item}`}
+              contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
+              // Performance optimizations
+              getItemLayout={(_, index) => ({
+                length: 50,
+                offset: 50 * index + 16 * index, // item width + gap
+                index,
+              })}
+              removeClippedSubviews={true}
+              maxToRenderPerBatch={10}
+              windowSize={5}
+              initialNumToRender={10}
               ListFooterComponentStyle={{
                 justifyContent: "center",
               }}
@@ -207,9 +270,8 @@ export function PlaygroundScreen() {
                 >
                   <GlassView
                     style={{
-                      padding: 8,
-                      width: 46,
-                      height: 46,
+                      width: 48,
+                      height: 48,
                       borderRadius: 25,
                       alignItems: "center",
                       justifyContent: "center",
@@ -227,9 +289,20 @@ export function PlaygroundScreen() {
 
         {/* Text to image result */}
         <View style={{ flex: 1 }}>
+          {sessionGenerations.length > 0 ? (
+            <Text
+              type="sm"
+              style={{ paddingHorizontal: 16, paddingBottom: 4 }}
+              darkColor={Color.zinc[400]}
+            >
+              {activeGenerationIndex !== undefined
+                ? "Mode: Editing - your prompt will modify this image"
+                : "Mode: New Design - your prompt will create a new tattoo"}
+            </Text>
+          ) : null}
           <TextToImageResult
             mutation={activeMutation}
-            lastGenerationBase64={activeGenerationBase64}
+            lastGenerationUri={activeGenerationUri}
           />
         </View>
 

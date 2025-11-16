@@ -1,4 +1,9 @@
 import {
+  cacheBase64Image,
+  clearSessionCache,
+  getCachedImageAsBase64,
+} from "@/lib/image-cache";
+import {
   textAndImageToImage,
   TextAndImageToImageInput,
   TextAndImageToImageResponse,
@@ -13,9 +18,14 @@ import {
 } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import * as React from "react";
-import { Alert, Keyboard } from "react-native";
-import Share from "react-native-share";
+import { Alert, Keyboard, Platform } from "react-native";
 import { toast } from "sonner-native";
+
+// Conditionally import react-native-share only on native platforms
+let Share: any = null;
+if (Platform.OS !== "web") {
+  Share = require("react-native-share").default;
+}
 
 // Union type that accepts either mutation type
 export type ImageGenerationMutation =
@@ -30,7 +40,7 @@ export type ImageGenerationMutation =
 export interface PlaygroundContextValue {
   prompt: string;
   setPrompt: React.Dispatch<React.SetStateAction<string>>;
-  sessionGenerations: string[];
+  sessionGenerations: string[]; // Now stores file URIs instead of base64
   setSessionGenerations: React.Dispatch<React.SetStateAction<string[]>>;
   activeGenerationIndex: number | undefined;
   setActiveGenerationIndex: React.Dispatch<
@@ -38,9 +48,9 @@ export interface PlaygroundContextValue {
   >;
   handleReset: () => void;
   pickImageFromGallery: () => Promise<boolean>;
-  handleShare: (base64Image?: string) => Promise<void>;
-  handleSave: (base64Image?: string) => Promise<void>;
-  activeGenerationBase64: string | undefined;
+  handleShare: (fileUri?: string) => Promise<void>;
+  handleSave: (fileUri?: string) => Promise<void>;
+  activeGenerationUri: string | undefined; // File URI, not base64
   activeMutation: ImageGenerationMutation;
   handleTattooGeneration: () => void;
 }
@@ -56,7 +66,7 @@ export const PlaygroundContext = React.createContext<PlaygroundContextValue>({
   pickImageFromGallery: () => Promise.resolve(false),
   handleShare: () => Promise.resolve(),
   handleSave: () => Promise.resolve(),
-  activeGenerationBase64: undefined,
+  activeGenerationUri: undefined,
   activeMutation: undefined as unknown as ImageGenerationMutation,
   handleTattooGeneration: () => {},
 });
@@ -86,12 +96,11 @@ export function PlaygroundProvider({
         prompt: prompt,
       });
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data?.imageData) {
-        const newGenerations = [
-          ...sessionGenerations,
-          `data:image/png;base64,${data.imageData}`,
-        ];
+        // Cache the image to disk and store only the file URI
+        const fileUri = await cacheBase64Image(data.imageData, "png");
+        const newGenerations = [...sessionGenerations, fileUri];
         setSessionGenerations(newGenerations);
         setActiveGenerationIndex(newGenerations.length - 1);
         queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
@@ -106,7 +115,7 @@ export function PlaygroundProvider({
   });
 
   /**
-   * Text to image mutation
+   * Text and image to image mutation
    */
   const textAndImageToImageMutation = useMutation({
     mutationFn: async ({ prompt, images_base64 }: TextAndImageToImageInput) => {
@@ -115,12 +124,11 @@ export function PlaygroundProvider({
         images_base64,
       });
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data?.imageData) {
-        const newGenerations = [
-          ...sessionGenerations,
-          `data:image/png;base64,${data.imageData}`,
-        ];
+        // Cache the image to disk and store only the file URI
+        const fileUri = await cacheBase64Image(data.imageData, "png");
+        const newGenerations = [...sessionGenerations, fileUri];
         setSessionGenerations(newGenerations);
         setActiveGenerationIndex(newGenerations.length - 1);
         queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
@@ -134,39 +142,45 @@ export function PlaygroundProvider({
     },
   });
 
-  function handleTattooGeneration() {
+  async function handleTattooGeneration() {
     if (prompt.trim().length === 0) {
       return;
     }
 
-    const activeImage =
+    const activeImageUri =
       activeGenerationIndex !== undefined
         ? sessionGenerations[activeGenerationIndex]
         : undefined;
 
     setPrompt("");
     Keyboard.dismiss();
+
     // Normal tattoo generation
     // Text to image generation
-    if (!activeImage) {
+    if (!activeImageUri) {
       // Clear active selection when starting a fresh generation
       setActiveGenerationIndex(undefined);
       textToImageMutation.mutate(prompt);
     } else {
       // Text and image to image generation
+      // Convert file URI back to base64 for the API call
+      const base64Image = await getCachedImageAsBase64(activeImageUri);
       textAndImageToImageMutation.mutate({
         prompt,
-        images_base64: [activeImage],
+        images_base64: [base64Image],
       });
     }
   }
 
-  async function handleShare(base64Image?: string) {
-    if (!base64Image) {
+  async function handleShare(fileUri?: string) {
+    if (!fileUri || !Share) {
       return;
     }
 
     try {
+      // Convert file URI to base64 for sharing
+      const base64Image = await getCachedImageAsBase64(fileUri);
+
       const shareResult = await Share.open({
         message: "Check out my tattoo design!",
         url: base64Image,
@@ -180,9 +194,13 @@ export function PlaygroundProvider({
     }
   }
 
-  async function handleSave(base64Image?: string) {
-    if (!base64Image) return;
+  async function handleSave(fileUri?: string) {
+    if (!fileUri) return;
+
+    // Convert file URI to base64 for saving
+    const base64Image = await getCachedImageAsBase64(fileUri);
     await saveBase64ToAlbum(base64Image, "png");
+
     Alert.alert(
       "Saved!",
       "Your tattoo design has been saved to your photo gallery."
@@ -200,7 +218,10 @@ export function PlaygroundProvider({
           text: "Reset",
           style: "default",
           isPreferred: true,
-          onPress: () => {
+          onPress: async () => {
+            // Clear cached images from file system
+            await clearSessionCache();
+
             setSessionGenerations([]);
             setActiveGenerationIndex(undefined);
             textToImageMutation.reset();
@@ -232,10 +253,9 @@ export function PlaygroundProvider({
       if (!result.canceled && result.assets[0]) {
         const selectedImage = result.assets[0];
         if (selectedImage.base64) {
-          setSessionGenerations((prev) => [
-            ...prev,
-            `data:image/png;base64,${selectedImage.base64}`,
-          ]);
+          // Cache the selected image and store the file URI
+          const fileUri = await cacheBase64Image(selectedImage.base64, "png");
+          setSessionGenerations((prev) => [...prev, fileUri]);
           setActiveGenerationIndex(() => sessionGenerations.length);
           return true;
         } else {
@@ -251,8 +271,8 @@ export function PlaygroundProvider({
     }
   }, [sessionGenerations.length]);
 
-  // Compute the active generation base64 from the index
-  const activeGenerationBase64 =
+  // Compute the active generation URI from the index
+  const activeGenerationUri =
     activeGenerationIndex !== undefined
       ? sessionGenerations[activeGenerationIndex]
       : undefined;
@@ -264,7 +284,7 @@ export function PlaygroundProvider({
     ? textToImageMutation
     : textAndImageToImageMutation.isPending
     ? textAndImageToImageMutation
-    : activeGenerationBase64
+    : activeGenerationUri
     ? textAndImageToImageMutation
     : textToImageMutation;
 
@@ -281,7 +301,7 @@ export function PlaygroundProvider({
         pickImageFromGallery,
         handleShare,
         handleSave,
-        activeGenerationBase64,
+        activeGenerationUri,
         activeMutation,
         handleTattooGeneration,
       }}

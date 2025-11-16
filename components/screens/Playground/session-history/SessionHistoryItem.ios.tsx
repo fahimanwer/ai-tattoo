@@ -3,9 +3,12 @@ import { Button, ContextMenu, Host } from "@expo/ui/swift-ui";
 import { frame, padding } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
 import { Image as ExpoImage } from "expo-image";
+import { memo } from "react";
 import { SessionHistoryItemProps } from "./SessionHistoryItem.types";
 
-export function SessionHistoryItem({
+// Memoized component to prevent unnecessary re-renders
+// Only re-renders when props actually change
+const SessionHistoryItemComponent = ({
   uri,
   onSave,
   onShare,
@@ -13,11 +16,11 @@ export function SessionHistoryItem({
   onSelect,
   isActive,
   onPress,
-}: SessionHistoryItemProps) {
+}: SessionHistoryItemProps) => {
   return (
     <Host matchContents>
       <ContextMenu
-        modifiers={[frame({ width: 50, height: 50 }), padding({ all: 9 })]}
+        modifiers={[frame({ width: 50, height: 50 }), padding({ vertical: 9 })]}
         activationMethod="longPress"
       >
         <ContextMenu.Items>
@@ -63,6 +66,7 @@ export function SessionHistoryItem({
           <Button onPress={onPress}>
             <ExpoImage
               source={{ uri }}
+              cachePolicy="memory-disk"
               style={{
                 width: 50,
                 height: 50,
@@ -76,4 +80,16 @@ export function SessionHistoryItem({
       </ContextMenu>
     </Host>
   );
-}
+};
+
+// Memoize with custom comparison function
+// Only re-render if uri or isActive changes
+export const SessionHistoryItem = memo(
+  SessionHistoryItemComponent,
+  (prevProps, nextProps) => {
+    return (
+      prevProps.uri === nextProps.uri &&
+      prevProps.isActive === nextProps.isActive
+    );
+  }
+);
