@@ -104,7 +104,7 @@ export default function AboutStyle() {
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    marginTop: 32,
+    marginVertical: 32,
   },
   galleryScrollContainer: {
     paddingHorizontal: 16,
