@@ -10,6 +10,9 @@ import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
 import { FeaturedSuggestion } from "@/modules/animated-input/src/AnimatedInput.types";
 import CoreHaptics from "@/modules/native-core-haptics";
 import { Host } from "@expo/ui/swift-ui";
+import { GlassView } from "expo-glass-effect";
+import { SymbolView } from "expo-symbols";
+import { PressableScale } from "pressto";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
 // Prepare suggestions for native view
@@ -187,6 +190,30 @@ export function PlaygroundScreen() {
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item, index) => `${index}-${item.slice(0, 50)}`}
               contentContainerStyle={{ paddingHorizontal: 16 }}
+              ListFooterComponentStyle={{
+                justifyContent: "center",
+              }}
+              ListFooterComponent={() => (
+                <PressableScale
+                  onPress={() => {
+                    setActiveGenerationIndex(undefined);
+                  }}
+                >
+                  <GlassView
+                    style={{
+                      padding: 8,
+                      width: 46,
+                      height: 46,
+                      borderRadius: 25,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    isInteractive
+                  >
+                    <SymbolView name={"plus"} size={30} tintColor="white" />
+                  </GlassView>
+                </PressableScale>
+              )}
               horizontal
             />
           </View>
@@ -207,7 +234,6 @@ export function PlaygroundScreen() {
             bottom: 0,
             left: 0,
             right: 0,
-            backgroundColor: "#FFFFFF50",
           }}
         >
           <InputControls
