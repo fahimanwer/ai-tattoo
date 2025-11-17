@@ -31,7 +31,7 @@ const ONBOARDING_VIDEOS = [
   {
     title: "Refine and Personalize Your Tattoo",
     description:
-      "Adjust colors, layout, and style to make the tattoo perfectly yours — all in seconds.",
+      "Adjust colors, layout, and style to make the tattoo perfectly yours.",
     video:
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/final-onb-2.mov",
   },
@@ -166,10 +166,10 @@ export default function Container() {
         ))}
       </ScrollView>
 
-      <View style={styles.container}>
-        <View style={styles.contentContainer}>
+      <View style={styles.container} pointerEvents="box-none">
+        <View style={styles.contentContainer} pointerEvents="box-none">
           {/* Pagination Dots */}
-          <View style={styles.paginationContainer}>
+          <View style={styles.paginationContainer} pointerEvents="none">
             {ONBOARDING_VIDEOS.map((_, index) => (
               <View
                 key={index}
@@ -187,6 +187,7 @@ export default function Container() {
               alignItems: "center",
               position: "relative",
             }}
+            pointerEvents="box-none"
           >
             <Text type="3xl" weight="bold" style={{ textAlign: "center" }}>
               {ONBOARDING_VIDEOS[currentIndex].title}
@@ -213,7 +214,10 @@ export default function Container() {
                 <ActivityIndicator />
               </View>
             ) : (
-              <View style={{ gap: 16, marginTop: 32, width: "100%" }}>
+              <View
+                style={{ gap: 16, marginTop: 32, width: "100%" }}
+                pointerEvents="auto"
+              >
                 <SignInWithGoogleButton
                   onPress={() => {
                     authClient.signIn.social({
@@ -225,7 +229,7 @@ export default function Container() {
                 <AppleSignInButton />
               </View>
             )}
-            <View style={styles.termsContainer}>
+            <View style={styles.termsContainer} pointerEvents="auto">
               <Text type="sm" style={styles.termsText}>
                 By continuing you agree to our{" "}
                 <Link href="/terms-of-service" asChild>
@@ -249,7 +253,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: -1,
+    zIndex: 1,
   },
 
   videoView: {
@@ -263,6 +267,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: "relative",
     experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.slate[950]})`,
+    zIndex: 2,
   },
 
   contentContainer: {
@@ -273,7 +278,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 3,
     paddingBottom: 32,
     paddingHorizontal: 16,
   },
