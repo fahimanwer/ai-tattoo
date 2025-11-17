@@ -145,37 +145,46 @@ export default function Container() {
   return (
     <>
       <StatusBar hidden />
-      <ScrollView
-        ref={scrollViewRef}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        decelerationRate="fast"
-        snapToInterval={SCREEN_WIDTH}
-        snapToAlignment="center"
-        style={styles.scrollView}
+      <Animated.View
+        entering={FadeIn.duration(600).delay(200)}
+        style={styles.videoContainer}
       >
-        {ONBOARDING_VIDEOS.map((_, index) => (
-          <PressableScale
-            key={index}
-            onPress={togglePlayPause}
-            style={{ width: SCREEN_WIDTH }}
-          >
-            <VideoView
-              style={styles.videoView}
-              player={players[index]}
-              nativeControls={false}
-            />
-          </PressableScale>
-        ))}
-      </ScrollView>
+        <ScrollView
+          ref={scrollViewRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          decelerationRate="fast"
+          snapToInterval={SCREEN_WIDTH}
+          snapToAlignment="center"
+          style={styles.scrollView}
+        >
+          {ONBOARDING_VIDEOS.map((_, index) => (
+            <PressableScale
+              key={index}
+              onPress={togglePlayPause}
+              style={{ width: SCREEN_WIDTH }}
+            >
+              <VideoView
+                style={styles.videoView}
+                player={players[index]}
+                nativeControls={false}
+              />
+            </PressableScale>
+          ))}
+        </ScrollView>
+      </Animated.View>
 
       <View style={styles.container} pointerEvents="box-none">
         <View style={styles.contentContainer} pointerEvents="box-none">
           {/* Pagination Dots */}
-          <View style={styles.paginationContainer} pointerEvents="none">
+          <Animated.View
+            entering={FadeIn.duration(500).delay(600)}
+            style={styles.paginationContainer}
+            pointerEvents="none"
+          >
             {ONBOARDING_VIDEOS.map((_, index) => (
               <View
                 key={index}
@@ -185,9 +194,10 @@ export default function Container() {
                 ]}
               />
             ))}
-          </View>
+          </Animated.View>
 
-          <View
+          <Animated.View
+            entering={FadeIn.duration(500).delay(800)}
             style={{
               width: "100%",
               alignItems: "center",
@@ -228,7 +238,8 @@ export default function Container() {
                 <ActivityIndicator />
               </View>
             ) : (
-              <View
+              <Animated.View
+                entering={FadeIn.duration(500).delay(1000)}
                 style={{ gap: 16, marginTop: 32, width: "100%" }}
                 pointerEvents="auto"
               >
@@ -241,9 +252,13 @@ export default function Container() {
                   }}
                 />
                 <AppleSignInButton />
-              </View>
+              </Animated.View>
             )}
-            <View style={styles.termsContainer} pointerEvents="auto">
+            <Animated.View
+              entering={FadeIn.duration(500).delay(1200)}
+              style={styles.termsContainer}
+              pointerEvents="auto"
+            >
               <Text type="sm" style={styles.termsText}>
                 By continuing you agree to our{" "}
                 <Link href="/terms-of-service" asChild>
@@ -252,8 +267,8 @@ export default function Container() {
                   </Text>
                 </Link>
               </Text>
-            </View>
-          </View>
+            </Animated.View>
+          </Animated.View>
         </View>
       </View>
     </>
@@ -261,13 +276,18 @@ export default function Container() {
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
+  videoContainer: {
     position: "absolute",
-    top: 0,
+    top: 10,
     left: 0,
     right: 0,
     bottom: 0,
     zIndex: 1,
+    transform: [{ scale: 0.9 }],
+  },
+
+  scrollView: {
+    flex: 1,
   },
 
   videoView: {
