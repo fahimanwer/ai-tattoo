@@ -132,8 +132,13 @@ export function Profile() {
     }
   };
 
-  const handleSignOut = () => {
-    authClient.signOut();
+  const handleSignOut = async () => {
+    try {
+      router.back();
+      await authClient.signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   if (!user) {

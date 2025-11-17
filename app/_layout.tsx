@@ -66,12 +66,7 @@ const configureRevenueCat = async () => {
 
 function AppContent() {
   const colorScheme = useColorScheme();
-  // const [loaded] = useFonts(importedFonts);
-  const {
-    data: session,
-    isPending,
-    error: sessionError,
-  } = authClient.useSession();
+  const { data: session, error: sessionError } = authClient.useSession();
 
   const isAuthenticated = !!session;
 
@@ -93,20 +88,6 @@ function AppContent() {
         });
     }
   }, [session?.user?.id, session?.user?.email]);
-
-  // const onLayoutRootView = useCallback(async () => {
-  //   if (loaded) {
-  //     await SplashScreen.hideAsync();
-  //   }
-  // }, [loaded]);
-
-  if (isPending) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
 
   if (sessionError) {
     return (
@@ -130,7 +111,6 @@ function AppContent() {
         flex: 1,
         backgroundColor: "#000000",
       }}
-      // onLayout={onLayoutRootView}
     >
       <ThemeProvider
         value={{

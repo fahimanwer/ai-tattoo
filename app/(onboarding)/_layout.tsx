@@ -3,7 +3,7 @@ import { Platform } from "react-native";
 
 export default function OnboardingLayout() {
   if (Platform.OS === "web") {
-    return <Redirect href="/(desktop)/index" />;
+    return <Redirect href="/(desktop)" />;
   }
   return (
     <Stack>

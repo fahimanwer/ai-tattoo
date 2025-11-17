@@ -1,5 +1,6 @@
 import { Color } from "@/constants/TWPalette";
-import { Image, Pressable, View } from "react-native";
+import { PressableScale } from "pressto";
+import { Image, View } from "react-native";
 import { Text } from "./Text";
 
 export default function SignInWithGoogleButton({
@@ -10,7 +11,12 @@ export default function SignInWithGoogleButton({
   disabled?: boolean;
 }) {
   return (
-    <Pressable onPress={onPress} disabled={disabled}>
+    <PressableScale
+      onPress={() => {
+        if (disabled) return;
+        onPress();
+      }}
+    >
       <View
         style={{
           width: "100%",
@@ -40,6 +46,6 @@ export default function SignInWithGoogleButton({
           Continue with Google
         </Text>
       </View>
-    </Pressable>
+    </PressableScale>
   );
 }

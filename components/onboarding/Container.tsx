@@ -6,9 +6,32 @@ import { Text } from "@/components/ui/Text";
 import { authClient } from "@/lib/auth-client";
 import { Link } from "expo-router";
 
-import { StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
-export default function Home() {
+export default function Container() {
+  const { isPending, isRefetching: isSessionRefetching } =
+    authClient.useSession();
+  const [showLoading, setShowLoading] = useState(false);
+
+  useEffect(() => {
+    const isLoading = isPending || isSessionRefetching;
+
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        setShowLoading(true);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    } else {
+      setShowLoading(false);
+    }
+  }, [isPending, isSessionRefetching]);
+
+  function isLoadingOrPending() {
+    return showLoading;
+  }
+
   return (
     <View style={styles.container}>
       <LinearGradientImageBlur
@@ -39,18 +62,31 @@ export default function Home() {
             The only tattoo mistake {`\n`} you can undo.
           </Text>
 
-          <View style={{ gap: 16, marginTop: 32, width: "100%" }}>
-            <SignInWithGoogleButton
-              onPress={() => {
-                authClient.signIn.social({
-                  provider: "google",
-                  callbackURL: "/(tabs)/home",
-                });
+          {isLoadingOrPending() ? (
+            <View
+              style={{
+                height: 104,
+                width: "100%",
+                marginTop: 32,
+                alignItems: "center",
+                justifyContent: "center",
               }}
-            />
-            <AppleSignInButton />
-          </View>
-
+            >
+              <ActivityIndicator />
+            </View>
+          ) : (
+            <View style={{ gap: 16, marginTop: 32, width: "100%" }}>
+              <SignInWithGoogleButton
+                onPress={() => {
+                  authClient.signIn.social({
+                    provider: "google",
+                    callbackURL: "/(tabs)/home",
+                  });
+                }}
+              />
+              <AppleSignInButton />
+            </View>
+          )}
           <View style={styles.termsContainer}>
             <Text type="sm" style={styles.termsText}>
               By continuing you agree to our{" "}

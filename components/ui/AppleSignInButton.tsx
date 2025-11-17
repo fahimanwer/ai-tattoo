@@ -1,5 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 import * as AppleAuthentication from "expo-apple-authentication";
+import * as Haptics from "expo-haptics";
 import { Alert, StyleSheet, useColorScheme } from "react-native";
 
 export function AppleSignInButton() {
@@ -15,6 +16,7 @@ export function AppleSignInButton() {
       cornerRadius={100}
       style={styles.button}
       onPress={async () => {
+        await Haptics.selectionAsync();
         try {
           const credential = await AppleAuthentication.signInAsync({
             requestedScopes: [
