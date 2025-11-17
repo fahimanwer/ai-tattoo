@@ -336,17 +336,17 @@ export default function Container() {
           style={styles.scrollView}
         >
           {ONBOARDING_VIDEOS.map((_, index) => (
-            <PressableScale
-              key={index}
-              onPress={togglePlayPause}
-              style={{ width: SCREEN_WIDTH }}
-            >
+            <View key={index} style={{ width: SCREEN_WIDTH, height: "100%" }}>
               <VideoView
                 style={styles.videoView}
                 player={players[index]}
                 nativeControls={false}
               />
-            </PressableScale>
+              <PressableScale
+                onPress={togglePlayPause}
+                style={styles.videoTapArea}
+              />
+            </View>
           ))}
         </ScrollView>
       </Animated.View>
@@ -468,6 +468,15 @@ const styles = StyleSheet.create({
     height: "100%",
     position: "absolute",
     top: -100,
+  },
+
+  videoTapArea: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 10,
   },
 
   container: {
