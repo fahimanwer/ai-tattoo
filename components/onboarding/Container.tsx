@@ -165,8 +165,12 @@ export default function Container() {
     authClient.useSession();
   const [showLoading, setShowLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showPausedIndicator, setShowPausedIndicator] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const hasPlayedEntranceHaptic = useRef(false);
+  const pausedIndicatorTimer = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   // Create three video players
   const player1 = useVideoPlayer(ONBOARDING_VIDEOS[0].video, (player) => {
@@ -222,6 +226,15 @@ export default function Container() {
       hasPlayedEntranceHaptic.current = true;
       NativeCoreHaptics.default.playPattern(onboardingEntranceHaptic);
     }
+  }, []);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (pausedIndicatorTimer.current) {
+        clearTimeout(pausedIndicatorTimer.current);
+      }
+    };
   }, []);
 
   // Auto-advance to next video when current video ends
@@ -306,9 +319,32 @@ export default function Container() {
   const togglePlayPause = () => {
     const currentPlayer = players[currentIndex];
     if (isPlayingStates[currentIndex]) {
+      // Pausing the video
       currentPlayer.pause();
+
+      // Clear any existing timer
+      if (pausedIndicatorTimer.current) {
+        clearTimeout(pausedIndicatorTimer.current);
+      }
+
+      // Show the paused indicator
+      setShowPausedIndicator(true);
+
+      // Hide it after 1.5 seconds
+      pausedIndicatorTimer.current = setTimeout(() => {
+        setShowPausedIndicator(false);
+      }, 1500);
     } else {
+      // Playing the video - no indicator needed
       currentPlayer.play();
+
+      // Hide paused indicator if it's showing
+      if (showPausedIndicator) {
+        setShowPausedIndicator(false);
+      }
+      if (pausedIndicatorTimer.current) {
+        clearTimeout(pausedIndicatorTimer.current);
+      }
     }
   };
 
@@ -346,6 +382,21 @@ export default function Container() {
                 onPress={togglePlayPause}
                 style={styles.videoTapArea}
               />
+              {/* Paused Indicator */}
+              {showPausedIndicator && index === currentIndex && (
+                <Animated.View
+                  entering={FadeIn.duration(300)}
+                  exiting={FadeOut.duration(300)}
+                  style={styles.pausedIndicator}
+                  pointerEvents="none"
+                >
+                  <View style={styles.pausedIndicatorBg}>
+                    <Text type="xl" weight="semibold" style={{ color: "#fff" }}>
+                      Paused
+                    </Text>
+                  </View>
+                </Animated.View>
+              )}
             </View>
           ))}
         </ScrollView>
@@ -477,6 +528,23 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 10,
+  },
+
+  pausedIndicator: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -60 }, { translateY: -25 }],
+    zIndex: 20,
+  },
+
+  pausedIndicatorBg: {
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   container: {
