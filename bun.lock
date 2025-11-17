@@ -44,6 +44,7 @@
         "expo-status-bar": "3.0.9-canary-20251031-b135dff",
         "expo-symbols": "1.1.0-canary-20251031-b135dff",
         "expo-system-ui": "6.0.9-canary-20251031-b135dff",
+        "expo-video": "3.1.0-canary-20251031-b135dff",
         "expo-web-browser": "15.0.9-canary-20251031-b135dff",
         "jose": "^6.1.0",
         "pressto": "^0.6.0",
@@ -1062,6 +1063,8 @@
     "expo-system-ui": ["expo-system-ui@6.0.9-canary-20251031-b135dff", "", { "dependencies": { "@react-native/normalize-colors": "0.82.1", "debug": "^4.3.2" }, "peerDependencies": { "expo": "55.0.0-canary-20251031-b135dff", "react-native": "*", "react-native-web": "*" }, "optionalPeers": ["react-native-web"] }, "sha512-+9nUAKw3amfH2OwINu+IT/bp8zFweJwu3RRCev0eh9Ro2BNDkMv7TxSutzj1ZkahhgL0wBsNRwL859f80FhMdw=="],
 
     "expo-updates-interface": ["expo-updates-interface@2.0.1-canary-20251031-b135dff", "", { "peerDependencies": { "expo": "55.0.0-canary-20251031-b135dff" } }, "sha512-qYJngXgMU+S/UjiG2+ESVFLaeTETULW3xavuNAbNDWcGXZu6Zb/fZEDsyn3by2pCWTuk3AeOb+/8xG2dnFMpXw=="],
+
+    "expo-video": ["expo-video@3.1.0-canary-20251031-b135dff", "", { "peerDependencies": { "expo": "55.0.0-canary-20251031-b135dff", "react": "*", "react-native": "*" } }, "sha512-PoXfJz1q0Q8DrmGjanBGum056SAv9YeUa6JThYDvdwh3ov1y47r0NpHQYJsbGmbgALZDlX+iK++EZzXTYUQv9w=="],
 
     "expo-web-browser": ["expo-web-browser@15.0.9-canary-20251031-b135dff", "", { "peerDependencies": { "expo": "55.0.0-canary-20251031-b135dff", "react-native": "*" } }, "sha512-/xRvFKyAXCwxBEchdnO1GS6P6aiUhTTeHi8/VkK3q+PY8qegxST34ystjPGMQgSwA6a+65P93pAgCIIjPW17kg=="],
 
