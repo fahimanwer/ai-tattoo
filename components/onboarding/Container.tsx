@@ -120,7 +120,11 @@ export default function Container() {
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / SCREEN_WIDTH);
-    if (index !== currentIndex) {
+    if (
+      index !== currentIndex &&
+      index >= 0 &&
+      index < ONBOARDING_VIDEOS.length
+    ) {
       setCurrentIndex(index);
     }
   };
@@ -145,7 +149,7 @@ export default function Container() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={handleScroll}
+        onScroll={handleScroll}
         scrollEventThrottle={16}
         decelerationRate="fast"
         snapToInterval={SCREEN_WIDTH}
