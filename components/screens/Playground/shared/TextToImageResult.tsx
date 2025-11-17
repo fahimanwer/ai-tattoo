@@ -1,7 +1,7 @@
 import { Text } from "@/components/ui/Text";
-import { blurhash } from "@/components/ui/VerticalCard";
 import { Color } from "@/constants/TWPalette";
 import { ImageGenerationMutation } from "@/context/PlaygroundContext";
+import { BLURHASH } from "@/lib/image-cache";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -110,7 +110,7 @@ export function TextToImageResult({
     >
       <Image
         source={{ uri: lastGenerationUri }}
-        placeholder={{ blurhash }}
+        placeholder={{ blurhash: BLURHASH }}
         cachePolicy="memory-disk"
         style={{
           width: "100%",
@@ -186,7 +186,7 @@ function LoadingChangingText({
       {lastGenerationUri && (
         <Image
           source={{ uri: lastGenerationUri }}
-          placeholder={{ blurhash }}
+          placeholder={{ blurhash: BLURHASH }}
           cachePolicy="memory-disk"
           style={{
             width: 100,

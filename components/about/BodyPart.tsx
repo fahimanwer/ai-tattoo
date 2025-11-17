@@ -2,6 +2,7 @@ import { Text } from "@/components/ui/Text";
 import { VerticalCard } from "@/components/ui/VerticalCard";
 import { Color } from "@/constants/TWPalette";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
+import { BLURHASH } from "@/lib/image-cache";
 import {
   filterImagesByBodyPart,
   GalleryImage,
@@ -19,9 +20,6 @@ import Animated, {
 } from "react-native-reanimated";
 
 const HEADER_HEIGHT = 420;
-
-export const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 interface BodyPartParallaxViewProps {
   bodyPart: string;
@@ -106,7 +104,7 @@ export default function BodyPartParallaxView({
         <Animated.View style={[styles.header, headerAnimatedStyle]}>
           <Image
             source={coverImage}
-            placeholder={{ blurhash }}
+            placeholder={{ blurhash: BLURHASH }}
             contentFit="cover"
             transition={1000}
             style={{

@@ -1,7 +1,7 @@
 import { Icon } from "@/components/ui/Icon";
 import { Text } from "@/components/ui/Text";
 import { PlaygroundContext } from "@/context/PlaygroundContext";
-import { cacheImageFromUrl } from "@/lib/image-cache";
+import { BLURHASH, cacheImageFromUrl } from "@/lib/image-cache";
 import { Button, Host } from "@expo/ui/swift-ui";
 import { fixedSize } from "@expo/ui/swift-ui/modifiers";
 import { GlassView } from "expo-glass-effect";
@@ -15,9 +15,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-
-export const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -86,7 +83,7 @@ function InteractiveImage({ uri }: { uri: string }) {
           style={styles.image}
           contentFit="contain"
           cachePolicy="memory-disk"
-          placeholder={{ blurhash }}
+          placeholder={{ blurhash: BLURHASH }}
           transition={1000}
         />
       </Animated.View>

@@ -1,5 +1,6 @@
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
+import { BLURHASH } from "@/lib/image-cache";
 import { Image } from "expo-image";
 import type { PropsWithChildren } from "react";
 import { ImageSourcePropType, StyleSheet, View } from "react-native";
@@ -11,9 +12,6 @@ import Animated, {
 } from "react-native-reanimated";
 
 const HEADER_HEIGHT = 420;
-
-export const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 export default function ParallaxScrollView({
   children,
@@ -69,7 +67,7 @@ export default function ParallaxScrollView({
           <Image
             cachePolicy="memory-disk"
             source={imageUrl}
-            placeholder={{ blurhash }}
+            placeholder={{ blurhash: BLURHASH }}
             contentFit="cover"
             transition={1000}
             style={{

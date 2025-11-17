@@ -8,7 +8,7 @@ import { router } from "expo-router";
 import { Alert, Pressable } from "react-native";
 
 export function Banner() {
-  const { isLimitReached, subscriptionTier } = useUsageLimit();
+  const { isLimitReached, subscriptionTier, isLoading } = useUsageLimit();
 
   // Only show banner if user is on free tier or has reached their limit
   const shouldShowBanner = subscriptionTier === "free" || isLimitReached;
@@ -36,6 +36,10 @@ export function Banner() {
 
   // Don't render banner if user doesn't need to upgrade
   if (!shouldShowBanner) {
+    return null;
+  }
+
+  if (isLoading) {
     return null;
   }
 

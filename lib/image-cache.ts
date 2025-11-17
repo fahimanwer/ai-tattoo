@@ -1,6 +1,8 @@
 import { Directory, File, Paths } from "expo-file-system";
 import { base64ToBytes } from "./base64-utils";
 
+export const BLURHASH = "LBDbA}oL00Na~B9u57={XRay-Uj[";
+
 /**
  * Image cache utility for storing generated images to disk
  * instead of keeping large base64 strings in memory

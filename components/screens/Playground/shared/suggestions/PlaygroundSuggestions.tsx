@@ -1,7 +1,7 @@
 import { Text } from "@/components/ui/Text";
-import { blurhash } from "@/components/ui/VerticalCard";
 import { Color } from "@/constants/TWPalette";
 import { featuredTattoos } from "@/lib/featured-tattoos";
+import { BLURHASH } from "@/lib/image-cache";
 import { Image } from "expo-image";
 import { PressableScale } from "pressto";
 import { ScrollView } from "react-native";
@@ -41,7 +41,7 @@ export function PlaygroundSuggestions({
             <Image
               source={item.image}
               style={{ width: 40, height: 40, borderRadius: 99 }}
-              placeholder={{ blurhash: blurhash }}
+              placeholder={{ blurhash: BLURHASH }}
               transition={300}
             />
             <Text

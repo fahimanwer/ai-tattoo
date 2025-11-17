@@ -5,6 +5,7 @@ import { useTattooCreation } from "@/context/TattooCreationContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { ApiError } from "@/lib/api-client";
 import { assetToBase64, urlToBase64 } from "@/lib/base64-utils";
+import { BLURHASH } from "@/lib/image-cache";
 import { textAndImageToImage } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,9 +17,6 @@ import { AnimatedText } from "./Playground/shared/AnimatedText";
 
 // Constants
 const MIX_TWO_PHOTOS_PROMPT = `Apply the tattoo design from the second image onto the body part from the first image. Create a hyper-realistic integration where the tattoo design follows the exact curvature and natural folds of the skin from the first image, adapting seamlessly to the anatomy. IMPORTANT: Preserve the exact natural skin tone, color, and texture from the original body part photo - do not alter or change the skin color in any way. The tattoo ink must look authentically healed into the skin: slightly diffused in pores, with natural wear, subtle fading in areas of tension, and matte tones rather than excessive shine. Shading and lines should curve and flow with the muscles and skin surface, never floating above it. Show fine details of skin texture such as pores, wrinkles, and light imperfections, blending with the tattoo ink while maintaining the original skin coloring. Lighting should remain soft and realistic, avoiding glossy or artificial effects, so the tattoo looks fully integrated and aged naturally. The final result should be the body part from the first image with the tattoo design applied, keeping all original skin characteristics intact. No background, only the tattooed body part in ultra-high resolution.`;
-
-const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 export function TattooGenerationResult() {
   const {
@@ -173,7 +171,7 @@ export function TattooGenerationResult() {
             onPress: () => {
               resetTattooCreation();
               setCurrentStep(1);
-              router.replace("/(tabs)/home");
+              router.replace("/(tabs)/(home)");
             },
           },
           {
@@ -190,7 +188,7 @@ export function TattooGenerationResult() {
                   // Then proceed to generate another
                   resetTattooCreation();
                   setCurrentStep(1);
-                  router.replace("/(tabs)/home");
+                  router.replace("/(tabs)/(home)");
                 } catch (error) {
                   Alert.alert(
                     "Error",
@@ -207,7 +205,7 @@ export function TattooGenerationResult() {
       // If already saved, proceed without confirmation
       resetTattooCreation();
       setCurrentStep(1);
-      router.replace("/(tabs)/home");
+      router.replace("/(tabs)/(home)");
     }
   }, [
     hasBeenSaved,
@@ -231,7 +229,7 @@ export function TattooGenerationResult() {
             resetTattooCreation();
             setCurrentStep(1);
             // Navigate to home
-            router.replace("/(tabs)/home");
+            router.replace("/(tabs)/(home)");
           },
         },
       ]
@@ -321,7 +319,7 @@ export function TattooGenerationResult() {
             contentFit="cover"
             contentPosition="center"
             transition={1000}
-            placeholder={{ blurhash }}
+            placeholder={{ blurhash: BLURHASH }}
           />
         </View>
 

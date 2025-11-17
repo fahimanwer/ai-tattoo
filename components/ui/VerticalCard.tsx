@@ -1,6 +1,7 @@
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
+import { BLURHASH } from "@/lib/image-cache";
 import { BlurView } from "expo-blur";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
@@ -23,9 +24,6 @@ interface VerticalCardProps {
   subtitle?: string; // Override subtitle from style object
   imageStyle?: StyleProp<ImageStyle>;
 }
-
-export const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 const IMAGE_WIDTH = Dimensions.get("window").width / 2 - 16;
 export function VerticalCard({
@@ -75,7 +73,7 @@ export function VerticalCard({
           ]}
           contentFit="cover"
           contentPosition="center"
-          placeholder={{ blurhash }}
+          placeholder={{ blurhash: BLURHASH }}
           transition={1000}
         />
         {showOverlay && (

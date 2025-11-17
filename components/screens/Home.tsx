@@ -1,26 +1,38 @@
 import { useUserData } from "@/hooks/useUserData";
-import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { useState } from "react";
+import { RefreshControl, ScrollView, StyleSheet } from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { BodyPartsInspiration } from "../home/BodyPartsInspiration";
 import { GetInspiration } from "../home/GetInspiration";
 import { Banner } from "../pro/Banner";
 
 export function Home() {
-  const { isLoading, refresh } = useUserData();
+  const { refresh } = useUserData();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refresh();
+    setIsRefreshing(false);
+  };
 
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ paddingHorizontal: 16 }}
       refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={refresh} />
+        <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
       }
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.section}>
+      <Animated.View
+        style={styles.section}
+        entering={FadeIn.duration(800).delay(100).springify()}
+      >
         <Banner />
         <GetInspiration />
         <BodyPartsInspiration />
-      </View>
+      </Animated.View>
     </ScrollView>
   );
 }

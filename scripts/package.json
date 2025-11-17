@@ -1,0 +1,13 @@
+{
+  "name": "ai-tattoo-scripts",
+  "version": "1.0.0",
+  "description": "Utility scripts for AI Tattoo app",
+  "private": true,
+  "scripts": {
+    "generate-blurhash": "node generate-blurhash.js"
+  },
+  "dependencies": {
+    "blurhash": "^2.0.5",
+    "sharp": "^0.33.5"
+  }
+}
