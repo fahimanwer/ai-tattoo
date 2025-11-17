@@ -5,6 +5,8 @@ import { Text } from "@/components/ui/Text";
 import { authClient } from "@/lib/auth-client";
 import { Link } from "expo-router";
 
+import type { HapticPatternData } from "@/modules/native-core-haptics";
+import * as NativeCoreHaptics from "@/modules/native-core-haptics";
 import { useEvent } from "expo";
 import { StatusBar } from "expo-status-bar";
 import { useVideoPlayer, VideoView } from "expo-video";
@@ -47,12 +49,124 @@ const ONBOARDING_VIDEOS = [
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
+/**
+ * Onboarding entrance haptic - synced with the staggered fade-in animations
+ * Creates a gentle, welcoming rhythm that matches the visual flow
+ * Updated with more delightful, spaced-out timing
+ */
+const onboardingEntranceHaptic: HapticPatternData = {
+  events: [
+    // Video fades in (200ms delay)
+    {
+      eventType: "hapticTransient",
+      time: 0.2,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.3 },
+        { parameterID: "hapticSharpness", value: 0.2 },
+      ],
+    },
+    // Pagination dots appear (700ms)
+    {
+      eventType: "hapticTransient",
+      time: 0.7,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.35 },
+        { parameterID: "hapticSharpness", value: 0.25 },
+      ],
+    },
+    // Title & description fade in (950ms)
+    {
+      eventType: "hapticTransient",
+      time: 0.95,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.45 },
+        { parameterID: "hapticSharpness", value: 0.3 },
+      ],
+    },
+    // Buttons appear (1200ms)
+    {
+      eventType: "hapticTransient",
+      time: 1.2,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.5 },
+        { parameterID: "hapticSharpness", value: 0.35 },
+      ],
+    },
+    // Terms text completes the sequence (1450ms)
+    {
+      eventType: "hapticTransient",
+      time: 1.45,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.4 },
+        { parameterID: "hapticSharpness", value: 0.25 },
+      ],
+    },
+    // Gentle settling haptic (1650ms)
+    {
+      eventType: "hapticContinuous",
+      time: 1.65,
+      eventDuration: 0.3,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.2 },
+        { parameterID: "hapticSharpness", value: 0.15 },
+      ],
+    },
+  ],
+  parameterCurves: [
+    {
+      parameterID: "hapticIntensityControl",
+      relativeTime: 1.65,
+      controlPoints: [
+        { relativeTime: 0.0, value: 0.25 },
+        { relativeTime: 1.0, value: 0.0 },
+      ],
+    },
+  ],
+};
+
+/**
+ * Subtle haptic when swiping between onboarding steps
+ * Quick and satisfying, like turning a page
+ */
+const onboardingSwipeHaptic: HapticPatternData = {
+  events: [
+    {
+      eventType: "hapticTransient",
+      time: 0.0,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.5 },
+        { parameterID: "hapticSharpness", value: 0.4 },
+      ],
+    },
+    {
+      eventType: "hapticContinuous",
+      time: 0.02,
+      eventDuration: 0.08,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.25 },
+        { parameterID: "hapticSharpness", value: 0.2 },
+      ],
+    },
+  ],
+  parameterCurves: [
+    {
+      parameterID: "hapticIntensityControl",
+      relativeTime: 0.02,
+      controlPoints: [
+        { relativeTime: 0.0, value: 0.3 },
+        { relativeTime: 1.0, value: 0.0 },
+      ],
+    },
+  ],
+};
+
 export default function Container() {
   const { isPending, isRefetching: isSessionRefetching } =
     authClient.useSession();
   const [showLoading, setShowLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+  const hasPlayedEntranceHaptic = useRef(false);
 
   // Create three video players
   const player1 = useVideoPlayer(ONBOARDING_VIDEOS[0].video, (player) => {
@@ -84,6 +198,14 @@ export default function Container() {
   });
 
   const isPlayingStates = [isPlaying1, isPlaying2, isPlaying3];
+
+  // Play entrance haptic on first mount
+  useEffect(() => {
+    if (!hasPlayedEntranceHaptic.current) {
+      hasPlayedEntranceHaptic.current = true;
+      NativeCoreHaptics.default.playPattern(onboardingEntranceHaptic);
+    }
+  }, []);
 
   useEffect(() => {
     const isLoading = isPending || isSessionRefetching;
@@ -126,6 +248,8 @@ export default function Container() {
       index < ONBOARDING_VIDEOS.length
     ) {
       setCurrentIndex(index);
+      // Play swipe haptic when changing steps
+      NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
     }
   };
 
@@ -146,7 +270,7 @@ export default function Container() {
     <>
       <StatusBar hidden />
       <Animated.View
-        entering={FadeIn.duration(600).delay(200)}
+        entering={FadeIn.duration(700).delay(200)}
         style={styles.videoContainer}
       >
         <ScrollView
@@ -181,7 +305,7 @@ export default function Container() {
         <View style={styles.contentContainer} pointerEvents="box-none">
           {/* Pagination Dots */}
           <Animated.View
-            entering={FadeIn.duration(500).delay(600)}
+            entering={FadeIn.duration(600).delay(700)}
             style={styles.paginationContainer}
             pointerEvents="none"
           >
@@ -197,7 +321,7 @@ export default function Container() {
           </Animated.View>
 
           <Animated.View
-            entering={FadeIn.duration(500).delay(800)}
+            entering={FadeIn.duration(600).delay(950)}
             style={{
               width: "100%",
               alignItems: "center",
@@ -239,7 +363,7 @@ export default function Container() {
               </View>
             ) : (
               <Animated.View
-                entering={FadeIn.duration(500).delay(1000)}
+                entering={FadeIn.duration(600).delay(1200)}
                 style={{ gap: 16, marginTop: 32, width: "100%" }}
                 pointerEvents="auto"
               >
@@ -255,7 +379,7 @@ export default function Container() {
               </Animated.View>
             )}
             <Animated.View
-              entering={FadeIn.duration(500).delay(1200)}
+              entering={FadeIn.duration(600).delay(1450)}
               style={styles.termsContainer}
               pointerEvents="auto"
             >
@@ -278,12 +402,11 @@ export default function Container() {
 const styles = StyleSheet.create({
   videoContainer: {
     position: "absolute",
-    top: 10,
+    top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     zIndex: 1,
-    transform: [{ scale: 0.9 }],
   },
 
   scrollView: {
