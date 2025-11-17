@@ -9,8 +9,16 @@ import { Color } from "@/constants/TWPalette";
 import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { PressableScale } from "pressto";
-import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
 const ONBOARDING_VIDEOS = [
   {
@@ -36,19 +44,45 @@ const ONBOARDING_VIDEOS = [
   },
 ];
 
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
 export default function Container() {
   const { isPending, isRefetching: isSessionRefetching } =
     authClient.useSession();
   const [showLoading, setShowLoading] = useState(false);
-  const player = useVideoPlayer(ONBOARDING_VIDEOS[0].video, (player) => {
-    player.loop = false;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  // Create three video players
+  const player1 = useVideoPlayer(ONBOARDING_VIDEOS[0].video, (player) => {
+    player.loop = true;
     player.playbackRate = 1.5;
     player.play();
   });
 
-  const { isPlaying } = useEvent(player, "playingChange", {
-    isPlaying: player.playing,
+  const player2 = useVideoPlayer(ONBOARDING_VIDEOS[1].video, (player) => {
+    player.loop = true;
+    player.playbackRate = 1.5;
   });
+
+  const player3 = useVideoPlayer(ONBOARDING_VIDEOS[2].video, (player) => {
+    player.loop = true;
+    player.playbackRate = 1.5;
+  });
+
+  const players = [player1, player2, player3];
+
+  const { isPlaying: isPlaying1 } = useEvent(player1, "playingChange", {
+    isPlaying: player1.playing,
+  });
+  const { isPlaying: isPlaying2 } = useEvent(player2, "playingChange", {
+    isPlaying: player2.playing,
+  });
+  const { isPlaying: isPlaying3 } = useEvent(player3, "playingChange", {
+    isPlaying: player3.playing,
+  });
+
+  const isPlayingStates = [isPlaying1, isPlaying2, isPlaying3];
 
   useEffect(() => {
     const isLoading = isPending || isSessionRefetching;
@@ -64,27 +98,89 @@ export default function Container() {
     }
   }, [isPending, isSessionRefetching]);
 
+  // Handle video switching based on current index
+  useEffect(() => {
+    // Play only the current video, pause others
+    if (currentIndex === 0) {
+      player1.play();
+      player2.pause();
+      player3.pause();
+    } else if (currentIndex === 1) {
+      player1.pause();
+      player2.play();
+      player3.pause();
+    } else if (currentIndex === 2) {
+      player1.pause();
+      player2.pause();
+      player3.play();
+    }
+  }, [currentIndex, player1, player2, player3]);
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(offsetX / SCREEN_WIDTH);
+    if (index !== currentIndex) {
+      setCurrentIndex(index);
+    }
+  };
+
+  const togglePlayPause = () => {
+    const currentPlayer = players[currentIndex];
+    if (isPlayingStates[currentIndex]) {
+      currentPlayer.pause();
+    } else {
+      currentPlayer.play();
+    }
+  };
+
   function isLoadingOrPending() {
     return showLoading;
   }
 
   return (
     <>
+      <ScrollView
+        ref={scrollViewRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={handleScroll}
+        scrollEventThrottle={16}
+        decelerationRate="fast"
+        snapToInterval={SCREEN_WIDTH}
+        snapToAlignment="center"
+        style={styles.scrollView}
+      >
+        {ONBOARDING_VIDEOS.map((_, index) => (
+          <PressableScale
+            key={index}
+            onPress={togglePlayPause}
+            style={{ width: SCREEN_WIDTH }}
+          >
+            <VideoView
+              style={styles.videoView}
+              player={players[index]}
+              nativeControls={false}
+            />
+          </PressableScale>
+        ))}
+      </ScrollView>
+
       <View style={styles.container}>
         <View style={styles.contentContainer}>
-          <View>
-            <PressableScale
-              onPress={() => {
-                if (isPlaying) {
-                  player.pause();
-                } else {
-                  player.play();
-                }
-              }}
-            >
-              <Text>Play</Text>
-            </PressableScale>
+          {/* Pagination Dots */}
+          <View style={styles.paginationContainer}>
+            {ONBOARDING_VIDEOS.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.paginationDot,
+                  currentIndex === index && styles.paginationDotActive,
+                ]}
+              />
+            ))}
           </View>
+
           <View
             style={{
               width: "100%",
@@ -92,19 +188,16 @@ export default function Container() {
               position: "relative",
             }}
           >
-            <Text
-              type="6xl"
-              weight="bold"
-              style={{ letterSpacing: -2, textAlign: "center", lineHeight: 58 }}
-            >
-              Try first, {`\n`} ink later
+            <Text type="3xl" weight="bold" style={{ textAlign: "center" }}>
+              {ONBOARDING_VIDEOS[currentIndex].title}
             </Text>
             <Text
               type="xl"
-              weight="normal"
-              style={{ opacity: 0.6, textAlign: "center" } as any}
+              style={
+                { opacity: 0.6, textAlign: "center", marginTop: 12 } as any
+              }
             >
-              The only tattoo mistake {`\n`} you can undo.
+              {ONBOARDING_VIDEOS[currentIndex].description}
             </Text>
 
             {isLoadingOrPending() ? (
@@ -145,21 +238,27 @@ export default function Container() {
           </View>
         </View>
       </View>
-      <VideoView
-        style={{
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-          top: -50,
-          zIndex: -1,
-        }}
-        player={player}
-      />
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
+  },
+
+  videoView: {
+    width: SCREEN_WIDTH,
+    height: "100%",
+    position: "absolute",
+    top: -50,
+  },
+
   container: {
     flex: 1,
     position: "relative",
@@ -177,6 +276,26 @@ const styles = StyleSheet.create({
     zIndex: 3,
     paddingBottom: 32,
     paddingHorizontal: 16,
+  },
+
+  paginationContainer: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+  },
+
+  paginationDotActive: {
+    backgroundColor: "rgba(255, 255, 255, 1)",
+    width: 24,
   },
 
   termsContainer: {
