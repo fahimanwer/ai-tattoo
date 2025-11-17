@@ -5,8 +5,8 @@ import { Text } from "@/components/ui/Text";
 import { authClient } from "@/lib/auth-client";
 import { Link } from "expo-router";
 
-import { Color } from "@/constants/TWPalette";
 import { useEvent } from "expo";
+import { StatusBar } from "expo-status-bar";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { PressableScale } from "pressto";
 import { useEffect, useRef, useState } from "react";
@@ -144,6 +144,7 @@ export default function Container() {
 
   return (
     <>
+      <StatusBar hidden />
       <ScrollView
         ref={scrollViewRef}
         horizontal
@@ -273,13 +274,13 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     height: "100%",
     position: "absolute",
-    top: -50,
+    top: -100,
   },
 
   container: {
     flex: 1,
     position: "relative",
-    experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.slate[950]})`,
+    experimental_backgroundImage: `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.8) 70%, #000000 100%)`,
     zIndex: 2,
   },
 

@@ -1,18 +1,13 @@
 import { authClient } from "@/lib/auth-client";
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as Haptics from "expo-haptics";
-import { Alert, StyleSheet, useColorScheme } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 
 export function AppleSignInButton() {
-  const colorScheme = useColorScheme();
   return (
     <AppleAuthentication.AppleAuthenticationButton
       buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-      buttonStyle={
-        colorScheme === "dark"
-          ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
-          : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-      }
+      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
       cornerRadius={100}
       style={styles.button}
       onPress={async () => {
