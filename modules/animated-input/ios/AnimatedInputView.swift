@@ -224,6 +224,29 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       
     }
     .padding()
+    .contentShape(Rectangle())
+    .onTapGesture {
+      if isFocused {
+        generatorHaptic.selectionChanged()
+        isFocused = false
+      }
+    }
+    .gesture(
+      DragGesture(minimumDistance: 20)
+        .onEnded { value in
+          let vertical = value.translation.height
+          
+          if vertical > 20 {
+            // Swipe down to dismis
+            generatorHaptic.selectionChanged()
+            isFocused = false
+          } else if vertical < -20 {
+            // Swipe up to focus
+            generatorHaptic.selectionChanged()
+            isFocused = true
+          }
+        }
+    )
     .onAppear {
       text = props.defaultValue
       if props.autoFocus {

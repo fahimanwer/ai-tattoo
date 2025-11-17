@@ -13,7 +13,6 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { PressableScale } from "pressto";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -161,9 +160,6 @@ const onboardingSwipeHaptic: HapticPatternData = {
 };
 
 export default function Container() {
-  const { isPending, isRefetching: isSessionRefetching } =
-    authClient.useSession();
-  const [showLoading, setShowLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPausedIndicator, setShowPausedIndicator] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -267,20 +263,6 @@ export default function Container() {
     }
   }, [status1, status2, status3, currentIndex, isPlayingStates, players]);
 
-  useEffect(() => {
-    const isLoading = isPending || isSessionRefetching;
-
-    if (isLoading) {
-      const timer = setTimeout(() => {
-        setShowLoading(true);
-      }, 500);
-
-      return () => clearTimeout(timer);
-    } else {
-      setShowLoading(false);
-    }
-  }, [isPending, isSessionRefetching]);
-
   // Handle video switching based on current index
   useEffect(() => {
     // Play only the current video, pause others, and restart from beginning
@@ -347,10 +329,6 @@ export default function Container() {
       }
     }
   };
-
-  function isLoadingOrPending() {
-    return showLoading;
-  }
 
   return (
     <>
@@ -450,35 +428,22 @@ export default function Container() {
               </Text>
             </Animated.View>
 
-            {isLoadingOrPending() ? (
-              <View
-                style={{
-                  height: 104,
-                  width: "100%",
-                  marginTop: 32,
-                  alignItems: "center",
-                  justifyContent: "center",
+            <Animated.View
+              entering={FadeIn.duration(600).delay(1200)}
+              style={{ gap: 16, marginTop: 32, width: "100%" }}
+              pointerEvents="auto"
+            >
+              <SignInWithGoogleButton
+                onPress={() => {
+                  authClient.signIn.social({
+                    provider: "google",
+                    callbackURL: "/(tabs)/home",
+                  });
                 }}
-              >
-                <ActivityIndicator />
-              </View>
-            ) : (
-              <Animated.View
-                entering={FadeIn.duration(600).delay(1200)}
-                style={{ gap: 16, marginTop: 32, width: "100%" }}
-                pointerEvents="auto"
-              >
-                <SignInWithGoogleButton
-                  onPress={() => {
-                    authClient.signIn.social({
-                      provider: "google",
-                      callbackURL: "/(tabs)/home",
-                    });
-                  }}
-                />
-                <AppleSignInButton />
-              </Animated.View>
-            )}
+              />
+              <AppleSignInButton />
+            </Animated.View>
+
             <Animated.View
               entering={FadeIn.duration(600).delay(1450)}
               style={styles.termsContainer}

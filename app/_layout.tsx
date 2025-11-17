@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
-import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { Toaster } from "sonner-native";
 
 // Native imports
@@ -18,6 +18,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { authClient } from "@/lib/auth-client";
 import "react-native-reanimated";
 
+import { AnimatedText } from "@/components/screens/Playground/shared/AnimatedText";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { PlaygroundProvider } from "@/context/PlaygroundContext";
@@ -214,6 +215,11 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const [isRevenueCatReady, setIsRevenueCatReady] = useState(false);
+  const [showAnimatedText, setShowAnimatedText] = useState(false);
+  const { isPending, isRefetching: isSessionRefetching } =
+    authClient.useSession();
+
+  const isLoading = !isRevenueCatReady || isPending || isSessionRefetching;
 
   // Configure RevenueCat on mount before rendering SubscriptionProvider
   useEffect(() => {
@@ -224,28 +230,47 @@ export default function RootLayout() {
     }
   }, []);
 
+  // Only show animated text if loading takes longer than 1 second
+  useEffect(() => {
+    if (!isLoading) {
+      // Reset the animated text state when we're done loading
+      setShowAnimatedText(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (isLoading) {
+        setShowAnimatedText(true);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
   if (Platform.OS === "web") {
     return <WebLayout />;
   }
 
   // Wait for RevenueCat to be configured before rendering SubscriptionProvider
-  if (!isRevenueCatReady) {
+  if (isLoading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#000000",
-        }}
-      >
-        <ActivityIndicator color="#ffffff" />
-      </View>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#000000",
+          }}
+        >
+          {showAnimatedText && <AnimatedText text="Welcome Back!" />}
+        </View>
+      </GestureHandlerRootView>
     );
   }
 
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <AccentColorProvider>
         <QueryClientProvider client={queryClient}>
           <SubscriptionProvider>
