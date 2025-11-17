@@ -11,7 +11,7 @@ import { useEvent } from "expo";
 import { StatusBar } from "expo-status-bar";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { PressableScale } from "pressto";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -170,22 +170,25 @@ export default function Container() {
 
   // Create three video players
   const player1 = useVideoPlayer(ONBOARDING_VIDEOS[0].video, (player) => {
-    player.loop = true;
+    player.loop = false;
     player.playbackRate = 1.5;
     player.play();
   });
 
   const player2 = useVideoPlayer(ONBOARDING_VIDEOS[1].video, (player) => {
-    player.loop = true;
+    player.loop = false;
     player.playbackRate = 1.5;
   });
 
   const player3 = useVideoPlayer(ONBOARDING_VIDEOS[2].video, (player) => {
-    player.loop = true;
+    player.loop = false;
     player.playbackRate = 1.5;
   });
 
-  const players = [player1, player2, player3];
+  const players = useMemo(
+    () => [player1, player2, player3],
+    [player1, player2, player3]
+  );
 
   const { isPlaying: isPlaying1 } = useEvent(player1, "playingChange", {
     isPlaying: player1.playing,
@@ -197,7 +200,21 @@ export default function Container() {
     isPlaying: player3.playing,
   });
 
-  const isPlayingStates = [isPlaying1, isPlaying2, isPlaying3];
+  const isPlayingStates = useMemo(
+    () => [isPlaying1, isPlaying2, isPlaying3],
+    [isPlaying1, isPlaying2, isPlaying3]
+  );
+
+  // Listen for video status changes to detect when video ends
+  const { status: status1 } = useEvent(player1, "statusChange", {
+    status: player1.status,
+  });
+  const { status: status2 } = useEvent(player2, "statusChange", {
+    status: player2.status,
+  });
+  const { status: status3 } = useEvent(player3, "statusChange", {
+    status: player3.status,
+  });
 
   // Play entrance haptic on first mount
   useEffect(() => {
@@ -206,6 +223,36 @@ export default function Container() {
       NativeCoreHaptics.default.playPattern(onboardingEntranceHaptic);
     }
   }, []);
+
+  // Auto-advance to next video when current video ends
+  useEffect(() => {
+    const currentPlayer = players[currentIndex];
+    const isCurrentlyPlaying = isPlayingStates[currentIndex];
+
+    // Check if video has ended (not playing and at the end)
+    if (
+      !isCurrentlyPlaying &&
+      currentPlayer.currentTime > 0 &&
+      currentPlayer.duration > 0 &&
+      currentPlayer.currentTime >= currentPlayer.duration - 0.1
+    ) {
+      // Wait 1 second then advance to next video
+      const timer = setTimeout(() => {
+        const nextIndex = currentIndex === 2 ? 0 : currentIndex + 1;
+
+        // Scroll to next video
+        scrollViewRef.current?.scrollTo({
+          x: nextIndex * SCREEN_WIDTH,
+          animated: true,
+        });
+
+        // Play swipe haptic
+        NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [status1, status2, status3, currentIndex, isPlayingStates, players]);
 
   useEffect(() => {
     const isLoading = isPending || isSessionRefetching;
@@ -223,18 +270,21 @@ export default function Container() {
 
   // Handle video switching based on current index
   useEffect(() => {
-    // Play only the current video, pause others
+    // Play only the current video, pause others, and restart from beginning
     if (currentIndex === 0) {
+      player1.currentTime = 0;
       player1.play();
       player2.pause();
       player3.pause();
     } else if (currentIndex === 1) {
       player1.pause();
+      player2.currentTime = 0;
       player2.play();
       player3.pause();
     } else if (currentIndex === 2) {
       player1.pause();
       player2.pause();
+      player3.currentTime = 0;
       player3.play();
     }
   }, [currentIndex, player1, player2, player3]);
