@@ -19,6 +19,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 const ONBOARDING_VIDEOS = [
   {
@@ -189,17 +190,25 @@ export default function Container() {
             }}
             pointerEvents="box-none"
           >
-            <Text type="3xl" weight="bold" style={{ textAlign: "center" }}>
-              {ONBOARDING_VIDEOS[currentIndex].title}
-            </Text>
-            <Text
-              type="xl"
-              style={
-                { opacity: 0.6, textAlign: "center", marginTop: 12 } as any
-              }
+            <Animated.View
+              key={currentIndex}
+              entering={FadeIn.duration(500)}
+              exiting={FadeOut.duration(500)}
+              pointerEvents="none"
+              style={{ width: "100%" }}
             >
-              {ONBOARDING_VIDEOS[currentIndex].description}
-            </Text>
+              <Text type="3xl" weight="bold" style={{ textAlign: "center" }}>
+                {ONBOARDING_VIDEOS[currentIndex].title}
+              </Text>
+              <Text
+                type="xl"
+                style={
+                  { opacity: 0.6, textAlign: "center", marginTop: 12 } as any
+                }
+              >
+                {ONBOARDING_VIDEOS[currentIndex].description}
+              </Text>
+            </Animated.View>
 
             {isLoadingOrPending() ? (
               <View
