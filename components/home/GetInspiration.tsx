@@ -6,7 +6,7 @@ import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
 export function GetInspiration() {
-  const inspirationStyles = featuredTattoos.slice(0, 8);
+  const inspirationStyles = [...featuredTattoos].reverse();
 
   return (
     <View style={{ flex: 1, gap: 16 }}>

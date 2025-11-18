@@ -1,5 +1,4 @@
 import { ALBUM_NAME } from "@/lib/save-to-library";
-import { File, Paths } from "expo-file-system";
 import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
@@ -10,7 +9,6 @@ import {
   Alert,
   Dimensions,
   Platform,
-  Share,
   StyleSheet,
   View,
 } from "react-native";
@@ -23,6 +21,12 @@ import Animated, {
 import { Button } from "../ui/Button";
 import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
 import { Text } from "../ui/Text";
+
+// Conditionally import react-native-share only on native platforms
+let Share: any = null;
+if (Platform.OS !== "web") {
+  Share = require("react-native-share").default;
+}
 
 interface TattooDetailScreenProps {
   tattooId: string;
@@ -143,47 +147,29 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
   }, [loadAsset]);
 
   const handleSharePress = async () => {
-    if (!asset) return;
+    if (!asset || !Share) return;
 
     try {
+      const appStoreUrl =
+        "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193";
       const shareMessage =
-        "Check out my AI generated tattoo design created with AI tattoo try on.";
+        "I just got tattooed! Check out this photo 🎨 Try it yourself: " +
+        appStoreUrl;
 
-      // Get asset info to get the file extension
+      // Get asset info to get the URI
       const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
       const fileUri = assetInfo.localUri || assetInfo.uri;
 
-      // Create source and destination file references
-      const fileExtension = fileUri.split(".").pop() || "jpg";
-      const tempFileName = `tattoo-share-${Date.now()}.${fileExtension}`;
-      const sourceFile = new File(fileUri);
-      const tempFile = new File(Paths.cache, tempFileName);
-
-      // Copy the file to cache directory for sharing
-      await sourceFile.copy(tempFile);
-
-      // Share the file
-      if (Platform.OS === "ios") {
-        await Share.share({
-          url: tempFile.uri,
-          message: shareMessage,
-        });
-      } else {
-        // On Android, we need to use url for files
-        await Share.share({
-          message: shareMessage,
-          url: tempFile.uri,
-        });
+      if (!fileUri) {
+        Alert.alert("Error", "Unable to access the image file.");
+        return;
       }
 
-      // Clean up the temporary file after a delay
-      setTimeout(async () => {
-        try {
-          await tempFile.delete();
-        } catch (error) {
-          console.error("Error cleaning up temp file:", error);
-        }
-      }, 5000);
+      // Share using react-native-share with the file URI
+      await Share.open({
+        message: shareMessage,
+        url: fileUri,
+      });
     } catch (error) {
       console.error("Error sharing:", error);
       Alert.alert("Error", "Unable to share the image. Please try again.");

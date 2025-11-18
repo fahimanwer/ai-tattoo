@@ -5,9 +5,22 @@ import {
   isLiquidGlassAvailable,
 } from "expo-glass-effect";
 import { Image } from "expo-image";
-import { Dimensions, Modal, Pressable, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 import { Icon } from "../ui/Icon";
 import { Text } from "../ui/Text";
+
+// Conditionally import react-native-share only on native platforms
+let Share: any = null;
+if (Platform.OS !== "web") {
+  Share = require("react-native-share").default;
+}
 
 interface TattooModalProps {
   tattoo: GeneratedTattoo | null;
@@ -23,6 +36,19 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
   const handleFavoritePress = () => {
     // TODO: Implement favorite functionality
     console.log("Favorite tattoo");
+  };
+
+  const handleSharePress = async () => {
+    if (!tattoo || !Share) return;
+
+    try {
+      await Share.open({
+        message: `I just got tattooed! Check out this photo 🎨 Try it yourself: https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193`,
+        url: `data:image/png;base64,${tattoo.imageData}`,
+      });
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
   };
 
   const formatDate = (date: Date) => {
@@ -92,12 +118,7 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
                 </GlassView>
 
                 <GlassView style={styles.actionButton} isInteractive>
-                  <Pressable
-                    onPress={() => {
-                      // TODO: Implement share functionality
-                      console.log("Share tattoo");
-                    }}
-                  >
+                  <Pressable onPress={handleSharePress}>
                     <Icon
                       symbol="square.and.arrow.up"
                       style={styles.actionIcon}
@@ -120,10 +141,7 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
                 </Pressable>
 
                 <Pressable
-                  onPress={() => {
-                    // TODO: Implement share functionality
-                    console.log("Share tattoo");
-                  }}
+                  onPress={handleSharePress}
                   style={[styles.actionButton, styles.fallbackButton]}
                 >
                   <Icon

@@ -43,7 +43,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
       "A traditional style from the Edo period that tells stories on the skin through flowing designs inspired by myth and nature.",
     description:
       "Japanese tattooing, known as Irezumi, has roots tracing back over 2,000 years in Japan. It evolved from early decorative markings and spiritual talismans into an art form deeply tied to folklore, mythology, and woodblock prints (ukiyo-e). During the Edo period (1603-1868), tattooing flourished despite being outlawed, becoming an underground culture of resistance and identity. Motifs such as koi fish represent perseverance, dragons symbolize wisdom and strength, and the Hannya mask reflects human emotion and transformation. Master artists like Horiyoshi III and Horimono traditions elevated Irezumi into a discipline of discipline, storytelling, and body-wide compositions. Historically associated with firemen, laborers, and later the Yakuza, today Japanese tattoos are recognized globally as one of the most sophisticated and narrative-driven styles of tattoo art.",
-    style: "Traditional",
+    style: "Japanese",
     image: {
       uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/cover.png",
       blurhash: "LAExeIib01TK~BE257?GjDEMEl-U",
@@ -473,6 +473,205 @@ export const featuredTattoos: FeaturedTattoo[] = [
     ],
     prompt:
       "Create a Neo Traditional style tattoo design. This modern evolution of American Traditional maintains the bold black outlines and iconic motifs of Old School (roses, daggers, animals, birds, flowers, skulls) but elevates them with enhanced detail, sophisticated shading techniques, and smooth color gradients. The style uses an expanded color palette beyond traditional limits, incorporating vibrant purples, oranges, teals, deep blues, magentas, and other contemporary hues while preserving the strong contrast and readability of classic designs. Unlike Old School's flat color fills, Neo Traditional introduces dimensional depth through smooth color transitions, subtle shading, and gradient work that adds realism without losing the bold graphic quality. The composition maintains traditional principles of strong contrast and clear hierarchy but allows for more intricate details, refined linework, and artistic expression. Motifs are rendered with greater complexity and nuance while staying true to symbolic meanings. The design should balance modern sophistication with classic appeal, using technical precision to create depth and dimension. The artwork should be suitable for professional tattoo application, honoring traditional roots while showcasing contemporary artistic innovation and expanded creative possibilities.",
+  },
+  {
+    id: 7,
+    title: "Couples",
+    short_description:
+      "A romantic style designed for partners, featuring complementary designs, matching motifs, and interconnected symbols that celebrate love and unity through shared body art.",
+    description:
+      "Couples tattoos represent a modern expression of partnership, commitment, and shared identity through complementary body art. This style emerged from the tradition of matching tattoos but has evolved into sophisticated designs that work both independently and as a unified pair. Couples tattoos can feature complementary motifs like puzzle pieces that fit together, split designs that complete each other, matching symbols with personal variations, or interconnected patterns that tell a shared story. The art form celebrates relationships through meaningful imagery—hearts, infinity symbols, coordinates of special places, dates, quotes, or custom designs that reflect the unique bond between partners. Whether minimalist or elaborate, couples tattoos serve as permanent declarations of love, unity, and the journey shared between two people. This style emphasizes harmony, balance, and the beautiful way two separate pieces can create a complete visual narrative when viewed together.",
+    style: "Couples / Matching",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/cover.png",
+      blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-female-1.png",
+        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/feet-couple-1.png",
+        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-1.png",
+        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/shin-couple-1.png",
+        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/shoulder-female-1.png",
+        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/wrist-couple-1.png",
+        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-2.png",
+        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-3.png",
+        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-4.png",
+        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/calf-couple-1.png",
+        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
+      },
+    ],
+    prompt:
+      "Create a Couples tattoo design style, featuring complementary and matching designs designed for partners. This style emphasizes romantic symbolism, unity, and shared identity through interconnected body art. Common motifs include complementary puzzle pieces that fit together, split designs that complete each other when viewed together, matching symbols with personal variations (hearts, infinity symbols, coordinates, dates, quotes), or interconnected patterns that tell a shared story. The designs should work both independently as beautiful individual pieces and as a unified pair when viewed together. The style can range from minimalist and delicate to elaborate and detailed, but always maintains harmony and balance between the two pieces. Color choices should complement each other, using either matching palettes or complementary colors that create visual cohesion. The composition should emphasize the relationship between the designs—whether through symmetry, mirroring, or complementary elements—while ensuring each piece remains meaningful and aesthetically pleasing on its own. The tattoo should celebrate love, commitment, and partnership through meaningful imagery that reflects the unique bond between two people. The design should be suitable for professional tattoo application, creating a permanent declaration of unity and shared journey.",
+  },
+  {
+    id: 8,
+    title: "Hindu Goddess",
+    short_description:
+      "A sacred style inspired by Hindu mythology, featuring divine goddesses, deities, and spiritual symbols rendered with intricate detail, vibrant colors, and traditional iconography.",
+    description:
+      "Hindu Goddess tattoos draw from the rich spiritual and artistic traditions of Hinduism, celebrating the divine feminine and the powerful deities of Hindu mythology. This style features intricate depictions of goddesses like Lakshmi (goddess of wealth and prosperity), Saraswati (goddess of knowledge and arts), Durga (warrior goddess), Kali (goddess of time and transformation), and Parvati (goddess of love and devotion). The art form incorporates traditional iconography including multiple arms, divine attributes (lotus flowers, conch shells, tridents, veenas), sacred animals, mandalas, and Sanskrit symbols. The style emphasizes vibrant colors—deep blues, rich reds, golden yellows, and emerald greens—combined with detailed linework that captures the ornate jewelry, flowing garments, and divine halos characteristic of Hindu art. These tattoos serve as spiritual expressions, cultural connections, and personal devotions, honoring the divine feminine and the rich heritage of Hindu mythology. The designs balance intricate detail with clear composition, ensuring the sacred imagery remains powerful and readable on the skin.",
+    style: "Hindu Goddess / Mythological",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/cover.png",
+      blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/arm-female-2.png",
+        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/arm-female-3.png",
+        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/arm-male-1.png",
+        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/arm-male-2.png",
+        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/arm-male-3.png",
+        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/back-female-1.png",
+        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/back-male-1.png",
+        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/chest-male-1.png",
+        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/neck-female-1.png",
+        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/shoulder-female-1.png",
+        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/shoulder-female-2.png",
+        blurhash: "L4AJKB9u0000PV?G01^O~V?G01WB",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/shoulder-male-1.png",
+        blurhash: "LGE30V00_ND%xaM{ofadM{t7WBt7",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/shoulder-male-3.png",
+        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/hindu-goddess/thigh-female-1.png",
+        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
+      },
+    ],
+    prompt:
+      "Create a Hindu Goddess style tattoo design inspired by Hindu mythology and spiritual traditions. This sacred style features intricate depictions of divine goddesses and deities, including Lakshmi (goddess of wealth and prosperity), Saraswati (goddess of knowledge and arts), Durga (warrior goddess), Kali (goddess of time and transformation), and Parvati (goddess of love and devotion). The design incorporates traditional Hindu iconography: multiple arms representing divine power, sacred attributes like lotus flowers, conch shells, tridents, veenas, and divine weapons, mandalas and geometric patterns, Sanskrit symbols and mantras, and sacred animals associated with each deity. The color palette uses vibrant, rich hues: deep blues, rich reds, golden yellows, emerald greens, and royal purples, often with metallic gold accents. The style emphasizes intricate detail work capturing ornate jewelry, flowing traditional garments, divine halos (prabhas), and elaborate crowns or headdresses. The composition should balance intricate detail with clear visual hierarchy, ensuring the sacred imagery remains powerful and readable. The design should honor the spiritual and cultural significance of Hindu mythology while creating a beautiful, meaningful tattoo that serves as both artistic expression and personal devotion. The artwork should be suitable for professional tattoo application, maintaining the ornate beauty and sacred symbolism of traditional Hindu art.",
+  },
+  {
+    id: 9,
+    title: "Chicano",
+    short_description:
+      "A distinctive style born from Mexican-American barrio culture, featuring fine-line black and gray work with iconic motifs like beautiful women, roses, religious imagery, and gothic lettering.",
+    description:
+      "Chicano tattooing emerged in the 1940s and 1950s from Mexican-American communities in Los Angeles, rooted in Pachuco culture and the zoot suit era. This style draws inspiration from Mexican muralism, Catholic iconography, lowrider culture, and prison art traditions. Characterized by fine-line black and gray work with selective red accents, Chicano tattoos feature iconic motifs including beautiful women (cholas), roses, religious imagery like the Virgin of Guadalupe and crucifixes, skulls (calaveras), clocks, gothic lettering, and family portraits. The style emphasizes realism with precise fine-line work and sophisticated shading techniques, creating compositions that tell personal stories of faith, family, and cultural pride. Master artists like Freddy Negrete, Mark Mahoney, and Jack Rudy elevated this style from underground barrio art to a globally recognized form of cultural expression.",
+    style: "Chicano",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/cover.png",
+      blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/arm-female-1.png",
+        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/arm-male-1.png",
+        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/back-female-1.png",
+        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/back-female-2.png",
+        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/back-male-1.png",
+        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/back-male-2.png",
+        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/back-male-3.png",
+        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/chest-male-1.png",
+        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/shoulder-female-1.png",
+        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/shoulder-female-2.png",
+        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/shoulder-male-1.png",
+        blurhash: "L4AJKB9u0000PV?G01^O~V?G01WB",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/shoulder-male-2.png",
+        blurhash: "LGE30V00_ND%xaM{ofadM{t7WBt7",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/chicano/thigh-female-1.png",
+        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+      },
+    ],
+    prompt:
+      "Create a Chicano style tattoo design rooted in Mexican-American barrio culture and traditions. This distinctive style is characterized by fine-line black and gray work with sophisticated shading techniques, though selective color accents (particularly red) may be used strategically. The technique emphasizes realism with precise fine-line work, smooth black and gray washes that create depth and dimension, and compositions that tell personal stories. Iconic Chicano motifs include beautiful women (cholas) with dramatic makeup, styled hair, and expressive features representing strength and beauty, roses symbolizing love, beauty, and the fleeting nature of life, religious imagery such as the Virgin of Guadalupe, crucifixes, and praying hands representing faith, devotion, and spiritual protection, skulls (calaveras) reflecting Day of the Dead traditions and mortality, clocks and pocket watches symbolizing time, mortality, and the passage of life, gothic lettering and script work with ornate typography, and portraits of family members, cultural icons, or loved ones. The color palette primarily uses black and gray tones with smooth gradients and shading, with selective use of red accents for roses, lettering, or symbolic elements. The style draws inspiration from Mexican muralism, Catholic iconography, lowrider culture, and prison art traditions. The composition should emphasize storytelling, cultural identity, and personal meaning, with each element carefully placed to create a cohesive narrative. The design should honor the rich heritage of Chicano culture while maintaining the distinctive fine-line aesthetic and symbolic power that makes this style unique. The artwork should be suitable for professional tattoo application, rendered with ultra-fine detail and sophisticated shading techniques that capture the depth and realism characteristic of master Chicano tattoo work.",
   },
 ];
 

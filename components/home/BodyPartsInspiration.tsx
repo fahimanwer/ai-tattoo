@@ -12,15 +12,45 @@ import { router } from "expo-router";
 import React, { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 
+/**
+ * Shuffles images ensuring no two consecutive images have the same style
+ */
+function shuffleImagesWithoutConsecutiveStyles(
+  images: GalleryImage[]
+): GalleryImage[] {
+  if (images.length === 0) return [];
+
+  // Simple random shuffle
+  const shuffled = [...images].sort(() => Math.random() - 0.5);
+
+  // Fix consecutive same styles by swapping
+  for (let i = 1; i < shuffled.length; i++) {
+    if (shuffled[i].styleId === shuffled[i - 1].styleId) {
+      // Find a different style to swap with
+      for (let j = i + 1; j < shuffled.length; j++) {
+        if (shuffled[j].styleId !== shuffled[i].styleId) {
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+          break;
+        }
+      }
+    }
+  }
+
+  return shuffled;
+}
+
 export function BodyPartsInspiration() {
   // Memoize body parts data to prevent recalculation on every render
   const bodyPartsData = useMemo(() => {
     const allBodyParts = getAllBodyParts();
     return allBodyParts
-      .map((bodyPart) => ({
-        bodyPart,
-        images: getBodyPartImagesFromAllStyles(bodyPart),
-      }))
+      .map((bodyPart) => {
+        const images = getBodyPartImagesFromAllStyles(bodyPart);
+        return {
+          bodyPart,
+          images: shuffleImagesWithoutConsecutiveStyles(images),
+        };
+      })
       .filter((data) => data.images.length > 0);
   }, []);
 
@@ -61,7 +91,7 @@ export function BodyPartsInspiration() {
       {/* Netflix-style: One horizontal scroll row per body part */}
       {bodyPartsData.map(({ bodyPart, images }) => (
         <View key={bodyPart} style={styles.bodyPartSection}>
-          <Text type="subtitle" weight="bold" style={styles.bodyPartTitle}>
+          <Text type="default" weight="bold" style={styles.bodyPartTitle}>
             {getBodyPartDisplayName(bodyPart)}
           </Text>
 
