@@ -89,7 +89,7 @@ export default function BodyPartParallaxView({
       gallery: [],
       prompt: "",
       description: "",
-      image: { uri: image.uri },
+      image: { uri: image.uri, blurhash: image.blurhash },
     };
   };
 

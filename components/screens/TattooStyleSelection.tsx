@@ -306,6 +306,10 @@ export function TattooStyleSelection() {
           >
             {options.selectedTattoo.gallery.map((galleryImage, index) => {
               const isSelected = isImageSelected(galleryImage);
+              const blurhash =
+                typeof galleryImage === "object" && "blurhash" in galleryImage
+                  ? galleryImage.blurhash
+                  : undefined;
 
               return (
                 <Pressable
@@ -315,6 +319,7 @@ export function TattooStyleSelection() {
                   <Image
                     cachePolicy="memory-disk"
                     source={galleryImage}
+                    placeholder={{ blurhash }}
                     style={{
                       width: 100,
                       height: 100,

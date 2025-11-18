@@ -27,6 +27,12 @@ export function ItemStyle({
       <Image
         source={tattoo.image ?? undefined}
         style={[styles.image, isSelected && styles.selectedImage]}
+        placeholder={{
+          blurhash:
+            typeof tattoo.image === "object" && "blurhash" in tattoo.image
+              ? tattoo.image.blurhash
+              : undefined,
+        }}
         accessibilityIgnoresInvertColors
         accessibilityLabel={`${tattoo.title} cover image`}
       />

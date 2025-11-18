@@ -53,6 +53,9 @@ export function VerticalCard({
     subtitle ||
     (asset ? new Date(asset.creationTime).toLocaleDateString() : style!.style);
 
+  // Use specific blurhash from featured tattoo if available, otherwise use generic
+  const blurhash = style?.image?.blurhash || BLURHASH;
+
   return (
     <>
       <PressableScale
@@ -73,7 +76,7 @@ export function VerticalCard({
           ]}
           contentFit="cover"
           contentPosition="center"
-          placeholder={{ blurhash: BLURHASH }}
+          placeholder={{ blurhash }}
           transition={1000}
         />
         {showOverlay && (

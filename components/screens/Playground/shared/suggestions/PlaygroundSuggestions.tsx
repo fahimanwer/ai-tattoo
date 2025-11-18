@@ -41,7 +41,7 @@ export function PlaygroundSuggestions({
             <Image
               source={item.image}
               style={{ width: 40, height: 40, borderRadius: 99 }}
-              placeholder={{ blurhash: BLURHASH }}
+              placeholder={{ blurhash: item.image?.blurhash || BLURHASH }}
               transition={300}
             />
             <Text

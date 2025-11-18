@@ -24,6 +24,12 @@ export default function AboutStyle() {
       imageUrl={currentStyle?.image as ImageSourcePropType}
       title={currentStyle?.title}
       shortDescription={currentStyle?.short_description}
+      imageBlurhash={
+        typeof currentStyle?.image === "object" &&
+        "blurhash" in currentStyle.image
+          ? currentStyle.image.blurhash
+          : undefined
+      }
     >
       <Button
         title="Read More"
@@ -64,7 +70,7 @@ export default function AboutStyle() {
                   description: "",
                   prompt: "",
                   gallery: [],
-                  image: image as ImageSourcePropType,
+                  image: image,
                 };
 
                 return (

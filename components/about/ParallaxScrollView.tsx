@@ -18,10 +18,12 @@ export default function ParallaxScrollView({
   imageUrl,
   title,
   shortDescription,
+  imageBlurhash,
 }: PropsWithChildren<{
   imageUrl: ImageSourcePropType;
   title: string;
   shortDescription: string;
+  imageBlurhash?: string;
 }>) {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
@@ -67,7 +69,7 @@ export default function ParallaxScrollView({
           <Image
             cachePolicy="memory-disk"
             source={imageUrl}
-            placeholder={{ blurhash: BLURHASH }}
+            placeholder={{ blurhash: imageBlurhash || BLURHASH }}
             contentFit="cover"
             transition={1000}
             style={{
