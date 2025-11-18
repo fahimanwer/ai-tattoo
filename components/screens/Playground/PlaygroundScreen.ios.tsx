@@ -57,9 +57,10 @@ export function PlaygroundScreen() {
     pickImageFromGallery,
     handleShare,
     handleSave,
-    activeGenerationUri,
+    activeGenerationUris,
     activeMutation,
     handleTattooGeneration,
+    removeImageFromActiveGroup,
   } = use(PlaygroundContext);
 
   // Play playful entrance haptic on first load
@@ -174,10 +175,13 @@ export function PlaygroundScreen() {
                 type: "sfSymbol",
               },
               onPress: async () => {
-                await handleShare(activeGenerationUri);
+                // Share the first image in the active group
+                if (activeGenerationUris.length > 0) {
+                  await handleShare(activeGenerationUris[0]);
+                }
               },
               selected: false,
-              disabled: !activeGenerationUri,
+              disabled: activeGenerationUris.length === 0,
             },
             {
               type: "button",
@@ -188,9 +192,12 @@ export function PlaygroundScreen() {
                 fontWeight: "bold",
               },
               onPress: async () => {
-                await handleSave(activeGenerationUri);
+                // Save the first image in the active group
+                if (activeGenerationUris.length > 0) {
+                  await handleSave(activeGenerationUris[0]);
+                }
               },
-              disabled: !activeGenerationUri,
+              disabled: activeGenerationUris.length === 0,
               selected: false,
             },
           ],
@@ -218,11 +225,12 @@ export function PlaygroundScreen() {
             </View>
             <FlatList
               data={sessionGenerations}
-              renderItem={({ item, index }) => (
+              renderItem={({ item: imageGroup, index }) => (
                 <SessionHistoryItem
-                  uri={item}
-                  onSave={() => handleSave(item)}
-                  onShare={() => handleShare(item)}
+                  uri={imageGroup[0]} // Show first image of the group
+                  imageCount={imageGroup.length}
+                  onSave={() => handleSave(imageGroup[0])}
+                  onShare={() => handleShare(imageGroup[0])}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                     setActiveGenerationIndex(() => index);
@@ -247,7 +255,9 @@ export function PlaygroundScreen() {
                 />
               )}
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => `generation-${index}-${item}`}
+              keyExtractor={(item, index) =>
+                `generation-${index}-${item[0] || ""}`
+              }
               contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
               // Performance optimizations
               getItemLayout={(_, index) => ({
@@ -302,7 +312,8 @@ export function PlaygroundScreen() {
           ) : null}
           <TextToImageResult
             mutation={activeMutation}
-            lastGenerationUri={activeGenerationUri}
+            lastGenerationUris={activeGenerationUris}
+            onRemoveImage={removeImageFromActiveGroup}
           />
         </View>
 
