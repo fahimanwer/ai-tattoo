@@ -12,6 +12,7 @@ export function PlaygroundSuggestions({
   onSelect,
   style,
 }: PlaygroundSuggestionProps) {
+  const suggestions = [...featuredTattoos].reverse();
   return (
     <Animated.View
       entering={FadeInDown.duration(1000)}
@@ -32,7 +33,7 @@ export function PlaygroundSuggestions({
         snapToAlignment="center"
         showsHorizontalScrollIndicator={false}
       >
-        {featuredTattoos.map((item) => (
+        {suggestions.map((item) => (
           <PressableScale
             key={item.title}
             style={{ alignItems: "center", marginRight: 16 }}
