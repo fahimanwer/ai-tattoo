@@ -11,6 +11,7 @@ import {
 import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
 
+import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { PlaygroundContext } from "@/context/PlaygroundContext";
@@ -317,24 +318,50 @@ export function PlaygroundScreen() {
           />
         </View>
 
-        <Host
-          style={{
-            height: activeMutation.isError ? "70%" : "90%",
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-          }}
-        >
-          <InputControls
-            onChangeText={setPrompt}
-            onPressImageGallery={pickImageFromGallery}
-            onSubmit={handleTattooGeneration}
-            onSelectSuggestion={() => {}}
-            isSubmitDisabled={prompt.length === 0}
-            suggestions={suggestions}
-          />
-        </Host>
+        {activeGenerationUris.length >= 2 ? (
+          <View style={{ paddingBottom: 100, paddingHorizontal: 16, gap: 16 }}>
+            <Text style={{ textAlign: "center" }}>
+              You&apos;ve selected 2 images! You can now combine them to preview
+              how a tattoo would look on a different part of your body.
+            </Text>
+
+            <Text
+              type="xs"
+              style={{ textAlign: "center" }}
+              darkColor={Color.zinc[400]}
+            >
+              This feature is optimized specifically for tattoos and body parts.
+              Using it for anything else may lead to unexpected results.
+            </Text>
+            <Button
+              title="Combine Images"
+              onPress={handleTattooGeneration}
+              color="yellow"
+              variant="solid"
+              loading={activeMutation.isPending}
+              disabled={activeMutation.isPending}
+            />
+          </View>
+        ) : (
+          <Host
+            style={{
+              height: activeMutation.isError ? "70%" : "90%",
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
+          >
+            <InputControls
+              onChangeText={setPrompt}
+              onPressImageGallery={pickImageFromGallery}
+              onSubmit={handleTattooGeneration}
+              onSelectSuggestion={() => {}}
+              isSubmitDisabled={prompt.length === 0}
+              suggestions={suggestions}
+            />
+          </Host>
+        )}
         {/* <View
           style={{
             flexDirection: "row",

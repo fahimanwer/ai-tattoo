@@ -111,13 +111,15 @@ export function TextToImageResult({
       entering={FadeIn.duration(1000)}
       exiting={FadeOut.duration(1000)}
     >
-      {lastGenerationUris.length > 1 && (
+      {lastGenerationUris.length > 0 && (
         <Text
           type="xs"
           weight="medium"
           style={{ color: Color.zinc[400], textAlign: "center" }}
         >
-          {lastGenerationUris.length} images selected
+          {lastGenerationUris.length === 1
+            ? "1 image selected - add one more to combine"
+            : `${lastGenerationUris.length} images selected (max)`}
         </Text>
       )}
       <View
@@ -151,35 +153,6 @@ export function TextToImageResult({
               contentPosition="center"
               transition={350}
             />
-            {onRemoveImage && lastGenerationUris.length > 1 && (
-              <PressableScale
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  onRemoveImage(uri);
-                }}
-                style={{
-                  position: "absolute",
-                  top: 8,
-                  right: 8,
-                  backgroundColor: Color.red[600] + "cc",
-                  borderRadius: 20,
-                  width: 32,
-                  height: 32,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: 16,
-                    fontWeight: "bold",
-                  }}
-                >
-                  ×
-                </Text>
-              </PressableScale>
-            )}
           </View>
         ))}
       </View>

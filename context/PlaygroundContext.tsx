@@ -1,3 +1,4 @@
+import { promptToCombineTwoImages } from "@/lib/featured-tattoos";
 import {
   cacheBase64Image,
   clearSessionCache,
@@ -147,7 +148,8 @@ export function PlaygroundProvider({
   });
 
   async function handleTattooGeneration() {
-    if (prompt.trim().length === 0) {
+    // allow passing this validation when there are 2 images selected
+    if (prompt.trim().length === 0 && activeGenerationUris?.length !== 2) {
       return;
     }
 
@@ -166,13 +168,17 @@ export function PlaygroundProvider({
       setActiveGenerationIndex(undefined);
       textToImageMutation.mutate(prompt);
     } else {
+      // Use our custome prompt to combine two images
+      const promptToUse =
+        activeImageGroup.length === 2 ? promptToCombineTwoImages : prompt;
+
       // Text and image to image generation
       // Convert all file URIs in the group back to base64 for the API call
       const base64Images = await Promise.all(
         activeImageGroup.map((uri) => getCachedImageAsBase64(uri))
       );
       textAndImageToImageMutation.mutate({
-        prompt,
+        prompt: promptToUse,
         images_base64: base64Images,
       });
     }
@@ -262,12 +268,17 @@ export function PlaygroundProvider({
           // Cache the selected image and store the file URI
           const fileUri = await cacheBase64Image(selectedImage.base64, "png");
 
-          // If there's an active group, add to it
-          if (activeGenerationIndex !== undefined) {
+          // Check if we can add to the active group (max 2 images per group)
+          const canAddToActiveGroup =
+            activeGenerationIndex !== undefined &&
+            sessionGenerations[activeGenerationIndex].length < 2;
+
+          if (canAddToActiveGroup) {
+            // Add to existing group (max 2 images)
             setSessionGenerations((prev) => {
               const newGenerations = [...prev];
-              newGenerations[activeGenerationIndex] = [
-                ...newGenerations[activeGenerationIndex],
+              newGenerations[activeGenerationIndex!] = [
+                ...newGenerations[activeGenerationIndex!],
                 fileUri,
               ];
               return newGenerations;
@@ -289,7 +300,7 @@ export function PlaygroundProvider({
       Alert.alert("Error", "Failed to pick image from gallery");
       return false;
     }
-  }, [activeGenerationIndex, sessionGenerations.length]);
+  }, [activeGenerationIndex, sessionGenerations]);
 
   // Compute the active generation URIs from the index
   const activeGenerationUris =

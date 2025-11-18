@@ -101,6 +101,7 @@ export default function Photo() {
     setSessionGenerations,
     setActiveGenerationIndex,
     activeGenerationIndex,
+    sessionGenerations,
   } = use(PlaygroundContext);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -113,8 +114,13 @@ export default function Photo() {
       const fileUri = await cacheImageFromUrl(params.imageUrl, "jpg");
 
       // Store only the file URI (not the base64) to minimize memory usage
-      // If there's an active group, add to it; otherwise create a new group
-      if (activeGenerationIndex !== undefined) {
+      // Check if we can add to the active group (max 2 images per group)
+      const canAddToActiveGroup =
+        activeGenerationIndex !== undefined &&
+        sessionGenerations[activeGenerationIndex].length < 2;
+
+      if (canAddToActiveGroup) {
+        // Add to existing group (max 2 images)
         setSessionGenerations((prev) => {
           const newGenerations = [...prev];
           newGenerations[activeGenerationIndex] = [

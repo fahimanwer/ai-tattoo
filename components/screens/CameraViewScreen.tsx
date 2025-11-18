@@ -118,12 +118,17 @@ export function CameraViewScreen() {
 
   async function handleConfirmPhoto() {
     if (!photoBase64) return;
-    
+
     // Cache the image to disk and store only the file URI
-    const fileUri = await cacheBase64Image(photoBase64, "jpeg");
-    
-    // If there's an active group, add to it
-    if (activeGenerationIndex !== undefined) {
+    const fileUri = await cacheBase64Image(photoBase64, "jpg");
+
+    // Check if we can add to the active group (max 2 images per group)
+    const canAddToActiveGroup =
+      activeGenerationIndex !== undefined &&
+      sessionGenerations[activeGenerationIndex].length < 2;
+
+    if (canAddToActiveGroup) {
+      // Add to existing group (max 2 images)
       setSessionGenerations((prev) => {
         const newGenerations = [...prev];
         newGenerations[activeGenerationIndex] = [
@@ -137,7 +142,7 @@ export function CameraViewScreen() {
       setSessionGenerations((prev) => [...prev, [fileUri]]);
       setActiveGenerationIndex(sessionGenerations.length);
     }
-    
+
     setPhotoBase64(null);
     router.push("/(playground)");
   }
