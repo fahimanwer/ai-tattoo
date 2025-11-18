@@ -1,6 +1,7 @@
 import { Color } from "@/constants/TWPalette";
 import { PlaygroundContext } from "@/context/PlaygroundContext";
 import { failureHaptic, successHaptic } from "@/lib/haptics-patterns.ios";
+import { cacheBase64Image } from "@/lib/image-cache";
 import CoreHaptics from "@/modules/native-core-haptics";
 import { useIsFocused } from "@react-navigation/native";
 import {
@@ -38,6 +39,7 @@ export function CameraViewScreen() {
     setSessionGenerations,
     setActiveGenerationIndex,
     sessionGenerations,
+    activeGenerationIndex,
   } = use(PlaygroundContext);
 
   if (!permission) {
@@ -114,13 +116,33 @@ export function CameraViewScreen() {
     }
   }
 
-  function handleConfirmPhoto() {
+  async function handleConfirmPhoto() {
     if (!photoBase64) return;
-    setSessionGenerations((prev) => [
-      ...prev,
-      `data:image/jpeg;base64,${photoBase64}`,
-    ]);
-    setActiveGenerationIndex(sessionGenerations.length);
+
+    // Cache the image to disk and store only the file URI
+    const fileUri = await cacheBase64Image(photoBase64, "jpg");
+
+    // Check if we can add to the active group (max 2 images per group)
+    const canAddToActiveGroup =
+      activeGenerationIndex !== undefined &&
+      sessionGenerations[activeGenerationIndex].length < 2;
+
+    if (canAddToActiveGroup) {
+      // Add to existing group (max 2 images)
+      setSessionGenerations((prev) => {
+        const newGenerations = [...prev];
+        newGenerations[activeGenerationIndex] = [
+          ...newGenerations[activeGenerationIndex],
+          fileUri,
+        ];
+        return newGenerations;
+      });
+    } else {
+      // Create a new group with this single image
+      setSessionGenerations((prev) => [...prev, [fileUri]]);
+      setActiveGenerationIndex(sessionGenerations.length);
+    }
+
     setPhotoBase64(null);
     router.push("/(playground)");
   }

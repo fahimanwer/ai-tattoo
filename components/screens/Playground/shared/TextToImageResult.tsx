@@ -13,12 +13,14 @@ import { AnimatedText } from "./AnimatedText";
 
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
-  lastGenerationUri?: string; // Now accepts file URI instead of base64
+  lastGenerationUris: string[]; // Array of file URIs
+  onRemoveImage?: (uri: string) => void;
 }
 
 export function TextToImageResult({
   mutation,
-  lastGenerationUri,
+  lastGenerationUris,
+  onRemoveImage,
 }: TextToImageResultProps) {
   const router = useRouter();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -97,32 +99,63 @@ export function TextToImageResult({
     );
   }
   if (mutation.isPending) {
-    return <LoadingChangingText lastGenerationUri={lastGenerationUri} />;
+    return <LoadingChangingText lastGenerationUris={lastGenerationUris} />;
   }
-  return lastGenerationUri ? (
+  return lastGenerationUris.length > 0 ? (
     <Animated.View
       style={{
         flex: 1,
         paddingHorizontal: 16,
+        gap: 12,
       }}
       entering={FadeIn.duration(1000)}
       exiting={FadeOut.duration(1000)}
     >
-      <Image
-        source={{ uri: lastGenerationUri }}
-        placeholder={{ blurhash: BLURHASH }}
-        cachePolicy="memory-disk"
+      {lastGenerationUris.length > 0 && (
+        <Text
+          type="xs"
+          weight="medium"
+          style={{ color: Color.zinc[400], textAlign: "center" }}
+        >
+          {lastGenerationUris.length === 1
+            ? "1 image selected - add one more to combine"
+            : `${lastGenerationUris.length} images selected (max)`}
+        </Text>
+      )}
+      <View
         style={{
-          width: "100%",
-          height: 400,
-          borderRadius: 16,
-          borderWidth: 1,
-          borderColor: Color.gray[500] + "30",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          gap: 8,
+          justifyContent: "center",
         }}
-        contentFit="cover"
-        contentPosition="center"
-        transition={350}
-      />
+      >
+        {lastGenerationUris.map((uri, index) => (
+          <View
+            key={uri}
+            style={{
+              position: "relative",
+              width: lastGenerationUris.length === 1 ? "100%" : "48%",
+            }}
+          >
+            <Image
+              source={{ uri }}
+              placeholder={{ blurhash: BLURHASH }}
+              cachePolicy="memory-disk"
+              style={{
+                width: "100%",
+                height: lastGenerationUris.length === 1 ? 400 : 200,
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: Color.gray[500] + "30",
+              }}
+              contentFit="cover"
+              contentPosition="center"
+              transition={350}
+            />
+          </View>
+        ))}
+      </View>
     </Animated.View>
   ) : (
     <AnimatedText
@@ -135,11 +168,12 @@ export function TextToImageResult({
 }
 
 function LoadingChangingText({
-  lastGenerationUri,
+  lastGenerationUris,
 }: {
-  lastGenerationUri?: string;
+  lastGenerationUris: string[];
 }) {
-  const firstMessage = lastGenerationUri
+  const hasImages = lastGenerationUris.length > 0;
+  const firstMessage = hasImages
     ? "Updating your tattoo..."
     : "Starting new tattoo...";
   const messages = [
@@ -183,26 +217,53 @@ function LoadingChangingText({
         padding: 16,
       }}
     >
-      {lastGenerationUri && (
-        <Image
-          source={{ uri: lastGenerationUri }}
-          placeholder={{ blurhash: BLURHASH }}
-          cachePolicy="memory-disk"
+      {hasImages && (
+        <View
           style={{
-            width: 100,
-            height: 100,
-            borderRadius: 50,
-            alignSelf: "center",
+            flexDirection: "row",
+            gap: 8,
+            justifyContent: "center",
+            marginBottom: 16,
           }}
-          contentFit="cover"
-          contentPosition="center"
-          transition={350}
-        />
+        >
+          {lastGenerationUris.slice(0, 3).map((uri) => (
+            <Image
+              key={uri}
+              source={{ uri }}
+              placeholder={{ blurhash: BLURHASH }}
+              cachePolicy="memory-disk"
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 40,
+              }}
+              contentFit="cover"
+              contentPosition="center"
+              transition={350}
+            />
+          ))}
+          {lastGenerationUris.length > 3 && (
+            <View
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 40,
+                backgroundColor: Color.zinc[800],
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: Color.zinc[400], fontSize: 20 }}>
+                +{lastGenerationUris.length - 3}
+              </Text>
+            </View>
+          )}
+        </View>
       )}
       {visible && (
         <AnimatedText
           key={index}
-          style={{ flex: lastGenerationUri ? 0.2 : 0.5 }}
+          style={{ flex: hasImages ? 0.2 : 0.5 }}
           text={messages[index]}
         />
       )}

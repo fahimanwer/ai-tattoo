@@ -97,8 +97,12 @@ export default function Photo() {
     styleId?: string;
   }>();
 
-  const { setSessionGenerations, setActiveGenerationIndex } =
-    use(PlaygroundContext);
+  const {
+    setSessionGenerations,
+    setActiveGenerationIndex,
+    activeGenerationIndex,
+    sessionGenerations,
+  } = use(PlaygroundContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleUseTattoo = async () => {
@@ -110,12 +114,30 @@ export default function Photo() {
       const fileUri = await cacheImageFromUrl(params.imageUrl, "jpg");
 
       // Store only the file URI (not the base64) to minimize memory usage
-      setSessionGenerations((prev) => {
-        const newGenerations = [...prev, fileUri];
-        // Set active index to the newly added image
-        setActiveGenerationIndex(newGenerations.length - 1);
-        return newGenerations;
-      });
+      // Check if we can add to the active group (max 2 images per group)
+      const canAddToActiveGroup =
+        activeGenerationIndex !== undefined &&
+        sessionGenerations[activeGenerationIndex].length < 2;
+
+      if (canAddToActiveGroup) {
+        // Add to existing group (max 2 images)
+        setSessionGenerations((prev) => {
+          const newGenerations = [...prev];
+          newGenerations[activeGenerationIndex] = [
+            ...newGenerations[activeGenerationIndex],
+            fileUri,
+          ];
+          return newGenerations;
+        });
+      } else {
+        // Create a new group with this single image
+        setSessionGenerations((prev) => {
+          const newGenerations = [...prev, [fileUri]];
+          // Set active index to the newly added image
+          setActiveGenerationIndex(newGenerations.length - 1);
+          return newGenerations;
+        });
+      }
 
       // Navigate to playground
       router.dismissTo("/(playground)");

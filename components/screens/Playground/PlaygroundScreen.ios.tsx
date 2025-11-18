@@ -11,6 +11,7 @@ import {
 import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
 
+import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { PlaygroundContext } from "@/context/PlaygroundContext";
@@ -57,9 +58,10 @@ export function PlaygroundScreen() {
     pickImageFromGallery,
     handleShare,
     handleSave,
-    activeGenerationUri,
+    activeGenerationUris,
     activeMutation,
     handleTattooGeneration,
+    removeImageFromActiveGroup,
   } = use(PlaygroundContext);
 
   // Play playful entrance haptic on first load
@@ -174,10 +176,13 @@ export function PlaygroundScreen() {
                 type: "sfSymbol",
               },
               onPress: async () => {
-                await handleShare(activeGenerationUri);
+                // Share the first image in the active group
+                if (activeGenerationUris.length > 0) {
+                  await handleShare(activeGenerationUris[0]);
+                }
               },
               selected: false,
-              disabled: !activeGenerationUri,
+              disabled: activeGenerationUris.length === 0,
             },
             {
               type: "button",
@@ -188,9 +193,12 @@ export function PlaygroundScreen() {
                 fontWeight: "bold",
               },
               onPress: async () => {
-                await handleSave(activeGenerationUri);
+                // Save the first image in the active group
+                if (activeGenerationUris.length > 0) {
+                  await handleSave(activeGenerationUris[0]);
+                }
               },
-              disabled: !activeGenerationUri,
+              disabled: activeGenerationUris.length === 0,
               selected: false,
             },
           ],
@@ -218,11 +226,12 @@ export function PlaygroundScreen() {
             </View>
             <FlatList
               data={sessionGenerations}
-              renderItem={({ item, index }) => (
+              renderItem={({ item: imageGroup, index }) => (
                 <SessionHistoryItem
-                  uri={item}
-                  onSave={() => handleSave(item)}
-                  onShare={() => handleShare(item)}
+                  uri={imageGroup[0]} // Show first image of the group
+                  imageCount={imageGroup.length}
+                  onSave={() => handleSave(imageGroup[0])}
+                  onShare={() => handleShare(imageGroup[0])}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                     setActiveGenerationIndex(() => index);
@@ -247,7 +256,9 @@ export function PlaygroundScreen() {
                 />
               )}
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => `generation-${index}-${item}`}
+              keyExtractor={(item, index) =>
+                `generation-${index}-${item[0] || ""}`
+              }
               contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
               // Performance optimizations
               getItemLayout={(_, index) => ({
@@ -302,28 +313,58 @@ export function PlaygroundScreen() {
           ) : null}
           <TextToImageResult
             mutation={activeMutation}
-            lastGenerationUri={activeGenerationUri}
+            lastGenerationUris={activeGenerationUris}
+            onRemoveImage={removeImageFromActiveGroup}
           />
         </View>
 
-        <Host
-          style={{
-            height: activeMutation.isError ? "70%" : "90%",
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-          }}
-        >
-          <InputControls
-            onChangeText={setPrompt}
-            onPressImageGallery={pickImageFromGallery}
-            onSubmit={handleTattooGeneration}
-            onSelectSuggestion={() => {}}
-            isSubmitDisabled={prompt.length === 0}
-            suggestions={suggestions}
-          />
-        </Host>
+        {activeGenerationUris.length >= 2 ? (
+          <View style={{ paddingBottom: 100, paddingHorizontal: 16, gap: 16 }}>
+            <Text style={{ textAlign: "center" }}>
+              You&apos;ve selected 2 images! You can now combine them to see how
+              a tattoo would look on your body.
+            </Text>
+
+            <Text
+              type="sm"
+              style={{ textAlign: "center" }}
+              darkColor={Color.zinc[400]}
+            >
+              For the best results, use a photo of a body part that matches the
+              example you selected. Our tattoo examples already include specific
+              body parts, so using a similar angle and area in your own photo
+              will create more accurate and realistic results. Make sure the
+              body part is clean, uncovered, and clearly visible.
+            </Text>
+            <Button
+              title="Combine Images"
+              onPress={handleTattooGeneration}
+              color="yellow"
+              variant="solid"
+              loading={activeMutation.isPending}
+              disabled={activeMutation.isPending}
+            />
+          </View>
+        ) : (
+          <Host
+            style={{
+              height: activeMutation.isError ? "70%" : "90%",
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
+          >
+            <InputControls
+              onChangeText={setPrompt}
+              onPressImageGallery={pickImageFromGallery}
+              onSubmit={handleTattooGeneration}
+              onSelectSuggestion={() => {}}
+              isSubmitDisabled={prompt.length === 0}
+              suggestions={suggestions}
+            />
+          </Host>
+        )}
         {/* <View
           style={{
             flexDirection: "row",
