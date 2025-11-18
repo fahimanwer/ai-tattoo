@@ -321,17 +321,20 @@ export function PlaygroundScreen() {
         {activeGenerationUris.length >= 2 ? (
           <View style={{ paddingBottom: 100, paddingHorizontal: 16, gap: 16 }}>
             <Text style={{ textAlign: "center" }}>
-              You&apos;ve selected 2 images! You can now combine them to preview
-              how a tattoo would look on a different part of your body.
+              You&apos;ve selected 2 images! You can now combine them to see how
+              a tattoo would look on your body.
             </Text>
 
             <Text
-              type="xs"
+              type="sm"
               style={{ textAlign: "center" }}
               darkColor={Color.zinc[400]}
             >
-              This feature is optimized specifically for tattoos and body parts.
-              Using it for anything else may lead to unexpected results.
+              For the best results, use a photo of a body part that matches the
+              example you selected. Our tattoo examples already include specific
+              body parts, so using a similar angle and area in your own photo
+              will create more accurate and realistic results. Make sure the
+              body part is clean, uncovered, and clearly visible.
             </Text>
             <Button
               title="Combine Images"
