@@ -167,7 +167,6 @@ Refer to the [EAS hosting documentation](https://docs.expo.dev/eas/) for more de
 ├── app/                    # Expo Router routes
 │   ├── (auth)/            # Authentication screens
 │   ├── (tabs)/            # Bottom tab navigation
-│   ├── (new)/             # Tattoo creation flow
 │   └── api/               # API routes (EAS hosted)
 ├── components/
 │   ├── screens/           # Screen components

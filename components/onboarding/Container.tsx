@@ -1,17 +1,15 @@
-import { AppleSignInButton } from "@/components/ui/AppleSignInButton";
-import SignInWithGoogleButton from "@/components/ui/SignInWithGoogleButton";
 import { Text } from "@/components/ui/Text";
 
-import { authClient } from "@/lib/auth-client";
 import { Link } from "expo-router";
 
+import { AppSettingsContext } from "@/context/AppSettings";
 import type { HapticPatternData } from "@/modules/native-core-haptics";
 import * as NativeCoreHaptics from "@/modules/native-core-haptics";
 import { useEvent } from "expo";
 import { StatusBar } from "expo-status-bar";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { PressableScale } from "pressto";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { use, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   NativeScrollEvent,
@@ -21,6 +19,7 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { Button } from "../ui/Button";
 
 const ONBOARDING_VIDEOS = [
   {
@@ -160,6 +159,7 @@ const onboardingSwipeHaptic: HapticPatternData = {
 };
 
 export default function Container() {
+  const { setIsOnboarded } = use(AppSettingsContext);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPausedIndicator, setShowPausedIndicator] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -433,7 +433,42 @@ export default function Container() {
               style={{ gap: 16, marginTop: 32, width: "100%" }}
               pointerEvents="auto"
             >
-              <SignInWithGoogleButton
+              <Button
+                title={currentIndex === 2 ? "Continue" : "Next"}
+                color="white"
+                variant="solid"
+                size="md"
+                radius="full"
+                onPress={() => {
+                  if (currentIndex === 2) {
+                    // On last video, complete onboarding
+                    setIsOnboarded(true);
+                  } else {
+                    // Advance to next video
+                    const nextIndex = currentIndex + 1;
+                    scrollViewRef.current?.scrollTo({
+                      x: nextIndex * SCREEN_WIDTH,
+                      animated: true,
+                    });
+                    // Play swipe haptic
+                    NativeCoreHaptics.default.playPattern(
+                      onboardingSwipeHaptic
+                    );
+                  }
+                }}
+              />
+              <Button
+                title="Skip"
+                variant="link"
+                color="gray"
+                size="sm"
+                style={{ height: 20 }}
+                radius="full"
+                onPress={() => {
+                  setIsOnboarded(true);
+                }}
+              />
+              {/* <SignInWithGoogleButton
                 onPress={() => {
                   authClient.signIn.social({
                     provider: "google",
@@ -441,7 +476,7 @@ export default function Container() {
                   });
                 }}
               />
-              <AppleSignInButton />
+              <AppleSignInButton /> */}
             </Animated.View>
 
             <Animated.View

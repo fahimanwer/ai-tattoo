@@ -19,14 +19,9 @@ import {
 } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import * as React from "react";
-import { Alert, Keyboard, Platform } from "react-native";
+import { Alert, Keyboard } from "react-native";
+import Share from "react-native-share";
 import { toast } from "sonner-native";
-
-// Conditionally import react-native-share only on native platforms
-let Share: any = null;
-if (Platform.OS !== "web") {
-  Share = require("react-native-share").default;
-}
 
 // Union type that accepts either mutation type
 export type ImageGenerationMutation =

@@ -5,22 +5,10 @@ import {
   isLiquidGlassAvailable,
 } from "expo-glass-effect";
 import { Image } from "expo-image";
-import {
-  Dimensions,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Dimensions, Modal, Pressable, StyleSheet, View } from "react-native";
+import Share from "react-native-share";
 import { Icon } from "../ui/Icon";
 import { Text } from "../ui/Text";
-
-// Conditionally import react-native-share only on native platforms
-let Share: any = null;
-if (Platform.OS !== "web") {
-  Share = require("react-native-share").default;
-}
 
 interface TattooModalProps {
   tattoo: GeneratedTattoo | null;

@@ -1,10 +1,6 @@
-import { Redirect, Stack } from "expo-router";
-import { Platform } from "react-native";
+import { Stack } from "expo-router";
 
 export default function OnboardingLayout() {
-  if (Platform.OS === "web") {
-    return <Redirect href="/(desktop)" />;
-  }
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />

@@ -1,4 +1,5 @@
 import { Color } from "@/constants/TWPalette";
+import { AppSettingsContext } from "@/context/AppSettings";
 import { getLastSubscription } from "@/context/SubscriptionContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
@@ -11,15 +12,18 @@ import {
   LabeledContent,
   List,
   Section,
+  Switch,
   Text,
 } from "@expo/ui/swift-ui";
 import { foregroundStyle } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import { Alert, Linking, Share, View } from "react-native";
 
 export function Profile() {
   const { user } = useUserData();
+  const { settings, updateSettings } = use(AppSettingsContext);
+
   const { refreshSubscriptionStatus, customerInfo } = useSubscription();
   const {
     used,
@@ -449,6 +453,22 @@ export function Profile() {
               Contact Support
             </Button>
           </HStack>
+        </Section>
+
+        <Section title="Settings">
+          <LabeledContent label="Show Onboarding">
+            <Switch
+              value={!settings.isOnboarded}
+              onValueChange={async () => {
+                router.dismissAll();
+                // wait for 1 second
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                updateSettings({
+                  isOnboarded: !(settings.isOnboarded ?? true),
+                });
+              }}
+            />
+          </LabeledContent>
         </Section>
 
         <Section title="Legal">

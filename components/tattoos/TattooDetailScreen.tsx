@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
-  Platform,
   StyleSheet,
   View,
 } from "react-native";
@@ -18,15 +17,10 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import Share from "react-native-share";
 import { Button } from "../ui/Button";
 import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
 import { Text } from "../ui/Text";
-
-// Conditionally import react-native-share only on native platforms
-let Share: any = null;
-if (Platform.OS !== "web") {
-  Share = require("react-native-share").default;
-}
 
 interface TattooDetailScreenProps {
   tattooId: string;

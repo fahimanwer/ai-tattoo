@@ -1,44 +1,31 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform } from "react-native";
+import "react-native-reanimated";
 import { Toaster } from "sonner-native";
 
 // Native imports
 import { AccentColorProvider } from "@/hooks/useAccentColor";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { DarkTheme, ThemeProvider } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { authClient } from "@/lib/auth-client";
-import "react-native-reanimated";
-
-import { AnimatedText } from "@/components/screens/Playground/shared/AnimatedText";
-import { Button } from "@/components/ui/Button";
-import { Text } from "@/components/ui/Text";
+import { AppSettingsContext, AppSettingsProvider } from "@/context/AppSettings";
 import { PlaygroundProvider } from "@/context/PlaygroundContext";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
-import { TattooCreationProvider } from "@/context/TattooCreationContext";
 import * as Haptics from "expo-haptics";
 import { PressablesConfig } from "pressto";
-import { useEffect, useState } from "react";
+import { use, useEffect } from "react";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import Purchases from "react-native-purchases";
-import { identifyDevice, vexo } from "vexo-analytics";
+import { vexo } from "vexo-analytics";
 
 vexo(process.env.EXPO_PUBLIC_VEXO!);
 
 SplashScreen.setOptions({
-  duration: 1000,
+  duration: 500,
   fade: true,
 });
-
-// SplashScreen.preventAutoHideAsync();
 
 // Configure RevenueCat before anything else
 const configureRevenueCat = async () => {
@@ -50,7 +37,7 @@ const configureRevenueCat = async () => {
         return;
       }
 
-      await Purchases.configure({
+      Purchases.configure({
         apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY,
       });
       console.log("✅ RevenueCat configured for iOS");
@@ -66,215 +53,64 @@ const configureRevenueCat = async () => {
 };
 
 function AppContent() {
-  const colorScheme = useColorScheme();
-  const { data: session, error: sessionError } = authClient.useSession();
+  const {
+    settings: { isOnboarded },
+  } = use(AppSettingsContext);
 
-  const isAuthenticated = !!session;
-
-  // Log in the user to RevenueCat when session is available
   useEffect(() => {
-    if (session?.user?.id) {
-      if (!__DEV__) {
-        // Vexo log in the user
-        identifyDevice(session.user.email);
-      }
-
-      // Log in the user to RevenueCat
-      Purchases.logIn(session.user.id)
-        .then(() => {
-          console.log(`✅ RevenueCat user logged in: ${session.user.id}`);
-        })
-        .catch((error) => {
-          console.error("❌ Error logging in to RevenueCat:", error);
-        });
-    }
-  }, [session?.user?.id, session?.user?.email]);
-
-  if (sessionError) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text type="body">Error: {sessionError.error}</Text>
-        <Text type="body">Error: {sessionError.message}</Text>
-        <Text type="body">Error: {sessionError.statusText}</Text>
-        <Text type="body">Error: {sessionError.status}</Text>
-        <Button
-          variant="subtle"
-          onPress={() => authClient.signOut()}
-          title="Sign Out"
-        />
-      </View>
-    );
-  }
+    configureRevenueCat();
+  }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#000000",
+    <Stack
+      screenOptions={{
+        headerShown: false,
       }}
     >
-      <ThemeProvider
-        value={{
-          ...(colorScheme === "dark" ? DarkTheme : DefaultTheme),
-          colors: {
-            ...(colorScheme === "dark"
-              ? DarkTheme.colors
-              : DefaultTheme.colors),
-            background: "#000000",
-            card: "#000000",
-          },
-        }}
-      >
-        <Stack
-          screenOptions={{
-            headerShown: false,
+      <Stack.Protected guard={!isOnboarded}>
+        <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Protected guard={isOnboarded}>
+        <Stack.Screen name="(tabs)" options={{}} />
+        <Stack.Screen name="(paywall)" options={{ presentation: "modal" }} />
+        <Stack.Screen
+          name="(playground)"
+          options={{
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: false,
           }}
-        >
-          <Stack.Protected guard={!isAuthenticated}>
-            <Stack.Screen
-              name="(onboarding)"
-              options={{ headerShown: false }}
-            />
-          </Stack.Protected>
-          <Stack.Protected guard={isAuthenticated}>
-            <Stack.Screen name="(tabs)" options={{}} />
-            <Stack.Screen name="(new)" />
-            <Stack.Screen
-              name="(paywall)"
-              options={{ presentation: "modal" }}
-            />
-            <Stack.Screen
-              name="(playground)"
-              options={{
-                presentation: "card",
-                animation: "slide_from_right",
-                gestureEnabled: false,
-              }}
-            />
-          </Stack.Protected>
+        />
+      </Stack.Protected>
 
-          <Stack.Screen
-            name="privacy-policy"
-            options={{ presentation: "modal" }}
-          />
-          <Stack.Screen
-            name="terms-of-service"
-            options={{ presentation: "modal" }}
-          />
-          <Stack.Screen name="profile" options={{ presentation: "modal" }} />
-        </Stack>
-        <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-      </ThemeProvider>
-    </View>
-  );
-}
-
-// Web-only layout component
-function WebLayout() {
-  return (
-    <View style={webStyles.container}>
-      <Stack
-        screenOptions={{
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: "#111111",
-          },
-          headerTitleStyle: {
-            fontWeight: "bold",
-            fontSize: 18,
-            color: "#ffffff",
-          },
-          headerTintColor: "#ffffff",
-        }}
-      >
-        <Stack.Screen
-          name="index"
-          options={{
-            title: "AI Tattoo Try On",
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="privacy-policy"
-          options={{
-            title: "Privacy Policy",
-          }}
-        />
-        <Stack.Screen
-          name="terms-of-service"
-          options={{
-            title: "Terms of Service",
-          }}
-        />
-      </Stack>
-    </View>
+      <Stack.Screen name="privacy-policy" options={{ presentation: "modal" }} />
+      <Stack.Screen
+        name="terms-of-service"
+        options={{ presentation: "modal" }}
+      />
+      <Stack.Screen name="profile" options={{ presentation: "modal" }} />
+    </Stack>
   );
 }
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const [isRevenueCatReady, setIsRevenueCatReady] = useState(false);
-  const [showAnimatedText, setShowAnimatedText] = useState(false);
-  const { isPending, isRefetching: isSessionRefetching } =
-    authClient.useSession();
-
-  const isLoading = !isRevenueCatReady || isPending || isSessionRefetching;
-
-  // Configure RevenueCat on mount before rendering SubscriptionProvider
-  useEffect(() => {
-    if (Platform.OS !== "web") {
-      configureRevenueCat().then(() => {
-        setIsRevenueCatReady(true);
-      });
-    }
-  }, []);
-
-  // Only show animated text if loading takes longer than 1 second
-  useEffect(() => {
-    if (!isLoading) {
-      // Reset the animated text state when we're done loading
-      setShowAnimatedText(false);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      if (isLoading) {
-        setShowAnimatedText(true);
-      }
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [isLoading]);
-
-  if (Platform.OS === "web") {
-    return <WebLayout />;
-  }
-
-  // Wait for RevenueCat to be configured before rendering SubscriptionProvider
-  if (isLoading) {
-    return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#000000",
-          }}
-        >
-          {showAnimatedText && <AnimatedText text="Welcome Back!" />}
-        </View>
-      </GestureHandlerRootView>
-    );
-  }
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AccentColorProvider>
-        <QueryClientProvider client={queryClient}>
-          <SubscriptionProvider>
-            <TattooCreationProvider>
+      <ThemeProvider
+        value={{
+          ...DarkTheme,
+          colors: {
+            ...DarkTheme.colors,
+            background: "#000000",
+            card: "#000000",
+          },
+        }}
+      >
+        <AppSettingsProvider>
+          <AccentColorProvider>
+            <QueryClientProvider client={queryClient}>
               <KeyboardProvider>
                 <PressablesConfig
                   globalHandlers={{
@@ -283,23 +119,18 @@ export default function RootLayout() {
                     },
                   }}
                 >
-                  <PlaygroundProvider>
-                    <AppContent />
-                  </PlaygroundProvider>
+                  <SubscriptionProvider>
+                    <PlaygroundProvider>
+                      <AppContent />
+                    </PlaygroundProvider>
+                  </SubscriptionProvider>
                   <Toaster />
                 </PressablesConfig>
               </KeyboardProvider>
-            </TattooCreationProvider>
-          </SubscriptionProvider>
-        </QueryClientProvider>
-      </AccentColorProvider>
+            </QueryClientProvider>
+          </AccentColorProvider>
+        </AppSettingsProvider>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }
-
-const webStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000000",
-  },
-});
