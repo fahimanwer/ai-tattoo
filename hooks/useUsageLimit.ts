@@ -1,4 +1,5 @@
 import type { PlanTier } from "@/constants/plan-limits";
+import { authClient } from "@/lib/auth-client";
 import { fetchUserUsage, type UsageResponse } from "@/lib/nano";
 import { useQuery } from "@tanstack/react-query";
 
@@ -50,7 +51,7 @@ const USAGE_QUERY_CONFIG = {
       console.warn("⚠️ API endpoint not properly deployed - skipping retries");
       return false;
     }
-    return failureCount < 2; // Retry twice for other errors
+    return failureCount < 1; // Retry twice for other errors
   },
   retryDelay: (attemptIndex: number) =>
     Math.min(1000 * 2 ** attemptIndex, 5000),
@@ -60,11 +61,38 @@ const USAGE_QUERY_CONFIG = {
  * Main hook for usage limits and subscription data
  */
 export const useUsageLimit = (): UsageLimitResult => {
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = session?.user !== undefined;
+
   const { data, isLoading, error, refetch } = useQuery<UsageResponse>({
     queryKey: ["user", "usage"],
+    enabled: isAuthenticated,
     queryFn: fetchUserUsage,
     ...USAGE_QUERY_CONFIG,
   });
+
+  // For unauthenticated users, return free tier defaults immediately
+  if (!isAuthenticated) {
+    return {
+      used: 0,
+      limit: 5, // Free tier default
+      remaining: 5,
+      isLimitReached: false,
+      canCreateTattoo: true,
+      periodStart: null,
+      periodEnd: null,
+      subscriptionTier: "free",
+      planDisplayName: "Free",
+      planColor: "#6b7280",
+      planFeatures: [],
+      limitMessage: "Sign in to track your usage",
+      usagePercentage: 0,
+      isLoading: false, // ✅ Not loading for unauthenticated users
+      error: null,
+      refetch,
+      data: undefined,
+    };
+  }
 
   // Default values when loading or no data
   if (isLoading || !data) {

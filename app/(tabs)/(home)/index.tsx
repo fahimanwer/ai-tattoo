@@ -1,26 +1,33 @@
 import { Home } from "@/components/screens/Home";
+import { authClient } from "@/lib/auth-client";
 import { Stack, useRouter } from "expo-router";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { data: session, isPending, isRefetching } = authClient.useSession();
+  const isAuthenticated =
+    session?.user !== undefined && !isPending && !isRefetching;
 
   return (
     <>
       <Stack.Screen
         options={{
-          unstable_headerLeftItems: (props) => [
-            {
-              type: "button",
-              label: "Profile",
-              icon: {
-                name: "person.fill",
-                type: "sfSymbol",
-              },
-              onPress: () => {
-                router.push("/profile");
-              },
-            },
-          ],
+          unstable_headerLeftItems: (props) =>
+            isAuthenticated
+              ? [
+                  {
+                    type: "button",
+                    label: "Profile",
+                    icon: {
+                      name: "person.fill",
+                      type: "sfSymbol",
+                    },
+                    onPress: () => {
+                      router.push("/profile");
+                    },
+                  },
+                ]
+              : [],
           unstable_headerRightItems: (props) => [
             {
               type: "button",

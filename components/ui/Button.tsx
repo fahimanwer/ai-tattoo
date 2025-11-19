@@ -11,14 +11,9 @@ import {
 } from "@/types/ui";
 import * as Haptics from "expo-haptics";
 import { SFSymbol } from "expo-symbols";
+import { PressableScale } from "pressto";
 import React, { useEffect, useMemo, useRef } from "react";
-import {
-  Alert,
-  Animated,
-  Pressable,
-  StyleSheet,
-  ViewStyle,
-} from "react-native";
+import { Alert, Animated, StyleSheet, ViewStyle } from "react-native";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
 
@@ -411,15 +406,9 @@ export function Button({
   };
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        ...buttonStyles,
-        shouldCenterIcon && styles.iconOnly,
-        isDisabled && styles.disabled,
-        pressed && !isDisabled && styles.pressed,
-      ]}
+    <PressableScale
+      style={buttonStyles}
       onPress={isDisabled ? undefined : handlePress}
-      disabled={isDisabled}
     >
       {displayIcon &&
         (loading ? (
@@ -438,7 +427,7 @@ export function Button({
           />
         ))}
       {title && <Text style={textStyles}>{title}</Text>}
-    </Pressable>
+    </PressableScale>
   );
 }
 

@@ -44,7 +44,21 @@ export function SubscriptionProvider({
       setIsLoading(true);
       setError(null);
 
-      const customerInfo = await Purchases.getCustomerInfo();
+      // Check if Purchases is configured
+      let customerInfo;
+      try {
+        customerInfo = await Purchases.getCustomerInfo();
+      } catch (initError: any) {
+        // If RevenueCat isn't initialized, wait a bit and retry once
+        if (initError?.message?.includes("singleton instance")) {
+          console.log("⏳ RevenueCat not ready, retrying in 500ms...");
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          customerInfo = await Purchases.getCustomerInfo();
+        } else {
+          throw initError;
+        }
+      }
+
       setCustomerInfo(customerInfo);
 
       // Get all active entitlements

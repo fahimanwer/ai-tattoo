@@ -1,6 +1,7 @@
 import { router, Stack } from "expo-router";
 import { use, useEffect } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   Platform,
@@ -14,7 +15,11 @@ import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
-import { PlaygroundContext } from "@/context/PlaygroundContext";
+import {
+  ImageGenerationMutation,
+  PlaygroundContext,
+} from "@/context/PlaygroundContext";
+import { authClient } from "@/lib/auth-client";
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
 import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
 import { FeaturedSuggestion } from "@/modules/animated-input/src/AnimatedInput.types";
@@ -24,6 +29,8 @@ import { GlassView } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
 // Prepare suggestions for native view
@@ -47,6 +54,10 @@ function formattedSuggestions(tattoos: FeaturedTattoo[]) {
 }
 
 export function PlaygroundScreen() {
+  const { data: session, isPending, isRefetching } = authClient.useSession();
+  const isAuthenticated = session?.user !== undefined;
+  const isLoading = isPending || isRefetching;
+
   const {
     prompt,
     setPrompt,
@@ -64,6 +75,8 @@ export function PlaygroundScreen() {
     removeImageFromActiveGroup,
   } = use(PlaygroundContext);
 
+  const { bottom } = useSafeAreaInsets();
+
   // Play playful entrance haptic on first load
   useEffect(() => {
     // Play the playful AI playground entrance haptic
@@ -79,6 +92,11 @@ export function PlaygroundScreen() {
       router.replace("/(tabs)/(home)");
     }
   }
+
+  if (isLoading) {
+    return <ActivityIndicator style={{ flex: 1, marginBottom: 100 }} />;
+  }
+
   return (
     <>
       <Stack.Screen
@@ -318,74 +336,116 @@ export function PlaygroundScreen() {
           />
         </View>
 
-        {activeGenerationUris.length >= 2 ? (
-          <View style={{ paddingBottom: 100, paddingHorizontal: 16, gap: 16 }}>
-            <Text style={{ textAlign: "center" }}>
-              You&apos;ve selected 2 images! You can now combine them to see how
-              a tattoo would look on your body.
+        {!isAuthenticated ? (
+          <Animated.View
+            entering={FadeIn.duration(1000)}
+            exiting={FadeOut.duration(1000)}
+            style={{ padding: 16, gap: 16, paddingBottom: bottom }}
+          >
+            <Text type="lg" weight="bold">
+              A quick sign-in before we create your tattoo.
             </Text>
-
-            <Text
-              type="sm"
-              style={{ textAlign: "center" }}
-              darkColor={Color.zinc[400]}
-            >
-              For the best results, use a photo of a body part that matches the
-              example you selected. Our tattoo examples already include specific
-              body parts, so using a similar angle and area in your own photo
-              will create more accurate and realistic results. Make sure the
-              body part is clean, uncovered, and clearly visible.
+            <Text type="sm">
+              This lets us track your free generations and make sure your
+              account is good to go.
             </Text>
             <Button
-              title="Combine Images"
-              onPress={handleTattooGeneration}
+              title="Sign in"
               color="yellow"
               variant="solid"
-              loading={activeMutation.isPending}
-              disabled={activeMutation.isPending}
+              size="lg"
+              radius="full"
+              hapticStyle="medium"
+              loading={isPending}
+              disabled={isPending}
+              onPress={() => router.push("/auth-sheet")}
             />
-          </View>
+          </Animated.View>
         ) : (
-          <Host
-            style={{
-              height: activeMutation.isError ? "70%" : "90%",
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-            }}
-          >
-            <InputControls
-              onChangeText={setPrompt}
-              onPressImageGallery={pickImageFromGallery}
-              onSubmit={handleTattooGeneration}
-              onSelectSuggestion={() => {}}
-              isSubmitDisabled={prompt.length === 0}
-              suggestions={suggestions}
-            />
-          </Host>
+          <ActionControls
+            activeGenerationUris={activeGenerationUris}
+            bottom={bottom}
+            handleTattooGeneration={handleTattooGeneration}
+            activeMutation={activeMutation}
+            setPrompt={setPrompt}
+            prompt={prompt}
+            pickImageFromGallery={pickImageFromGallery}
+          />
         )}
-        {/* <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            gap: 10,
-            padding: 16,
-          }}
-        >
-          <View style={{ width: WIDTH - 32 }}>
-            <InputControls
-              onChangeText={setPrompt}
-              onChangeFocus={setIsKeyboardVisible}
-              onSubmit={handleTattooGeneration}
-              isSubmitDisabled={prompt.length === 0}
-            />
-          </View>
-        </View> */}
-
-        {/* <Animated.View style={fakeView} /> */}
       </View>
     </>
+  );
+}
+
+function ActionControls({
+  activeGenerationUris,
+  bottom,
+  handleTattooGeneration,
+  activeMutation,
+  setPrompt,
+  prompt,
+  pickImageFromGallery,
+}: {
+  activeGenerationUris: string[];
+  bottom: number;
+  handleTattooGeneration: () => void;
+  activeMutation: ImageGenerationMutation;
+  setPrompt: React.Dispatch<React.SetStateAction<string>>;
+  prompt: string;
+  pickImageFromGallery: () => Promise<boolean>;
+}) {
+  return activeGenerationUris.length >= 2 ? (
+    <View
+      style={{
+        paddingBottom: bottom,
+        paddingHorizontal: 16,
+        gap: 16,
+      }}
+    >
+      <Text style={{ textAlign: "center" }}>
+        You&apos;ve selected 2 images! You can now combine them to see how a
+        tattoo would look on your body.
+      </Text>
+
+      <Text
+        type="sm"
+        style={{ textAlign: "center" }}
+        darkColor={Color.zinc[400]}
+      >
+        For the best results, use a photo of a body part that matches the
+        example you selected. Our tattoo examples already include specific body
+        parts, so using a similar angle and area in your own photo will create
+        more accurate and realistic results. Make sure the body part is clean,
+        uncovered, and clearly visible.
+      </Text>
+      <Button
+        title="Combine Images"
+        onPress={handleTattooGeneration}
+        color="yellow"
+        variant="solid"
+        loading={activeMutation.isPending}
+        disabled={activeMutation.isPending}
+      />
+    </View>
+  ) : (
+    <Host
+      style={{
+        height: activeMutation.isError ? "70%" : "90%",
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+      }}
+    >
+      <InputControls
+        onChangeText={setPrompt}
+        onPressImageGallery={pickImageFromGallery}
+        onSubmit={handleTattooGeneration}
+        onSelectSuggestion={() => {}}
+        isSubmitDisabled={prompt.length === 0}
+        suggestions={suggestions}
+      />
+    </Host>
   );
 }
 

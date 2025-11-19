@@ -1,6 +1,7 @@
 import { Text } from "@/components/ui/Text";
 import { Color } from "@/constants/TWPalette";
 import { useUsageLimit } from "@/hooks/useUsageLimit";
+import { authClient } from "@/lib/auth-client";
 import { BlurView } from "expo-blur";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
@@ -9,9 +10,13 @@ import { Alert, Pressable } from "react-native";
 
 export function Banner() {
   const { isLimitReached, subscriptionTier, isLoading } = useUsageLimit();
+  const { data: session, isPending, isRefetching } = authClient.useSession();
+  const isAuthenticated = session?.user !== undefined;
+  const isLoadingAuth = isPending || isRefetching;
 
   // Only show banner if user is on free tier or has reached their limit
-  const shouldShowBanner = subscriptionTier === "free" || isLimitReached;
+  const shouldShowBanner =
+    subscriptionTier === "free" || !isAuthenticated || isLimitReached;
 
   // Dynamic banner text based on user status
   const bannerTitle = isLimitReached
@@ -22,6 +27,10 @@ export function Banner() {
     : "Unlimited designs, exclusive styles & HD downloads";
 
   const handlePress = async () => {
+    if (!isAuthenticated) {
+      router.push("/auth-sheet");
+      return;
+    }
     try {
       router.push("/(paywall)");
     } catch (error) {
@@ -34,13 +43,24 @@ export function Banner() {
     }
   };
 
-  // Don't render banner if user doesn't need to upgrade
-  if (!shouldShowBanner) {
+  // Wait for auth to load, but if user is not authenticated, show banner regardless of usage loading state
+  if (isLoadingAuth) {
     return null;
   }
 
-  if (isLoading) {
-    return null;
+  // If user is not authenticated, always show banner
+  if (!isAuthenticated) {
+    // Render banner (same JSX below)
+  } else {
+    // For authenticated users, wait for usage data to load
+    if (isLoading) {
+      return null;
+    }
+
+    // Don't render banner if user doesn't need to upgrade
+    if (!shouldShowBanner) {
+      return null;
+    }
   }
 
   return (

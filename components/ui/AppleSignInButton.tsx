@@ -3,7 +3,11 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import * as Haptics from "expo-haptics";
 import { Alert, StyleSheet } from "react-native";
 
-export function AppleSignInButton() {
+interface AppleSignInButtonProps {
+  onSuccess?: () => void;
+}
+
+export function AppleSignInButton({ onSuccess }: AppleSignInButtonProps = {}) {
   return (
     <AppleAuthentication.AppleAuthenticationButton
       buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
@@ -32,6 +36,7 @@ export function AppleSignInButton() {
               token: credential.identityToken,
             },
           });
+          onSuccess?.();
         } catch (e: any) {
           if (e.code === "ERR_REQUEST_CANCELED") {
             return;
