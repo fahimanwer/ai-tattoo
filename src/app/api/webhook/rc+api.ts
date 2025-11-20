@@ -1,5 +1,8 @@
-import { entitlementToTier, getMonthlyLimit } from "@/constants/plan-limits";
 import { PrismaClient } from "@/prisma/generated/client/edge";
+import {
+  entitlementToTier,
+  getMonthlyLimit,
+} from "@/src/constants/plan-limits";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
 const prisma = new PrismaClient({

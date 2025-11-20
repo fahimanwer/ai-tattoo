@@ -1,11 +1,11 @@
+import { PrismaClient } from "@/prisma/generated/client/edge";
+import { withAuth } from "@/server-utils/auth-middleware";
 import {
   entitlementToTier,
   getMonthlyLimit,
   getPlanConfig,
   type PlanTier,
-} from "@/constants/plan-limits";
-import { PrismaClient } from "@/prisma/generated/client/edge";
-import { withAuth } from "@/server-utils/auth-middleware";
+} from "@/src/constants/plan-limits";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
 const prisma = new PrismaClient({
