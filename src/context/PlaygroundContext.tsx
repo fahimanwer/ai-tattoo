@@ -12,6 +12,7 @@ import {
   TextToImageResponse,
 } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
+import Share from "@/patches/rn-share-re-export";
 import {
   useMutation,
   UseMutationResult,
@@ -20,7 +21,6 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import * as React from "react";
 import { Alert, Keyboard } from "react-native";
-import Share from "react-native-share";
 import { toast } from "sonner-native";
 
 // Union type that accepts either mutation type

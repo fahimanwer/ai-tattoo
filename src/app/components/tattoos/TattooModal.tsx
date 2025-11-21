@@ -1,3 +1,4 @@
+import Share from "@/patches/rn-share-re-export";
 import { GeneratedTattoo } from "@/src/types/tattoo";
 import {
   GlassContainer,
@@ -6,7 +7,6 @@ import {
 } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { Dimensions, Modal, Pressable, StyleSheet, View } from "react-native";
-import Share from "react-native-share";
 import { Icon } from "../ui/Icon";
 import { Text } from "../ui/Text";
 

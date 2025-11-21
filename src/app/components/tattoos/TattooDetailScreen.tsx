@@ -1,4 +1,5 @@
 import { ALBUM_NAME } from "@/lib/save-to-library";
+import Share from "@/patches/rn-share-re-export";
 import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
@@ -17,7 +18,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import Share from "react-native-share";
 import { Button } from "../ui/Button";
 import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
 import { Text } from "../ui/Text";
