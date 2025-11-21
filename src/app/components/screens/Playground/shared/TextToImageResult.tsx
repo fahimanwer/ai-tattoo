@@ -214,28 +214,32 @@ function LoadingChangingText({
     <View
       style={{
         flex: 1,
-        padding: 16,
+        padding: 32,
+        gap: 32,
       }}
     >
       {hasImages && (
         <View
           style={{
             flexDirection: "row",
-            gap: 8,
             justifyContent: "center",
             marginBottom: 16,
           }}
         >
-          {lastGenerationUris.slice(0, 3).map((uri) => (
+          {lastGenerationUris.slice(0, 3).map((uri, index) => (
             <Image
               key={uri}
               source={{ uri }}
               placeholder={{ blurhash: BLURHASH }}
               cachePolicy="memory-disk"
               style={{
-                width: 80,
-                height: 80,
-                borderRadius: 40,
+                width: 100,
+                height: 100,
+                borderRadius: 50,
+                borderWidth: 2,
+                borderColor: Color.yellow[700],
+                marginRight: index < 2 ? -8 : 0,
+                marginLeft: index < 2 ? -8 : 0,
               }}
               contentFit="cover"
               contentPosition="center"

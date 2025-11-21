@@ -441,7 +441,6 @@ function ActionControls({
         onChangeText={setPrompt}
         onPressImageGallery={pickImageFromGallery}
         onSubmit={handleTattooGeneration}
-        onSelectSuggestion={() => {}}
         isSubmitDisabled={prompt.length === 0}
         suggestions={suggestions}
       />

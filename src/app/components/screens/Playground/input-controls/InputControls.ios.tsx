@@ -6,7 +6,6 @@ export function InputControls({
   onChangeFocus,
   onChangeText,
   onSubmit,
-  onSelectSuggestion,
   autoFocus,
   isSubmitDisabled = false,
   suggestions = [],
@@ -14,13 +13,6 @@ export function InputControls({
   const handleMainActionPress = () => {
     console.log("Main action button pressed - submit the prompt");
     onSubmit?.();
-  };
-
-  const handleSelectSuggestion = (event: {
-    nativeEvent: { title: string };
-  }) => {
-    console.log("Suggestion selected:", event.nativeEvent.title);
-    onSelectSuggestion?.(event.nativeEvent.title);
   };
 
   return (
@@ -37,7 +29,6 @@ export function InputControls({
       }}
       onPressImageGallery={onPressImageGallery}
       onPressMainAction={handleMainActionPress}
-      onSelectSuggestion={handleSelectSuggestion}
     />
   );
   // return (
