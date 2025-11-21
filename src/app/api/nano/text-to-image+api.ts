@@ -156,6 +156,13 @@ export const POST = withAuth(async (request: Request, session: any) => {
             parts: [{ text: prompt }],
           },
         ],
+        // https://ai.google.dev/api/generate-content#generationconfig
+        generationConfig: {
+          imageConfig: {
+            aspectRatio: "1:1",
+            image_size: "1K",
+          },
+        },
       }),
       headers: {
         "Content-Type": "application/json",
