@@ -2,7 +2,7 @@
   "expo": {
     "name": "AI Tattoo",
     "slug": "ai-tattoo",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/ios-tinted.png",
     "scheme": "aitattoo",
@@ -16,7 +16,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "5",
+      "buildNumber": "1",
       "appleTeamId": "T2A8YY9YDW"
     },
     "android": {
