@@ -1,5 +1,7 @@
+import { onboardingEntranceHaptic } from "@/lib/haptics-patterns.ios";
+import CoreHaptics from "@/modules/native-core-haptics";
 import { useUserData } from "@/src/hooks/useUserData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { BodyPartsInspiration } from "../home/BodyPartsInspiration";
@@ -9,6 +11,11 @@ import { Banner } from "../pro/Banner";
 export function Home() {
   const { refresh } = useUserData();
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Play entrance haptic on first mount
+  useEffect(() => {
+    CoreHaptics.playPattern(onboardingEntranceHaptic);
+  }, []);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
