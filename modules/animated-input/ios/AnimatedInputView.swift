@@ -16,6 +16,7 @@ final class AnimatedInputViewProps: ExpoSwiftUI.ViewProps {
   var onFocusChanged = EventDispatcher()
   var onPressImageGallery = EventDispatcher()
   var onPressMainAction = EventDispatcher()
+  var onPressSecondIcon = EventDispatcher()
 }
 
 struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
@@ -52,7 +53,18 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
               .background(fillColor, in: .circle)
             
           }
-          
+          Button {
+            generatorHaptic.selectionChanged()
+            isFocused = false
+            props.onPressSecondIcon([:])
+          } label: {
+            Image(systemName: "camera")
+              .fontWeight(.medium)
+              .foregroundStyle(Color.primary)
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .background(fillColor, in: .circle)
+            
+          }
           if #available(iOS 26.0, *) {
             if model.isAvailable {
               Button {
@@ -96,17 +108,7 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
           } else {
             // Fallback on earlier versions
           }
-          Button {
-            generatorHaptic.selectionChanged()
-            isFocused = false
-          } label: {
-            Image(systemName: "keyboard.chevron.compact.down")
-              .fontWeight(.medium)
-              .foregroundStyle(Color.primary)
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-              .background(fillColor, in: .circle)
-            
-          }
+         
         } trailingAction: {
           //        Button {
           //          isFocused.toggle()

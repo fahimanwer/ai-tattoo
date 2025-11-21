@@ -233,6 +233,7 @@ export function PlaygroundScreen() {
                 alignItems: "center",
                 borderWidth: 1,
                 paddingHorizontal: 16,
+                paddingTop: 4,
               }}
             >
               <Text type="sm" weight="bold">
@@ -277,7 +278,7 @@ export function PlaygroundScreen() {
               keyExtractor={(item, index) =>
                 `generation-${index}-${item[0] || ""}`
               }
-              contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
+              contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
               // Performance optimizations
               getItemLayout={(_, index) => ({
                 length: 50,
@@ -318,7 +319,7 @@ export function PlaygroundScreen() {
 
         {/* Text to image result */}
         <View style={{ flex: 1 }}>
-          {sessionGenerations.length > 0 ? (
+          {/* {sessionGenerations.length > 0 ? (
             <Text
               type="sm"
               style={{ paddingHorizontal: 16, paddingBottom: 4 }}
@@ -328,7 +329,7 @@ export function PlaygroundScreen() {
                 ? "Mode: Editing - your prompt will modify this image"
                 : "Mode: New Design - your prompt will create a new tattoo"}
             </Text>
-          ) : null}
+          ) : null} */}
           <TextToImageResult
             mutation={activeMutation}
             lastGenerationUris={activeGenerationUris}
@@ -430,7 +431,7 @@ function ActionControls({
   ) : (
     <Host
       style={{
-        height: activeMutation.isError ? "70%" : "90%",
+        height: activeMutation.isError ? "70%" : "80%",
         position: "absolute",
         bottom: 0,
         left: 0,
@@ -443,6 +444,7 @@ function ActionControls({
         onSubmit={handleTattooGeneration}
         isSubmitDisabled={prompt.length === 0}
         suggestions={suggestions}
+        onPressSecondIcon={() => router.dismissTo("/camera-view")}
       />
     </Host>
   );

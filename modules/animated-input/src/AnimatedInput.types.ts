@@ -23,5 +23,6 @@ export type AnimatedInputViewProps = {
   onFocusChanged?: (event: { nativeEvent: OnFocusChangedEventPayload }) => void;
   onPressImageGallery?: () => void;
   onPressMainAction?: () => void;
+  onPressSecondIcon?: () => void;
   style?: StyleProp<ViewStyle>;
 };

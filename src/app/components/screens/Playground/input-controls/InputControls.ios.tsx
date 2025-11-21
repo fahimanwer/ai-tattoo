@@ -9,6 +9,7 @@ export function InputControls({
   autoFocus,
   isSubmitDisabled = false,
   suggestions = [],
+  onPressSecondIcon,
 }: InputControlsProps) {
   const handleMainActionPress = () => {
     console.log("Main action button pressed - submit the prompt");
@@ -27,6 +28,7 @@ export function InputControls({
       onFocusChanged={(event) => {
         onChangeFocus?.(event.nativeEvent.isFocused);
       }}
+      onPressSecondIcon={onPressSecondIcon}
       onPressImageGallery={onPressImageGallery}
       onPressMainAction={handleMainActionPress}
     />

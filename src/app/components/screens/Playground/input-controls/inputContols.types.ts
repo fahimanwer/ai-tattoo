@@ -8,4 +8,5 @@ export interface InputControlsProps {
   autoFocus?: boolean;
   isSubmitDisabled?: boolean;
   suggestions?: FeaturedSuggestion[];
+  onPressSecondIcon?: () => void;
 }

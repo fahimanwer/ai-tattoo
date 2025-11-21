@@ -111,17 +111,6 @@ export function TextToImageResult({
       entering={FadeIn.duration(1000)}
       exiting={FadeOut.duration(1000)}
     >
-      {lastGenerationUris.length > 0 && (
-        <Text
-          type="xs"
-          weight="medium"
-          style={{ color: Color.zinc[400], textAlign: "center" }}
-        >
-          {lastGenerationUris.length === 1
-            ? "1 image selected - add one more to combine"
-            : `${lastGenerationUris.length} images selected (max)`}
-        </Text>
-      )}
       <View
         style={{
           flexDirection: "row",
@@ -156,6 +145,17 @@ export function TextToImageResult({
           </View>
         ))}
       </View>
+      {lastGenerationUris.length > 0 && (
+        <Text
+          type="xs"
+          weight="medium"
+          style={{ color: Color.zinc[400], textAlign: "center" }}
+        >
+          {lastGenerationUris.length === 1
+            ? "1 image selected - add one more to combine"
+            : `${lastGenerationUris.length} images selected (max)`}
+        </Text>
+      )}
     </Animated.View>
   ) : (
     <AnimatedText
