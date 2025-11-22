@@ -8,10 +8,6 @@ export type OnFocusChangedEventPayload = {
   isFocused: boolean;
 };
 
-export type OnSelectSuggestionEventPayload = {
-  title: string;
-};
-
 export type FeaturedSuggestion = {
   title: string;
   imageUrl: string;
@@ -27,8 +23,6 @@ export type AnimatedInputViewProps = {
   onFocusChanged?: (event: { nativeEvent: OnFocusChangedEventPayload }) => void;
   onPressImageGallery?: () => void;
   onPressMainAction?: () => void;
-  onSelectSuggestion?: (event: {
-    nativeEvent: OnSelectSuggestionEventPayload;
-  }) => void;
+  onPressSecondIcon?: () => void;
   style?: StyleProp<ViewStyle>;
 };

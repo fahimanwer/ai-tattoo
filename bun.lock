@@ -39,7 +39,6 @@
         "expo-media-library": "18.3.0-canary-20251031-b135dff",
         "expo-router": "7.0.0-canary-20251031-b135dff",
         "expo-secure-store": "15.0.8-canary-20251031-b135dff",
-        "expo-splash-screen": "31.0.11-canary-20251031-b135dff",
         "expo-sqlite": "16.0.9-canary-20251031-b135dff",
         "expo-status-bar": "3.0.9-canary-20251031-b135dff",
         "expo-symbols": "1.1.0-canary-20251031-b135dff",
@@ -1051,8 +1050,6 @@
     "expo-secure-store": ["expo-secure-store@15.0.8-canary-20251031-b135dff", "", { "peerDependencies": { "expo": "55.0.0-canary-20251031-b135dff" } }, "sha512-j/ybwDnN6deLrq/xo/sVa6/yNQJ+NdTHsQk0wGB0KTsgps84a0KgfLFts9hn7ewJOzi+6/o4+TrP7pn+P4Epwg=="],
 
     "expo-server": ["expo-server@1.0.4-canary-20251031-b135dff", "", {}, "sha512-hXIRqvyPr/MPrVcVUgjPaM65ErRPXrS3/JmPRLhjsTrbN5S+U1c1Tm+J9tbuRnIn4kFkSLGazBXEBXB88sXipQ=="],
-
-    "expo-splash-screen": ["expo-splash-screen@31.0.11-canary-20251031-b135dff", "", { "dependencies": { "@expo/prebuild-config": "54.0.7-canary-20251031-b135dff" }, "peerDependencies": { "expo": "55.0.0-canary-20251031-b135dff" } }, "sha512-Zy5OUIxeQ0HlatALXgi7QK2SYNyWCf/Mc2lZTfAZ28wNRwUI4F64TxQAMxHbZPLCMoij/mIdikwBe5c8O2isyg=="],
 
     "expo-sqlite": ["expo-sqlite@16.0.9-canary-20251031-b135dff", "", { "dependencies": { "await-lock": "^2.2.2" }, "peerDependencies": { "expo": "55.0.0-canary-20251031-b135dff", "react": "*", "react-native": "*" } }, "sha512-C/QZ9pAqTTF053R1/zgyBOOlgzZx8VtyiQSzdF/K6hdxameoPNzqVuRi2ICigJWYgHgcURmTfa6sCo5LmQRZTQ=="],
 

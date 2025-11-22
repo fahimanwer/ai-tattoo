@@ -410,3 +410,114 @@ export const failureHaptic: HapticPatternData = {
     },
   ],
 };
+
+/**
+ * Onboarding entrance haptic - synced with the staggered fade-in animations
+ * Creates a gentle, welcoming rhythm that matches the visual flow
+ * Updated with more delightful, spaced-out timing
+ */
+export const onboardingEntranceHaptic: HapticPatternData = {
+  events: [
+    // Video fades in (200ms delay)
+    {
+      eventType: "hapticTransient",
+      time: 0.2,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.3 },
+        { parameterID: "hapticSharpness", value: 0.2 },
+      ],
+    },
+    // Pagination dots appear (700ms)
+    {
+      eventType: "hapticTransient",
+      time: 0.7,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.35 },
+        { parameterID: "hapticSharpness", value: 0.25 },
+      ],
+    },
+    // Title & description fade in (950ms)
+    {
+      eventType: "hapticTransient",
+      time: 0.95,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.45 },
+        { parameterID: "hapticSharpness", value: 0.3 },
+      ],
+    },
+    // Buttons appear (1200ms)
+    {
+      eventType: "hapticTransient",
+      time: 1.2,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.5 },
+        { parameterID: "hapticSharpness", value: 0.35 },
+      ],
+    },
+    // Terms text completes the sequence (1450ms)
+    {
+      eventType: "hapticTransient",
+      time: 1.45,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.4 },
+        { parameterID: "hapticSharpness", value: 0.25 },
+      ],
+    },
+    // Gentle settling haptic (1650ms)
+    {
+      eventType: "hapticContinuous",
+      time: 1.65,
+      eventDuration: 0.3,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.2 },
+        { parameterID: "hapticSharpness", value: 0.15 },
+      ],
+    },
+  ],
+  parameterCurves: [
+    {
+      parameterID: "hapticIntensityControl",
+      relativeTime: 1.65,
+      controlPoints: [
+        { relativeTime: 0.0, value: 0.25 },
+        { relativeTime: 1.0, value: 0.0 },
+      ],
+    },
+  ],
+};
+
+/**
+ * Subtle haptic when swiping between onboarding steps
+ * Quick and satisfying, like turning a page
+ */
+export const onboardingSwipeHaptic: HapticPatternData = {
+  events: [
+    {
+      eventType: "hapticTransient",
+      time: 0.0,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.5 },
+        { parameterID: "hapticSharpness", value: 0.4 },
+      ],
+    },
+    {
+      eventType: "hapticContinuous",
+      time: 0.02,
+      eventDuration: 0.08,
+      parameters: [
+        { parameterID: "hapticIntensity", value: 0.25 },
+        { parameterID: "hapticSharpness", value: 0.2 },
+      ],
+    },
+  ],
+  parameterCurves: [
+    {
+      parameterID: "hapticIntensityControl",
+      relativeTime: 0.02,
+      controlPoints: [
+        { relativeTime: 0.0, value: 0.3 },
+        { relativeTime: 1.0, value: 0.0 },
+      ],
+    },
+  ],
+};

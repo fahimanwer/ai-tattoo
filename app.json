@@ -2,9 +2,8 @@
   "expo": {
     "name": "AI Tattoo",
     "slug": "ai-tattoo",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/images/ios-tinted.png",
     "scheme": "aitattoo",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
@@ -16,7 +15,6 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "2",
       "appleTeamId": "T2A8YY9YDW"
     },
     "android": {
@@ -25,20 +23,10 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "server",
-      "favicon": "./assets/images/favicon.png"
+      "output": "server"
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#000000"
-        }
-      ],
       [
         "expo-image-picker",
         {

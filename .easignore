@@ -43,7 +43,7 @@ app-example/
 android/
 
 # iOS
-ios/
+/ios/
 
 # Windows
 windows/

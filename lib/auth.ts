@@ -37,6 +37,7 @@ export const auth = betterAuth({
   },
   trustedOrigins: [
     "exp://",
+    "aitattoo://",
     "aitattoo://**",
     "aitattoo:///(tabs)/home",
     "https://tattoaiapp.com",
