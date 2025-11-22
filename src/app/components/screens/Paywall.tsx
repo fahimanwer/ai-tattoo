@@ -139,7 +139,7 @@ export function Paywall() {
         }}
       />
       <Image
-        source={require("@/assets/images/AITattooHome.png")}
+        source={require("@/assets/images/home.png")}
         style={styles.heroBackground}
         contentFit="cover"
       />
