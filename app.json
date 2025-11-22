@@ -4,7 +4,6 @@
     "slug": "ai-tattoo",
     "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/images/ios-tinted.png",
     "scheme": "aitattoo",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
@@ -24,20 +23,10 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "server",
-      "favicon": "./assets/images/favicon.png"
+      "output": "server"
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#000000"
-        }
-      ],
       [
         "expo-image-picker",
         {

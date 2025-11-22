@@ -7,7 +7,6 @@ import { Toaster } from "sonner-native";
 // Native imports
 import { AccentColorProvider } from "@/src/hooks/useAccentColor";
 import { DarkTheme, ThemeProvider } from "@react-navigation/native";
-import * as SplashScreen from "expo-splash-screen";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import {
@@ -25,11 +24,6 @@ import Purchases from "react-native-purchases";
 import { vexo } from "vexo-analytics";
 
 if (!__DEV__) vexo(process.env.EXPO_PUBLIC_VEXO!);
-
-SplashScreen.setOptions({
-  duration: 500,
-  fade: true,
-});
 
 // RevenueCat initialization state
 let isRevenueCatConfigured = false;
