@@ -112,6 +112,8 @@ export const POST = withAuth(async (request: Request, session: any) => {
       },
     };
 
+    console.log("server", "usage response", response);
+
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: { "Content-Type": "application/json" },
