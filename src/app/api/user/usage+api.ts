@@ -32,12 +32,28 @@ export const POST = withAuth(async (request: Request, session: any) => {
     const userId = session.user.id;
     const now = new Date();
 
-    // Find current period records (where now is between periodStart and periodEnd)
-    const currentPeriodRecords = await prisma.usage.findMany({
+    // First, check for free tier record (one-time credits, ignore period dates)
+    const freeRecord = await prisma.usage.findFirst({
+      where: {
+        userId: userId,
+        entitlement: "free",
+      },
+      select: {
+        entitlement: true,
+        periodStart: true,
+        periodEnd: true,
+        count: true,
+        limit: true,
+      },
+    });
+
+    // Then check for active paid tier records
+    const paidRecord = await prisma.usage.findFirst({
       where: {
         userId: userId,
         periodStart: { lte: now },
         periodEnd: { gte: now },
+        entitlement: { not: "free" },
       },
       orderBy: { periodStart: "desc" },
       select: {
@@ -47,22 +63,21 @@ export const POST = withAuth(async (request: Request, session: any) => {
         count: true,
         limit: true,
       },
-      take: 1, // Only get the most recent one
     });
 
+    // Priority: paid tier > free tier
     const activePeriodRecord: {
       entitlement: string;
       periodStart: Date;
       periodEnd: Date;
       count: number;
       limit: number;
-    } | null = currentPeriodRecords[0] || null;
+    } | null = paidRecord || freeRecord || null;
 
-    // Determine subscription tier - ONLY from active period
+    // Determine subscription tier
     let subscriptionTier: PlanTier = "free";
 
     if (activePeriodRecord) {
-      // User has an active period
       subscriptionTier = entitlementToTier(activePeriodRecord.entitlement);
     }
 
@@ -70,13 +85,13 @@ export const POST = withAuth(async (request: Request, session: any) => {
     const tierLimit = getMonthlyLimit(subscriptionTier);
     const planConfig = getPlanConfig(subscriptionTier);
 
-    // Calculate current period usage (only if there's an active period)
+    // Calculate current period usage
     const used = activePeriodRecord?.count || 0;
     const limit = tierLimit;
     const remaining = Math.max(0, limit - used);
     const isLimitReached = used >= limit;
 
-    // Set period dates based on active period or create free tier period
+    // Set period dates based on active period
     let periodStart: Date;
     let periodEnd: Date;
 
@@ -85,7 +100,7 @@ export const POST = withAuth(async (request: Request, session: any) => {
       periodStart = new Date(activePeriodRecord.periodStart);
       periodEnd = new Date(activePeriodRecord.periodEnd);
     } else {
-      // No active period - create a default monthly period for free tier
+      // No record found - use placeholder dates
       periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
       periodEnd = new Date(
         now.getFullYear(),

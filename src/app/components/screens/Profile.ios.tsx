@@ -527,6 +527,7 @@ export function Profile() {
                       style: "destructive",
                       onPress: async () => {
                         try {
+                          router.dismissAll();
                           await authClient.deleteUser();
                         } catch (error) {
                           console.error("Error deleting account:", error);

@@ -9,6 +9,19 @@ const prisma = new PrismaClient({
   datasourceUrl: process.env.DATABASE_URL,
 }).$extends(withAccelerate());
 
+/**
+ * Maps product IDs to entitlement names
+ * Used for PRODUCT_CHANGE events where new_product_id is provided
+ */
+function getEntitlementFromProductId(productId: string): string | null {
+  const productMap: Record<string, string> = {
+    main_ai_tattoo_starter: "Starter",
+    main_ai_tattoo_plus: "Plus",
+    main_ai_tattoo_pro: "Pro",
+  };
+  return productMap[productId] || null;
+}
+
 // RevenueCat webhook event types
 type RevenueCatEventType =
   | "INITIAL_PURCHASE"
@@ -36,6 +49,7 @@ interface RevenueCatWebhookEvent {
     original_app_user_id: string;
     aliases?: string[];
     product_id: string;
+    new_product_id?: string; // For PRODUCT_CHANGE events
     period_type: "NORMAL" | "TRIAL" | "INTRO";
     purchased_at_ms: number;
     expiration_at_ms?: number;
@@ -239,42 +253,22 @@ async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
 
   const now = new Date();
 
-  // Find all existing active usage records by revenuecatUserId (consistent across devices)
-  const existingRecords = await prisma.usage.findMany({
+  // Expire non-free records that aren't already expired
+  // This handles transfers and out-of-order webhooks
+  const expireResult = await prisma.usage.updateMany({
     where: {
       revenuecatUserId: revenuecatUserId,
-      periodStart: { lte: now },
-      periodEnd: { gte: now },
+      entitlement: { not: "free" }, // Don't expire free tier (one-time credits)
+      periodEnd: { gte: now }, // Only update records that aren't already expired
+    },
+    data: {
+      periodEnd: now,
     },
   });
 
-  console.log("[RC WEBHOOK] 🔍 Existing records search:", {
-    found: existingRecords.length,
-    records: existingRecords.map((r) => ({
-      userId: r.userId,
-      entitlement: r.entitlement,
-      count: r.count,
-      limit: r.limit,
-      periodStart: r.periodStart.toISOString(),
-      periodEnd: r.periodEnd.toISOString(),
-    })),
-  });
-
-  // Expire all existing active records for this user
-  if (existingRecords.length > 0) {
-    await prisma.usage.updateMany({
-      where: {
-        revenuecatUserId: revenuecatUserId,
-        periodStart: { lte: now },
-        periodEnd: { gte: now },
-      },
-      data: {
-        periodEnd: now,
-      },
-    });
-
+  if (expireResult.count > 0) {
     console.log(
-      `[RC WEBHOOK] ✅ Expired ${existingRecords.length} active records for user ${userId}`
+      `[RC WEBHOOK] ✅ Expired ${expireResult.count} non-free records for user ${userId}`
     );
   }
 
@@ -367,60 +361,45 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
     return;
   }
 
-  // Find all existing active usage records by revenuecatUserId (consistent across devices)
-  const existingRecords = await prisma.usage.findMany({
+  // Check if we have any existing non-free records with a newer period (out-of-order webhook protection)
+  const newerRecords = await prisma.usage.findFirst({
     where: {
       revenuecatUserId: revenuecatUserId,
-      periodStart: { lte: now },
-      periodEnd: { gte: now },
+      entitlement: { not: "free" },
+      periodStart: { gt: periodStart },
+    },
+    select: {
+      periodStart: true,
     },
   });
 
-  console.log("[RC WEBHOOK] 🔍 Existing records search:", {
-    found: existingRecords.length,
-    records: existingRecords.map((r) => ({
-      userId: r.userId,
-      entitlement: r.entitlement,
-      count: r.count,
-      limit: r.limit,
-      periodStart: r.periodStart.toISOString(),
-      periodEnd: r.periodEnd.toISOString(),
-    })),
+  if (newerRecords) {
+    console.warn(
+      "[RC WEBHOOK] ⚠️  SKIPPING: Already have a newer period (out-of-order webhook)",
+      {
+        webhookPeriodStart: periodStart.toISOString(),
+        existingNewerPeriodStart: newerRecords.periodStart.toISOString(),
+      }
+    );
+    return;
+  }
+
+  // Expire non-free records that aren't already expired
+  // This handles transfers and out-of-order webhooks
+  const expireResult = await prisma.usage.updateMany({
+    where: {
+      revenuecatUserId: revenuecatUserId,
+      entitlement: { not: "free" }, // Don't expire free tier (one-time credits)
+      periodEnd: { gte: now }, // Only update records that aren't already expired
+    },
+    data: {
+      periodEnd: now,
+    },
   });
 
-  // Only expire existing records if the new period is actually newer
-  if (existingRecords.length > 0) {
-    // Check if any existing record has a later period than this webhook
-    const hasNewerPeriod = existingRecords.some(
-      (r) => r.periodStart > periodStart
-    );
-
-    if (hasNewerPeriod) {
-      console.warn(
-        "[RC WEBHOOK] ⚠️  SKIPPING: Already have a newer period (out-of-order webhook)",
-        {
-          webhookPeriodStart: periodStart.toISOString(),
-          existingPeriodStarts: existingRecords.map((r) =>
-            r.periodStart.toISOString()
-          ),
-        }
-      );
-      return;
-    }
-
-    await prisma.usage.updateMany({
-      where: {
-        revenuecatUserId: revenuecatUserId,
-        periodStart: { lte: now },
-        periodEnd: { gte: now },
-      },
-      data: {
-        periodEnd: now,
-      },
-    });
-
+  if (expireResult.count > 0) {
     console.log(
-      `[RC WEBHOOK] ✅ Expired ${existingRecords.length} active records for user ${userId}`
+      `[RC WEBHOOK] ✅ Expired ${expireResult.count} non-free records for user ${userId}`
     );
   }
 
@@ -507,36 +486,64 @@ async function handleBillingIssue(event: RevenueCatWebhookEvent["event"]) {
 
 async function handleProductChange(event: RevenueCatWebhookEvent["event"]) {
   const userId = event.app_user_id;
-  const entitlementIds = event.entitlement_ids || [];
+  const revenuecatUserId = event.original_app_user_id;
+  const newProductId = event.new_product_id;
+
+  if (!newProductId) {
+    console.error(
+      "[RC WEBHOOK] ❌ PRODUCT_CHANGE: Missing new_product_id field"
+    );
+    return;
+  }
+
+  const newEntitlement = getEntitlementFromProductId(newProductId);
+
+  if (!newEntitlement) {
+    console.error(
+      `[RC WEBHOOK] ❌ PRODUCT_CHANGE: Unknown product ID: ${newProductId}`
+    );
+    return;
+  }
 
   console.log(
-    `[RC WEBHOOK] 🔄 PRODUCT_CHANGE: Product change for user ${userId} to entitlements: ${entitlementIds.join(
-      ", "
-    )}`
+    `[RC WEBHOOK] 🔄 PRODUCT_CHANGE: Changing from ${event.product_id} to ${newProductId} (entitlement: ${newEntitlement}) for user ${userId}`
   );
 
   // Handle upgrade/downgrade - reset current period and create new usage records
-  await resetCurrentPeriodAndCreateNew(userId, entitlementIds, event);
+  await resetCurrentPeriodAndCreateNew(
+    userId,
+    revenuecatUserId,
+    [newEntitlement],
+    event
+  );
 }
 
 async function resetCurrentPeriodAndCreateNew(
   userId: string,
+  revenuecatUserId: string,
   entitlementIds: string[],
   event: RevenueCatWebhookEvent["event"]
 ) {
   const now = new Date();
 
-  // 1. Mark current active period as ended
-  await prisma.usage.updateMany({
+  // 1. Expire non-free records that aren't already expired
+  // This handles transfers and out-of-order webhooks
+  const expireResult = await prisma.usage.updateMany({
     where: {
-      userId,
-      periodStart: { lte: now },
-      periodEnd: { gte: now },
+      revenuecatUserId,
+      entitlement: { not: "free" }, // Don't expire free tier (one-time credits)
+      periodEnd: { gte: now }, // Only update records that aren't already expired
     },
     data: {
       periodEnd: now,
     },
   });
+
+  if (expireResult.count > 0) {
+    console.log(
+      `[RC WEBHOOK] ✅ Expired ${expireResult.count} non-free records before creating new ones`
+    );
+  }
 
   // 2. Create new usage records for each new entitlement
   for (const entitlementId of entitlementIds) {
@@ -558,7 +565,7 @@ async function resetCurrentPeriodAndCreateNew(
       },
       update: {
         periodEnd,
-        revenuecatUserId: event.original_app_user_id,
+        revenuecatUserId,
         count: 0, // Reset count for new period
         limit,
       },
@@ -569,7 +576,7 @@ async function resetCurrentPeriodAndCreateNew(
         periodEnd,
         count: 0,
         limit,
-        revenuecatUserId: event.original_app_user_id,
+        revenuecatUserId,
       },
     });
   }
@@ -592,13 +599,12 @@ async function handleExpiration(event: RevenueCatWebhookEvent["event"]) {
     `[RC WEBHOOK] ⏱️  EXPIRATION: Subscription expired for user ${userId} at ${expirationDate.toISOString()}`
   );
 
-  // Close any active usage periods for this user by setting periodEnd to expiration time
-  const now = new Date();
+  // Close ALL non-free usage periods for this user (regardless of period dates)
+  // This handles transfers and out-of-order webhooks
   const result = await prisma.usage.updateMany({
     where: {
       revenuecatUserId: revenuecatUserId,
-      periodStart: { lte: now },
-      periodEnd: { gte: now }, // Only update records that are currently active
+      entitlement: { not: "free" }, // Don't expire free tier (one-time credits)
     },
     data: {
       periodEnd: expirationDate,
@@ -606,7 +612,7 @@ async function handleExpiration(event: RevenueCatWebhookEvent["event"]) {
   });
 
   console.log(
-    `[RC WEBHOOK] ✅ Closed ${result.count} active usage period(s) for user ${userId}`
+    `[RC WEBHOOK] ✅ Closed ${result.count} non-free usage period(s) for user ${userId}`
   );
 }
 

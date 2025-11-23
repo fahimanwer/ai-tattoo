@@ -19,9 +19,9 @@ export const PLAN_LIMITS: Record<PlanTier, PlanConfig> = {
   free: {
     tier: "free",
     displayName: "Free",
-    monthlyLimit: 5,
+    monthlyLimit: 5, // One-time limit, not monthly
     color: "#6b7280", // gray
-    features: ["5 generations per month", "Basic tattoo styles"],
+    features: ["5 one-time generations", "Basic tattoo styles"],
   },
   starter: {
     tier: "starter",

@@ -2,10 +2,6 @@ import { getCurrentUserEntitlement } from "@/lib/entitlement-utils";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAuth } from "@/server-utils/auth-middleware";
 import { constants } from "@/server-utils/constants";
-import {
-  entitlementToTier,
-  getMonthlyLimit,
-} from "@/src/constants/plan-limits";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { z } from "zod";
 
@@ -25,17 +21,6 @@ export const POST = withAuth(async (request: Request, session: any) => {
   }).$extends(withAccelerate());
 
   const now = new Date();
-  // Use same logic as database trigger: first day of current month at midnight UTC
-  const periodStart = new Date(now.getUTCFullYear(), now.getUTCMonth(), 1);
-  const periodEnd = new Date(
-    now.getUTCFullYear(),
-    now.getUTCMonth() + 1,
-    0,
-    23,
-    59,
-    59,
-    999
-  );
 
   // Get current user entitlement dynamically
   const entitlement = await getCurrentUserEntitlement(session.user.id);
@@ -46,23 +31,36 @@ export const POST = withAuth(async (request: Request, session: any) => {
     const { prompt } = textToImageSchema.parse(body);
     console.log("server", "received prompt", prompt);
 
-    // First, check if there's an active period record (created by webhook or previous API call)
-    let usage = await prisma.usage.findFirst({
-      where: {
-        userId: session.user.id,
-        periodStart: { lte: now },
-        periodEnd: { gte: now },
-      },
-      orderBy: {
-        periodStart: "desc",
-      },
-    });
+    // Find usage record based on entitlement type
+    let usage;
 
-    console.log(
-      "🔍 server",
-      "active period usage found:",
-      usage ? "YES" : "NO"
-    );
+    if (entitlement === "free") {
+      // For free tier, ignore period dates (one-time credits)
+      usage = await prisma.usage.findFirst({
+        where: {
+          userId: session.user.id,
+          entitlement: "free",
+        },
+        orderBy: {
+          periodStart: "desc",
+        },
+      });
+    } else {
+      // For paid tiers, check active period
+      usage = await prisma.usage.findFirst({
+        where: {
+          userId: session.user.id,
+          periodStart: { lte: now },
+          periodEnd: { gte: now },
+        },
+        orderBy: {
+          periodStart: "desc",
+        },
+      });
+    }
+
+    console.log("🔍 server", "usage record found:", usage ? "YES" : "NO");
+
     if (usage) {
       console.log("🔍 server", "usage record details:", {
         entitlement: usage.entitlement,
@@ -74,51 +72,21 @@ export const POST = withAuth(async (request: Request, session: any) => {
       });
     }
 
-    // If no active record found, create one using upsert to prevent race conditions
+    // If no usage record found, return error (should be created at signup)
     if (!usage) {
-      console.log(
-        "🔍 server",
-        "creating new usage record with entitlement:",
-        entitlement
-      );
-
-      // Calculate correct limit for the entitlement
-      const tier = entitlementToTier(entitlement);
-      const correctLimit = getMonthlyLimit(tier);
-      console.log(
-        "🔍 server",
-        "calculated limit for",
+      console.error("❌ server", "No usage record found for user:", {
+        userId: session.user.id,
+        email: session.user.email,
         entitlement,
-        ":",
-        correctLimit
+      });
+      return Response.json(
+        {
+          success: false,
+          message: "Usage record not found. Please contact support.",
+          error: "NO_USAGE_RECORD",
+        },
+        { status: 500 }
       );
-
-      usage = await prisma.usage.upsert({
-        where: {
-          userId_entitlement_periodStart: {
-            userId: session.user.id,
-            entitlement,
-            periodStart,
-          },
-        },
-        update: {
-          // Record already exists, just return it
-        },
-        create: {
-          userId: session.user.id,
-          entitlement,
-          periodStart,
-          periodEnd,
-          count: 0,
-          limit: correctLimit,
-          revenuecatUserId: session.user.id,
-        },
-      });
-      console.log("🔍 server", "new usage record created:", {
-        entitlement: usage.entitlement,
-        count: usage.count,
-        limit: usage.limit,
-      });
     }
 
     // Check if user has reached their generation limit
