@@ -17,10 +17,10 @@ export default function TattoosLayout() {
         name="details/index"
         options={{
           ...largeHeaderOptions,
-          presentation: "fullScreenModal",
+          presentation: "modal",
           headerShown: true,
           headerLargeTitle: false,
-          title: "Tattoo Details",
+          title: "",
         }}
       />
     </Stack>

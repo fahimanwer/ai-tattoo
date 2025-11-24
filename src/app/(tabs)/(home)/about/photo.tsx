@@ -1,93 +1,14 @@
-import { BLURHASH, cacheImageFromUrl } from "@/lib/image-cache";
+import { cacheImageFromUrl } from "@/lib/image-cache";
 import { Icon } from "@/src/components/ui/Icon";
+import { InteractiveImage } from "@/src/components/ui/InteractiveImage";
 import { Text } from "@/src/components/ui/Text";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import { GlassView } from "expo-glass-effect";
-import { Image } from "expo-image";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { use, useState } from "react";
 import { Alert, Dimensions, StyleSheet, View } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-
-function InteractiveImage({ uri }: { uri: string }) {
-  const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
-  const offset = useSharedValue({ x: 0, y: 0 });
-  const start = useSharedValue({ x: 0, y: 0 });
-
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: offset.value.x },
-      { translateY: offset.value.y },
-      { scale: scale.value },
-    ],
-  }));
-
-  const panGesture = Gesture.Pan()
-    .onUpdate((e) => {
-      offset.value = {
-        x: e.translationX + start.value.x,
-        y: e.translationY + start.value.y,
-      };
-    })
-    .onEnd(() => {
-      start.value = {
-        x: offset.value.x,
-        y: offset.value.y,
-      };
-    });
-
-  const pinchGesture = Gesture.Pinch()
-    .onUpdate((e) => {
-      scale.value = savedScale.value * e.scale;
-    })
-    .onEnd(() => {
-      savedScale.value = scale.value;
-    });
-
-  const doubleTapGesture = Gesture.Tap()
-    .numberOfTaps(2)
-    .onEnd(() => {
-      if (scale.value > 1) {
-        // Reset to default
-        scale.value = withTiming(1);
-        savedScale.value = 1;
-        offset.value = withTiming({ x: 0, y: 0 });
-        start.value = { x: 0, y: 0 };
-      } else {
-        // Zoom in
-        scale.value = withTiming(2);
-        savedScale.value = 2;
-      }
-    });
-
-  const composed = Gesture.Simultaneous(
-    doubleTapGesture,
-    Gesture.Simultaneous(pinchGesture, panGesture)
-  );
-
-  return (
-    <GestureDetector gesture={composed}>
-      <Animated.View style={[styles.imageWrapper, animatedStyles]}>
-        <Image
-          source={{ uri }}
-          style={styles.image}
-          contentFit="contain"
-          cachePolicy="memory-disk"
-          placeholder={{ blurhash: BLURHASH }}
-          transition={1000}
-        />
-      </Animated.View>
-    </GestureDetector>
-  );
-}
 
 export default function Photo() {
   const params = useLocalSearchParams<{
