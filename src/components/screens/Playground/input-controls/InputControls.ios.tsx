@@ -18,6 +18,7 @@ export function InputControls({
 
   return (
     <AnimatedInputView
+      style={{ flex: 1 }}
       placeholder="Generate a realistic tattoo..."
       autoFocus={autoFocus}
       disableMainAction={isSubmitDisabled}
