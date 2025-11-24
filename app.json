@@ -13,7 +13,13 @@
       "icon": "./assets/AiTattooIcon.icon",
       "usesAppleSignIn": true,
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "LSApplicationQueriesSchemes": [
+          "fb",
+          "instagram",
+          "twitter",
+          "tiktoksharesdk"
+        ]
       },
       "appleTeamId": "T2A8YY9YDW"
     },
@@ -80,6 +86,12 @@
         "projectId": "ab9df978-7734-423b-a42f-e0028dc1b749"
       }
     },
-    "owner": "betoatexpo"
+    "owner": "betoatexpo",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ab9df978-7734-423b-a42f-e0028dc1b749"
+    }
   }
 }
