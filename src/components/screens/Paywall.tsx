@@ -13,7 +13,6 @@ import Purchases, {
 } from "react-native-purchases";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "../ui/Button";
-import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
 import { Text } from "../ui/Text";
 
 export function Paywall() {
@@ -129,13 +128,17 @@ export function Paywall() {
       <Stack.Screen
         options={{
           title: "",
-          headerLeft: () => (
-            <HeaderButton
-              imageProps={{ systemName: "xmark" }}
-              buttonProps={{ onPress: () => router.back() }}
-            />
-          ),
-          headerTransparent: true,
+          unstable_headerLeftItems: (props) => [
+            {
+              type: "button",
+              label: "Back",
+              icon: {
+                name: "xmark",
+                type: "sfSymbol",
+              },
+              onPress: () => router.back(),
+            },
+          ],
         }}
       />
       <Image
