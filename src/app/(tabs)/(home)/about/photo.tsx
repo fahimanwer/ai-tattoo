@@ -2,8 +2,6 @@ import { BLURHASH, cacheImageFromUrl } from "@/lib/image-cache";
 import { Icon } from "@/src/components/ui/Icon";
 import { Text } from "@/src/components/ui/Text";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
-import { Button, Host } from "@expo/ui/swift-ui";
-import { fixedSize } from "@expo/ui/swift-ui/modifiers";
 import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { router, Stack, useLocalSearchParams } from "expo-router";
@@ -163,7 +161,7 @@ export default function Photo() {
     <>
       <Stack.Screen
         options={{
-          title: "Tattoo Preview",
+          title: "",
           unstable_headerLeftItems: () => [
             {
               type: "button",
@@ -173,7 +171,14 @@ export default function Photo() {
                 type: "sfSymbol",
               },
               onPress: () => router.back(),
-              selected: false,
+            },
+          ],
+          unstable_headerRightItems: () => [
+            {
+              type: "button",
+              label: isLoading ? "Loading..." : "Use Tattoo",
+              onPress: handleUseTattoo,
+              disabled: isLoading,
             },
           ],
         }}
@@ -185,7 +190,7 @@ export default function Photo() {
         </View>
 
         {/* Action Bar */}
-        <GlassView style={styles.actionBar} glassEffectStyle="clear">
+        <GlassView style={styles.actionBar}>
           <View style={styles.actionContent}>
             <View style={styles.hintContainer}>
               <Icon
@@ -197,18 +202,6 @@ export default function Photo() {
                 Pinch to zoom • Double tap to reset
               </Text>
             </View>
-
-            <Host matchContents style={{ width: "100%" }}>
-              <Button
-                systemImage="wand.and.sparkles"
-                controlSize="large"
-                variant="borderedProminent"
-                onPress={handleUseTattoo}
-                modifiers={[fixedSize()]}
-              >
-                {isLoading ? "Loading..." : "Use This Tattoo"}
-              </Button>
-            </Host>
           </View>
         </GlassView>
       </View>

@@ -38,19 +38,13 @@ export default function ProfileLayout() {
         options={{
           headerLargeTitle: true,
           presentation: "modal",
-          // this is crashing when dismissing the sheet. no idea why maybe re-enable later
-          // sheetGrabberVisible: true,
-          // sheetAllowedDetents: [0.8],
-          // contentStyle: {
-          //   backgroundColor: isLiquidGlassAvailable() ? "transparent" : "black",
-          // },
         }}
       />
       <Stack.Screen
         name="about/photo"
         options={{
           headerLargeTitle: false,
-          presentation: "fullScreenModal",
+          presentation: "modal",
         }}
       />
     </Stack>

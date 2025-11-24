@@ -1,9 +1,6 @@
 import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import { BLURHASH } from "@/lib/image-cache";
 import { Text } from "@/src/components/ui/Text";
-import { Color } from "@/src/constants/TWPalette";
-import { BlurView } from "expo-blur";
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import { PressableScale } from "pressto";
@@ -13,6 +10,7 @@ import {
   ImageStyle,
   StyleProp,
   StyleSheet,
+  View,
 } from "react-native";
 
 interface VerticalCardProps {
@@ -80,26 +78,16 @@ export function VerticalCard({
           transition={1000}
         />
         {showOverlay && (
-          <>
-            {isLiquidGlassAvailable() ? (
-              <GlassView style={styles.glassViewContainer}>
-                <Text type="sm" weight="medium" numberOfLines={1}>
-                  {displaySubtitle}
-                </Text>
-              </GlassView>
-            ) : (
-              <BlurView intensity={20} style={styles.blurViewContainer}>
-                <Text
-                  type="sm"
-                  weight="normal"
-                  style={styles.description}
-                  numberOfLines={1}
-                >
-                  {displaySubtitle}
-                </Text>
-              </BlurView>
-            )}
-          </>
+          <View style={styles.blurViewContainer}>
+            <Text
+              type="sm"
+              weight="normal"
+              style={styles.description}
+              numberOfLines={1}
+            >
+              {displaySubtitle}
+            </Text>
+          </View>
         )}
       </PressableScale>
     </>
@@ -137,7 +125,7 @@ const styles = StyleSheet.create({
   blurViewContainer: {
     position: "absolute",
     width: "100%",
-    height: 50,
+    height: "50%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
@@ -148,14 +136,12 @@ const styles = StyleSheet.create({
     zIndex: 2,
     paddingBottom: 16,
     paddingHorizontal: 16,
-    borderRadius: 16,
-    backgroundColor: "transparent",
-    experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
+    experimental_backgroundImage: `linear-gradient(to bottom, transparent, rgba(0, 0, 0, 1))`,
   },
   description: {
     width: "100%",
-    opacity: 0.7,
     overflow: "hidden",
     textOverflow: "ellipsis",
+    textAlign: "center",
   },
 });

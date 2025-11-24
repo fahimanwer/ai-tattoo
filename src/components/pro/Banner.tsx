@@ -1,145 +1,111 @@
 import { authClient } from "@/lib/auth-client";
+import { BLURHASH } from "@/lib/image-cache";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { BlurView } from "expo-blur";
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { Alert, Pressable } from "react-native";
+import { PressableScale } from "pressto";
+import { Alert } from "react-native";
+import { SlideInLeft } from "react-native-reanimated";
 
 export function Banner() {
-  const { isLimitReached, subscriptionTier, isLoading } = useUsageLimit();
-  const { data: session, isPending, isRefetching } = authClient.useSession();
+  const { isLimitReached, subscriptionTier } = useUsageLimit();
+  const { data: session } = authClient.useSession();
   const isAuthenticated = session?.user !== undefined;
-  const isLoadingAuth = isPending || isRefetching;
+  const hasSubscription = subscriptionTier !== "free";
 
-  // Only show banner if user is on free tier or has reached their limit
-  const shouldShowBanner =
-    subscriptionTier === "free" || !isAuthenticated || isLimitReached;
-
-  // Dynamic banner text based on user status
-  const bannerTitle = isLimitReached
-    ? "Limit Reached - Upgrade Now"
-    : "Unlock Premium Tattoos";
-  const bannerSubtitle = isLimitReached
-    ? "Continue creating with unlimited generations"
-    : "Unlimited designs, exclusive styles & HD downloads";
-
-  const handlePress = async () => {
+  // Determine banner content and action based on user state
+  const getBannerConfig = () => {
+    // Not authenticated → Sign in
     if (!isAuthenticated) {
-      router.push("/auth-sheet");
-      return;
+      return {
+        title: "Sign In to Start Creating",
+        subtitle: "Create unlimited tattoo designs with AI",
+        action: () => router.push("/auth-sheet"),
+      };
     }
-    try {
-      router.push("/(paywall)");
-    } catch (error) {
-      console.error("Error presenting paywall:", error);
-      Alert.alert(
-        "Error",
-        "Unable to open upgrade options. Please try again later.",
-        [{ text: "OK", style: "default" }]
-      );
+
+    // Limit reached or no subscription → Show paywall
+    if (isLimitReached || !hasSubscription) {
+      return {
+        title: isLimitReached
+          ? "Limit Reached - Upgrade Now"
+          : "Unlock Unlimited Designs",
+        subtitle: isLimitReached
+          ? "Continue creating with unlimited generations"
+          : "Unlimited designs, endless creativity",
+        action: () => {
+          try {
+            router.push("/(paywall)");
+          } catch (error) {
+            console.error("Error presenting paywall:", error);
+            Alert.alert(
+              "Error",
+              "Unable to open upgrade options. Please try again later.",
+              [{ text: "OK", style: "default" }]
+            );
+          }
+        },
+      };
     }
+
+    // Logged in with subscription → Go to playground
+    return {
+      title: "Ready to Create?",
+      subtitle: "Jump into the playground and start designing",
+      action: () => router.push("/(playground)"),
+    };
   };
 
-  // Wait for auth to load, but if user is not authenticated, show banner regardless of usage loading state
-  if (isLoadingAuth) {
-    return null;
-  }
-
-  // If user is not authenticated, always show banner
-  if (!isAuthenticated) {
-    // Render banner (same JSX below)
-  } else {
-    // For authenticated users, wait for usage data to load
-    if (isLoading) {
-      return null;
-    }
-
-    // Don't render banner if user doesn't need to upgrade
-    if (!shouldShowBanner) {
-      return null;
-    }
-  }
+  const { title, subtitle, action } = getBannerConfig();
 
   return (
-    <Pressable
-      onPress={handlePress}
-      android_ripple={{ color: "rgba(0,0,0,0.1)" }}
-      unstable_pressDelay={0}
-      style={({ pressed }) => [
+    <PressableScale
+      entering={SlideInLeft}
+      onPress={action}
+      style={[
         {
           position: "relative",
           height: 198,
           borderRadius: 16,
-          transform: [{ scale: pressed ? 0.99 : 1 }],
         },
       ]}
     >
-      {isLiquidGlassAvailable() ? (
-        <GlassView
-          style={{
-            position: "absolute",
-            width: "95%",
-            left: "50%",
-            transform: [{ translateX: "-50%" }],
-            bottom: 8,
-            zIndex: 2,
-            flex: 1,
-            borderRadius: 16,
-            padding: 4,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "transparent",
-            experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
-          }}
-          glassEffectStyle="clear"
+      <BlurView
+        intensity={10}
+        style={{
+          position: "absolute",
+          width: "100%",
+          left: "50%",
+          transform: [{ translateX: "-50%" }],
+          bottom: 0,
+          zIndex: 2,
+          flex: 1,
+          borderRadius: 16,
+          paddingVertical: 8,
+          justifyContent: "center",
+          alignItems: "center",
+          experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
+        }}
+      >
+        <Text type="2xl" weight="bold">
+          {title}
+        </Text>
+        <Text
+          type="base"
+          weight="light"
+          style={{ textAlign: "center", opacity: 0.7 }}
         >
-          <Text type="2xl" weight="bold">
-            {bannerTitle}
-          </Text>
-          <Text
-            type="base"
-            weight="light"
-            style={{ textAlign: "center", opacity: 0.7 }}
-          >
-            {bannerSubtitle}
-          </Text>
-        </GlassView>
-      ) : (
-        <BlurView
-          intensity={10}
-          style={{
-            position: "absolute",
-            width: "100%",
-            left: "50%",
-            transform: [{ translateX: "-50%" }],
-            bottom: 0,
-            zIndex: 2,
-            flex: 1,
-            borderRadius: 16,
-            paddingVertical: 8,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "transparent",
-          }}
-        >
-          <Text type="2xl" weight="bold">
-            {bannerTitle}
-          </Text>
-          <Text
-            type="base"
-            weight="light"
-            style={{ textAlign: "center", opacity: 0.7 }}
-          >
-            {bannerSubtitle}
-          </Text>
-        </BlurView>
-      )}
+          {subtitle}
+        </Text>
+      </BlurView>
       <Image
         cachePolicy="memory-disk"
-        source={require("@/assets/images/banner-pro.png")}
+        source={require("@/assets/images/home.png")}
+        priority="high"
+        placeholder={{ blurhash: BLURHASH }}
         style={{
           width: "100%",
           height: "100%",
@@ -151,6 +117,6 @@ export function Banner() {
         contentFit="cover"
         contentPosition="top"
       />
-    </Pressable>
+    </PressableScale>
   );
 }
