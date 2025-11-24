@@ -1,4 +1,4 @@
-import { MyTattoos } from "@/src/app/components/screens/MyTattoos";
+import { MyTattoos } from "@/src/components/screens/MyTattoos";
 
 export default function MyTattoosScreen() {
   return <MyTattoos />;

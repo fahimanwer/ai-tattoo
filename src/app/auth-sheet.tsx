@@ -1,7 +1,7 @@
 import { authClient } from "@/lib/auth-client";
-import { AppleSignInButton } from "@/src/app/components/ui/AppleSignInButton";
-import SignInWithGoogleButton from "@/src/app/components/ui/SignInWithGoogleButton";
-import { Text } from "@/src/app/components/ui/Text";
+import { AppleSignInButton } from "@/src/components/ui/AppleSignInButton";
+import SignInWithGoogleButton from "@/src/components/ui/SignInWithGoogleButton";
+import { Text } from "@/src/components/ui/Text";
 import { Link, useRouter } from "expo-router";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";

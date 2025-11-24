@@ -1,7 +1,7 @@
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
-import ParallaxScrollView from "@/src/app/components/about/ParallaxScrollView";
-import { Button } from "@/src/app/components/ui/Button";
-import { VerticalCard } from "@/src/app/components/ui/VerticalCard";
+import ParallaxScrollView from "@/src/components/about/ParallaxScrollView";
+import { Button } from "@/src/components/ui/Button";
+import { VerticalCard } from "@/src/components/ui/VerticalCard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import {
   ImageSourcePropType,

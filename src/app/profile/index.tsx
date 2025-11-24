@@ -1,4 +1,4 @@
-import { Profile } from "@/src/app/components/screens/Profile";
+import { Profile } from "@/src/components/screens/Profile";
 
 export default function ProfileScreen() {
   return <Profile />;

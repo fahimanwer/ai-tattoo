@@ -1,4 +1,4 @@
-import BodyPartParallaxView from "@/src/app/components/about/BodyPart";
+import BodyPartParallaxView from "@/src/components/about/BodyPart";
 import { useLocalSearchParams } from "expo-router";
 import { ImageSourcePropType } from "react-native";
 

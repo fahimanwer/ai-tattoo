@@ -1,4 +1,4 @@
-import { CameraViewScreen } from "@/src/app/components/screens/CameraViewScreen";
+import { CameraViewScreen } from "@/src/components/screens/CameraViewScreen";
 
 export default function CameraView() {
   return <CameraViewScreen />;

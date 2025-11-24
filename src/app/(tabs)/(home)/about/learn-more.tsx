@@ -1,7 +1,7 @@
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
-import { NotFound } from "@/src/app/components/screens/notFound";
-import { Button } from "@/src/app/components/ui/Button";
-import { Text } from "@/src/app/components/ui/Text";
+import { NotFound } from "@/src/components/screens/notFound";
+import { Button } from "@/src/components/ui/Button";
+import { Text } from "@/src/components/ui/Text";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView } from "react-native";
 

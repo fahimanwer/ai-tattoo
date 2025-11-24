@@ -1,4 +1,4 @@
-import { TattooDetailScreen } from "@/src/app/components/tattoos/TattooDetailScreen";
+import { TattooDetailScreen } from "@/src/components/tattoos/TattooDetailScreen";
 import { useLocalSearchParams } from "expo-router";
 
 export default function TattooDetailPage() {

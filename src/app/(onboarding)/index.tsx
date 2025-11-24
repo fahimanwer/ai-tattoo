@@ -1,4 +1,4 @@
-import Container from "@/src/app/components/onboarding/Container";
+import Container from "@/src/components/onboarding/Container";
 
 export default function Onboarding() {
   return <Container />;

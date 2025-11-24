@@ -1,5 +1,5 @@
 import { authClient } from "@/lib/auth-client";
-import { Home } from "@/src/app/components/screens/Home";
+import { Home } from "@/src/components/screens/Home";
 import { Stack, useRouter } from "expo-router";
 
 export default function HomeScreen() {

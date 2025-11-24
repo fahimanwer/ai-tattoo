@@ -1,6 +1,6 @@
 import { BLURHASH, cacheImageFromUrl } from "@/lib/image-cache";
-import { Icon } from "@/src/app/components/ui/Icon";
-import { Text } from "@/src/app/components/ui/Text";
+import { Icon } from "@/src/components/ui/Icon";
+import { Text } from "@/src/components/ui/Text";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import { Button, Host } from "@expo/ui/swift-ui";
 import { fixedSize } from "@expo/ui/swift-ui/modifiers";
