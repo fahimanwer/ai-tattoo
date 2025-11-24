@@ -15,7 +15,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { SFSymbol, SymbolView } from "expo-symbols";
 import { PressableWithoutFeedback } from "pressto";
-import { use, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { Linking, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -34,6 +34,8 @@ export function CameraViewScreen() {
   const ref = useRef<CameraView>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const isFocused = useIsFocused();
+  const [shouldRenderCamera, setShouldRenderCamera] = useState(isFocused);
+  const unmountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const {
     pickImageFromGallery,
     setSessionGenerations,
@@ -41,6 +43,29 @@ export function CameraViewScreen() {
     sessionGenerations,
     activeGenerationIndex,
   } = use(PlaygroundContext);
+
+  // Handle delayed unmounting of camera to prevent flickering when switching screens quickly
+  useEffect(() => {
+    if (isFocused) {
+      // Immediately show camera when focused
+      if (unmountTimerRef.current) {
+        clearTimeout(unmountTimerRef.current);
+        unmountTimerRef.current = null;
+      }
+      setShouldRenderCamera(true);
+    } else {
+      // Delay hiding camera by 2 seconds when unfocused
+      unmountTimerRef.current = setTimeout(() => {
+        setShouldRenderCamera(false);
+      }, 2000);
+    }
+
+    return () => {
+      if (unmountTimerRef.current) {
+        clearTimeout(unmountTimerRef.current);
+      }
+    };
+  }, [isFocused]);
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -155,16 +180,16 @@ export function CameraViewScreen() {
           <AnimatedImage
             source={{ uri: `data:image/jpeg;base64,${photoBase64}` }}
             style={{ width: "100%", height: "100%" }}
-            entering={FadeIn.duration(500)}
+            // entering={FadeIn.duration(500)}
             exiting={FadeOut.duration(500)}
           />
         </View>
       )}
 
-      {isFocused && !photoBase64 && (
+      {shouldRenderCamera && !photoBase64 && (
         <AnimatedCameraView
-          entering={FadeIn.duration(1000)}
-          exiting={FadeOut.duration(1000)}
+          entering={FadeIn.duration(500)}
+          exiting={FadeOut.duration(500)}
           mirror={facing === "front"}
           onCameraReady={() => {
             setIsCameraReady(true);
@@ -175,7 +200,7 @@ export function CameraViewScreen() {
         />
       )}
 
-      {!isCameraReady || (!isFocused && <View style={{ flex: 1 }} />)}
+      {!isCameraReady || (!shouldRenderCamera && <View style={{ flex: 1 }} />)}
 
       {/* Camera controls */}
       <Animated.View
@@ -186,8 +211,8 @@ export function CameraViewScreen() {
           alignItems: "center",
           paddingHorizontal: 16,
         }}
-        entering={FadeIn.duration(1000)}
-        exiting={FadeOut.duration(1000)}
+        entering={FadeIn.duration(500)}
+        exiting={FadeOut.duration(500)}
       >
         <CameraControlButton
           onPress={async () => {
