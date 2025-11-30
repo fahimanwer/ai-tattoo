@@ -15,7 +15,7 @@ import {
   Switch,
   Text,
 } from "@expo/ui/swift-ui";
-import { foregroundStyle } from "@expo/ui/swift-ui/modifiers";
+import { font, foregroundStyle } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
 import { use, useMemo, useState } from "react";
 import { Alert, Linking, Share, View } from "react-native";
@@ -187,7 +187,7 @@ export function Profile() {
             }
           >
             <LabeledContent label="Plan">
-              <Text weight="bold" color={planColor}>
+              <Text modifiers={[font({ weight: "bold" })]} color={planColor}>
                 {hasActiveSubscription && lastSubscription
                   ? lastSubscription.productName || "Unknown"
                   : "Free"}
@@ -212,7 +212,7 @@ export function Profile() {
             </LabeledContent>
             <LabeledContent label="Remaining">
               <Text
-                weight="bold"
+                modifiers={[font({ weight: "bold" })]}
                 color={remaining <= 5 ? Color.yellow[500] : Color.green[500]}
               >
                 {`${remaining} generations`}

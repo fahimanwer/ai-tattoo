@@ -214,6 +214,7 @@ Refer to the [EAS hosting documentation](https://docs.expo.dev/eas/) for more de
 - **Payments**: [RevenueCat](https://www.revenuecat.com/)
 - **AI**: [Google Gemini API](https://ai.google.dev/)
 - **Hosting**: [EAS Hosting](https://expo.dev/eas)
+- **Vexo**: [Vexo Analytics](https://vexo.co)
 
 ## 📖 Documentation
 
