@@ -56,8 +56,8 @@ vec4 main(vec2 fragCoord) {
     // Pure black background
     vec3 bgColor = vec3(0.0);
     
-    // Dark orange/amber for blobs
-    vec3 blobColor = vec3(0.5, 0.25, 0.05);
+    // Yellow 500 (#eab308) for blobs
+    vec3 blobColor = vec3(0.918, 0.702, 0.031);
     
     // Mix background with blob color - subtle
     vec3 finalColor = mix(bgColor, blobColor, blob * 0.7);

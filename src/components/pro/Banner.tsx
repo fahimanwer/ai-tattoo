@@ -1,5 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 import { Text } from "@/src/components/ui/Text";
+import { Color } from "@/src/constants/TWPalette";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { router } from "expo-router";
 import { PressableScale } from "pressto";
@@ -80,7 +81,7 @@ export function Banner() {
         <Text
           type="base"
           weight="light"
-          style={{ textAlign: "center", opacity: 0.7 }}
+          style={{ textAlign: "center", opacity: 0.8 }}
         >
           {subtitle}
         </Text>
@@ -97,6 +98,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     justifyContent: "center",
     alignItems: "center",
+    experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
+    boxShadow: `0 0 0 1px ${Color.yellow[500] + "20"}, 0 0 20px 1px ${
+      Color.yellow[400] + "20"
+    }`,
   },
   lavaLampContainer: {
     position: "absolute",
