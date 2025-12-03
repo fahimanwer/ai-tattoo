@@ -1,11 +1,11 @@
 import { authClient } from "@/lib/auth-client";
 import { Text } from "@/src/components/ui/Text";
-import { Color } from "@/src/constants/TWPalette";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { router } from "expo-router";
 import { PressableScale } from "pressto";
 import { Alert, StyleSheet, View } from "react-native";
 import { SlideInLeft } from "react-native-reanimated";
+import { LavaLamp } from "../shaders/lava-lamp";
 
 export function Banner() {
   const { isLimitReached, subscriptionTier } = useUsageLimit();
@@ -67,10 +67,12 @@ export function Banner() {
           position: "relative",
           height: 124,
           borderRadius: 16,
-          boxShadow: `0 0 0 1px ${Color.yellow[500] + "80"}`,
         },
       ]}
     >
+      <View style={styles.lavaLampContainer}>
+        <LavaLamp />
+      </View>
       <View style={styles.container}>
         <Text type="xl" weight="bold">
           {title}
@@ -95,6 +97,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     justifyContent: "center",
     alignItems: "center",
-    experimental_backgroundImage: `linear-gradient(to top, transparent, ${Color.yellow[400]})`,
+  },
+  lavaLampContainer: {
+    position: "absolute",
+    overflow: "hidden",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });

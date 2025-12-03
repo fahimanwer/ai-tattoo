@@ -40,42 +40,6 @@ export default function HomeScreen() {
               onPress: () => {
                 router.push("/(playground)");
               },
-
-              // type: "menu",
-              // variant: "prominent",
-              // label: "New Tattoo",
-              // tintColor: "yellow",
-              // labelStyle: {
-              //   // color: "yellow",
-              //   fontWeight: "bold",
-              // },
-              // menu: {
-              //   // title: "New Tattoo",
-              //   items: [
-              //     {
-              //       type: "action",
-              //       label: "Try On Tattoo",
-              //       onPress: () => {
-              //         handleTryOnTattoo();
-              //       },
-              //       icon: {
-              //         name: "person.crop.square",
-              //         type: "sfSymbol",
-              //       },
-              //     },
-              //     {
-              //       type: "action",
-              //       label: "Tattoo Playground",
-              //       onPress: () => {
-              //         router.push("/(playground)");
-              //       },
-              //       icon: {
-              //         name: "apple.image.playground",
-              //         type: "sfSymbol",
-              //       },
-              //     },
-              //   ],
-              // },
             },
           ],
         }}
