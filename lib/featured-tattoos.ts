@@ -45,65 +45,53 @@ export const featuredTattoos: FeaturedTattoo[] = [
       "Japanese tattooing, known as Irezumi, has roots tracing back over 2,000 years in Japan. It evolved from early decorative markings and spiritual talismans into an art form deeply tied to folklore, mythology, and woodblock prints (ukiyo-e). During the Edo period (1603-1868), tattooing flourished despite being outlawed, becoming an underground culture of resistance and identity. Motifs such as koi fish represent perseverance, dragons symbolize wisdom and strength, and the Hannya mask reflects human emotion and transformation. Master artists like Horiyoshi III and Horimono traditions elevated Irezumi into a discipline of discipline, storytelling, and body-wide compositions. Historically associated with firemen, laborers, and later the Yakuza, today Japanese tattoos are recognized globally as one of the most sophisticated and narrative-driven styles of tattoo art.",
     style: "Japanese",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/cover.png",
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/cover.png",
       blurhash: "LAExeIib01TK~BE257?GjDEMEl-U",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/hand-male.png",
-        blurhash: "L3AvOe]:0002}[Io0fr=010y}@^k",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/arm-female-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/abdomen-female.png",
-        blurhash: "LDAlwu}[570}$%xFRjNHELI:ozw|",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/arm-female-3.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/toe-female.png",
-        blurhash: "LcL4W%9Z_N?HM{ITRjt7$gx]NHRP",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/arm-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/arm-female.png",
-        blurhash: "LD9735aeACxv~Wt7NwtR^+oLozoz",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/arm-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/thigh-female.png",
-        blurhash: "LoKw:}tR_NjZ%MxutRV@xttRM{V@",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/arm-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/back-female.png",
-        blurhash: "L7A[.S^P0M5R}?s:5RaeApJ7RQnj",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/back-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/neck-female.png",
-        blurhash: "LBDSE:~V005700rr?bI=^%={9a9u",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/back-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/hand-female.png",
-        blurhash: "LSFFQ$~qk=xa%MfRkCV@o}f7V@Rj",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/shin-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/neck-male.png",
-        blurhash: "LLF=Ht^*tRNI00nN9uE2~VoeR+WW",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/shin-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/back-male.png",
-        blurhash: "L49Ggi-p0NOF_4ozoMs:0gR*}?s,",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/shoulder-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/thigh-male.png",
-        blurhash: "LuJt#URj~qt7%1ayxuoLIUj[RjWB",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/arm-male.png",
-        blurhash: "LEDI{{RjY5_2o$t6E3s;~pfR%M%M",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/toe-male.png",
-        blurhash: "L4A9$n?H009G01Na~BxZR5M|g3xt",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/abdomen-male.png",
-        blurhash: "LBC6AN~W5:pI~CxaIUR*E2MxR5Mx",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese-2/shoulder-male.png",
+        blurhash: "",
       },
     ],
     prompt:
@@ -118,65 +106,53 @@ export const featuredTattoos: FeaturedTattoo[] = [
       "Realistic tattooing emerged in the late 20th century, heavily influenced by fine art, portraiture, and the advancement of modern tattoo machines and pigments. Unlike earlier traditional styles, realism aimed to replicate the exact look of photographs, paintings, or real-life objects on the skin. Common themes include human portraits, animals, and natural elements rendered with precise detail. The technique requires advanced skills in shading, contrast, and tonal transitions to create depth and texture. Major exponents include artists like Nikko Hurtado, Dmitriy Samohin, and Steve Butcher, who pushed realism into hyperrealism by capturing vivid likeness and emotional presence. Today, this style is recognized worldwide as a benchmark of technical mastery and artistic discipline in tattooing.",
     style: "Photorealism",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/cover.png",
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/cover.png",
       blurhash: "LCDI2pxa00I:~BE256-VkWWV$*s:",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/hand-male.png",
-        blurhash: "L28DX{^j009u?GEM4:-V009u~C%2",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/arm-female-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/abdomen-female.png",
-        blurhash: "LSF#{;~p.Tb_%2xakCbH0LM|r=t6",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/arm-female-3.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/toe-female.png",
-        blurhash: "L6D+MP~B00EMM{?GE2EL019tbwRj",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/arm-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/arm-female.png",
-        blurhash: "LHFYAN~V0KxZ~V4.01f8oeE1af%M",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/arm-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/thigh-female.png",
-        blurhash: "LIF#H=~C0L9t%2-VM|E2J7ofw{Io",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/arm-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/back-female.png",
-        blurhash: "LAELmO~VxU%1-pxtE2kCE1Rj0ME1",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/back-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/neck-female.png",
-        blurhash: "LEFhI$?HELNG=x0Lsm%2~B0f9aRk",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/back-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/hand-female.png",
-        blurhash: "LFDItM~CE1oJof9aNGay9ZE1bHR*",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/shin-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/neck-male.png",
-        blurhash: "LTGHh@~Ck9R*0fM|M|M|WVNHNGWC",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/shin-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/back-male.png",
-        blurhash: "LFBMGP=|9ZWB~Cxa9aR*NGNHE2NG",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/shoulder-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/thigh-male.png",
-        blurhash: "L7ByNy0ME000_2xu9Zi_S#~B0Lo2",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/arm-male.png",
-        blurhash: "L5A9.-=|000L~VIo0L?Godo0xaWX",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/toe-male.png",
-        blurhash: "L29%SD000z={9^}s4.tR00?v8{tl",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/abdomen-male.png",
-        blurhash: "LPDbvTWE0L%1~VWCE1xtoft6afRk",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/photorealism-2/shoulder-male.png",
+        blurhash: "",
       },
     ],
     prompt:
@@ -255,81 +231,9 @@ export const featuredTattoos: FeaturedTattoo[] = [
     prompt:
       "Create a Blackwork style tattoo design rooted in tribal and cultural traditions. This style is characterized by heavy use of solid black ink fills with no gradients or shading, creating bold, high-contrast designs. The technique emphasizes geometric and abstract motifs with sharp, clean edges and strategic use of negative space (skin breaks) to create visual balance and intricate patterns. The style draws inspiration from Polynesian, Maori, and Celtic heritage, incorporating symbolic elements that represent strength, ancestry, and spiritual protection. Common design elements include geometric patterns, tribal symbols, mandalas, ornamental borders, and abstract shapes that flow with body contours. The composition must be bold, ornamental, and harmonious, using only solid black fills and white/negative space - no gray tones, gradients, or color. Line work should be precise and clean, with patterns that are both intricate and readable. The design should be ultra-detailed, high-resolution, and suitable for professional tattoo application, respecting cultural heritage while creating a modern, powerful visual statement.",
   },
+ 
   {
     id: 4,
-    title: "Watercolor",
-    short_description:
-      "A modern style that transforms tattoos into living paintings, with flowing brushstrokes, splashes, and vibrant color gradients inspired by watercolor art.",
-    description:
-      "Watercolor tattooing is a contemporary artistic style inspired by fine art watercolor painting. Emerging in the early 2000s, it challenged traditional tattoo conventions by moving away from rigid black outlines and instead embracing fluidity, transparency, and vibrant palettes. This technique recreates brushstrokes, splashes, and layered gradients, allowing tattoos to look like living paintings on the skin. The art form is influenced by abstract and impressionist painting, using diffusion and blending to mimic how pigment and water interact on paper. Although not rooted in ancient ritual, it represents a cultural shift: tattoos as expressive fine art. Watercolor tattoos celebrate individuality, creativity, and freedom, requiring advanced technical skill to preserve vibrancy and structure over time.",
-    style: "Watercolor / Abstract Painting",
-    image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/cover.png",
-      blurhash: "L8A9pORj0J-:oy0eWB~Cs*j]=|R%",
-    },
-    gallery: [
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/hand-male.png",
-        blurhash: "L56%~Ng400#k-;%2RiM{0x%1~CI;",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/abdomen-female.png",
-        blurhash: "LCDbc:~C0fM_?HE39aobxss:$*%1",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/toe-female.png",
-        blurhash: "L7B.[qod00Iq9a~B%10L4.oL?H9t",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/arm-female.png",
-        blurhash: "L88|Fn$*0KNxJB57Ri~Bacj?=|$*",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/thigh-female.png",
-        blurhash: "LIA+:GxG0KNH~Bs.9aR+%LoeIpR*",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/back-female.png",
-        blurhash: "LID+G4ay0Koe~BbHjYWB?Hays,fk",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/neck-female.png",
-        blurhash: "LBEU#~NG009u9a0M~C={-U9t=|nj",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/hand-female.png",
-        blurhash: "L68Ws#-p000K^+R+4.xG56E1-W~C",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/neck-male.png",
-        blurhash: "LAB..e~B4-NZ0K0fxu-VxtIoWFnk",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/back-male.png",
-        blurhash: "L48WaE-V00Ef~Cs:0eNG0eNaNfRk",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/thigh-male.png",
-        blurhash: "LHA+{hWX0Ke-~CS39Zn$xtWVRke:",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/arm-male.png",
-        blurhash: "L68pls%200E1~C~BD%01xr-V$+0y",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/toe-male.png",
-        blurhash: "L38WdL9a00?G0f~B$*0155-V^k0e",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/abdomen-male.png",
-        blurhash: "LEByU5WG00-n~EkXEJ-6-qbwS0$2",
-      },
-    ],
-    prompt:
-      "Create a Watercolor style tattoo design. This contemporary style mimics fine art watercolor painting, featuring flowing brushstrokes, paint splashes, and vibrant translucent color gradients that appear to be absorbed into the skin. The palette uses vibrant, saturated colors including blues, reds, purples, greens, yellows, oranges, and pinks, often blending and bleeding into each other naturally. The style intentionally avoids harsh black outlines, instead using soft edges, color transitions, and organic shapes that suggest movement and fluidity. Common motifs include abstract compositions, nature scenes, flowers, animals, or any subject rendered with painterly techniques like color washes, drips, splatters, and blooms. The design should follow body anatomy naturally, with colors that appear to blend seamlessly with skin texture. Transparency and layering effects create depth, mimicking how watercolor pigments interact on paper. The composition should emphasize artistic expression and creativity, using diffused edges and color bleeding to create an impressionistic, living-painting effect. The design should be suitable for professional tattoo application while maintaining the vibrant, fluid aesthetic of watercolor art.",
-  },
-  {
-    id: 5,
     title: "Old School",
     short_description:
       "A classic tattoo style with bold outlines, flat colors, and iconic sailor motifs like anchors, roses, daggers, and swallows.",
@@ -337,72 +241,60 @@ export const featuredTattoos: FeaturedTattoo[] = [
       'Old School tattooing, also known as American Traditional, has its roots in the late 19th and early 20th centuries, flourishing among sailors, soldiers, and adventurers. It became the visual language of a generation that used tattoos as symbols of loyalty, love, bravery, and remembrance. This style is defined by bold black outlines, a restricted color palette (red, green, yellow, blue, and black), and simple yet powerful imagery that ensured tattoos remained readable even after years on the skin. Motifs such as anchors represented stability, swallows symbolized safe return, daggers embodied danger or betrayal, while roses and hearts expressed love and devotion. Legendary artists like Norman "Sailor Jerry" Collins shaped this movement, blending Western iconography with Asian influences. Today, Old School remains a timeless cultural icon of tattoo art, celebrated for its heritage, simplicity, and strength of design.',
     style: "Old School",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/cover.png",
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/cover.png",
       blurhash: "LEBL;Un+0LNa~BbG57so%1Wp9us.",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/hand-male.png",
-        blurhash: "L483^eNH00-U~Cxa4:Io0K-V}[4:",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/arm-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/abdomen-female.png",
-        blurhash: "LFDbf.-o4:n%~BR+E2a{E3IpI:kB",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/arm-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/toe-female.png",
-        blurhash: "LADR{KE200-V56~BR-4:9t9t=|t7",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/arm-male-3.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/arm-female.png",
-        blurhash: "L6BodW-U000#~VNa9G-V~At69aM|",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/arm-male-4.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/thigh-female.png",
-        blurhash: "LMEnx0Io01^k~Bn%E1ozS1%1WBEM",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/arm-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/back-female.png",
-        blurhash: "L18WdE0z00~B~pRk4oxu0M=x5RNH",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/back-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/neck-female.png",
-        blurhash: "LEFqq3nO0ekWE1~Ba$Ip=x^jogIo",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/back-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/hand-female.png",
-        blurhash: "LB9iuR%10LE2}[WW57snJjI:V@-V",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/shin-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/neck-male.png",
-        blurhash: "LFD[Lc0z5R^Q}@$*9u%1J7-UIps:",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/shin-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/back-male.png",
-        blurhash: "LBAl,{s:0LR*~CoL56WVI:ayELWC",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/shoulder-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/thigh-male.png",
-        blurhash: "LFAcJGEL0e=|~CRj9axu^kni9aoz",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/arm-male.png",
-        blurhash: "L4A]Z{t800Mx~V^j4.0L55s:-qIp",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/toe-male.png",
-        blurhash: "L5BCogxZ00I:01xZ^*Ip01Rk~VxZ",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/abdomen-male.png",
-        blurhash: "LLCh_}s:0fsm~Aj[E2oJ={oeM|WB",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/old-school-2/shoulder-male.png",
+        blurhash: "",
       },
     ],
     prompt:
       "Create an Old School (American Traditional) style tattoo design. This classic style is defined by bold, thick black outlines that create strong, readable shapes. The color palette is strictly limited to a traditional five-color scheme: vibrant red, forest green, bright yellow, deep blue, and solid black. Colors are applied as flat fills with no gradients or shading - only solid, saturated color blocks. Iconic motifs include anchors symbolizing stability, roses representing love and beauty, daggers embodying danger or betrayal, hearts expressing devotion, swallows representing safe return home, eagles representing freedom, ships for adventure, and snakes for transformation. The design style emphasizes simplicity, boldness, and timeless appeal, with each element having clear symbolism. Composition follows traditional rules: strong contrast, minimal detail, and imagery that remains readable even after years on the skin. The design should be clean, well-balanced, and suitable for professional tattoo application, honoring the heritage of legendary artists like Sailor Jerry while maintaining the strength and clarity that makes Old School tattoos timeless.",
   },
   {
-    id: 6,
+    id: 5,
     title: "Neo Traditional",
     short_description:
       "A modern evolution of American Traditional that combines bold outlines with enhanced detail, expanded color palettes, and sophisticated shading for a contemporary classic look.",
@@ -473,6 +365,75 @@ export const featuredTattoos: FeaturedTattoo[] = [
     ],
     prompt:
       "Create a Neo Traditional style tattoo design. This modern evolution of American Traditional maintains the bold black outlines and iconic motifs of Old School (roses, daggers, animals, birds, flowers, skulls) but elevates them with enhanced detail, sophisticated shading techniques, and smooth color gradients. The style uses an expanded color palette beyond traditional limits, incorporating vibrant purples, oranges, teals, deep blues, magentas, and other contemporary hues while preserving the strong contrast and readability of classic designs. Unlike Old School's flat color fills, Neo Traditional introduces dimensional depth through smooth color transitions, subtle shading, and gradient work that adds realism without losing the bold graphic quality. The composition maintains traditional principles of strong contrast and clear hierarchy but allows for more intricate details, refined linework, and artistic expression. Motifs are rendered with greater complexity and nuance while staying true to symbolic meanings. The design should balance modern sophistication with classic appeal, using technical precision to create depth and dimension. The artwork should be suitable for professional tattoo application, honoring traditional roots while showcasing contemporary artistic innovation and expanded creative possibilities.",
+  },
+  {
+      id: 6,
+    title: "Watercolor",
+    short_description:
+      "A modern style that transforms tattoos into living paintings, with flowing brushstrokes, splashes, and vibrant color gradients inspired by watercolor art.",
+    description:
+      "Watercolor tattooing is a contemporary artistic style inspired by fine art watercolor painting. Emerging in the early 2000s, it challenged traditional tattoo conventions by moving away from rigid black outlines and instead embracing fluidity, transparency, and vibrant palettes. This technique recreates brushstrokes, splashes, and layered gradients, allowing tattoos to look like living paintings on the skin. The art form is influenced by abstract and impressionist painting, using diffusion and blending to mimic how pigment and water interact on paper. Although not rooted in ancient ritual, it represents a cultural shift: tattoos as expressive fine art. Watercolor tattoos celebrate individuality, creativity, and freedom, requiring advanced technical skill to preserve vibrancy and structure over time.",
+    style: "Watercolor",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/cover.png",
+      blurhash: "L8A9pORj0J-:oy0eWB~Cs*j]=|R%",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/arm-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/arm-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/back-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/back-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/rib-female.png",
+        blurhash: "LIA+:GxG0KNH~Bs.9aR+%LoeIpR*",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/rib-male.png",
+        blurhash: "LHA+{hWX0Ke-~CS39Zn$xtWVRke:",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/shin-male.png",
+        blurhash: "LHA+{hWX0Ke-~CS39Zn$xtWVRke:",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/shin-female.png",
+        blurhash: "LHA+{hWX0Ke-~CS39Zn$xtWVRke:",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/shoulder-male.png",
+        blurhash: "LHA+{hWX0Ke-~CS39Zn$xtWVRke:",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/shoulder-female.png",
+        blurhash: "LHA+{hWX0Ke-~CS39Zn$xtWVRke:",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/thigh-male.png",
+        blurhash: "LHA+{hWX0Ke-~CS39Zn$xtWVRke:",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/thigh-female.png",
+        blurhash: "LHA+{hWX0Ke-~CS39Zn$xtWVRke:",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor-2/wrist-male.png",
+        blurhash: "LHA+{hWX0Ke-~CS39Zn$xtWVRke:",
+      },
+    ],
+    prompt:
+      "Create a Watercolor style tattoo design. This contemporary style mimics fine art watercolor painting, featuring flowing brushstrokes, paint splashes, and vibrant translucent color gradients that appear to be absorbed into the skin. The palette uses vibrant, saturated colors including blues, reds, purples, greens, yellows, oranges, and pinks, often blending and bleeding into each other naturally. The style intentionally avoids harsh black outlines, instead using soft edges, color transitions, and organic shapes that suggest movement and fluidity. Common motifs include abstract compositions, nature scenes, flowers, animals, or any subject rendered with painterly techniques like color washes, drips, splatters, and blooms. The design should follow body anatomy naturally, with colors that appear to blend seamlessly with skin texture. Transparency and layering effects create depth, mimicking how watercolor pigments interact on paper. The composition should emphasize artistic expression and creativity, using diffused edges and color bleeding to create an impressionistic, living-painting effect. The design should be suitable for professional tattoo application while maintaining the vibrant, fluid aesthetic of watercolor art.",
   },
   {
     id: 7,
@@ -605,7 +566,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
       "Create a Hindu Goddess style tattoo design inspired by Hindu mythology and spiritual traditions. This sacred style features intricate depictions of divine goddesses and deities, including Lakshmi (goddess of wealth and prosperity), Saraswati (goddess of knowledge and arts), Durga (warrior goddess), Kali (goddess of time and transformation), and Parvati (goddess of love and devotion). The design incorporates traditional Hindu iconography: multiple arms representing divine power, sacred attributes like lotus flowers, conch shells, tridents, veenas, and divine weapons, mandalas and geometric patterns, Sanskrit symbols and mantras, and sacred animals associated with each deity. The color palette uses vibrant, rich hues: deep blues, rich reds, golden yellows, emerald greens, and royal purples, often with metallic gold accents. The style emphasizes intricate detail work capturing ornate jewelry, flowing traditional garments, divine halos (prabhas), and elaborate crowns or headdresses. The composition should balance intricate detail with clear visual hierarchy, ensuring the sacred imagery remains powerful and readable. The design should honor the spiritual and cultural significance of Hindu mythology while creating a beautiful, meaningful tattoo that serves as both artistic expression and personal devotion. The artwork should be suitable for professional tattoo application, maintaining the ornate beauty and sacred symbolism of traditional Hindu art.",
   },
   {
-    id: 9,
+      id: 9,
     title: "Chicano",
     short_description:
       "A distinctive style born from Mexican-American barrio culture, featuring fine-line black and gray work with iconic motifs like beautiful women, roses, religious imagery, and gothic lettering.",
@@ -674,7 +635,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
       "Create a Chicano style tattoo design rooted in Mexican-American barrio culture and traditions. This distinctive style is characterized by fine-line black and gray work with sophisticated shading techniques, though selective color accents (particularly red) may be used strategically. The technique emphasizes realism with precise fine-line work, smooth black and gray washes that create depth and dimension, and compositions that tell personal stories. Iconic Chicano motifs include beautiful women (cholas) with dramatic makeup, styled hair, and expressive features representing strength and beauty, roses symbolizing love, beauty, and the fleeting nature of life, religious imagery such as the Virgin of Guadalupe, crucifixes, and praying hands representing faith, devotion, and spiritual protection, skulls (calaveras) reflecting Day of the Dead traditions and mortality, clocks and pocket watches symbolizing time, mortality, and the passage of life, gothic lettering and script work with ornate typography, and portraits of family members, cultural icons, or loved ones. The color palette primarily uses black and gray tones with smooth gradients and shading, with selective use of red accents for roses, lettering, or symbolic elements. The style draws inspiration from Mexican muralism, Catholic iconography, lowrider culture, and prison art traditions. The composition should emphasize storytelling, cultural identity, and personal meaning, with each element carefully placed to create a cohesive narrative. The design should honor the rich heritage of Chicano culture while maintaining the distinctive fine-line aesthetic and symbolic power that makes this style unique. The artwork should be suitable for professional tattoo application, rendered with ultra-fine detail and sophisticated shading techniques that capture the depth and realism characteristic of master Chicano tattoo work.",
   },
   {
-    id: 10,
+      id: 10,
     title: "Mini",
     short_description:
       "A delicate and minimalist fine-line style featuring ultra-thin single-needle work, romantic symbolism, and clean compositions perfect for first tattoos and subtle body art.",
@@ -739,7 +700,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
       "Create a Mini (Fine-line / Minimalist) style tattoo design. This delicate and modern style is characterized by extremely fine lines created with single-needle techniques, creating ultra-thin, precise linework that appears delicate and elegant. The composition emphasizes clean, minimal designs with generous breathing room between elements, allowing each motif to stand out clearly. The style features romantic and symbolic iconography including hearts representing love and emotion, flowers (roses, daisies, small blossoms) symbolizing beauty and growth, ribbons and bows adding a feminine, decorative touch, Cupid motifs representing romance and affection, script lettering with delicate typography for words, quotes, or names, and small geometric shapes or symbols with personal meaning. The color palette is very soft and minimal, typically using only black outlines with no fills, or very subtle, muted color accents if any color is used at all. The designs are small, simple, and easy to tattoo, perfect for first-time clients or those seeking subtle, discreet body art. The aesthetic is inspired by modern social media trends (Pinterest/Instagram style), featuring a romantic flash sheet aesthetic that feels contemporary and feminine. The composition should emphasize simplicity, elegance, and emotional meaning, with each element carefully placed to create a harmonious, balanced design. The linework must be ultra-fine and precise, with clean edges and no unnecessary complexity. The design should be suitable for professional tattoo application, rendered with delicate detail that maintains clarity even at small sizes. The overall feel should be romantic, aesthetic, and universally appealing, perfect for placement on the wrist, collarbone, fingers, inner forearm, ankle, or behind the ear.",
   },
   {
-    id: 11,
+      id: 11,
     title: "Aesthetic",
     short_description:
       "A modern visual style prioritizing beauty, harmony, and decorative design through clean geometric patterns, stylized natural elements, and ornamental compositions.",
@@ -880,6 +841,58 @@ export const featuredTattoos: FeaturedTattoo[] = [
     prompt:
       "Create an Anime style tattoo design inspired by Japanese animation art. This vibrant style celebrates the distinctive visual language of anime and manga, characterized by expressive characters, dynamic action lines, and bold color palettes. The design should capture the essence of anime art with clean, bold outlines similar to cel-shading in animation, vibrant color saturation, and precise detail work. Common anime motifs include character portraits featuring the distinctive anime art style with large expressive eyes, stylized hair, and emotional expressions, iconic symbols and logos from famous anime series, action scenes with speed lines and dynamic movement suggesting motion and energy, chibi (super-deformed) versions of characters with exaggerated cute features, magical elements like sparkles, energy auras, and mystical symbols, and anime-inspired original designs that capture the aesthetic without directly copying specific characters. The color palette uses vibrant, saturated colors typical of anime: bright blues, vivid reds, electric greens, vibrant purples, and bold yellows, often with high contrast and clear color separation. The style draws from various anime genres including shonen (action-adventure with dynamic poses and power effects), shojo (romance and drama with delicate, emotional expressions), mecha (robots and technology with mechanical details), and fantasy anime (magical elements, mystical creatures, and enchanted settings). The composition should emphasize dynamic energy, emotional expression, and the distinctive visual style that makes anime instantly recognizable. Linework should be clean and bold, with clear definition between elements, similar to how anime is drawn with distinct outlines. The design should feel vibrant, energetic, and true to anime aesthetics, allowing fans to express their love for Japanese animation culture through body art. The tattoo should be suitable for professional application, rendered with attention to the characteristic anime art style while maintaining clarity and readability on the skin.",
   },
+  {
+    id: 13,
+    title: "Geometric Animal",
+    short_description: "A geometric style featuring bold shapes, lines, and patterns inspired by animals and nature.",
+    description: "Create a Geometric Animal style tattoo design inspired by animals and nature. This style emphasizes bold shapes, lines, and patterns that create a sense of movement and energy. Common geometric animal motifs include animals rendered with simple geometric shapes and lines, animals with bold, geometric patterns, animals with simple, clean lines, animals with bold, geometric patterns, animals with simple, clean lines, animals with bold, geometric patterns, animals with simple, clean lines.",
+    style: "Geometric Animal",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/geometric-animals/cover.png",
+      blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/geometric-animals/arm-female.png",
+        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+      },
+      
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/geometric-animals/arm-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/geometric-animals/back-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/geometric-animals/shin-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/geometric-animals/shin-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/geometric-animals/shoulder-female-2.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/geometric-animals/shoulder-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/geometric-animals/shoulder-male-2.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/geometric-animals/shoulder-male.png",
+        blurhash: "",
+      },
+    ],
+    prompt:
+      "Create a Geometric Animal style tattoo design inspired by animals and nature. This style emphasizes bold shapes, lines, and patterns that create a sense of movement and energy. Common geometric animal motifs include animals rendered with simple geometric shapes and lines, animals with bold, geometric patterns, animals with simple, clean lines, animals with bold, geometric patterns, animals with simple, clean lines, animals with bold, geometric patterns, animals with simple, clean lines.",
+  }
 ];
 
 export const bodyParts = {

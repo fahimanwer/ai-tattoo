@@ -46,7 +46,7 @@ export function Home() {
 
 const styles = StyleSheet.create({
   section: {
-    marginTop: 24,
+    marginTop: 12,
     marginBottom: 52,
     gap: 24,
   },

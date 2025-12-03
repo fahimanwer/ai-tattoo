@@ -1,13 +1,10 @@
 import { authClient } from "@/lib/auth-client";
-import { BLURHASH } from "@/lib/image-cache";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
-import { BlurView } from "expo-blur";
-import { Image } from "expo-image";
 import { router } from "expo-router";
 import { PressableScale } from "pressto";
-import { Alert } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import { SlideInLeft } from "react-native-reanimated";
 
 export function Banner() {
@@ -68,29 +65,14 @@ export function Banner() {
       style={[
         {
           position: "relative",
-          height: 198,
+          height: 124,
           borderRadius: 16,
+          boxShadow: `0 0 0 1px ${Color.yellow[500] + "80"}`,
         },
       ]}
     >
-      <BlurView
-        intensity={10}
-        style={{
-          position: "absolute",
-          width: "100%",
-          left: "50%",
-          transform: [{ translateX: "-50%" }],
-          bottom: 0,
-          zIndex: 2,
-          flex: 1,
-          borderRadius: 16,
-          paddingVertical: 8,
-          justifyContent: "center",
-          alignItems: "center",
-          experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
-        }}
-      >
-        <Text type="2xl" weight="bold">
+      <View style={styles.container}>
+        <Text type="xl" weight="bold">
           {title}
         </Text>
         <Text
@@ -100,23 +82,19 @@ export function Banner() {
         >
           {subtitle}
         </Text>
-      </BlurView>
-      <Image
-        cachePolicy="memory-disk"
-        source={require("@/assets/images/home.png")}
-        priority="high"
-        placeholder={{ blurhash: BLURHASH }}
-        style={{
-          width: "100%",
-          height: "100%",
-          borderRadius: 16,
-          position: "absolute",
-          top: 0,
-          left: 0,
-        }}
-        contentFit="cover"
-        contentPosition="top"
-      />
+      </View>
     </PressableScale>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    zIndex: 2,
+    flex: 1,
+    borderRadius: 16,
+    paddingVertical: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    experimental_backgroundImage: `linear-gradient(to top, transparent, ${Color.yellow[400]})`,
+  },
+});

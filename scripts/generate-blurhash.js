@@ -177,46 +177,22 @@ const featuredTattoos = [
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/hand-male.png",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/rib-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/abdomen-female.png",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/shin-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/toe-female.png",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/shoulder-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/arm-female.png",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/shoulder-male.png",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/thigh-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/back-female.png",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/neck-female.png",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/hand-female.png",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/neck-male.png",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/back-male.png",
-      },
-      {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/thigh-male.png",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/arm-male.png",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/toe-male.png",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/abdomen-male.png",
       },
     ],
   },
