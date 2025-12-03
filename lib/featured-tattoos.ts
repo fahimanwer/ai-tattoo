@@ -302,65 +302,73 @@ export const featuredTattoos: FeaturedTattoo[] = [
       "Neo Traditional tattooing emerged in the 1990s as a modern evolution of American Traditional, building upon the foundation laid by Old School masters while pushing the boundaries of technical execution and artistic expression. This style maintains the bold black outlines and iconic motifs of its predecessor—roses, daggers, animals, and symbolic imagery—but elevates them with refined detail, expanded color palettes, and sophisticated shading techniques. Where Old School relied on flat color fills and a restricted palette, Neo Traditional introduces gradients, depth, and a wider spectrum of hues while preserving the strong readability and timeless appeal of traditional designs. Artists like Guy Aitchison, Mike Rubendall, and Valerie Vargas pioneered this movement, proving that tradition could evolve without losing its essence. Today, Neo Traditional represents the perfect fusion of classic American tattooing heritage with contemporary artistic innovation, creating tattoos that honor the past while embracing the future.",
     style: "Neo Traditional",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/cover.png",
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/cover.png",
       blurhash: "L48WT]-V00NG}@}[I;0L={$*$*R*",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/hand-male.png",
-        blurhash: "L15}Hqof00oc_NI:4T={0Ke.=|S4",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/arm-female-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/abdomen-female.png",
-        blurhash: "L9BCus$%00%M?bNG9G%2~BR*57of",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/arm-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/toe-female.png",
-        blurhash: "L59sYeE200xu9t~BR+0LIoNa%2WB",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/arm-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/arm-female.png",
-        blurhash: "L69F~B={010z}s-VEi57%Lt6i_ae",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/arm-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/thigh-female.png",
-        blurhash: "LAA]KY^j0L0z~B%1IoNG?G-UIp9t",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/back-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/back-female.png",
-        blurhash: "L6BCAD5802~ANwf6jFR+0#-Uw0Ip",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/back-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/neck-female.png",
-        blurhash: "L9CFYLM|01-p4:=|~BsA9u~B$*E2",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/chest-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/hand-female.png",
-        blurhash: "L68pGsxZ01EL}@$*5Q9u6Mxa+|E2",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/chest-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/neck-male.png",
-        blurhash: "LACFO~~B9[-U0L57WCbIS1EMM|Io",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/hand-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/back-male.png",
-        blurhash: "L37K9%of00WBt7oL9tWB00n$~CS3",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/hand-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/thigh-male.png",
-        blurhash: "L79?Udxa00EL~Vs:9ZR*^*s:9ZNH",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/neck-female-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/arm-male.png",
-        blurhash: "L25;gk-p00D%^+}@Mx0L=s$*tSNb",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/neck-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/toe-male.png",
-        blurhash: "L58gHZE200xu0L~B-o01}@R*I:WB",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/neck-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/abdomen-male.png",
-        blurhash: "L79GK+?G0z9Z~B%20zE2ozt7niIo",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/shin-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/shin-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional-2/shoulder-male.png",
+        blurhash: "",
       },
     ],
     prompt:
@@ -892,7 +900,88 @@ export const featuredTattoos: FeaturedTattoo[] = [
     ],
     prompt:
       "Create a Geometric Animal style tattoo design inspired by animals and nature. This style emphasizes bold shapes, lines, and patterns that create a sense of movement and energy. Common geometric animal motifs include animals rendered with simple geometric shapes and lines, animals with bold, geometric patterns, animals with simple, clean lines, animals with bold, geometric patterns, animals with simple, clean lines, animals with bold, geometric patterns, animals with simple, clean lines.",
-  }
+  },
+  {
+    id: 14,
+    title: "Patchwork",
+    short_description:
+      "A bold black and grey patchwork sleeve made of individual traditional-inspired motifs with strong lines, solid blacks, and open skin between pieces for a sticker-like collage effect.",
+    description:
+      "Patchwork is a contemporary evolution of American Traditional and Neo Traditional tattooing, built from many individual standalone pieces that gradually accumulate across any part of the body. Instead of a single continuous mural, areas such as arms, legs, torso, or other body parts are covered over time with distinct tattoos—flowers, snakes, script, daggers, hearts, flames, dice, eyes, and other classic motifs—each with its own clear silhouette. The style is characterized by bold black linework, solid black fills, and dotwork shading, usually with little to no color. Negative space is left intentionally between the pieces so that the skin itself becomes part of the composition, resulting in a sticker-like collage effect on the body. Motifs are typically simplified for readability from a distance, but include enough texture and stippling for visual richness and detail. This approach is popular with those who collect tattoos gradually, allowing each piece to remain distinct while contributing to an overall cohesive look. Patchwork tattoos bridge the gap between classic flash tattoo culture and modern blackwork aesthetics, offering a flexible and highly personal way to build a unique tattoo collection over time.",
+    style: "Patchwork",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/cover.png",
+      blurhash: "",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/abdomen-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/arm-female-2.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/arm-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/arm-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/back-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/back-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/chest-male-2.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/chest-male-3.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/chest-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/hands-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/leg-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/neck-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/ribs-female-2.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/ribs-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/shoulder-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/thigh-female.png",
+        blurhash: "",
+      },
+    ],
+    prompt:
+      "Create a Patchwork Blackwork Sleeve style tattoo design. This style is built from multiple individual motifs that together create a cohesive sleeve, rather than a single continuous mural. Each motif should have bold, consistent black linework, solid black fills, and dotwork (stippling) shading, using only black and grey—no color. Common motifs include flowers, snakes, daggers, hearts, flames, script lettering, eyes, classic symbols, and small decorative shapes, all rendered in a style that blends American Traditional and Neo Traditional influences. Designs must prioritize clean silhouettes, strong contrast, and high readability from a distance. Leave intentional negative space between motifs so the skin becomes part of the composition, creating a sticker-sleeve or collage aesthetic instead of one big blocked-out piece. All lines should be crisp and closed, with no broken paths, and black fills must be solid and even. The layout should feel like a collection of tattoos that belong together—balanced, harmonious, and flowing with the body—while still allowing each individual piece to stand alone. The artwork should be ultra-detailed, high resolution, and suitable for professional tattooing, with a clear patchwork blackwork sleeve identity.",
+  },
 ];
 
 export const bodyParts = {
