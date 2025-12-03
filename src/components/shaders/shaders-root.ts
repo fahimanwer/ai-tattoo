@@ -53,18 +53,17 @@ vec4 main(vec2 fragCoord) {
     // Create the blob shape
     float blob = smoothstep(0.7, 0.75, fract(DF));
     
-    // Dark background
-    vec3 bgColor = vec3(0.08, 0.08, 0.1);
+    // Pure black background
+    vec3 bgColor = vec3(0.0);
     
-    // Subtle warm amber/gold color for blobs
-    vec3 blobColor = vec3(0.9, 0.65, 0.2);
+    // Dark orange/amber for blobs
+    vec3 blobColor = vec3(0.5, 0.25, 0.05);
     
-    // Mix background with blob color
-    vec3 finalColor = mix(bgColor, blobColor, blob * 0.6);
+    // Mix background with blob color - subtle
+    vec3 finalColor = mix(bgColor, blobColor, blob * 0.7);
     
-    // Add subtle glow around blobs
-    float glow = smoothstep(0.5, 0.7, fract(DF)) - blob;
-    finalColor += blobColor * glow * 0.15;
+    // Subtle warm glow around blobs
+    finalColor += blobColor * 0;
 
     return vec4(finalColor, 1.0);
 }
