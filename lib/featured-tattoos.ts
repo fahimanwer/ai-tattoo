@@ -162,74 +162,74 @@ export const featuredTattoos: FeaturedTattoo[] = [
     id: 3,
     title: "Blackwork",
     short_description:
-      "A bold style rooted in tribal and cultural traditions, using solid black ink and negative space for symbolic storytelling.",
+      "A bold modern style using solid black ink and negative space to create striking organic patterns, flowing designs, and artistic compositions.",
     description:
-      "Blackwork tattooing has its origins in ancient tribal practices, including Polynesian, Maori, and Celtic cultures. These tattoos were rich with symbolism, representing strength, ancestry, and spiritual protection. Over time, blackwork evolved into a modern graphic tattoo style known for its heavy contrast, solid black fills, and ornamental geometric patterns. This style emphasizes boldness and clarity, using negative space as a powerful design element to create striking visual narratives that honor cultural heritage and personal identity.",
+      "Blackwork is a contemporary tattoo style characterized by the strategic use of solid black ink fills and negative space to create bold, high-contrast designs. This modern approach emphasizes organic, flowing patterns such as swirling clouds, wave-like motifs, floral and leaf patterns, and abstract compositions. The style uses negative space (natural skin tone) as a powerful design element within solid black areas, creating intricate and visually striking patterns. Unlike traditional geometric blackwork, this style focuses on fluid, organic shapes that flow naturally with body contours. The technique requires precise line work and careful planning of negative space to achieve balance and visual harmony. Designs can range from large-scale compositions covering entire body parts to smaller, more delicate patterns. The style emphasizes boldness, clarity, and artistic expression, using only solid black fills and negative space—no gradients, shading, or color. This creates a timeless, powerful aesthetic that stands out for its dramatic contrast and modern artistic sensibility.",
     style: "Solid Black",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/cover.png",
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/cover.png",
       blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/hand-male.png",
-        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/arm-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/abdomen-female.png",
-        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/arm-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/toe-female.png",
-        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/arm-male-3.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/arm-female.png",
-        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/arm-male-4.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/thigh-female.png",
-        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/arm-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/back-female.png",
-        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/back-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/neck-female.png",
-        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/back-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/hand-female.png",
-        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/shin-female-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/neck-male.png",
-        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/shin-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/back-male.png",
-        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/shin-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/thigh-male.png",
-        blurhash: "L4AJKB9u0000PV?G01^O~V?G01WB",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/shin-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/arm-male.png",
-        blurhash: "LGE30V00_ND%xaM{ofadM{t7WBt7",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/shoulder-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/toe-male.png",
-        blurhash: "LOI}t]00_N?bx]008_-;tRx]D%R*",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/shoulder-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/abdomen-male.png",
-        blurhash: "LAB..T^j019aEja}$$xZ0gWC~A%1",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/solid-black-2/shoulder-male.png",
+        blurhash: "",
       },
     ],
     prompt:
-      "Create a Blackwork style tattoo design rooted in tribal and cultural traditions. This style is characterized by heavy use of solid black ink fills with no gradients or shading, creating bold, high-contrast designs. The technique emphasizes geometric and abstract motifs with sharp, clean edges and strategic use of negative space (skin breaks) to create visual balance and intricate patterns. The style draws inspiration from Polynesian, Maori, and Celtic heritage, incorporating symbolic elements that represent strength, ancestry, and spiritual protection. Common design elements include geometric patterns, tribal symbols, mandalas, ornamental borders, and abstract shapes that flow with body contours. The composition must be bold, ornamental, and harmonious, using only solid black fills and white/negative space - no gray tones, gradients, or color. Line work should be precise and clean, with patterns that are both intricate and readable. The design should be ultra-detailed, high-resolution, and suitable for professional tattoo application, respecting cultural heritage while creating a modern, powerful visual statement.",
+      "Create a modern Blackwork style tattoo design characterized by bold, solid black ink fills and strategic use of negative space. This contemporary style emphasizes organic, flowing patterns such as swirling cloud-like formations, wave motifs, floral and leaf patterns, and abstract organic compositions. The technique uses negative space (natural skin tone) as a powerful design element within solid black areas, creating intricate and visually striking patterns that flow naturally with body contours. Designs should feature fluid, organic shapes rather than rigid geometric patterns, with smooth transitions between black fills and negative space. Common motifs include large-scale swirling patterns, wave-like designs, delicate floral and botanical elements, abstract organic shapes, and flowing compositions that wrap around body parts. The composition must be bold, harmonious, and visually balanced, using only solid black fills and negative space—no gray tones, gradients, shading, or color. Line work should be precise and clean, with patterns that are both intricate and readable. The design should emphasize artistic expression and modern aesthetics, creating a timeless, powerful visual statement suitable for professional tattoo application with ultra-detailed, high-resolution artwork quality.",
   },
  
   {
