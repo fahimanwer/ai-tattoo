@@ -821,10 +821,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/back-male.png",
         blurhash: "",
       },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/back-male-2.png",
-        blurhash: "",
-      },
+      
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/chest-female.png",
         blurhash: "",
