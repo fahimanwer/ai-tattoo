@@ -1,64 +1,44 @@
+import { featuredTattoos } from "@/lib/featured-tattoos";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
-import {
-  getAllBodyParts,
-  getBodyPartDisplayName,
-} from "@/src/utils/bodyPartsUtils";
 import { LegendList } from "@legendapp/list";
 import { Image } from "expo-image";
 import { PressableScale } from "pressto";
 import React, { memo, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 
-export interface BodyPartFilterItem {
-  id: string;
+export interface StyleFilterItem {
+  id: number;
   name: string;
   displayName: string;
-  iconUri: string;
+  imageUri: string | undefined;
 }
 
-interface BodyPartFilterProps {
-  selectedBodyPart: string | null;
-  onSelectBodyPart: (bodyPart: string | null) => void;
-}
-
-const bodyPartToIconMap: Record<string, string> = {
-  all: "all",
-  arm: "arms",
-  back: "back",
-  chest: "chest",
-  feet: "feet",
-  hand: "hands",
-  thigh: "legs",
-  neck: "neck",
-  rib: "ribs",
-  shin: "shin",
-  shoulder: "shoulder",
-  wrist: "wrist",
-};
-
-const FILTER_ICONS_BASE_URL =
-  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/icons-filters-body-part/";
-
-function getIconUri(bodyPart: string): string {
-  const iconName = bodyPartToIconMap[bodyPart] || bodyPart;
-  return `${FILTER_ICONS_BASE_URL}${iconName}.png`;
+interface StyleFilterProps {
+  selectedStyle: number | null;
+  onSelectStyle: (styleId: number | null) => void;
 }
 
 interface FilterItemProps {
-  item: BodyPartFilterItem;
+  item: StyleFilterItem;
   isSelected: boolean;
-  onPress: (item: BodyPartFilterItem) => void;
+  onPress: (item: StyleFilterItem) => void;
 }
 
 const FilterItem = memo(({ item, isSelected, onPress }: FilterItemProps) => {
   return (
     <PressableScale onPress={() => onPress(item)} style={styles.filterItem}>
-      <Image
-        source={{ uri: item.iconUri }}
-        style={[styles.icon, { opacity: isSelected ? 1 : 0.3 }]}
-        contentFit="contain"
-      />
+      {item.imageUri ? (
+        <Image
+          source={{ uri: item.imageUri }}
+          style={[styles.icon, { opacity: isSelected ? 1 : 0.5 }]}
+          contentFit="cover"
+        />
+      ) : (
+        <View
+          style={[styles.iconPlaceholder, { opacity: isSelected ? 1 : 0.3 }]}
+        />
+      )}
       <Text
         type="xs"
         style={styles.label}
@@ -73,39 +53,37 @@ const FilterItem = memo(({ item, isSelected, onPress }: FilterItemProps) => {
 
 FilterItem.displayName = "FilterItem";
 
-export function BodyPartFilter({
-  selectedBodyPart,
-  onSelectBodyPart,
-}: BodyPartFilterProps) {
-  const allBodyParts = useMemo(() => getAllBodyParts(), []);
-
-  const filterItems = useMemo<BodyPartFilterItem[]>(() => {
-    const items: BodyPartFilterItem[] = [
+export function StyleFilter({
+  selectedStyle,
+  onSelectStyle,
+}: StyleFilterProps) {
+  const filterItems = useMemo<StyleFilterItem[]>(() => {
+    const items: StyleFilterItem[] = [
       {
-        id: "all",
+        id: 0,
         name: "all",
         displayName: "All",
-        iconUri: getIconUri("all"),
+        imageUri: undefined,
       },
     ];
 
-    allBodyParts.forEach((bodyPart) => {
+    featuredTattoos.forEach((tattoo) => {
       items.push({
-        id: bodyPart,
-        name: bodyPart,
-        displayName: getBodyPartDisplayName(bodyPart),
-        iconUri: getIconUri(bodyPart),
+        id: tattoo.id,
+        name: tattoo.title,
+        displayName: tattoo.title,
+        imageUri: tattoo.image?.uri,
       });
     });
 
     return items;
-  }, [allBodyParts]);
+  }, []);
 
-  const handleFilterPress = (item: BodyPartFilterItem) => {
-    if (item.id === "all") {
-      onSelectBodyPart(null);
+  const handleFilterPress = (item: StyleFilterItem) => {
+    if (item.id === 0) {
+      onSelectStyle(null);
     } else {
-      onSelectBodyPart(item.id);
+      onSelectStyle(item.id);
     }
   };
 
@@ -114,12 +92,10 @@ export function BodyPartFilter({
       <LegendList
         horizontal
         data={filterItems}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => {
           const isSelected =
-            selectedBodyPart === null
-              ? item.id === "all"
-              : selectedBodyPart === item.id;
+            selectedStyle === null ? item.id === 0 : selectedStyle === item.id;
 
           return (
             <FilterItem
@@ -132,7 +108,7 @@ export function BodyPartFilter({
         style={styles.scrollView}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
-        extraData={selectedBodyPart}
+        extraData={selectedStyle}
         recycleItems={false}
       />
     </View>
@@ -142,6 +118,7 @@ export function BodyPartFilter({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
+    height: 90,
   },
   scrollView: {
     height: "auto",
@@ -153,16 +130,23 @@ const styles = StyleSheet.create({
   filterItem: {
     alignItems: "center",
     justifyContent: "center",
-
     borderRadius: 12,
     backgroundColor: "transparent",
     width: 80,
-    height: 80,
+    height: 88,
   },
   icon: {
     width: 64,
     height: 64,
+    borderRadius: 8,
     marginBottom: 4,
+  },
+  iconPlaceholder: {
+    width: 64,
+    height: 64,
+    borderRadius: 8,
+    marginBottom: 4,
+    backgroundColor: Color.grayscale[300],
   },
   label: {
     textAlign: "center",

@@ -84,7 +84,7 @@ export function BodyPartsInspiration() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text type="subtitle" weight="bold">
-          Discover by body part
+          Explore by body part
         </Text>
       </View>
 
@@ -105,10 +105,6 @@ export function BodyPartsInspiration() {
               <VerticalCard
                 style={convertToVerticalCardFormat(image)}
                 onPress={() => handleImagePress(image)}
-                title={
-                  image.bodyPart.charAt(0).toUpperCase() +
-                  image.bodyPart.slice(1)
-                }
                 imageStyle={{
                   width: 160,
                 }}
