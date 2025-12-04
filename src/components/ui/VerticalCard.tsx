@@ -18,7 +18,6 @@ interface VerticalCardProps {
   asset?: MediaLibrary.Asset;
   onPress: (data: FeaturedTattoo | MediaLibrary.Asset) => void;
   showOverlay?: boolean; // Controls visibility of title, description, and blur
-  title?: string; // Override title from style object
   subtitle?: string; // Override subtitle from style object
   imageStyle?: StyleProp<ImageStyle>;
 }
@@ -29,7 +28,6 @@ export function VerticalCard({
   asset,
   onPress,
   showOverlay = true,
-  title,
   subtitle,
   imageStyle,
 }: VerticalCardProps) {
@@ -79,14 +77,16 @@ export function VerticalCard({
         />
         {showOverlay && (
           <View style={styles.blurViewContainer}>
-            <Text
-              type="sm"
-              weight="normal"
-              style={styles.description}
-              numberOfLines={1}
-            >
-              {displaySubtitle}
-            </Text>
+            {subtitle && (
+              <Text
+                type="sm"
+                weight="normal"
+                style={styles.description}
+                numberOfLines={1}
+              >
+                {displaySubtitle}
+              </Text>
+            )}
           </View>
         )}
       </PressableScale>

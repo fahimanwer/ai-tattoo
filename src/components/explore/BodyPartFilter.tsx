@@ -1,4 +1,5 @@
 import { Text } from "@/src/components/ui/Text";
+import { Color } from "@/src/constants/TWPalette";
 import {
   getAllBodyParts,
   getBodyPartDisplayName,
@@ -148,26 +149,25 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     paddingHorizontal: 4,
-    gap: 12,
+    gap: 4,
   },
   filterItem: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+
     borderRadius: 12,
     backgroundColor: "transparent",
     width: 80,
     height: 80,
   },
   icon: {
-    width: 60,
-    height: 60,
+    width: 64,
+    height: 64,
     marginBottom: 4,
   },
   label: {
     textAlign: "center",
-    fontSize: 11,
-    color: "#666",
+    fontSize: 12,
+    color: Color.grayscale[600],
   },
 });
