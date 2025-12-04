@@ -45,10 +45,6 @@ export function VerticalCard({
     return null;
   }
 
-  const displaySubtitle =
-    subtitle ||
-    (asset ? new Date(asset.creationTime).toLocaleDateString() : style!.style);
-
   // Use specific blurhash from featured tattoo if available, otherwise use generic
   const blurhash = style?.image?.blurhash || BLURHASH;
 
@@ -84,7 +80,7 @@ export function VerticalCard({
                 style={styles.description}
                 numberOfLines={1}
               >
-                {displaySubtitle}
+                {subtitle}
               </Text>
             )}
           </View>

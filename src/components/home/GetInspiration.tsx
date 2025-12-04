@@ -21,6 +21,7 @@ export function GetInspiration() {
         renderItem={({ item: style }) => (
           <VerticalCard
             style={style}
+            subtitle={style.title}
             imageStyle={{
               width: 160,
             }}
