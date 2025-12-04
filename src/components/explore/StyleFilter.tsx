@@ -19,6 +19,9 @@ interface StyleFilterProps {
   onSelectStyle: (styleId: number | null) => void;
 }
 
+const FILTER_ICONS_BASE_URL =
+  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/";
+
 interface FilterItemProps {
   item: StyleFilterItem;
   isSelected: boolean;
@@ -63,7 +66,7 @@ export function StyleFilter({
         id: 0,
         name: "all",
         displayName: "All",
-        imageUri: undefined,
+        imageUri: `${FILTER_ICONS_BASE_URL}all-tattoos.png`,
       },
     ];
 
