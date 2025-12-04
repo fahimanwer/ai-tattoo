@@ -9,11 +9,43 @@ export interface GalleryImage {
   styleTitle: string;
 }
 
+// Normalize body part names to handle plural/singular inconsistencies
+function normalizeBodyPartName(bodyPart: string): string {
+  const normalizationMap: Record<string, string> = {
+    // Plural to singular
+    hands: "hand",
+    ribs: "rib",
+    legs: "thigh", // Group legs with thighs
+    arms: "arm",
+    thighs: "thigh",
+    toes: "toe",
+    shoulders: "shoulder",
+    // Keep singular as is
+    hand: "hand",
+    rib: "rib",
+    leg: "thigh", // Group leg with thigh
+    arm: "arm",
+    thigh: "thigh",
+    toe: "toe",
+    shoulder: "shoulder",
+    // Other body parts
+    abdomen: "rib", // Group abdomen with ribs
+    calf: "shin", // Group calf with shin
+    shin: "shin",
+    back: "back",
+    neck: "neck",
+    chest: "chest",
+  };
+
+  return normalizationMap[bodyPart.toLowerCase()] || bodyPart.toLowerCase();
+}
+
 // Extract body part from URL (e.g., "arm-female.png" -> "arm")
 export function extractBodyPartFromUrl(url: string): string {
   const filename = url.split("/").pop() || "";
   const parts = filename.replace(".png", "").split("-");
-  return parts[0] || "";
+  const rawBodyPart = parts[0] || "";
+  return normalizeBodyPartName(rawBodyPart);
 }
 
 // Extract gender from URL (e.g., "arm-female.png" -> "female")
@@ -107,11 +139,11 @@ export function getBodyPartDisplayName(bodyPart: string): string {
     back: "Back",
     neck: "Neck",
     hand: "Hands",
-    thigh: "Thighs",
-    abdomen: "Abdomen",
+    rib: "Ribs & Abdomen",
+    thigh: "Thighs & Legs",
+    shin: "Calf & Shin",
     toe: "Toes",
     chest: "Chest",
-    leg: "Legs",
     shoulder: "Shoulders",
   };
 

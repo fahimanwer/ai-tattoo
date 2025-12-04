@@ -785,65 +785,81 @@ export const featuredTattoos: FeaturedTattoo[] = [
       "Anime tattooing celebrates the distinctive visual language of Japanese animation, characterized by expressive characters with large eyes, dynamic action lines, and vibrant color palettes. This style emerged from the global popularity of anime since the 1960s, allowing fans to permanently display their love for beloved series and characters. The style draws from iconic anime genres including shonen (action-adventure), shojo (romance and drama), mecha (robots), and fantasy anime. Popular motifs include character portraits, iconic symbols from famous series, action scenes with speed lines, chibi versions of characters, and anime-inspired original designs. The technique emphasizes clean, bold outlines similar to cel-shading, vibrant color saturation, and precise detail work. Anime tattoos represent a fusion of pop culture, personal fandom, and artistic expression, reflecting the deep emotional connections fans form with anime narratives and characters.",
     style: "Anime",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/cover.png",
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/cover.png",
       blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/arm-female-1.png",
-        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/arm-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/arm-male-1.png",
-        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/arm-female-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/arm-male-2.png",
-        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/arm-female-3.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/arm-male-3.png",
-        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/arm-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/back-female-1.png",
-        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/arm-male-3.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/back-male-1.png",
-        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/arm-male-4.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/back-male-2.png",
-        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/back-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/calf-female-1.png",
-        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/back-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/shin-male-1.png",
-        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/back-male-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/shoulder-female-1.png",
-        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/chest-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/shoulder-female-2.png",
-        blurhash: "L4AJKB9u0000PV?G01^O~V?G01WB",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/chest-male.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/shoulder-male-1.png",
-        blurhash: "LGE30V00_ND%xaM{ofadM{t7WBt7",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/shin-female.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/thigh-female-1.png",
-        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/shin-female-2.png",
+        blurhash: "",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime/wrist-male-1.png",
-        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/shin-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/shoulder-female.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/shoulder-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/thigh-male.png",
+        blurhash: "",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/anime-2/wrist-male.png",
+        blurhash: "",
       },
     ],
     prompt:
