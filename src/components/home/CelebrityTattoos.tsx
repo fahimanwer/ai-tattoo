@@ -1,4 +1,4 @@
-import { featuredTattoos } from "@/lib/featured-tattoos";
+import { tattooCategories } from "@/lib/celebrity-tattoos";
 import { Text } from "@/src/components/ui/Text";
 import { VerticalCard } from "@/src/components/ui/VerticalCard";
 import { LegendList } from "@legendapp/list";
@@ -6,23 +6,21 @@ import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
 export function CelebrityTattoos() {
-  // For now, using featured tattoos as placeholder data
-  // This can be replaced with actual celebrity tattoos data later
-  const celebrityTattoos = [...featuredTattoos].slice(0, 6);
+  const categoriesData = [...tattooCategories];
 
   return (
     <View style={{ flex: 1, gap: 16 }}>
       <Text type="subtitle" weight="bold">
-        Celebrity Tattoos
+        Athletic Tattoos
       </Text>
       <LegendList
         horizontal
-        data={celebrityTattoos}
-        keyExtractor={(item) => `celebrity-${item.id.toString()}`}
-        renderItem={({ item: tattoo }) => (
+        data={categoriesData}
+        keyExtractor={(item) => `category-${item.id.toString()}`}
+        renderItem={({ item: category }) => (
           <VerticalCard
-            style={tattoo}
-            subtitle={tattoo.title}
+            style={category}
+            subtitle={category.title}
             imageStyle={{
               width: 160,
             }}
@@ -30,7 +28,7 @@ export function CelebrityTattoos() {
               router.push({
                 pathname: "/(tabs)/(home)/about/style",
                 params: {
-                  style: tattoo.id,
+                  style: category.id,
                 },
               })
             }
@@ -53,6 +51,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
 });
-
-
-

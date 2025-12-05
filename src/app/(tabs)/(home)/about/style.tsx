@@ -1,4 +1,5 @@
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
+import { TattooCategory, tattooCategories } from "@/lib/celebrity-tattoos";
 import ParallaxScrollView from "@/src/components/about/ParallaxScrollView";
 import { Button } from "@/src/components/ui/Button";
 import { VerticalCard } from "@/src/components/ui/VerticalCard";
@@ -13,11 +14,17 @@ import {
 export default function AboutStyle() {
   const { style: styleParam } = useLocalSearchParams<{ style: string }>();
 
+  // First search in tattooCategories, then in featuredTattoos
+  const selectedCategory: TattooCategory | undefined = tattooCategories.find(
+    (category) => category.id.toString() === styleParam
+  );
+
   const selectedStyle: FeaturedTattoo | undefined = featuredTattoos.find(
     (tattoo) => tattoo.id.toString() === styleParam
   );
 
-  const currentStyle = selectedStyle || featuredTattoos[0];
+  // Use category if found, otherwise use featured tattoo, otherwise default to first featured tattoo
+  const currentStyle = selectedCategory || selectedStyle || featuredTattoos[0];
 
   return (
     <>

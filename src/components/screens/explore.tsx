@@ -15,7 +15,6 @@ export function ExploreScreen() {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingHorizontal: 16,
     paddingBottom: 52,
   },
 });
