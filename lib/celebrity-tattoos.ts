@@ -32,29 +32,24 @@ export const tattooCategories: TattooCategory[] = [
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/celebrity/conor-mcgregor/tiger-chest.png",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/athletic/chest-irish-fighter.avif",
         blurhash: "",
         prompt: "",
-        more_about: "Chest tattoos featuring powerful animals, cultural symbols, or bold designs are popular among athletes across all sports. The chest placement symbolizes heart, courage, and determination—core qualities of athletic excellence. These designs serve as prominent statement pieces that reflect dedication and strength. Perfect for athletes in MMA, boxing, football, basketball, and other sports who want bold, meaningful body art that embodies their competitive spirit and personal values.",
+        more_about: "The crowned gorilla biting a heart symbolizes raw power, leadership, and taking control rather than waiting for it. The tattoo portrays strength, aggression, and emotion all at once—a reminder that victory comes with risk and instinct.",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/celebrity/conor-mcgregor/celtic-forearm.png",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/athletic/abdomen-irish-fighter.avif",
         blurhash: "",
         prompt: "",
-        more_about: "Forearm tattoos featuring tribal patterns, cultural symbols, geometric designs, or sports-related imagery are highly visible and popular among athletes. These designs honor heritage, represent personal identity, or celebrate athletic achievements. The forearm placement makes the tattoo prominent during competition and training, serving as a constant reminder of goals and values. Ideal for athletes in any sport who want meaningful, symbolic designs that reflect their dedication and cultural pride.",
+        more_about: "The tiger represents strength, instinct, and survival. Placed at the center of the body, it reflects power from within—an inner beast that stays alert and ready. It’s a symbol of determination, dominance, and fearlessness.",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/celebrity/conor-mcgregor/motivational-quote.png",
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/athletic/arm-irish-fighter.avif",
         blurhash: "",
         prompt: "",
-        more_about: "Motivational quote and text tattoos are extremely popular among athletes across all sports disciplines. These words serve as daily reminders of goals, values, and the mental fortitude required to achieve greatness. Quote tattoos carry deep personal meaning and can inspire during training, competition, and everyday life. This style is perfect for athletes in MMA, boxing, football, basketball, baseball, running, and all sports who want to carry their personal mantras or motivational words as permanent reminders of what drives them forward.",
+        more_about: "The arm tattoo combines a dagger, roses, a clock, and a heart, symbolizing the balance between love and pain, the passing of time, and the acceptance of life and death. The vintage style and bold lines give it a classic, timeless look that reflects resilience and experience.",
       },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/celebrity/conor-mcgregor/irish-symbols-back.png",
-        blurhash: "",
-        prompt: "",
-        more_about: "Back pieces featuring cultural symbols, tribal patterns, intricate designs, or large-scale compositions create powerful statements of identity and personal narrative. The back provides a large canvas for complex designs that tell a complete story. This placement is popular among athletes who want to honor their heritage, celebrate achievements, or display meaningful imagery. The intricate detail work showcases artistic skill while carrying deep symbolic significance, making it a bold choice for athletes across all sports.",
-      },
+    
     ],
     prompt:
       "Create an athletic tattoo design inspired by sports culture. This style is characterized by bold, dynamic designs that reflect dedication, discipline, and competitive spirit across all sports disciplines including MMA, boxing, football, basketball, baseball, running, and endurance sports. Common motifs include motivational quotes and text reflecting determination and mental fortitude, cultural symbols and tribal patterns representing heritage and identity, powerful animals like tigers, lions, eagles, and wolves symbolizing strength and courage, sports-specific imagery and athletic iconography, numbers and dates marking achievements, and personal symbols including family tributes and meaningful iconography. The style emphasizes strong, confident linework with bold black outlines, often incorporating dynamic compositions that reflect movement and energy. Color choices vary from deep blacks and earth tones to vibrant team colors and selective use of color for emphasis. The designs are placed strategically on the body to complement athletic physiques, with chest pieces, forearm sleeves, leg designs, and back pieces being common. The overall aesthetic is powerful, meaningful, and reflects a combination of dedication, heritage, strength, and competitive spirit. The tattoo should be suitable for professional application, rendered with bold detail and clear symbolism that embodies athletic excellence and sports culture.",
