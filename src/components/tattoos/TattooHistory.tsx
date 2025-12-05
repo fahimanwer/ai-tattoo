@@ -1,13 +1,14 @@
 import { listAlbumAssets } from "@/lib/save-to-library";
 import { LegendList } from "@legendapp/list";
+import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
+import { PressableScale } from "pressto";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Linking, StyleSheet, View } from "react-native";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
-import { VerticalCard } from "../ui/VerticalCard";
 
 export function TattooHistory() {
   const [tattoos, setTattoos] = useState<MediaLibrary.Asset[]>([]);
@@ -104,7 +105,7 @@ export function TattooHistory() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator />
       </View>
     );
   }
@@ -116,11 +117,22 @@ export function TattooHistory() {
       data={tattoos}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <VerticalCard asset={item} onPress={() => handleTattooPress(item)} />
+        <PressableScale
+          onPress={() => handleTattooPress(item)}
+          style={styles.imageContainer}
+        >
+          <View style={styles.imageWrapper}>
+            <Image
+              source={{ uri: item.uri }}
+              style={styles.image}
+              contentFit="cover"
+            />
+          </View>
+        </PressableScale>
       )}
-      numColumns={2}
-      contentContainerStyle={styles.listContainer}
-      columnWrapperStyle={{ gap: 16 }}
+      numColumns={4}
+      estimatedItemSize={90}
+      contentContainerStyle={styles.listContent}
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       ListEmptyComponent={renderEmpty}
@@ -130,21 +142,20 @@ export function TattooHistory() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+  listContent: {
+    gap: 10,
   },
-  title: {
-    marginBottom: 4,
+  imageContainer: {
+    width: "100%",
+    height: 90,
   },
-  subtitle: {
-    color: "#666",
-    marginBottom: 20,
+  imageWrapper: {
+    flexGrow: 1,
   },
-  listContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 20,
+  image: {
+    width: "100%",
+    height: 90,
+    borderRadius: 16,
   },
   loadingContainer: {
     flex: 1,

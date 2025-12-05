@@ -11,6 +11,7 @@ export default function TattoosLayout() {
         options={{
           ...largeHeaderOptions,
           title: "My Tattoos",
+          headerLargeTitle: false,
         }}
       />
       <Stack.Screen
