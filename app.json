@@ -21,11 +21,25 @@
           "tiktoksharesdk"
         ]
       },
-      "appleTeamId": "T2A8YY9YDW"
+      "appleTeamId": "T2A8YY9YDW",
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.codewithbeto.aitattoo"]
+      }
     },
     "android": {
       "edgeToEdgeEnabled": true,
-      "package": "dev.codewithbeto.aitattoo"
+      "package": "dev.codewithbeto.aitattoo",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -58,8 +72,21 @@
       [
         "react-native-share",
         {
-          "ios": ["fb", "instagram", "twitter", "tiktoksharesdk"],
+          "ios": [
+            "fb",
+            "instagram",
+            "twitter",
+            "tiktoksharesdk",
+            "fb",
+            "instagram",
+            "twitter",
+            "tiktoksharesdk"
+          ],
           "android": [
+            "com.facebook.katana",
+            "com.instagram.android",
+            "com.twitter.android",
+            "com.zhiliaoapp.musically",
             "com.facebook.katana",
             "com.instagram.android",
             "com.twitter.android",
@@ -75,7 +102,8 @@
       "expo-sqlite",
       "expo-build-properties",
       "expo-image",
-      "expo-video"
+      "expo-video",
+      "@bacons/apple-targets"
     ],
     "experiments": {
       "typedRoutes": true
