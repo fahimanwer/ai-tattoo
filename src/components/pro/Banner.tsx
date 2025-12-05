@@ -4,18 +4,26 @@ import { Color } from "@/src/constants/TWPalette";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { router } from "expo-router";
 import { PressableScale } from "pressto";
-import { Alert, StyleSheet, View } from "react-native";
-import { SlideInLeft } from "react-native-reanimated";
+import { Alert, StyleSheet } from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { LavaLamp } from "../shaders/lava-lamp";
 
 export function Banner() {
-  const { isLimitReached, subscriptionTier } = useUsageLimit();
+  const { isLimitReached, subscriptionTier, isLoading } = useUsageLimit();
   const { data: session } = authClient.useSession();
   const isAuthenticated = session?.user !== undefined;
   const hasSubscription = subscriptionTier !== "free";
 
   // Determine banner content and action based on user state
   const getBannerConfig = () => {
+    if (isLoading || !isAuthenticated) {
+      return {
+        title: "",
+        subtitle: "",
+        action: () => {},
+      };
+    }
+
     // Not authenticated → Sign in
     if (!isAuthenticated) {
       return {
@@ -61,8 +69,10 @@ export function Banner() {
 
   return (
     <PressableScale
-      entering={SlideInLeft}
-      onPress={action}
+      onPress={() => {
+        if (isLoading) return;
+        action();
+      }}
       style={[
         {
           position: "relative",
@@ -71,10 +81,10 @@ export function Banner() {
         },
       ]}
     >
-      <View style={styles.lavaLampContainer}>
+      <Animated.View style={styles.lavaLampContainer}>
         <LavaLamp />
-      </View>
-      <View style={styles.container}>
+      </Animated.View>
+      <Animated.View style={styles.container} entering={FadeIn.duration(3_000)}>
         <Text type="xl" weight="bold">
           {title}
         </Text>
@@ -85,7 +95,7 @@ export function Banner() {
         >
           {subtitle}
         </Text>
-      </View>
+      </Animated.View>
     </PressableScale>
   );
 }
@@ -99,9 +109,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
-    boxShadow: `0 0 0 1px ${Color.yellow[500] + "20"}, 0 0 20px 1px ${
-      Color.yellow[400] + "20"
-    }`,
+    // boxShadow: `0 0 0 1px ${Color.yellow[500] + "20"}, 0 0 20px 1px ${
+    //   Color.yellow[400] + "20"
+    // }`,
   },
   lavaLampContainer: {
     position: "absolute",

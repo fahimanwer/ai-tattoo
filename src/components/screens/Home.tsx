@@ -2,7 +2,7 @@ import { onboardingEntranceHaptic } from "@/lib/haptics-patterns.ios";
 import CoreHaptics from "@/modules/native-core-haptics";
 import { useUserData } from "@/src/hooks/useUserData";
 import { useEffect, useState } from "react";
-import { RefreshControl, ScrollView, StyleSheet } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { CelebrityTattoos } from "../home/CelebrityTattoos";
 import { GetInspiration } from "../home/GetInspiration";
@@ -35,7 +35,9 @@ export function Home() {
         style={styles.section}
         entering={FadeIn.duration(800).delay(100).springify()}
       >
-        <Banner />
+        <View style={{ paddingHorizontal: 16 }}>
+          <Banner />
+        </View>
         <GetInspiration />
         <CelebrityTattoos />
       </Animated.View>

@@ -10,7 +10,7 @@ export function CelebrityTattoos() {
 
   return (
     <View style={{ flex: 1, gap: 16 }}>
-      <Text type="subtitle" weight="bold">
+      <Text type="subtitle" weight="bold" style={{ paddingHorizontal: 16 }}>
         Athletic Tattoos
       </Text>
       <LegendList
@@ -36,7 +36,7 @@ export function CelebrityTattoos() {
         )}
         style={styles.scrollView}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
         recycleItems
       />
     </View>

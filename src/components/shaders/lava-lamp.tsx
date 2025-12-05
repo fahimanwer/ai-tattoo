@@ -1,8 +1,9 @@
 import { Canvas, RoundedRect, Shader, vec } from "@shopify/react-native-skia";
 import { useEffect, useState } from "react";
-import { LayoutChangeEvent, StyleSheet, View } from "react-native";
-import {
+import { LayoutChangeEvent, StyleSheet } from "react-native";
+import Animated, {
   Easing,
+  FadeIn,
   useDerivedValue,
   useSharedValue,
   withRepeat,
@@ -37,7 +38,11 @@ export function LavaLamp() {
   };
 
   return (
-    <View style={StyleSheet.absoluteFill} onLayout={onLayout}>
+    <Animated.View
+      style={StyleSheet.absoluteFill}
+      onLayout={onLayout}
+      entering={FadeIn.duration(2_000)}
+    >
       <Canvas style={StyleSheet.absoluteFill}>
         <RoundedRect
           x={0}
@@ -49,6 +54,6 @@ export function LavaLamp() {
           <Shader source={LAVA_LAMP_SOURCE} uniforms={uniforms} />
         </RoundedRect>
       </Canvas>
-    </View>
+    </Animated.View>
   );
 }
