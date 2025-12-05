@@ -528,7 +528,11 @@ export function Profile() {
                       onPress: async () => {
                         try {
                           router.dismissAll();
-                          await authClient.deleteUser();
+
+                          // TODO: Delete account, currently people are deleteing and recreating accounts to get free generations. :(
+                          // await authClient.deleteUser();
+
+                          await authClient.signOut();
                         } catch (error) {
                           console.error("Error deleting account:", error);
                         }
