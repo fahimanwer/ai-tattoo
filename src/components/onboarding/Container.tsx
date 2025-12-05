@@ -26,21 +26,21 @@ import { Button } from "../ui/Button";
 
 const ONBOARDING_VIDEOS = [
   {
-    title: "Create Tattoos With a Simple Prompt",
+    title: "Generate Tattoos Instantly",
     description:
       "Type a few words and instantly generate unique tattoo designs.",
     video:
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/final-onb-1.mov",
   },
   {
-    title: "Refine and Personalize Your Tattoo",
+    title: "Personalize Your Design",
     description:
       "Adjust colors, layout, and style to make the tattoo perfectly yours.",
     video:
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/final-onb-2.mov",
   },
   {
-    title: "See the Tattoo on Your Body",
+    title: "Preview on Your Skin",
     description:
       "Preview any tattoo on your skin — adjust size and placement instantly.",
     video:
@@ -349,7 +349,7 @@ export default function Container() {
                   }
                 }}
               />
-              <Button
+              {/* <Button
                 title="Skip"
                 variant="link"
                 color="gray"
@@ -359,7 +359,7 @@ export default function Container() {
                 onPress={() => {
                   setIsOnboarded(true);
                 }}
-              />
+              /> */}
               {/* <SignInWithGoogleButton
                 onPress={() => {
                   authClient.signIn.social({
@@ -408,9 +408,8 @@ const styles = StyleSheet.create({
 
   videoView: {
     width: SCREEN_WIDTH,
-    height: "100%",
-    position: "absolute",
-    top: -100,
+    height: 600,
+    marginTop: 35,
   },
 
   videoTapArea: {
