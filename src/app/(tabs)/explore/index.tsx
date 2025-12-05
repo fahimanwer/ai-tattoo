@@ -1,7 +1,10 @@
 import { ExploreScreen } from "@/src/components/screens/explore";
-import { ExploreFilterProvider, useExploreFilter } from "@/src/context/ExploreFilterContext";
-import { Stack } from "expo-router";
+import {
+  ExploreFilterProvider,
+  useExploreFilter,
+} from "@/src/context/ExploreFilterContext";
 import * as Haptics from "expo-haptics";
+import { Stack } from "expo-router";
 
 function ExploreContent() {
   const { filterMode, setFilterMode, handleBodyPartReset } = useExploreFilter();
@@ -19,11 +22,14 @@ function ExploreContent() {
           unstable_headerRightItems: (props) => [
             {
               type: "menu",
+              label:
+                filterMode === "body part"
+                  ? "Filter: Body part"
+                  : "Filter: Styles",
               icon: {
-                name: "ellipsis",
+                name: "line.3.horizontal.decrease",
                 type: "sfSymbol",
               },
-              label: "Filter",
               menu: {
                 title: "Filter by",
                 items: [
@@ -35,7 +41,7 @@ function ExploreContent() {
                       type: "sfSymbol",
                     },
                     onPress: () => handleFilterModeChange("body part"),
-                    selected: filterMode === "body part",
+                    state: filterMode === "body part" ? "on" : "off",
                   },
                   {
                     type: "action",
@@ -45,7 +51,7 @@ function ExploreContent() {
                       type: "sfSymbol",
                     },
                     onPress: () => handleFilterModeChange("styles"),
-                    selected: filterMode === "styles",
+                    state: filterMode === "styles" ? "on" : "off",
                   },
                 ],
               },

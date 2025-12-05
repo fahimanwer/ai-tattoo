@@ -1,5 +1,5 @@
+import { tattooCategories, TattooCategory } from "@/lib/celebrity-tattoos";
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
-import { TattooCategory, tattooCategories } from "@/lib/celebrity-tattoos";
 import ParallaxScrollView from "@/src/components/about/ParallaxScrollView";
 import { Button } from "@/src/components/ui/Button";
 import { VerticalCard } from "@/src/components/ui/VerticalCard";
@@ -30,6 +30,7 @@ export default function AboutStyle() {
     <>
       <Stack.Screen
         options={{
+          title: currentStyle?.title || "Style",
           unstable_headerRightItems: () => [
             {
               type: "button",

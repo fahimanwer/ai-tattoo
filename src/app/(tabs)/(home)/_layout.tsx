@@ -24,7 +24,6 @@ export default function ProfileLayout() {
       <Stack.Screen
         name="about/style"
         options={{
-          title: "",
           headerBackButtonDisplayMode: "minimal",
           headerLargeTitle: false,
         }}

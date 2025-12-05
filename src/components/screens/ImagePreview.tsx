@@ -85,17 +85,8 @@ export default function ImagePreview() {
             backgroundColor: "transparent",
           },
           headerTransparent: true,
-          unstable_headerLeftItems: () => [
-            {
-              type: "button",
-              label: "Close",
-              icon: {
-                name: "chevron.left",
-                type: "sfSymbol",
-              },
-              onPress: () => router.back(),
-            },
-          ],
+          headerLargeTitle: false,
+          headerBackButtonDisplayMode: "minimal",
           unstable_headerRightItems: () => [
             {
               labelStyle: {
