@@ -10,7 +10,7 @@ import { Alert, Dimensions, StyleSheet, View } from "react-native";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-export default function Photo() {
+export default function ImagePreview() {
   const params = useLocalSearchParams<{
     imageUrl: string;
     styleId?: string;

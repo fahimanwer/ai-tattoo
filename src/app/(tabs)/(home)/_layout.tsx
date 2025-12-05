@@ -44,13 +44,6 @@ export default function ProfileLayout() {
           presentation: "modal",
         }}
       />
-      <Stack.Screen
-        name="about/photo"
-        options={{
-          headerLargeTitle: false,
-          presentation: "modal",
-        }}
-      />
     </Stack>
   );
 }
