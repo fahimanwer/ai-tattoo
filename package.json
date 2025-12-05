@@ -12,6 +12,7 @@
     "deploy:testflight": "npx eas-cli@latest workflow:run .eas/workflows/testflight.yaml"
   },
   "dependencies": {
+    "@bacons/apple-targets": "^3.0.5",
     "@better-auth/expo": "^1.3.17",
     "@expo/metro-runtime": "6.2.0-canary-20251120-e46b3cc",
     "@expo/ui": "0.2.0-canary-20251120-e46b3cc",
@@ -82,7 +83,8 @@
   },
   "private": true,
   "patchedDependencies": {
-    "expo-router@7.0.0-canary-20251031-b135dff": "patches/expo-router@7.0.0-canary-20251031-b135dff.patch"
+    "expo-router@7.0.0-canary-20251031-b135dff": "patches/expo-router@7.0.0-canary-20251031-b135dff.patch",
+    "@bacons/apple-targets@3.0.5": "patches/@bacons%2Fapple-targets@3.0.5.patch"
   },
   "trustedDependencies": [
     "@shopify/react-native-skia"
