@@ -58,6 +58,7 @@ struct DailyInspirationWidgetView: View {
   
   var body: some View {
     content
+      .widgetURL(deepLinkURL)
       .containerBackground(for: .widget) {
         ZStack {
           // Background image or placeholder
@@ -67,6 +68,11 @@ struct DailyInspirationWidgetView: View {
           gradientOverlay
         }
       }
+  }
+  
+  // MARK: Deep Link URL
+  private var deepLinkURL: URL? {
+    URL(string: "ai-tattoo://(tabs)/(home)/about/style?style=\(entry.tattoo.styleId)")
   }
   
   // MARK: Background View
@@ -203,7 +209,6 @@ struct DailyInspirationWidget: Widget {
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
       DailyInspirationWidgetView(entry: entry)
-        .widgetURL(URL(string: "ai-tattoo://(playground)"))
     }
     .configurationDisplayName("Daily Inspiration")
     .description("Get daily tattoo inspiration and tap to create your own.")
