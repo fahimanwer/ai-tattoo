@@ -1,6 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 import { fetchUserUsage, type UsageResponse } from "@/lib/nano";
-import type { PlanTier } from "@/src/constants/plan-limits";
+import { FREE_TIER_LIMIT, type PlanTier } from "@/src/constants/plan-limits";
 import { useQuery } from "@tanstack/react-query";
 
 /**
@@ -75,8 +75,8 @@ export const useUsageLimit = (): UsageLimitResult => {
   if (!isAuthenticated) {
     return {
       used: 0,
-      limit: 5, // Free tier default
-      remaining: 5,
+      limit: FREE_TIER_LIMIT,
+      remaining: FREE_TIER_LIMIT,
       isLimitReached: false,
       canCreateTattoo: true,
       periodStart: null,
@@ -98,8 +98,8 @@ export const useUsageLimit = (): UsageLimitResult => {
   if (isLoading || !data) {
     return {
       used: 0,
-      limit: 5, // Free tier default
-      remaining: 5,
+      limit: FREE_TIER_LIMIT,
+      remaining: FREE_TIER_LIMIT,
       isLimitReached: false,
       canCreateTattoo: true,
       periodStart: null,

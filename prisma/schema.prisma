@@ -15,7 +15,7 @@ model Usage {
   periodStart      DateTime
   periodEnd        DateTime
   count            Int      @default(0)
-  limit            Int      @default(5)
+  limit            Int      @default(2)
   revenuecatUserId String
 
   @@id([userId, entitlement, periodStart])

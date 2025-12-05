@@ -13,10 +13,8 @@ import { Image } from "expo-image";
 import { router, Stack } from "expo-router";
 import { PressableScale } from "pressto";
 import { useCallback, useMemo } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-
-const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export function ExploreScreen() {
   const {

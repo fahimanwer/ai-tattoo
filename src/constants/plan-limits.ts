@@ -5,6 +5,12 @@
  * It's shared between client and server for consistent validation.
  */
 
+/**
+ * Free tier limit - single source of truth
+ * Change this value to update the free tier limit across the entire codebase
+ */
+export const FREE_TIER_LIMIT = 2;
+
 export type PlanTier = "free" | "starter" | "plus" | "pro";
 
 export interface PlanConfig {
@@ -19,9 +25,12 @@ export const PLAN_LIMITS: Record<PlanTier, PlanConfig> = {
   free: {
     tier: "free",
     displayName: "Free",
-    monthlyLimit: 5, // One-time limit, not monthly
+    monthlyLimit: FREE_TIER_LIMIT,
     color: "#6b7280", // gray
-    features: ["5 one-time generations", "Basic tattoo styles"],
+    features: [
+      `${FREE_TIER_LIMIT} one-time generations`,
+      "Basic tattoo styles",
+    ],
   },
   starter: {
     tier: "starter",
