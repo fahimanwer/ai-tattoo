@@ -103,6 +103,37 @@ struct DailyInspirationWidgetView: View {
     }
 }
 
+// MARK: - Default Placeholder Background
+struct PlaceholderBackground: View {
+    let size: CGSize
+    
+    var body: some View {
+        ZStack {
+            // Gradient background
+            LinearGradient(
+                colors: [
+                    Color(red: 0.1, green: 0.1, blue: 0.15),
+                    Color(red: 0.05, green: 0.05, blue: 0.1)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            
+            // Sparkles icon
+            Image(systemName: "sparkles")
+                .font(.system(size: min(size.width, size.height) * 0.3))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.purple.opacity(0.6), .blue.opacity(0.4)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        }
+        .frame(width: size.width, height: size.height)
+    }
+}
+
 // MARK: - Background Image Helper
 struct WidgetBackgroundImage: View {
     let url: URL?
@@ -117,7 +148,7 @@ struct WidgetBackgroundImage: View {
                 .frame(width: size.width, height: size.height)
                 .clipped()
         } else {
-            Color.black
+            PlaceholderBackground(size: size)
         }
     }
 }
