@@ -57,7 +57,7 @@ export function BodyPartsInspiration() {
   const handleImagePress = (image: GalleryImage) => {
     // Navigate to body part detail screen
     router.push({
-      pathname: "/image-preview",
+      pathname: "/(tabs)/(home)/about/image-preview",
       params: {
         bodyPart: image.bodyPart,
         imageUrl: image.uri,

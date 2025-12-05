@@ -44,6 +44,12 @@ export default function ProfileLayout() {
           presentation: "modal",
         }}
       />
+      <Stack.Screen
+        name="about/image-preview"
+        options={{
+          presentation: "card",
+        }}
+      />
     </Stack>
   );
 }

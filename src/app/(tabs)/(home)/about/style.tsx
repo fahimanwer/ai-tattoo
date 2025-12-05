@@ -33,7 +33,7 @@ export default function AboutStyle() {
               },
               onPress: () => {
                 router.push({
-                  pathname: "/image-preview",
+                  pathname: "/(tabs)/(home)/about/image-preview",
                   params: {
                     imageUrl:
                       typeof currentStyle?.image === "object" &&
@@ -118,7 +118,7 @@ export default function AboutStyle() {
                             : galleryItem.image;
 
                         router.push({
-                          pathname: "/image-preview",
+                          pathname: "/(tabs)/(home)/about/image-preview",
                           params: {
                             imageUrl: imageUrl as string,
                             styleId: currentStyle.id.toString(),

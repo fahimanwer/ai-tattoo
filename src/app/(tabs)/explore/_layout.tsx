@@ -17,6 +17,12 @@ export default function ExploreLayout() {
           title: "Explore",
         }}
       />
+      <Stack.Screen
+        name="image-preview"
+        options={{
+          presentation: "card",
+        }}
+      />
     </Stack>
   );
 }

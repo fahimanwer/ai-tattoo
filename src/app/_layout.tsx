@@ -164,7 +164,7 @@ function AppContent() {
         <Stack.Screen name="(tabs)" options={{}} />
         <Stack.Screen
           name="(imagePreview)"
-          options={{ presentation: "modal" }}
+          options={{ presentation: "card" }}
         />
         <Stack.Screen name="(paywall)" options={{ presentation: "modal" }} />
         <Stack.Screen
