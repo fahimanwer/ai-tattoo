@@ -4,6 +4,7 @@ import { useUserData } from "@/src/hooks/useUserData";
 import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
+import { CelebrityTattoos } from "../home/CelebrityTattoos";
 import { GetInspiration } from "../home/GetInspiration";
 import { Banner } from "../pro/Banner";
 
@@ -37,6 +38,7 @@ export function Home() {
       >
         <Banner />
         <GetInspiration />
+        <CelebrityTattoos />
       </Animated.View>
     </ScrollView>
   );
