@@ -1,57 +1,58 @@
 import { Color } from "@/src/constants/TWPalette";
-import { Tabs } from "expo-router";
-import { Platform } from "react-native";
+import { NativeTabs } from "expo-router/unstable-native-tabs";
+// import { Platform } from "react-native";
 
 // Conditionally import NativeTabs only on native platforms
-let NativeTabs: any;
+// let NativeTabs: any;
 
-if (Platform.OS !== "web") {
-  const nativeTabs = require("expo-router/unstable-native-tabs");
-  NativeTabs = nativeTabs.NativeTabs;
-}
+// if (Platform.OS !== "web") {
+//   const nativeTabs = require("expo-router/unstable-native-tabs");
+//   NativeTabs = nativeTabs.NativeTabs;
+// }
 
 export default function TabLayout() {
   // Use standard Tabs for web
-  if (Platform.OS === "web") {
-    return (
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Tabs.Screen
-          name="home"
-          options={{
-            title: "Home",
-          }}
-        />
-        <Tabs.Screen
-          name="tattoos"
-          options={{
-            title: "My Tattoos",
-          }}
-        />
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: "Profile",
-          }}
-        />
-        <Tabs.Screen
-          name="index"
-          options={{
-            href: null,
-          }}
-        />
-      </Tabs>
-    );
-  }
+  // if (Platform.OS === "web") {
+  //   return (
+  //     <Tabs
+  //       screenOptions={{
+  //         headerShown: false,
+  //       }}
+  //     >
+  //       <Tabs.Screen
+  //         name="home"
+  //         options={{
+  //           title: "Home",
+  //         }}
+  //       />
+  //       <Tabs.Screen
+  //         name="tattoos"
+  //         options={{
+  //           title: "My Tattoos",
+  //         }}
+  //       />
+  //       <Tabs.Screen
+  //         name="profile"
+  //         options={{
+  //           title: "Profile",
+  //         }}
+  //       />
+  //       <Tabs.Screen
+  //         name="index"
+  //         options={{
+  //           href: null,
+  //         }}
+  //       />
+  //     </Tabs>
+  //   );
+  // }
 
   // Use NativeTabs for iOS/Android
   return (
     <NativeTabs
       disableTransparentOnScrollEdge={true}
       tintColor={Color.slate[50]}
+      minimizeBehavior="onScrollDown"
     >
       <NativeTabs.Trigger name="(home)">
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
@@ -65,10 +66,24 @@ export default function TabLayout() {
         <NativeTabs.Trigger.Label>My Tattoos</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="photo.fill.on.rectangle.fill" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="camera-view">
+      <NativeTabs.Trigger name="camera-view" role="search">
         <NativeTabs.Trigger.Label>Try On Tattoo</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="camera.fill" />
       </NativeTabs.Trigger>
+
+      {/* I have no idea what feature to implement here. Commenting out for now. */}
+      {/* <NativeTabs.BottomAccessory>
+        <PressableScale
+          onPress={() => router.push("/(playground)")}
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text>Go to Playground</Text>
+        </PressableScale>
+      </NativeTabs.BottomAccessory> */}
     </NativeTabs>
   );
 }
