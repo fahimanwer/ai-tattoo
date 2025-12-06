@@ -179,7 +179,7 @@ export function PlaygroundScreen() {
                       name: "camera",
                       type: "sfSymbol",
                     },
-                    onPress: () => router.dismissTo("/camera-view"),
+                    onPress: () => router.push("/(playground)/camera-view"),
                     selected: false,
                   },
                 ],
@@ -444,7 +444,7 @@ function ActionControls({
         onSubmit={handleTattooGeneration}
         isSubmitDisabled={prompt.length === 0}
         suggestions={suggestions}
-        onPressSecondIcon={() => router.dismissTo("/camera-view")}
+        onPressSecondIcon={() => router.push("/(playground)/camera-view")}
         // autoFocus // this is buggy need to fix later
       />
     </Host>

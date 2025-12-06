@@ -169,7 +169,7 @@ export function CameraViewScreen() {
     }
 
     setPhotoBase64(null);
-    router.push("/(playground)");
+    router.dismissTo("/(playground)");
   }
 
   return (
@@ -218,7 +218,7 @@ export function CameraViewScreen() {
           onPress={async () => {
             const result = await pickImageFromGallery();
             if (result) {
-              router.push("/(playground)");
+              router.dismissTo("/(playground)");
             }
           }}
           icon="photo.on.rectangle"
