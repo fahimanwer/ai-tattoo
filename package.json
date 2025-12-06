@@ -84,7 +84,8 @@
   },
   "private": true,
   "patchedDependencies": {
-    "@bacons/apple-targets@3.0.5": "patches/@bacons%2Fapple-targets@3.0.5.patch"
+    "@bacons/apple-targets@3.0.5": "patches/@bacons%2Fapple-targets@3.0.5.patch",
+    "expo-router@7.0.0-canary-20251205-a1dedc6": "patches/expo-router@7.0.0-canary-20251205-a1dedc6.patch"
   },
   "trustedDependencies": [
     "@shopify/react-native-skia"
