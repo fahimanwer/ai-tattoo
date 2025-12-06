@@ -100,7 +100,6 @@
       "expo-secure-store",
       "expo-asset",
       "expo-sqlite",
-      "expo-build-properties",
       "expo-image",
       "expo-video",
       "@bacons/apple-targets"
