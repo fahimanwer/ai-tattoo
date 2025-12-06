@@ -16,7 +16,7 @@ export function Banner() {
 
   // Determine banner content and action based on user state
   const getBannerConfig = () => {
-    if (isLoading || !isAuthenticated) {
+    if (isLoading) {
       return {
         title: "",
         subtitle: "",
