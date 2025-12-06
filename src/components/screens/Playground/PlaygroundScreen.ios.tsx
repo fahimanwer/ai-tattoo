@@ -445,6 +445,7 @@ function ActionControls({
         isSubmitDisabled={prompt.length === 0}
         suggestions={suggestions}
         onPressSecondIcon={() => router.dismissTo("/camera-view")}
+        // autoFocus // this is buggy need to fix later
       />
     </Host>
   );

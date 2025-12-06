@@ -210,10 +210,10 @@ export function PlaygroundProvider({
     const base64Image = await getCachedImageAsBase64(fileUri);
     await saveBase64ToAlbum(base64Image, "png");
 
-    Alert.alert(
-      "Saved!",
-      "Your tattoo design has been saved to your photo gallery."
-    );
+    toast.success("Image saved to gallery!", {
+      dismissible: true,
+      duration: 1_000,
+    });
   }
 
   function handleReset() {
