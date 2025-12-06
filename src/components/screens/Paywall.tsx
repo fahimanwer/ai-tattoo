@@ -2,7 +2,7 @@ import { Color } from "@/src/constants/TWPalette";
 import { entitlementToTier, getPlanConfig } from "@/src/constants/plan-limits";
 import { useSubscription } from "@/src/hooks/useSubscription";
 import { useQueryClient } from "@tanstack/react-query";
-import { Image } from "expo-image";
+import { BlurView } from "expo-blur";
 import { Link, router, Stack } from "expo-router";
 import { PressableScale } from "pressto";
 import { useEffect, useMemo, useState } from "react";
@@ -12,6 +12,7 @@ import Purchases, {
   PurchasesPackage,
 } from "react-native-purchases";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { PaywallBackground } from "../shaders/PaywallBackground";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 
@@ -20,8 +21,7 @@ export function Paywall() {
   const { customerInfo, refreshSubscriptionStatus } = useSubscription();
   const queryClient = useQueryClient();
 
-  const { top } = useSafeAreaInsets();
-  const { bottom } = useSafeAreaInsets();
+  const { top, bottom } = useSafeAreaInsets();
   const fetchProducts = async () => {
     const offerings = await Purchases.getOfferings();
     setOfferings(offerings);
@@ -141,11 +141,7 @@ export function Paywall() {
           ],
         }}
       />
-      <Image
-        source={require("@/assets/images/home.png")}
-        style={styles.heroBackground}
-        contentFit="cover"
-      />
+      <PaywallBackground />
       <View
         style={{
           flex: 1,
@@ -163,9 +159,8 @@ export function Paywall() {
             Create. Ink. Repeat.
           </Text>
           <Text type="base" weight="medium" style={styles.heroSubtitle}>
-            Unlock premium AI features to design limitless tattoo ideas.
-            Experiment with styles, refine details, and bring your next tattoo
-            to life with precision.
+            Explore styles, refine details, and bring your tattoo vision to
+            life.
           </Text>
         </View>
 
@@ -195,60 +190,65 @@ export function Paywall() {
                       handlePurchase(pkg, offering.identifier);
                     }}
                     style={[
+                      styles.planCard,
                       isBestValue && styles.planCardFeatured,
-                      {
-                        padding: 16,
-                        backgroundColor: Color.zinc[900],
-                        borderRadius: 16,
-                      },
                     ]}
                   >
-                    <View style={styles.planHeader}>
-                      <View style={styles.planTitleRow}>
-                        <Text
-                          weight="bold"
-                          type="sm"
-                          style={[
-                            styles.planTitle,
-                            { color: tierColors.primary },
-                          ]}
-                        >
-                          {planConfig.displayName}
-                        </Text>
-                        {isCurrent && (
-                          <View
+                    <BlurView
+                      intensity={40}
+                      tint="dark"
+                      style={styles.planCardBlur}
+                    >
+                      <View style={styles.planHeader}>
+                        <View style={styles.planTitleRow}>
+                          <Text
+                            weight="bold"
+                            type="sm"
                             style={[
-                              styles.planBadge,
-                              styles.currentBadge,
-                              { backgroundColor: tierColors.badge },
+                              styles.planTitle,
+                              { color: tierColors.primary },
                             ]}
                           >
-                            <Text
-                              type="sm"
-                              weight="bold"
-                              style={styles.currentBadgeText}
+                            {planConfig.displayName}
+                          </Text>
+                          {isCurrent && (
+                            <View
+                              style={[
+                                styles.planBadge,
+                                styles.currentBadge,
+                                { backgroundColor: tierColors.badge },
+                              ]}
                             >
-                              Current Plan
-                            </Text>
-                          </View>
-                        )}
+                              <Text
+                                type="sm"
+                                weight="bold"
+                                style={styles.currentBadgeText}
+                              >
+                                Current Plan
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+
+                        <View style={styles.priceContainer}>
+                          <Text
+                            type="xl"
+                            weight="semibold"
+                            style={styles.priceText}
+                          >
+                            {pkg.product.priceString} / month
+                          </Text>
+                        </View>
                       </View>
 
-                      <View style={styles.priceContainer}>
-                        <Text
-                          type="xl"
-                          weight="semibold"
-                          style={styles.priceText}
-                        >
-                          {pkg.product.priceString} / month
-                        </Text>
-                      </View>
-                    </View>
-
-                    <Text weight="bold" style={[{ color: tierColors.primary }]}>
-                      {planConfig.monthlyLimit.toLocaleString()} generations /
-                      month
-                    </Text>
+                      <Text
+                        weight="bold"
+                        style={[{ color: tierColors.primary }]}
+                      >
+                        {planConfig.monthlyLimit.toLocaleString()} generations /
+                        month
+                      </Text>
+                    </BlurView>
                   </PressableScale>
                 );
               })}
@@ -346,12 +346,6 @@ function getTierColors(tier: string) {
 }
 
 const styles = StyleSheet.create({
-  heroBackground: {
-    width: "100%",
-    height: 340,
-    position: "absolute",
-    top: 0,
-  },
   heroContainer: {
     gap: 16,
     marginBottom: 16,
@@ -369,6 +363,14 @@ const styles = StyleSheet.create({
   },
   planList: {
     gap: 16,
+  },
+  planCard: {
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+  },
+  planCardBlur: {
+    padding: 16,
   },
   planCardFeatured: {
     borderColor: Color.violet[500],
