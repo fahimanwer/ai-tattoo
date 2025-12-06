@@ -1,18 +1,13 @@
 import { Color } from "@/src/constants/TWPalette";
 import { Tabs } from "expo-router";
-import React from "react";
 import { Platform } from "react-native";
 
 // Conditionally import NativeTabs only on native platforms
 let NativeTabs: any;
-let Icon: any;
-let Label: any;
 
 if (Platform.OS !== "web") {
   const nativeTabs = require("expo-router/unstable-native-tabs");
   NativeTabs = nativeTabs.NativeTabs;
-  Icon = nativeTabs.Icon;
-  Label = nativeTabs.Label;
 }
 
 export default function TabLayout() {
@@ -59,20 +54,20 @@ export default function TabLayout() {
       tintColor={Color.slate[50]}
     >
       <NativeTabs.Trigger name="(home)">
-        <Label>Home</Label>
-        <Icon sf="house.fill" />
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="house.fill" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="explore">
-        <Label>Explore</Label>
-        <Icon sf="globe" />
+        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="globe" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="tattoos">
-        <Label>My Tattoos</Label>
-        <Icon sf="photo.fill.on.rectangle.fill" />
+        <NativeTabs.Trigger.Label>My Tattoos</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="photo.fill.on.rectangle.fill" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="camera-view">
-        <Label>Try On Tattoo</Label>
-        <Icon sf="camera.fill" />
+        <NativeTabs.Trigger.Label>Try On Tattoo</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="camera.fill" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );

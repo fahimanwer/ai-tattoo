@@ -23,7 +23,9 @@
       },
       "appleTeamId": "T2A8YY9YDW",
       "entitlements": {
-        "com.apple.security.application-groups": ["group.codewithbeto.aitattoo"]
+        "com.apple.security.application-groups": [
+          "group.codewithbeto.aitattoo"
+        ]
       }
     },
     "android": {
@@ -102,7 +104,8 @@
       "expo-sqlite",
       "expo-image",
       "expo-video",
-      "@bacons/apple-targets"
+      "@bacons/apple-targets",
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true
