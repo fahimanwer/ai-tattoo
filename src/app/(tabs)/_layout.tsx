@@ -68,7 +68,9 @@ export default function TabLayout() {
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="camera-view" role="search">
         <NativeTabs.Trigger.Label>Try On Tattoo</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="camera.fill" />
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "camera.fill", selected: "camera.fill" }}
+        />
       </NativeTabs.Trigger>
 
       {/* I have no idea what feature to implement here. Commenting out for now. */}
