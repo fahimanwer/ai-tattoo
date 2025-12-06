@@ -11,6 +11,7 @@ import Purchases, {
   PurchasesOfferings,
   PurchasesPackage,
 } from "react-native-purchases";
+import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PaywallBackground } from "../shaders/PaywallBackground";
 import { Button } from "../ui/Button";
@@ -180,6 +181,100 @@ export function Paywall() {
                 const isBestValue = tier === "pro";
                 const tierColors = getTierColors(tier);
 
+                const cardContent = (
+                  <BlurView
+                    intensity={40}
+                    tint="dark"
+                    style={styles.planCardBlur}
+                  >
+                    <View style={styles.planHeader}>
+                      <View style={styles.planTitleRow}>
+                        <Text
+                          weight="bold"
+                          type="sm"
+                          style={[
+                            styles.planTitle,
+                            { color: tierColors.primary },
+                          ]}
+                        >
+                          {planConfig.displayName}
+                        </Text>
+                        {isCurrent && (
+                          <View
+                            style={[
+                              styles.planBadge,
+                              styles.currentBadge,
+                              { backgroundColor: tierColors.badge },
+                            ]}
+                          >
+                            <Text
+                              type="sm"
+                              weight="bold"
+                              style={styles.currentBadgeText}
+                            >
+                              Current Plan
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+
+                      <View style={styles.priceContainer}>
+                        <Text
+                          type="xl"
+                          weight="semibold"
+                          style={styles.priceText}
+                        >
+                          {pkg.product.priceString} / month
+                        </Text>
+                      </View>
+                    </View>
+
+                    <Text weight="bold" style={[{ color: tierColors.primary }]}>
+                      {planConfig.monthlyLimit.toLocaleString()} generations /
+                      month
+                    </Text>
+                  </BlurView>
+                );
+
+                if (isBestValue) {
+                  return (
+                    <PressableScale
+                      key={key}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Choose the ${planConfig.displayName} plan`}
+                      onPress={() => {
+                        if (isCurrent) return;
+                        handlePurchase(pkg, offering.identifier);
+                      }}
+                    >
+                      <Animated.View
+                        style={[
+                          styles.planCard,
+                          styles.planCardFeatured,
+                          {
+                            animationName: {
+                              "0%": {
+                                boxShadow: `0 0 8px 0 ${Color.orange[600]}`,
+                              },
+                              "50%": {
+                                boxShadow: `0 0 20px 4px ${Color.orange[500]}`,
+                              },
+                              "100%": {
+                                boxShadow: `0 0 8px 0 ${Color.orange[600]}`,
+                              },
+                            },
+                            animationDuration: "2s",
+                            animationIterationCount: "infinite",
+                            animationTimingFunction: "ease-in-out",
+                          } as any,
+                        ]}
+                      >
+                        {cardContent}
+                      </Animated.View>
+                    </PressableScale>
+                  );
+                }
+
                 return (
                   <PressableScale
                     key={key}
@@ -189,66 +284,9 @@ export function Paywall() {
                       if (isCurrent) return;
                       handlePurchase(pkg, offering.identifier);
                     }}
-                    style={[
-                      styles.planCard,
-                      isBestValue && styles.planCardFeatured,
-                    ]}
+                    style={styles.planCard}
                   >
-                    <BlurView
-                      intensity={40}
-                      tint="dark"
-                      style={styles.planCardBlur}
-                    >
-                      <View style={styles.planHeader}>
-                        <View style={styles.planTitleRow}>
-                          <Text
-                            weight="bold"
-                            type="sm"
-                            style={[
-                              styles.planTitle,
-                              { color: tierColors.primary },
-                            ]}
-                          >
-                            {planConfig.displayName}
-                          </Text>
-                          {isCurrent && (
-                            <View
-                              style={[
-                                styles.planBadge,
-                                styles.currentBadge,
-                                { backgroundColor: tierColors.badge },
-                              ]}
-                            >
-                              <Text
-                                type="sm"
-                                weight="bold"
-                                style={styles.currentBadgeText}
-                              >
-                                Current Plan
-                              </Text>
-                            </View>
-                          )}
-                        </View>
-
-                        <View style={styles.priceContainer}>
-                          <Text
-                            type="xl"
-                            weight="semibold"
-                            style={styles.priceText}
-                          >
-                            {pkg.product.priceString} / month
-                          </Text>
-                        </View>
-                      </View>
-
-                      <Text
-                        weight="bold"
-                        style={[{ color: tierColors.primary }]}
-                      >
-                        {planConfig.monthlyLimit.toLocaleString()} generations /
-                        month
-                      </Text>
-                    </BlurView>
+                    {cardContent}
                   </PressableScale>
                 );
               })}
@@ -334,8 +372,8 @@ function getTierColors(tier: string) {
       };
     case "pro":
       return {
-        primary: Color.violet[400],
-        badge: Color.violet[600],
+        primary: Color.orange[400],
+        badge: Color.orange[600],
       };
     default:
       return {
@@ -373,8 +411,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   planCardFeatured: {
-    borderColor: Color.violet[500],
-    borderWidth: 2,
+    borderRadius: 16,
   },
   planHeader: {
     gap: 16,
