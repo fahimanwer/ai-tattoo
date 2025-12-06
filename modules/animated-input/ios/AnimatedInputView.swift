@@ -1,8 +1,25 @@
 import ExpoModulesCore
 import SwiftUI
+import TipKit
 
 import FoundationModels
 import Foundation
+
+// MARK: - TipKit Tip Definition
+@available(iOS 17.0, *)
+struct PromptInputTip: Tip {
+  var title: Text {
+    Text("Try On and Update Tattoos in Seconds")
+  }
+
+  var message: Text? {
+    Text("Pick or capture an image, then describe what you want changed. The model only sees the selected image—clear prompts give better results.")
+  }
+  
+  var image: Image? {
+    Image(systemName: "sparkles")
+  }
+}
 
 @available(iOS 26.0, *)
 private let model = SystemLanguageModel.default
@@ -44,6 +61,9 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       let fillColor = Color.gray.opacity(0.15)
       
       if #available(iOS 17.0, *) {
+        // Inline tip above the input
+        TipView(PromptInputTip(), arrowEdge: .bottom)
+        
         AnimatedBottomBar(hint: props.placeholder, text: $text, isFocused: $isFocused) {
           Button {
             generatorHaptic.selectionChanged()
@@ -296,6 +316,21 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       text = props.defaultValue
       if props.autoFocus {
         isFocused = true
+      }
+      
+      // Configure TipKit (safe to call multiple times, will only configure once)
+      if #available(iOS 17.0, *) {
+        Task {
+          do {
+            try Tips.configure([
+              .displayFrequency(.monthly),
+              .datastoreLocation(.applicationDefault)
+            ])
+          } catch {
+            // TipKit already configured or unavailable
+            print("TipKit configuration: \(error.localizedDescription)")
+          }
+        }
       }
     }
     .onChange(of: text) { newValue in
