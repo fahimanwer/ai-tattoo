@@ -59,8 +59,12 @@ struct AnimatedBottomBar<LeadingAction: View, TrailingAction: View, MainAction: 
             Spacer( minLength: 0)
             
             trailingAction()
-              .frame(width: 35, height: 35)
+              .frame(height: 35)
               .contentShape(.rect)
+              .padding(.trailing, isFocused ? 55 : 0)
+              .allowsHitTesting(isFocused)
+              .blur(radius: isFocused ? 0 : 6)
+              .opacity(isFocused ? 1 : 0)
           }
         }
         .frame(height: isFocused ? nil : 55)

@@ -25,6 +25,9 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   
   @State var text: String = ""
   @State var isGenerating: Bool = false
+  @State var originalText: String? = nil  // Stores text before improvement (nil = no improvement done)
+  @State var isImproving: Bool = false    // Tracks if currently streaming improvement
+  @State var previousGeneratedPrompt: String? = nil  // Stores the last generated prompt to avoid repetition
   
   let generatorHaptic = UISelectionFeedbackGenerator()
   
@@ -67,6 +70,7 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
           }
           if #available(iOS 26.0, *) {
             if model.isAvailable {
+              // Wand icon - generate random prompt
               Button {
                 generatorHaptic.selectionChanged()
                 Task {
@@ -74,16 +78,41 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
                   do {
                     isGenerating = true
                     
-                    let stream =  session.streamResponse(
+                    var promptInstructions = """
+                    Generate a short, original prompt for a creative tattoo design.
+                    Only reply with the new prompt, no quotes or explanations.
+
+                    Guidelines:
+                    - Always start the prompt with: "Generate a realistic tattoo of..."
+                    - Describe a specific concept in 1–2 sentences.
+                    - Be imaginative, visually detailed, and concise.
+                    - Avoid generic or vague ideas.
+                    - Do NOT repeat or resemble previous prompts.
+                    """
+
+                    if let previous = previousGeneratedPrompt {
+                      promptInstructions += """
+                    IMPORTANT: Avoid repeating or closely resembling this previous prompt:
+                    \(previous)
+                    """
+                    }
+                    let stream = session.streamResponse(
                       options: GenerationOptions(maximumResponseTokens: 50)
                     ) {
-                      "Generate a short prompt to generate a tattoo image"
-                      
-                      "Only reply with the prompt, don't use quotes, don't repeat the same prompt"
+                      promptInstructions
                     }
+                    
+                    var generatedPrompt = ""
                     for try await partialResponse in stream {
                       self.text = partialResponse.content
+                      generatedPrompt = partialResponse.content
                     }
+                    
+                    // Store the generated prompt to avoid repetition next time
+                    if !generatedPrompt.isEmpty {
+                      previousGeneratedPrompt = generatedPrompt
+                    }
+                    
                     isGenerating = false
                   } catch {
                     print("Error generating response: \(error)")
@@ -108,23 +137,117 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
           } else {
             // Fallback on earlier versions
           }
-         
         } trailingAction: {
-          //        Button {
-          //          isFocused.toggle()
-          //        } label: {
-          //          Image(systemName: "keyboard")
-          //            .fontWeight(.medium)
-          //            .foregroundStyle(Color.primary)
-          //            .frame(maxWidth: .infinity, maxHeight: .infinity)
-          //            .background(fillColor, in: .circle)
-          //
-          //        }
+          if #available(iOS 26.0, *) {
+            if model.isAvailable && !text.isEmpty {
+              Group {
+                if originalText != nil {
+                  // Undo pill button - restore original text
+                  Button {
+                    generatorHaptic.selectionChanged()
+                    text = originalText ?? ""
+                    originalText = nil
+                  } label: {
+                    if isImproving {
+                      ProgressView()
+                        .progressViewStyle(.circular)
+                        .frame(height: 35)
+                        .padding(.horizontal, 12)
+                        .background(fillColor, in: Capsule())
+                    } else {
+                      Text("Undo")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.primary)
+                        .frame(height: 35)
+                        .padding(.horizontal, 12)
+                        .background(fillColor, in: Capsule())
+                    }
+                  }
+                  .disabled(isImproving)
+                } else {
+                  // Improve Prompt pill button
+                  Button {
+                    generatorHaptic.selectionChanged()
+                    Task {
+                      let session = LanguageModelSession()
+                      do {
+                        isImproving = true
+                        originalText = text
+                        
+                        let userInput = text
+                        let stream = session.streamResponse(
+                          options: GenerationOptions(maximumResponseTokens: 100)
+                        ) {
+                          """
+                          You are a tattoo-prompt enhancer.
+
+                          Your job:
+                          Transform the user's input into a concise (1–2 sentences), detailed prompt for generating realistic tattoos.
+
+                          Behavior rules:
+                          - Always describe a **realistic tattoo** (never a full image change).
+                          - If the user’s input implies applying a tattoo to a person (e.g., references to “my face,” “my neck,” “on me,” “on this photo,” “this pic,” “my arm,” etc.), interpret it as tattoo placement on an existing image and:
+                            - Emphasize that the person, pose, and background must remain unchanged.
+                            - Describe how the tattoo should be applied naturally on the visible body area.
+                          - If the user’s input does NOT reference a person or photo, generate a standalone tattoo design prompt.
+                          - Enhance vague input with style, linework, shading, artistic details, and composition.
+                          - Output only the improved prompt—no explanations, no quotes.
+
+                          Examples:
+                          - "change the color" → "Change the tattoo color to deep crimson red."
+                          - "face tattoos" → "Add small, realistic face tattoos—fine-line symbols, tiny stars, and a subtle teardrop—applied naturally without altering facial features."
+                          - "cover my neck in tattoos" → "Cover the visible neck area with a realistic tattoo sleeve made of dark ornamental patterns and fine-line texture while keeping the person unchanged."
+                          - "dragon" → "Create a traditional Japanese dragon tattoo with bold outlines, flowing clouds, and intricate scale detail."
+                          """
+                          
+                          "User input: \(userInput)"
+                        }
+                        for try await partialResponse in stream {
+                          self.text = partialResponse.content
+                        }
+                        isImproving = false
+                      } catch {
+                        print("Error improving prompt: \(error)")
+                        isImproving = false
+                        // Restore original text on error
+                        if let original = originalText {
+                          text = original
+                          originalText = nil
+                        }
+                      }
+                    }
+                  } label: {
+                    if isImproving {
+                      ProgressView()
+                        .progressViewStyle(.circular)
+                        .frame(height: 35)
+                        .padding(.horizontal, 12)
+                        .background(fillColor, in: Capsule())
+                    } else {
+                      Text("Improve Prompt")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.primary)
+                        .frame(height: 35)
+                        .padding(.horizontal, 12)
+                        .background(fillColor, in: Capsule())
+                    }
+                  }
+                  .disabled(isImproving)
+                }
+              }
+              .fixedSize()
+              .transition(.scale.combined(with: .opacity))
+              .animation(.spring(response: 0.3, dampingFraction: 0.7), value: originalText != nil)
+            }
+          }
         } mainAction: {
           let button = Button {
             generatorHaptic.selectionChanged()
             isFocused = false
             text = ""
+            originalText = nil  // Reset improvement state
             props.onPressMainAction([:])
           } label: {
             Image(systemName: "arrow.up")
@@ -132,7 +255,7 @@ struct AnimatedInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
               .foregroundStyle(Color.primary)
               .frame(maxWidth: .infinity, maxHeight: .infinity)
           }
-            .disabled(text.isEmpty || isGenerating || props.disableMainAction)
+            .disabled(text.isEmpty || isGenerating || isImproving || props.disableMainAction)
           
           if #available(iOS 26.0, *) {
             button.buttonStyle(.glassProminent)
