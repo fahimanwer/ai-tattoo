@@ -31,7 +31,7 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
 
     try {
       await Share.open({
-        message: `I just got tattooed! Check out this photo 🎨 Try it yourself: https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193`,
+        message: `I just got tattooed! Check out this photo \n🎨 Try it yourself: https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193`,
         url: `data:image/png;base64,${tattoo.imageData}`,
       });
     } catch (error) {

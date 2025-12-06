@@ -191,7 +191,7 @@ export function PlaygroundProvider({
         "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193";
 
       const shareResult = await Share.open({
-        message: `I just got tattooed! Check out this photo 🎨 Try it yourself: ${appStoreUrl}`,
+        message: `I just got tattooed! Check out this photo \n🎨 Try it yourself: ${appStoreUrl}`,
         url: base64Image,
       });
 

@@ -11,9 +11,9 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { InteractiveImage } from "../ui/InteractiveImage";
 import { Button } from "../ui/Button";
 import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
+import { InteractiveImage } from "../ui/InteractiveImage";
 import { Text } from "../ui/Text";
 
 interface TattooDetailScreenProps {
@@ -21,7 +21,6 @@ interface TattooDetailScreenProps {
 }
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-
 
 export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
   const [asset, setAsset] = useState<MediaLibrary.Asset | null>(null);
@@ -67,7 +66,7 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
       const appStoreUrl =
         "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193";
       const shareMessage =
-        "I just got tattooed! Check out this photo 🎨 Try it yourself: " +
+        "I just got tattooed! Check out this photo \n🎨 Try it yourself: " +
         appStoreUrl;
 
       // Get asset info to get the URI
