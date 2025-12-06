@@ -1,12 +1,24 @@
 import { authClient } from "@/lib/auth-client";
 import { Home } from "@/src/components/screens/Home";
 import { Stack, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+
+const DISABLE_PROFILE_BUTTON_FOR = 1_000;
 
 export default function HomeScreen() {
   const router = useRouter();
   const { data: session, isPending, isRefetching } = authClient.useSession();
   const isAuthenticated =
     session?.user !== undefined && !isPending && !isRefetching;
+
+  const [isProfileButtonDisabled, setIsProfileButtonDisabled] = useState(false);
+
+  // TODO: Added this because app crashes if you press the profile button too quickly.
+  useEffect(() => {
+    setTimeout(() => {
+      setIsProfileButtonDisabled(true);
+    }, DISABLE_PROFILE_BUTTON_FOR);
+  }, []);
 
   return (
     <>
@@ -18,6 +30,7 @@ export default function HomeScreen() {
                   {
                     type: "button",
                     label: "Profile",
+                    disabled: isProfileButtonDisabled,
                     icon: {
                       name: "person.fill",
                       type: "sfSymbol",
