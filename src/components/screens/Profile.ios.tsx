@@ -273,7 +273,7 @@ export function Profile() {
                     weight="bold"
                     color={
                       lastSubscription.daysRemaining <= 3
-                        ? Color.yellow[500]
+                        ? "yellow"
                         : Color.green[500]
                     }
                   >
@@ -333,7 +333,7 @@ export function Profile() {
               title={hasActiveSubscription ? "Change Plan" : "Upgrade Plan"}
               systemImage="arrow.up.circle.fill"
               onPress={() => router.push("/(paywall)")}
-              color={hasActiveSubscription ? "white" : Color.yellow[500]}
+              color={hasActiveSubscription ? "white" : "yellow"}
             />
             <FormButton
               title={isRefreshing ? "Refreshing..." : "Refresh data"}
