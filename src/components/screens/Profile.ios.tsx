@@ -581,14 +581,11 @@ export function Profile() {
           <LabeledContent label="Show Onboarding">
             <Switch
               value={!settings.isOnboarded}
-              onValueChange={async () => {
-                router.dismissAll();
-                // wait for 1 second
-                await new Promise((resolve) => setTimeout(resolve, 1000));
+              onValueChange={() =>
                 updateSettings({
                   isOnboarded: !(settings.isOnboarded ?? true),
-                });
-              }}
+                })
+              }
             />
           </LabeledContent>
         </Section>
