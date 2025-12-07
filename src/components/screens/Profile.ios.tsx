@@ -444,40 +444,6 @@ export function Profile() {
             </Section>
           )}
 
-        <Section title="Support & Feedback">
-          <FormButton
-            title="Rate App"
-            systemImage="star.fill"
-            onPress={handleRateApp}
-          />
-          <FormButton
-            title="Share with Friends"
-            systemImage="square.and.arrow.up.fill"
-            onPress={handleShareApp}
-          />
-          <FormButton
-            title="Contact Support"
-            systemImage="envelope.fill"
-            onPress={handleContactSupport}
-          />
-        </Section>
-
-        <Section title="Settings">
-          <LabeledContent label="Show Onboarding">
-            <Switch
-              value={!settings.isOnboarded}
-              onValueChange={async () => {
-                router.dismissAll();
-                // wait for 1 second
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                updateSettings({
-                  isOnboarded: !(settings.isOnboarded ?? true),
-                });
-              }}
-            />
-          </LabeledContent>
-        </Section>
-
         <Section
           footer={
             isSecretExpanded ? (
@@ -491,7 +457,7 @@ export function Profile() {
           <DisclosureGroup
             isExpanded={isSecretExpanded}
             onStateChange={setIsSecretExpanded}
-            label="🎁 Enjoying the app?"
+            label="🎁    Enjoying the app?"
           >
             <VStack spacing={16} alignment="leading">
               <Text color={Color.zinc[300]}>
@@ -544,7 +510,7 @@ export function Profile() {
               systemImage="envelope.fill"
               onPress={() => {
                 const subject = "AI Tattoo Review Screenshot 🎁";
-                const body = `Hi!\n\nI left a review for AI Tattoo! Here's my screenshot.\n\nMy account email: ${user?.email}\n\n[Attach your screenshot]\n\nThanks!`;
+                const body = `Hi!\n\nI left a review for AI Tattoo! Here's my screenshot.\n\nMy account email: ${user?.email}\n\nMy user ID: ${user?.id}\n\n[Attach your screenshot]\n\nThanks!`;
                 const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
                   subject
                 )}&body=${encodeURIComponent(body)}`;
@@ -553,6 +519,40 @@ export function Profile() {
               color="yellow"
             />
           </DisclosureGroup>
+        </Section>
+
+        <Section title="Support & Feedback">
+          <FormButton
+            title="Rate App"
+            systemImage="star.fill"
+            onPress={handleRateApp}
+          />
+          <FormButton
+            title="Share with Friends"
+            systemImage="square.and.arrow.up.fill"
+            onPress={handleShareApp}
+          />
+          <FormButton
+            title="Contact Support"
+            systemImage="envelope.fill"
+            onPress={handleContactSupport}
+          />
+        </Section>
+
+        <Section title="Settings">
+          <LabeledContent label="Show Onboarding">
+            <Switch
+              value={!settings.isOnboarded}
+              onValueChange={async () => {
+                router.dismissAll();
+                // wait for 1 second
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                updateSettings({
+                  isOnboarded: !(settings.isOnboarded ?? true),
+                });
+              }}
+            />
+          </LabeledContent>
         </Section>
 
         <Section title="Legal">
