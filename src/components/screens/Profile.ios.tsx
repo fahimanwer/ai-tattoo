@@ -17,6 +17,7 @@ import {
   Section,
   Switch,
   Text,
+  VStack,
 } from "@expo/ui/swift-ui";
 import { font, foregroundStyle } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
@@ -67,6 +68,7 @@ export function Profile() {
   } = useUsageLimit();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPlanDetailsExpanded, setIsPlanDetailsExpanded] = useState(false);
+  const [isSecretExpanded, setIsSecretExpanded] = useState(false);
   const router = useRouter();
 
   // Get last subscription info
@@ -474,6 +476,83 @@ export function Profile() {
               }}
             />
           </LabeledContent>
+        </Section>
+
+        <Section
+          footer={
+            isSecretExpanded ? (
+              <Text color={Color.zinc[400]}>
+                We manually verify all reviews. Limit increases are applied
+                within 24-48 hours. One reward per account.
+              </Text>
+            ) : null
+          }
+        >
+          <DisclosureGroup
+            isExpanded={isSecretExpanded}
+            onStateChange={setIsSecretExpanded}
+            label="🎁 Enjoying the app?"
+          >
+            <VStack spacing={16} alignment="leading">
+              <Text color={Color.zinc[300]}>
+                {"Want free generations? Here's how:"}
+              </Text>
+
+              <LabeledContent
+                label="⭐ Leave a Review"
+                modifiers={[font({ weight: "bold" })]}
+              >
+                <Text
+                  color={Color.green[500]}
+                  modifiers={[font({ weight: "bold" })]}
+                >
+                  +50 gens
+                </Text>
+              </LabeledContent>
+              <Text color={Color.zinc[400]}>
+                {
+                  "Drop us a 5-star review on the App Store, screenshot it, and email it to us with your account email."
+                }
+              </Text>
+
+              <LabeledContent
+                label="🤝 Refer a Friend"
+                modifiers={[font({ weight: "bold" })]}
+              >
+                <Text
+                  color={Color.yellow[500]}
+                  modifiers={[font({ weight: "bold" })]}
+                >
+                  +30 gens
+                </Text>
+              </LabeledContent>
+              <Text color={Color.zinc[400]}>
+                {
+                  "Get a friend to leave a review! Send us their screenshot + your account email and we'll hook you both up."
+                }
+              </Text>
+            </VStack>
+
+            <FormButton
+              title="Leave a Review"
+              systemImage="star.fill"
+              onPress={handleRateApp}
+              color={Color.green[500]}
+            />
+            <FormButton
+              title="Email Screenshot"
+              systemImage="envelope.fill"
+              onPress={() => {
+                const subject = "AI Tattoo Review Screenshot 🎁";
+                const body = `Hi!\n\nI left a review for AI Tattoo! Here's my screenshot.\n\nMy account email: ${user?.email}\n\n[Attach your screenshot]\n\nThanks!`;
+                const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
+                  subject
+                )}&body=${encodeURIComponent(body)}`;
+                Linking.openURL(mailtoUrl);
+              }}
+              color="yellow"
+            />
+          </DisclosureGroup>
         </Section>
 
         <Section title="Legal">
