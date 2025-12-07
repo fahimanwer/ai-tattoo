@@ -1,3 +1,4 @@
+import { authClient } from "@/lib/auth-client";
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 // import { Platform } from "react-native";
 
@@ -10,6 +11,10 @@ import { NativeTabs } from "expo-router/unstable-native-tabs";
 // }
 
 export default function TabLayout() {
+  const { data: session, isPending, isRefetching } = authClient.useSession();
+  const isAuthenticated =
+    session?.user !== undefined && !isPending && !isRefetching;
+
   // Use standard Tabs for web
   // if (Platform.OS === "web") {
   //   return (
@@ -65,7 +70,7 @@ export default function TabLayout() {
         <NativeTabs.Trigger.Label>My Tattoos</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="photo.fill.on.rectangle.fill" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile">
+      <NativeTabs.Trigger name="profile" hidden={!isAuthenticated}>
         <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="person.fill" />
       </NativeTabs.Trigger>

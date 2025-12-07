@@ -7,10 +7,10 @@ import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { useUserData } from "@/src/hooks/useUserData";
 import {
   Button,
+  Form,
   Host,
   HStack,
   LabeledContent,
-  List,
   Section,
   Switch,
   Text,
@@ -166,7 +166,7 @@ export function Profile() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <List listStyle="automatic">
+      <Form>
         <Section title="Account">
           <LabeledContent label="Name">
             <Text>{displayName}</Text>
@@ -547,7 +547,7 @@ export function Profile() {
             </Button>
           </HStack>
         </Section>
-      </List>
+      </Form>
     </Host>
   );
 }

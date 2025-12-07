@@ -1,5 +1,5 @@
 import { useLargeHeaderOptions } from "@/src/constants/navigation-options";
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 
 export default function HomeLayout() {
   const largeHeaderOptions = useLargeHeaderOptions();
@@ -15,19 +15,10 @@ export default function HomeLayout() {
         name="index"
         options={{
           title: "Profile",
-          unstable_headerLeftItems: (props) => [
-            {
-              type: "button",
-              label: "Back",
-              icon: {
-                name: "xmark",
-                type: "sfSymbol",
-              },
-              onPress: () => {
-                router.back();
-              },
-            },
-          ],
+          headerLargeTitle: true,
+          headerStyle: {
+            backgroundColor: "transparent",
+          },
         }}
       />
     </Stack>
