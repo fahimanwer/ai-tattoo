@@ -1,4 +1,3 @@
-import { Color } from "@/src/constants/TWPalette";
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 // import { Platform } from "react-native";
 
@@ -51,7 +50,7 @@ export default function TabLayout() {
   return (
     <NativeTabs
       disableTransparentOnScrollEdge={true}
-      tintColor={Color.slate[50]}
+      tintColor={"yellow"}
       minimizeBehavior="onScrollDown"
     >
       <NativeTabs.Trigger name="(home)">
@@ -66,26 +65,16 @@ export default function TabLayout() {
         <NativeTabs.Trigger.Label>My Tattoos</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="photo.fill.on.rectangle.fill" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="person.fill" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="camera-view" role="search">
         <NativeTabs.Trigger.Label>Try On Tattoo</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           sf={{ default: "camera.fill", selected: "camera.fill" }}
         />
       </NativeTabs.Trigger>
-
-      {/* I have no idea what feature to implement here. Commenting out for now. */}
-      {/* <NativeTabs.BottomAccessory>
-        <PressableScale
-          onPress={() => router.push("/(playground)")}
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text>Go to Playground</Text>
-        </PressableScale>
-      </NativeTabs.BottomAccessory> */}
     </NativeTabs>
   );
 }

@@ -18,7 +18,7 @@ import {
 import { font, foregroundStyle } from "@expo/ui/swift-ui/modifiers";
 import { useRouter } from "expo-router";
 import { use, useMemo, useState } from "react";
-import { Alert, Linking, Share, View } from "react-native";
+import { Alert, Linking, Share } from "react-native";
 
 export function Profile() {
   const { user } = useUserData();
@@ -147,7 +147,7 @@ export function Profile() {
 
   if (!user) {
     return (
-      <View
+      <Host
         style={{
           flex: 1,
           padding: 20,
@@ -156,7 +156,7 @@ export function Profile() {
         }}
       >
         <Text>Not signed in</Text>
-      </View>
+      </Host>
     );
   }
 
