@@ -20,6 +20,7 @@ import {
   VStack,
 } from "@expo/ui/swift-ui";
 import { font, foregroundStyle } from "@expo/ui/swift-ui/modifiers";
+import * as Application from "expo-application";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { use, useMemo, useState } from "react";
@@ -178,6 +179,39 @@ export function Profile() {
     }
   };
 
+  // Format member since date
+  const memberSince = useMemo(() => {
+    if (!user?.createdAt) return null;
+    const date = new Date(user.createdAt);
+    return date.toLocaleDateString(undefined, {
+      month: "long",
+      year: "numeric",
+    });
+  }, [user?.createdAt]);
+
+  // Get plan badge info
+  const planBadge = useMemo(() => {
+    if (hasActiveSubscription && lastSubscription) {
+      const name = lastSubscription.productName || "Pro";
+      if (name.toLowerCase().includes("plus")) {
+        return {
+          name: "Plus",
+          color: Color.green[500],
+          icon: "star.fill" as const,
+        };
+      }
+      if (name.toLowerCase().includes("starter")) {
+        return {
+          name: "Starter",
+          color: Color.yellow[500],
+          icon: "star.leadinghalf.filled" as const,
+        };
+      }
+      return { name, color: Color.green[500], icon: "star.fill" as const };
+    }
+    return { name: "Free", color: Color.zinc[400], icon: "star" as const };
+  }, [hasActiveSubscription, lastSubscription]);
+
   if (!user) {
     return (
       <Host
@@ -207,6 +241,22 @@ export function Profile() {
           <LabeledContent label="Email">
             <Text>{user.email}</Text>
           </LabeledContent>
+          <LabeledContent label="Plan">
+            <HStack spacing={6}>
+              <Label systemImage={planBadge.icon} />
+              <Text
+                color={planBadge.color}
+                modifiers={[font({ weight: "bold" })]}
+              >
+                {planBadge.name}
+              </Text>
+            </HStack>
+          </LabeledContent>
+          {memberSince && (
+            <LabeledContent label="Member Since">
+              <Text color={Color.zinc[400]}>{memberSince}</Text>
+            </LabeledContent>
+          )}
         </Section>
 
         {(hasActiveSubscription || hasActiveUsagePeriod) && (
@@ -369,8 +419,17 @@ export function Profile() {
         {!hasActiveSubscription &&
           !hasActiveUsagePeriod &&
           lastSubscription && (
-            <Section title="Last Subscription">
-              <LabeledContent label="Plan">
+            <Section
+              title="💔 We Miss You!"
+              footer={
+                <Text color={Color.zinc[400]}>
+                  {
+                    "Ready to create more amazing tattoos? Come back and let's design something incredible together."
+                  }
+                </Text>
+              }
+            >
+              <LabeledContent label="Previous Plan">
                 <Text weight="bold" color={planColor}>
                   {lastSubscription.productName || "Unknown"}
                 </Text>
@@ -389,52 +448,11 @@ export function Profile() {
                   </Text>
                 </LabeledContent>
               )}
-              {lastSubscription.daysSinceExpired !== null &&
-                lastSubscription.daysSinceExpired > 0 && (
-                  <LabeledContent label="Expired">
-                    <Text weight="bold" color={Color.red[500]}>
-                      {`${lastSubscription.daysSinceExpired} days ago`}
-                    </Text>
-                  </LabeledContent>
-                )}
-              <LabeledContent label="Auto-Renew">
-                <Text
-                  color={
-                    lastSubscription.willRenew
-                      ? Color.green[500]
-                      : Color.red[500]
-                  }
-                >
-                  {lastSubscription.willRenew ? "Was On" : "Was Off"}
-                </Text>
-              </LabeledContent>
-              {lastSubscription.price && (
-                <LabeledContent label="Price">
-                  <Text>
-                    {`${lastSubscription.price.currency} $${lastSubscription.price.amount}`}
-                  </Text>
-                </LabeledContent>
-              )}
-              {lastSubscription.unsubscribeDetectedAt && (
-                <LabeledContent label="Cancelled At">
-                  <Text weight="bold" color={Color.yellow[500]}>
-                    {new Date(
-                      lastSubscription.unsubscribeDetectedAt
-                    ).toLocaleString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
-                  </Text>
-                </LabeledContent>
-              )}
               <FormButton
-                title="Subscribe Again"
-                systemImage="arrow.up.circle.fill"
+                title="🎨 Come Back & Create"
+                systemImage="sparkles"
                 onPress={() => router.push("/(paywall)")}
+                color="yellow"
               />
               <FormButton
                 title={isRefreshing ? "Refreshing..." : "Refresh data"}
@@ -539,7 +557,27 @@ export function Profile() {
           />
         </Section>
 
-        <Section title="Settings">
+        <Section title="Follow Us">
+          <FormButton
+            title="@trytattooapp on X"
+            systemImage="bubble.left.fill"
+            onPress={() => Linking.openURL("https://x.com/trytattooapp")}
+          />
+          <FormButton
+            title="trytattooapp.ai"
+            systemImage="globe"
+            onPress={() => Linking.openURL("https://trytattooapp.ai")}
+          />
+        </Section>
+
+        <Section
+          title="Settings"
+          footer={
+            <Text color={Color.zinc[500]}>
+              {`Version ${Application.nativeApplicationVersion}`}
+            </Text>
+          }
+        >
           <LabeledContent label="Show Onboarding">
             <Switch
               value={!settings.isOnboarded}
