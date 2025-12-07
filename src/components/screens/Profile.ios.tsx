@@ -9,16 +9,43 @@ import {
   Button,
   Form,
   Host,
-  HStack,
+  Label,
   LabeledContent,
   Section,
   Switch,
   Text,
 } from "@expo/ui/swift-ui";
 import { font, foregroundStyle } from "@expo/ui/swift-ui/modifiers";
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { use, useMemo, useState } from "react";
 import { Alert, Linking, Share } from "react-native";
+import type { SFSymbol } from "sf-symbols-typescript";
+
+// Button component for Form sections with haptic feedback
+function FormButton({
+  title,
+  systemImage,
+  onPress,
+  color = "white",
+}: {
+  title: string;
+  systemImage: SFSymbol;
+  onPress: () => void;
+  color?: string;
+}) {
+  return (
+    <Button
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        onPress();
+      }}
+      modifiers={[foregroundStyle({ type: "color", color })]}
+    >
+      <Label title={title} systemImage={systemImage} />
+    </Button>
+  );
+}
 
 export function Profile() {
   const { user } = useUserData();
@@ -302,31 +329,17 @@ export function Profile() {
                 }`}
               </Text>
             </LabeledContent>
-            <HStack>
-              <Button
-                variant="borderless"
-                systemImage="arrow.up.circle"
-                onPress={() => router.push("/(paywall)")}
-                modifiers={[
-                  foregroundStyle({
-                    type: "color",
-                    color: hasActiveSubscription ? "white" : Color.yellow[500],
-                  }),
-                ]}
-              >
-                {hasActiveSubscription ? "Change Plan" : "Upgrade Plan"}
-              </Button>
-            </HStack>
-            <HStack>
-              <Button
-                variant="borderless"
-                systemImage="arrow.clockwise"
-                onPress={handleRefresh}
-                modifiers={[foregroundStyle({ type: "color", color: "white" })]}
-              >
-                {isRefreshing ? "Refreshing..." : "Refresh data"}
-              </Button>
-            </HStack>
+            <FormButton
+              title={hasActiveSubscription ? "Change Plan" : "Upgrade Plan"}
+              systemImage="arrow.up.circle.fill"
+              onPress={() => router.push("/(paywall)")}
+              color={hasActiveSubscription ? "white" : Color.yellow[500]}
+            />
+            <FormButton
+              title={isRefreshing ? "Refreshing..." : "Refresh data"}
+              systemImage="arrow.clockwise.circle.fill"
+              onPress={handleRefresh}
+            />
           </Section>
         )}
 
@@ -395,64 +408,35 @@ export function Profile() {
                   </Text>
                 </LabeledContent>
               )}
-              <HStack>
-                <Button
-                  variant="borderless"
-                  systemImage="arrow.up.circle"
-                  onPress={() => router.push("/(paywall)")}
-                  modifiers={[
-                    foregroundStyle({ type: "color", color: "white" }),
-                  ]}
-                >
-                  Subscribe Again
-                </Button>
-              </HStack>
-              <HStack>
-                <Button
-                  variant="borderless"
-                  systemImage="arrow.clockwise"
-                  onPress={handleRefresh}
-                  modifiers={[
-                    foregroundStyle({ type: "color", color: "white" }),
-                  ]}
-                >
-                  {isRefreshing ? "Refreshing..." : "Refresh data"}
-                </Button>
-              </HStack>
+              <FormButton
+                title="Subscribe Again"
+                systemImage="arrow.up.circle.fill"
+                onPress={() => router.push("/(paywall)")}
+              />
+              <FormButton
+                title={isRefreshing ? "Refreshing..." : "Refresh data"}
+                systemImage="arrow.clockwise"
+                onPress={handleRefresh}
+              />
             </Section>
           )}
 
         <Section title="Support & Feedback">
-          <HStack>
-            <Button
-              variant="borderless"
-              systemImage="star"
-              onPress={handleRateApp}
-              modifiers={[foregroundStyle({ type: "color", color: "white" })]}
-            >
-              Rate App
-            </Button>
-          </HStack>
-          <HStack>
-            <Button
-              variant="borderless"
-              systemImage="square.and.arrow.up"
-              onPress={handleShareApp}
-              modifiers={[foregroundStyle({ type: "color", color: "white" })]}
-            >
-              Share with Friends
-            </Button>
-          </HStack>
-          <HStack>
-            <Button
-              variant="borderless"
-              systemImage="arrow.up.forward.square"
-              onPress={handleContactSupport}
-              modifiers={[foregroundStyle({ type: "color", color: "white" })]}
-            >
-              Contact Support
-            </Button>
-          </HStack>
+          <FormButton
+            title="Rate App"
+            systemImage="star.fill"
+            onPress={handleRateApp}
+          />
+          <FormButton
+            title="Share with Friends"
+            systemImage="square.and.arrow.up.fill"
+            onPress={handleShareApp}
+          />
+          <FormButton
+            title="Contact Support"
+            systemImage="envelope.fill"
+            onPress={handleContactSupport}
+          />
         </Section>
 
         <Section title="Settings">
@@ -472,80 +456,60 @@ export function Profile() {
         </Section>
 
         <Section title="Legal">
-          <HStack>
-            <Button
-              variant="borderless"
-              systemImage="hand.raised"
-              onPress={handlePrivacyPolicy}
-              modifiers={[foregroundStyle({ type: "color", color: "white" })]}
-            >
-              Privacy Policy
-            </Button>
-          </HStack>
-          <HStack>
-            <Button
-              variant="borderless"
-              systemImage="doc.plaintext"
-              onPress={handleTermsOfService}
-              modifiers={[foregroundStyle({ type: "color", color: "white" })]}
-            >
-              Terms of Service
-            </Button>
-          </HStack>
+          <FormButton
+            title="Privacy Policy"
+            systemImage="hand.raised.fill"
+            onPress={handlePrivacyPolicy}
+          />
+          <FormButton
+            title="Terms of Service"
+            systemImage="doc.text.fill"
+            onPress={handleTermsOfService}
+          />
         </Section>
 
         <Section>
-          <HStack>
-            <Button
-              variant="borderless"
-              systemImage="rectangle.portrait.and.arrow.right"
-              onPress={handleSignOut}
-              modifiers={[foregroundStyle({ type: "color", color: "white" })]}
-            >
-              Log out
-            </Button>
-          </HStack>
+          <FormButton
+            title="Log out"
+            systemImage="rectangle.portrait.and.arrow.right.fill"
+            onPress={handleSignOut}
+          />
         </Section>
 
         <Section title="Danger Zone">
-          <HStack>
-            <Button
-              variant="borderless"
-              color="gray"
-              systemImage="exclamationmark.triangle"
-              onPress={() =>
-                Alert.alert(
-                  "Delete Account",
-                  "Are you sure you want to delete your account? This action cannot be undone, and all your data will be permanently deleted. Note that deleting your account will NOT cancel any active subscriptions. You can manage or cancel your subscriptions at any time from your iCloud settings.",
-                  [
-                    {
-                      text: "Cancel",
-                      style: "cancel",
-                    },
-                    {
-                      text: "Delete",
-                      style: "destructive",
-                      onPress: async () => {
-                        try {
-                          router.dismissAll();
+          <FormButton
+            title="Delete Account"
+            systemImage="exclamationmark.triangle.fill"
+            color={Color.zinc[500]}
+            onPress={() =>
+              Alert.alert(
+                "Delete Account",
+                "Are you sure you want to delete your account? This action cannot be undone, and all your data will be permanently deleted. Note that deleting your account will NOT cancel any active subscriptions. You can manage or cancel your subscriptions at any time from your iCloud settings.",
+                [
+                  {
+                    text: "Cancel",
+                    style: "cancel",
+                  },
+                  {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                      try {
+                        router.dismissAll();
 
-                          // TODO: Delete account, currently people are deleteing and recreating accounts to get free generations. :(
-                          // await authClient.deleteUser();
+                        // TODO: Delete account, currently people are deleteing and recreating accounts to get free generations. :(
+                        // await authClient.deleteUser();
 
-                          await authClient.signOut();
-                        } catch (error) {
-                          console.error("Error deleting account:", error);
-                        }
-                      },
+                        await authClient.signOut();
+                      } catch (error) {
+                        console.error("Error deleting account:", error);
+                      }
                     },
-                  ]
-                )
-              }
-              modifiers={[foregroundStyle({ type: "color", color: "gray" })]}
-            >
-              Delete Account
-            </Button>
-          </HStack>
+                  },
+                ]
+              )
+            }
+          />
         </Section>
       </Form>
     </Host>
