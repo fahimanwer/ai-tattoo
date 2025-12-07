@@ -7,10 +7,13 @@ import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { useUserData } from "@/src/hooks/useUserData";
 import {
   Button,
+  DisclosureGroup,
   Form,
   Host,
+  HStack,
   Label,
   LabeledContent,
+  LinearProgress,
   Section,
   Switch,
   Text,
@@ -63,6 +66,7 @@ export function Profile() {
     refetch: refetchUsage,
   } = useUsageLimit();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isPlanDetailsExpanded, setIsPlanDetailsExpanded] = useState(false);
   const router = useRouter();
 
   // Get last subscription info
@@ -212,123 +216,30 @@ export function Profile() {
                   : "Plan & Usage"
                 : "Active Usage Period"
             }
+            footer={
+              <Text color={remaining <= 5 ? "yellow" : Color.zinc[400]}>
+                {`${remaining} generations remaining`}
+              </Text>
+            }
           >
-            <LabeledContent label="Plan">
-              <Text modifiers={[font({ weight: "bold" })]} color={planColor}>
-                {hasActiveSubscription && lastSubscription
-                  ? lastSubscription.productName || "Unknown"
-                  : "Free"}
-              </Text>
-            </LabeledContent>
-            {hasActiveSubscription && lastSubscription && (
-              <LabeledContent label="Status">
-                <Text weight="bold" color={getStatusDisplay().color}>
-                  {lastSubscription.unsubscribeDetectedAt
-                    ? "Cancelled (Active Until Expiration)"
-                    : getStatusDisplay().text}
-                </Text>
-              </LabeledContent>
-            )}
-            <LabeledContent label="Usage This Period">
-              <Text
-                weight="bold"
-                color={isLimitReached ? "#ef4444" : planColor}
-              >
-                {`${used} / ${limit}`}
-              </Text>
-            </LabeledContent>
-            <LabeledContent label="Remaining">
+            <HStack spacing={16}>
+              <LinearProgress
+                progress={remaining / limit}
+                color={
+                  remaining < 4
+                    ? "yellow"
+                    : remaining < 8
+                    ? "orange"
+                    : Color.green[500]
+                }
+              />
               <Text
                 modifiers={[font({ weight: "bold" })]}
-                color={remaining <= 5 ? Color.yellow[500] : Color.green[500]}
+                color={isLimitReached ? "#ef4444" : planColor}
               >
-                {`${remaining} generations`}
+                {`${used} / ${limit} gens`}
               </Text>
-            </LabeledContent>
-            {hasActiveSubscription && lastSubscription?.expiresDate && (
-              <LabeledContent
-                label={
-                  lastSubscription.unsubscribeDetectedAt
-                    ? "Access Ends On"
-                    : lastSubscription.willRenew
-                    ? "Renews On"
-                    : "Expires On"
-                }
-              >
-                <Text
-                  weight={
-                    lastSubscription.unsubscribeDetectedAt ? "bold" : "regular"
-                  }
-                >
-                  {new Date(lastSubscription.expiresDate).toLocaleDateString()}
-                </Text>
-              </LabeledContent>
-            )}
-            {hasActiveSubscription &&
-              lastSubscription &&
-              lastSubscription.daysRemaining !== null &&
-              lastSubscription.daysRemaining > 0 && (
-                <LabeledContent label="Days Remaining">
-                  <Text
-                    weight="bold"
-                    color={
-                      lastSubscription.daysRemaining <= 3
-                        ? "yellow"
-                        : Color.green[500]
-                    }
-                  >
-                    {`${lastSubscription.daysRemaining} days`}
-                  </Text>
-                </LabeledContent>
-              )}
-            {hasActiveSubscription && lastSubscription && (
-              <LabeledContent label="Auto-Renew">
-                <Text
-                  color={
-                    lastSubscription.willRenew
-                      ? Color.green[500]
-                      : Color.red[500]
-                  }
-                >
-                  {lastSubscription.willRenew ? "On" : "Off"}
-                </Text>
-              </LabeledContent>
-            )}
-            {hasActiveSubscription &&
-              lastSubscription?.unsubscribeDetectedAt && (
-                <LabeledContent label="Cancelled At">
-                  <Text weight="bold" color={Color.yellow[500]}>
-                    {new Date(
-                      lastSubscription.unsubscribeDetectedAt
-                    ).toLocaleString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
-                  </Text>
-                </LabeledContent>
-              )}
-            {hasActiveSubscription && lastSubscription?.price && (
-              <LabeledContent label="Price">
-                <Text>
-                  {`${lastSubscription.price.currency} $${lastSubscription.price.amount}`}
-                </Text>
-              </LabeledContent>
-            )}
-            <LabeledContent label="Billing Period">
-              <Text>
-                {`${
-                  periodStart
-                    ? new Date(periodStart).toLocaleDateString()
-                    : "N/A"
-                } - ${
-                  periodEnd ? new Date(periodEnd).toLocaleDateString() : "N/A"
-                }`}
-              </Text>
-            </LabeledContent>
+            </HStack>
             <FormButton
               title={hasActiveSubscription ? "Change Plan" : "Upgrade Plan"}
               systemImage="arrow.up.circle.fill"
@@ -340,6 +251,116 @@ export function Profile() {
               systemImage="arrow.clockwise.circle.fill"
               onPress={handleRefresh}
             />
+            <DisclosureGroup
+              isExpanded={isPlanDetailsExpanded}
+              onStateChange={setIsPlanDetailsExpanded}
+              label="Plan Details"
+            >
+              <LabeledContent label="Plan">
+                <Text modifiers={[font({ weight: "bold" })]} color={planColor}>
+                  {hasActiveSubscription && lastSubscription
+                    ? lastSubscription.productName || "Unknown"
+                    : "Free"}
+                </Text>
+              </LabeledContent>
+              {hasActiveSubscription && lastSubscription && (
+                <LabeledContent label="Status">
+                  <Text weight="bold" color={getStatusDisplay().color}>
+                    {lastSubscription.unsubscribeDetectedAt
+                      ? "Cancelled (Active Until Expiration)"
+                      : getStatusDisplay().text}
+                  </Text>
+                </LabeledContent>
+              )}
+              {hasActiveSubscription && lastSubscription?.expiresDate && (
+                <LabeledContent
+                  label={
+                    lastSubscription.unsubscribeDetectedAt
+                      ? "Access Ends On"
+                      : lastSubscription.willRenew
+                      ? "Renews On"
+                      : "Expires On"
+                  }
+                >
+                  <Text
+                    weight={
+                      lastSubscription.unsubscribeDetectedAt
+                        ? "bold"
+                        : "regular"
+                    }
+                  >
+                    {new Date(
+                      lastSubscription.expiresDate
+                    ).toLocaleDateString()}
+                  </Text>
+                </LabeledContent>
+              )}
+              {hasActiveSubscription &&
+                lastSubscription &&
+                lastSubscription.daysRemaining !== null &&
+                lastSubscription.daysRemaining > 0 && (
+                  <LabeledContent label="Days Remaining">
+                    <Text
+                      weight="bold"
+                      color={
+                        lastSubscription.daysRemaining <= 3
+                          ? "yellow"
+                          : Color.green[500]
+                      }
+                    >
+                      {`${lastSubscription.daysRemaining} days`}
+                    </Text>
+                  </LabeledContent>
+                )}
+              {hasActiveSubscription && lastSubscription && (
+                <LabeledContent label="Auto-Renew">
+                  <Text
+                    color={
+                      lastSubscription.willRenew
+                        ? Color.green[500]
+                        : Color.red[500]
+                    }
+                  >
+                    {lastSubscription.willRenew ? "On" : "Off"}
+                  </Text>
+                </LabeledContent>
+              )}
+              {hasActiveSubscription &&
+                lastSubscription?.unsubscribeDetectedAt && (
+                  <LabeledContent label="Cancelled At">
+                    <Text weight="bold" color={Color.yellow[500]}>
+                      {new Date(
+                        lastSubscription.unsubscribeDetectedAt
+                      ).toLocaleString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </Text>
+                  </LabeledContent>
+                )}
+              {hasActiveSubscription && lastSubscription?.price && (
+                <LabeledContent label="Price">
+                  <Text>
+                    {`${lastSubscription.price.currency} $${lastSubscription.price.amount}`}
+                  </Text>
+                </LabeledContent>
+              )}
+              <LabeledContent label="Billing Period">
+                <Text>
+                  {`${
+                    periodStart
+                      ? new Date(periodStart).toLocaleDateString()
+                      : "N/A"
+                  } - ${
+                    periodEnd ? new Date(periodEnd).toLocaleDateString() : "N/A"
+                  }`}
+                </Text>
+              </LabeledContent>
+            </DisclosureGroup>
           </Section>
         )}
 
@@ -476,7 +497,17 @@ export function Profile() {
           />
         </Section>
 
-        <Section title="Danger Zone">
+        <Section
+          title="Danger Zone"
+          footer={
+            <Text>
+              Deleting your account is permanent and cannot be undone. All your
+              data, tattoos, and history will be lost forever. This does NOT
+              cancel active subscriptions — cancel in Settings → Apple ID →
+              Subscriptions first.
+            </Text>
+          }
+        >
           <FormButton
             title="Delete Account"
             systemImage="exclamationmark.triangle.fill"
