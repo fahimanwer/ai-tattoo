@@ -13,9 +13,7 @@ export default function BodyPart() {
   const bodyPartValue = bodyPart || "arm";
   const coverImage: ImageSourcePropType = imageUrl
     ? { uri: imageUrl }
-    : {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-1.png",
-      };
+    : { uri: "" };
 
   return (
     <BodyPartParallaxView

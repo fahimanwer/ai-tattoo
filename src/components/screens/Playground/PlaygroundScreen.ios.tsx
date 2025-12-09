@@ -1,5 +1,5 @@
-import { router, Stack } from "expo-router";
-import { use, useEffect } from "react";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { use, useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -57,6 +57,8 @@ export function PlaygroundScreen() {
   const { data: session, isPending, isRefetching } = authClient.useSession();
   const isAuthenticated = session?.user !== undefined;
   const isLoading = isPending || isRefetching;
+  const params = useLocalSearchParams<{ mode?: string }>();
+  const hasHandledMode = useRef(false);
 
   const {
     prompt,
@@ -84,6 +86,26 @@ export function PlaygroundScreen() {
       console.error("Failed to play playground entrance haptic:", error);
     });
   }, []); // Empty dependency array means this runs once on mount
+
+  // Handle mode parameter for quick actions
+  useEffect(() => {
+    if (hasHandledMode.current || !isAuthenticated || isLoading) return;
+
+    const mode = params.mode;
+    if (mode === "preview") {
+      hasHandledMode.current = true;
+      // Navigate directly to camera for preview mode
+      setTimeout(() => {
+        router.push("/(playground)/camera-view");
+      }, 300);
+    } else if (mode === "edit") {
+      hasHandledMode.current = true;
+      // Open gallery for edit mode
+      setTimeout(() => {
+        pickImageFromGallery();
+      }, 300);
+    }
+  }, [params.mode, isAuthenticated, isLoading, pickImageFromGallery]);
 
   function dismissToHome() {
     if (router.canGoBack()) {
