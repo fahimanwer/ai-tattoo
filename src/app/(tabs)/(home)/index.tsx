@@ -30,7 +30,7 @@ export default function HomeScreen() {
     // Limit reached or no subscription → Show "Update plan" and go to paywall
     if (isLimitReached || !hasSubscription) {
       return {
-        label: "Update plan",
+        label: "Upgrade plan",
         action: () => router.push("/(paywall)"),
       };
     }
