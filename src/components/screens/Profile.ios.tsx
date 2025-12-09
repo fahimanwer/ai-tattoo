@@ -70,6 +70,7 @@ export function Profile() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPlanDetailsExpanded, setIsPlanDetailsExpanded] = useState(false);
   const [isSecretExpanded, setIsSecretExpanded] = useState(false);
+  const [isArtistExpanded, setIsArtistExpanded] = useState(false);
   const router = useRouter();
 
   // Get last subscription info
@@ -123,6 +124,19 @@ export function Profile() {
     try {
       const subject = "AI Tattoo App Support Request";
       const body = `Hi,\n\nI need help with the AI Tattoo app.\n\nUser ID: ${user?.id}\nEmail: ${user?.email}\n\nDescription:\n[Please describe your issue here]\n\nThanks!`;
+      const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
+      await Linking.openURL(mailtoUrl);
+    } catch (error) {
+      console.error("Error opening email:", error);
+    }
+  };
+
+  const handleArtistContact = async () => {
+    try {
+      const subject = "Are you an artist? - AI Tattoo";
+      const body = `Hi!\n\nI'm interested in collaborating or have suggestions/complaints.\n\nMy account email: ${user?.email}\nMy user ID: ${user?.id}\n\n[Please share your suggestions, complaints, or tell us about yourself as an artist]\n\nThanks!`;
       const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
         subject
       )}&body=${encodeURIComponent(body)}`;
@@ -518,6 +532,29 @@ export function Profile() {
                 Linking.openURL(mailtoUrl);
               }}
               color="yellow"
+            />
+          </DisclosureGroup>
+        </Section>
+
+        <Section>
+          <DisclosureGroup
+            isExpanded={isArtistExpanded}
+            onStateChange={setIsArtistExpanded}
+            label="🎨    Are you an artist?"
+          >
+            <VStack spacing={16} alignment="leading">
+              <Text color={Color.zinc[300]}>
+                {
+                  "Interested in collaborating? Have suggestions or complaints? We'd love to hear from you!"
+                }
+              </Text>
+            </VStack>
+
+            <FormButton
+              title="Write to Us"
+              systemImage="envelope.fill"
+              onPress={handleArtistContact}
+              color={Color.blue[500]}
             />
           </DisclosureGroup>
         </Section>

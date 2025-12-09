@@ -11,7 +11,7 @@ export function CelebrityTattoos() {
   return (
     <View style={{ flex: 1, gap: 16 }}>
       <Text type="subtitle" weight="bold" style={{ paddingHorizontal: 16 }}>
-        Athletic Tattoos
+        More styles
       </Text>
       <LegendList
         horizontal
