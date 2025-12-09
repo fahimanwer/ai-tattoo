@@ -45,6 +45,7 @@
     "expo-linear-gradient": "15.0.9-canary-20251205-a1dedc6",
     "expo-linking": "8.0.11-canary-20251205-a1dedc6",
     "expo-media-library": "18.3.0-canary-20251205-a1dedc6",
+    "expo-network": "^8.0.8",
     "expo-router": "7.0.0-canary-20251205-a1dedc6",
     "expo-secure-store": "15.0.9-canary-20251205-a1dedc6",
     "expo-sqlite": "16.1.0-canary-20251205-a1dedc6",

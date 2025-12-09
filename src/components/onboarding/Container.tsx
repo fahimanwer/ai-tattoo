@@ -30,21 +30,21 @@ const ONBOARDING_VIDEOS = [
     description:
       "Type a few words and instantly generate unique tattoo designs.",
     video:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/final-onb-1.mov",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding2.mov",
   },
   {
     title: "Personalize Your Design",
     description:
       "Adjust colors, layout, and style to make the tattoo perfectly yours.",
     video:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/final-onb-2.mov",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding22.mov",
   },
   {
     title: "Preview on Your Skin",
     description:
       "Preview any tattoo on your skin — adjust size and placement instantly.",
     video:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/final-onb-3.mov",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding2222.mov",
   },
 ];
 
@@ -408,8 +408,9 @@ const styles = StyleSheet.create({
 
   videoView: {
     width: SCREEN_WIDTH,
-    height: 600,
-    marginTop: 35,
+    height: "100%",
+
+    // marginTop: 35,
   },
 
   videoTapArea: {
