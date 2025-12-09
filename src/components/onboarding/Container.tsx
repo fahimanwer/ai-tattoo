@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: "relative",
-    experimental_backgroundImage: `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,1) 85%)`,
+    experimental_backgroundImage: `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.8) 70%, #000000 100%)`,
     zIndex: 2,
   },
 

@@ -490,29 +490,12 @@ export function Profile() {
                   color={Color.green[500]}
                   modifiers={[font({ weight: "bold" })]}
                 >
-                  +50 gens
+                  +10 gens
                 </Text>
               </LabeledContent>
               <Text color={Color.zinc[400]}>
                 {
                   "Drop us a 5-star review on the App Store, screenshot it, and email it to us with your account email."
-                }
-              </Text>
-
-              <LabeledContent
-                label="🤝 Refer a Friend"
-                modifiers={[font({ weight: "bold" })]}
-              >
-                <Text
-                  color={Color.yellow[500]}
-                  modifiers={[font({ weight: "bold" })]}
-                >
-                  +30 gens
-                </Text>
-              </LabeledContent>
-              <Text color={Color.zinc[400]}>
-                {
-                  "Get a friend to leave a review! Send us their screenshot + your account email and we'll hook you both up."
                 }
               </Text>
             </VStack>

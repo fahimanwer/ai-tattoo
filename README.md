@@ -251,3 +251,73 @@ Refer to the [EAS hosting documentation](https://docs.expo.dev/eas/) for more de
 You can also:
 • Fair use cap (e.g. “up to 1200 generations/month”).
 • Offer annual discount ($99/yr Pro).
+
+## ⚠️ Correction: Why These Numbers Were Wrong
+
+The original pricing model assumed **~$0.039 per image**, but after reviewing [Google’s actual Gemini pricing:](https://ai.google.dev/gemini-api/docs/pricing#standard_1)
+
+### ✔ Output image cost is **~$0.134 EACH** (1K–2K resolution)
+
+### ✔ Input images each cost **$0.0011**
+
+### ✔ Weekly/monthly costs **scale with usage**
+
+### ✔ Apple takes **15%**
+
+### ✔ RevenueCat takes **1%**
+
+### ✔ Hosting + DB adds **$0.30 per user**
+
+This means your real cost per generation is **~$0.135**, not $0.039.
+
+### **Your existing plans actually LOSE money:**
+
+| Plan              | Cost (your real cost) | Price  | Outcome               |
+| ----------------- | --------------------- | ------ | --------------------- |
+| Starter (75 gens) | ~$10.43               | $4.99  | **–$5.44 loss/user**  |
+| Plus (200 gens)   | ~$27.30               | $9.99  | **–$17.31 loss/user** |
+| Pro (600 gens)    | ~$81.30               | $29.99 | **–$51.31 loss/user** |
+
+So we need a **new pricing strategy**.
+
+---
+
+## ✅ Path Forward — Weekly + Monthly Pricing (Industry Standard)
+
+The new model:
+
+- Weekly → **high conversion**, smaller perceived price, stronger LTV
+- Monthly → optional, slightly cheaper per generation
+- Generations adjusted to be profitable
+- Profits calculated **after** Apple (15%), RC (1%), hosting, and real model costs
+
+We'll show:
+
+- **Starter Weekly**
+- **Plus Weekly**
+- **Pro Weekly**
+- **Monthly equivalents for each**
+
+---
+
+## 📆 Recommended Weekly Pricing (US Market)
+
+| Plan               | Price (wk) | Gens/wk | Your Cost | Your Revenue After Apple/RC | **Profit/wk** |
+| ------------------ | ---------- | ------- | --------- | --------------------------- | ------------- |
+| **Starter Weekly** | **$4.99**  | 25 gens | $3.38     | $4.19                       | **+$0.81**    |
+| **Plus Weekly**    | **$6.99**  | 35 gens | $4.73     | $5.87                       | **+$1.14**    |
+| **Pro Weekly**     | **$9.99**  | 50 gens | $6.75     | $8.39                       | **+$1.64**    |
+
+---
+
+## 📅 Recommended Monthly Pricing
+
+These are priced to be cheaper than weekly on a per-generation basis, but still profitable.
+
+### Monthly pricing must match the value of the weekly plans.
+
+| Monthly             | Price      | Gens     | Your Cost | Your Revenue After Apple/RC | **Profit/mo** |
+| ------------------- | ---------- | -------- | --------- | --------------------------- | ------------- |
+| **Starter Monthly** | **$14.99** | 75 gens  | $10.13    | $12.59                      | **+$0.69**    |
+| **Plus Monthly**    | **$24.99** | 125 gens | $16.88    | $20.99                      | **+$4.11**    |
+| **Pro Monthly**     | **$39.99** | 200 gens | $27.00    | $33.59                      | **+$6.59**    |
