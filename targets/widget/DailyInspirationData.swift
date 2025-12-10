@@ -24,6 +24,23 @@ let inspirationTattoos: [InspirationTattoo] = [
     InspirationTattoo(id: 12, title: "Geometric", style: "Geometric Animal", styleId: 13, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/widget/pattern.avif"),
     InspirationTattoo(id: 13, title: "Realistic", style: "Photorealism", styleId: 2, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/widget/realistic.avif"),
     InspirationTattoo(id: 14, title: "Watercolor", style: "Watercolor", styleId: 6, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/widget/watercolor.avif"),
+      
+    InspirationTattoo(id: 15, title: "Sports", style: "Sports", styleId: 100, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/athletic/irish-fighter-back.avif"),
+    InspirationTattoo(id: 16, title: "Sports", style: "Sports", styleId: 100, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/athletic/box-arm.avif"),
+    InspirationTattoo(id: 17, title: "Sports", style: "Sports", styleId: 100, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/athletic/jump-full.avif"),
+    InspirationTattoo(id: 18, title: "Sports", style: "Sports", styleId: 100, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/athletic/running-back.avif"),
+    InspirationTattoo(id: 19, title: "Lifestyle", style: "Lifestyle", styleId: 101, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/lifestyle/woman-book-cafe.avif"),
+    InspirationTattoo(id: 20, title: "Lifestyle", style: "Lifestyle", styleId: 101, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/lifestyle/urban-train.avif"),
+    InspirationTattoo(id: 21, title: "Lifestyle", style: "Lifestyle", styleId: 101, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/lifestyle/travel-arm.avif"),
+    InspirationTattoo(id: 22, title: "Lifestyle", style: "Lifestyle", styleId: 101, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/lifestyle/coffee-shop.avif"),
+    InspirationTattoo(id: 23, title: "Mythology", style: "Mythology", styleId: 102, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mythology/arm-boxing.avif"),
+    InspirationTattoo(id: 24, title: "Mythology", style: "Mythology", styleId: 102, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mythology/roman-arm.avif"),
+    InspirationTattoo(id: 25, title: "Mythology", style: "Mythology", styleId: 102, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mythology/back-gym.avif"),
+    InspirationTattoo(id: 26, title: "Vintage Soul", style: "Vintage Soul", styleId: 200, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/arm-camera-female.avif"),
+    InspirationTattoo(id: 27, title: "Vintage Soul", style: "Vintage Soul", styleId: 200, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/arm-coffe-female.avif"),
+    InspirationTattoo(id: 28, title: "Vintage Soul", style: "Vintage Soul", styleId: 200, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/arm-vinyl-male.avif"),
+    InspirationTattoo(id: 29, title: "Vintage Soul", style: "Vintage Soul", styleId: 200, imageUrl: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/back-male-vinyl.avif"),
+
 ]
 
 func getDailyInspiration() -> InspirationTattoo {

@@ -1,4 +1,5 @@
 import { BLURHASH } from "@/lib/image-cache";
+import { Icon } from "@/src/components/ui/Icon";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { ImageGenerationMutation } from "@/src/context/PlaygroundContext";
@@ -10,7 +11,6 @@ import { useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AnimatedText } from "./AnimatedText";
-
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
   lastGenerationUris: string[]; // Array of file URIs
@@ -61,12 +61,35 @@ export function TextToImageResult({
     return (
       <View
         style={{
-          flex: 1,
+          height: "85%",
           alignItems: "center",
+          justifyContent: "center",
+
           gap: 8,
         }}
       >
-        <Text type="sm" style={{ color: Color.red[600], textAlign: "center" }}>
+        <View
+          style={{
+            width: 48,
+            height: 48,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Icon
+            symbol="exclamationmark.triangle"
+            size={32}
+            color={Color.amber[600]}
+          />
+        </View>
+        <Text
+          type="sm"
+          style={{
+            color: Color.amber[600],
+            textAlign: "center",
+            paddingHorizontal: 32,
+          }}
+        >
           {mutation.error?.message === "LIMIT_REACHED"
             ? "You have reached your generation limit for the current period. Please upgrade your plan or wait for the next period."
             : "Something went wrong: " + mutation.error?.message ||
@@ -80,7 +103,11 @@ export function TextToImageResult({
               router.push("/(paywall)");
             }}
           >
-            <Text type="default" style={{ color: Color.yellow[400] }}>
+            <Text
+              type="default"
+              weight="semibold"
+              style={{ color: Color.yellow[400], marginTop: 8 }}
+            >
               Upgrade Plan
             </Text>
           </PressableScale>
@@ -90,7 +117,11 @@ export function TextToImageResult({
               mutation.reset();
             }}
           >
-            <Text type="default" style={{ color: Color.yellow[400] }}>
+            <Text
+              type="default"
+              weight="semibold"
+              style={{ color: Color.indigo[400], marginTop: 8 }}
+            >
               Try Again
             </Text>
           </PressableScale>

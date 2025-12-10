@@ -14,8 +14,8 @@ export default function HomeScreen() {
   const getButtonConfig = () => {
     if (isLoading) {
       return {
-        label: "New Tattoo",
-        action: () => router.push("/(playground)"),
+        label: "Loading...",
+        action: () => {},
       };
     }
 

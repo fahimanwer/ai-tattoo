@@ -2,7 +2,8 @@ import { Color } from "@/src/constants/TWPalette";
 import { entitlementToTier, getPlanConfig } from "@/src/constants/plan-limits";
 import { useSubscription } from "@/src/hooks/useSubscription";
 import { useQueryClient } from "@tanstack/react-query";
-import { BlurView } from "expo-blur";
+import { GlassView } from "expo-glass-effect";
+import { Image } from "expo-image";
 import { Link, router, Stack } from "expo-router";
 import { PressableScale } from "pressto";
 import { useEffect, useMemo, useState } from "react";
@@ -13,7 +14,6 @@ import Purchases, {
 } from "react-native-purchases";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PaywallBackground } from "../shaders/PaywallBackground";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 
@@ -142,24 +142,59 @@ export function Paywall() {
           ],
         }}
       />
-      <PaywallBackground />
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
+      >
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1,
+            experimental_backgroundImage: `linear-gradient(to bottom, transparent 0%, ${Color.grayscale[50]} 50%)`,
+          }}
+        />
+        <Image
+          source={{
+            uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/paywall-2-bw-2.png",
+          }}
+          contentFit="cover"
+          contentPosition="bottom right"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+        />
+        {/* <PaywallBackground /> */}
+      </View>
       <View
         style={{
           flex: 1,
           padding: 16,
-          paddingTop: top + 16,
+          paddingTop: top * 4,
+          position: "relative",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          gap: 56,
         }}
       >
         <View style={[styles.heroContainer]}>
-          <Text
-            variant="poster"
-            type="4xl"
-            weight="bold"
-            style={styles.heroTitle}
-          >
+          <Text type="4xl" weight="bold" style={styles.heroTitle}>
             Create. Ink. Repeat.
           </Text>
-          <Text type="base" weight="medium" style={styles.heroSubtitle}>
+          <Text type="lg" weight="medium" style={styles.heroSubtitle}>
             Explore styles, refine details, and bring your tattoo vision to
             life.
           </Text>
@@ -167,8 +202,9 @@ export function Paywall() {
 
         <View
           style={{
-            flex: 1,
             justifyContent: "center",
+            position: "relative",
+            zIndex: 2,
           }}
         >
           {availableOfferings.length > 0 ? (
@@ -179,34 +215,26 @@ export function Paywall() {
                 const planConfig = getPlanConfig(tier);
                 const isCurrent = isCurrentPlan(offering.identifier);
                 const isBestValue = tier === "pro";
-                const tierColors = getTierColors(tier);
 
                 const cardContent = (
-                  <BlurView
-                    intensity={40}
-                    tint="dark"
-                    style={styles.planCardBlur}
+                  <GlassView
+                    glassEffectStyle="clear"
+                    style={[
+                      styles.planCardBlur,
+                      isBestValue && styles.isPlanCardFeatured,
+                    ]}
                   >
                     <View style={styles.planHeader}>
                       <View style={styles.planTitleRow}>
                         <Text
-                          weight="bold"
+                          weight="semibold"
                           type="sm"
-                          style={[
-                            styles.planTitle,
-                            { color: tierColors.primary },
-                          ]}
+                          style={styles.planTitle}
                         >
                           {planConfig.displayName}
                         </Text>
                         {isCurrent && (
-                          <View
-                            style={[
-                              styles.planBadge,
-                              styles.currentBadge,
-                              { backgroundColor: tierColors.badge },
-                            ]}
-                          >
+                          <View style={styles.planBadge}>
                             <Text
                               type="sm"
                               weight="bold"
@@ -219,21 +247,21 @@ export function Paywall() {
                       </View>
 
                       <View style={styles.priceContainer}>
-                        <Text
-                          type="xl"
-                          weight="semibold"
-                          style={styles.priceText}
-                        >
-                          {pkg.product.priceString} / month
+                        <Text type="xl" weight="bold" style={styles.priceText}>
+                          {pkg.product.priceString} / Monthly
                         </Text>
                       </View>
                     </View>
 
-                    <Text weight="bold" style={[{ color: tierColors.primary }]}>
-                      {planConfig.monthlyLimit.toLocaleString()} generations /
-                      month
+                    <Text
+                      weight="medium"
+                      type="sm"
+                      style={styles.planLimitText}
+                    >
+                      Unlock up to {planConfig.monthlyLimit.toLocaleString()}{" "}
+                      stunning tattoo generations each month
                     </Text>
-                  </BlurView>
+                  </GlassView>
                 );
 
                 if (isBestValue) {
@@ -250,14 +278,14 @@ export function Paywall() {
                       <Animated.View
                         style={[
                           styles.planCard,
-                          styles.planCardFeatured,
-                          {
+                          styles.isPlanCardFeatured,
+                          /*  {
                             animationName: {
                               "0%": {
-                                boxShadow: `0 0 8px 0 ${Color.orange[600]}`,
+                                boxShadow: `0 0 12px 0 ${Color.orange[600]}`,
                               },
                               "50%": {
-                                boxShadow: `0 0 20px 4px ${Color.orange[500]}`,
+                                boxShadow: `0 0 20px 12px ${Color.orange[500]}`,
                               },
                               "100%": {
                                 boxShadow: `0 0 8px 0 ${Color.orange[600]}`,
@@ -266,9 +294,18 @@ export function Paywall() {
                             animationDuration: "2s",
                             animationIterationCount: "infinite",
                             animationTimingFunction: "ease-in-out",
-                          } as any,
+                          } as any, */
                         ]}
                       >
+                        <View style={styles.badgeMostPopular}>
+                          <Text
+                            type="sm"
+                            weight="bold"
+                            style={styles.badgeMostPopularText}
+                          >
+                            Most Popular
+                          </Text>
+                        </View>
                         {cardContent}
                       </Animated.View>
                     </PressableScale>
@@ -334,7 +371,7 @@ export function Paywall() {
               }
             }}
             variant="link"
-            color="blue"
+            color="yellow"
           />
 
           <View style={styles.legalLinks}>
@@ -358,57 +395,54 @@ export function Paywall() {
   );
 }
 
-function getTierColors(tier: string) {
-  switch (tier) {
-    case "starter":
-      return {
-        primary: Color.yellow[400],
-        badge: Color.yellow[600],
-      };
-    case "plus":
-      return {
-        primary: Color.emerald[400],
-        badge: Color.emerald[600],
-      };
-    case "pro":
-      return {
-        primary: Color.orange[400],
-        badge: Color.orange[600],
-      };
-    default:
-      return {
-        primary: Color.zinc[400],
-        badge: Color.zinc[600],
-      };
-  }
-}
-
 const styles = StyleSheet.create({
   heroContainer: {
-    gap: 16,
-    marginBottom: 16,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
   },
   heroTitle: {
     color: Color.zinc[50],
     letterSpacing: -1,
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 8,
+    textAlign: "center",
   },
   heroSubtitle: {
-    color: Color.zinc[300],
-    lineHeight: 24,
+    color: Color.zinc[50] + "80",
+    textAlign: "center",
+    lineHeight: 20,
   },
   planList: {
     gap: 16,
   },
   planCard: {
-    borderRadius: 16,
+    borderRadius: 18,
     overflow: "hidden",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   planCardBlur: {
     padding: 16,
+    experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
+  },
+  isPlanCardFeatured: {
+    experimental_backgroundImage: `linear-gradient(to top, transparent, ${
+      Color.yellow[400] + "30"
+    })`,
+    boxShadow: `0 0 0 3px ${Color.yellow[400]}`,
+  },
+  badgeMostPopular: {
+    position: "absolute",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 99,
+    top: 8,
+    right: 8,
+    zIndex: 3,
+    experimental_backgroundImage: `linear-gradient(-10deg, ${Color.yellow[400]}, ${Color.yellow[100]}, ${Color.yellow[400]})`,
+  },
+  badgeMostPopularText: {
+    color: Color.grayscale[50],
+    letterSpacing: -1,
   },
   planCardFeatured: {
     borderRadius: 16,
@@ -429,7 +463,6 @@ const styles = StyleSheet.create({
   planBadge: {
     borderRadius: 999,
   },
-  currentBadge: {},
   currentBadgeText: {
     color: Color.zinc[50],
     letterSpacing: 0.5,
@@ -442,7 +475,11 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   priceText: {
-    color: Color.zinc[50],
+    color: Color.grayscale[950],
+    letterSpacing: -1,
+  },
+  planLimitText: {
+    color: Color.grayscale[950] + "80",
     letterSpacing: -1,
   },
   loadingContainer: {
@@ -450,13 +487,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loadingText: {
-    color: Color.zinc[500],
+    color: Color.grayscale[500],
   },
   footer: {
-    paddingHorizontal: 20,
-    paddingTop: 32,
-    gap: 20,
-    justifyContent: "flex-end",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   legalLinks: {
     flexDirection: "row",
@@ -465,10 +502,10 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   legalLinkText: {
-    color: Color.zinc[500],
+    color: Color.grayscale[500],
     textDecorationLine: "underline",
   },
   legalSeparator: {
-    color: Color.zinc[700],
+    color: Color.grayscale[700],
   },
 });
