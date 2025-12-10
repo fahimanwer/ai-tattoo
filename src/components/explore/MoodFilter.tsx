@@ -56,17 +56,14 @@ const FilterItem = memo(({ item, isSelected, onPress }: FilterItemProps) => {
 
 FilterItem.displayName = "FilterItem";
 
-export function MoodFilter({
-  selectedMood,
-  onSelectMood,
-}: MoodFilterProps) {
+export function MoodFilter({ selectedMood, onSelectMood }: MoodFilterProps) {
   const filterItems = useMemo<MoodFilterItem[]>(() => {
     const items: MoodFilterItem[] = [
       {
         id: 0,
         name: "all",
         displayName: "All",
-        imageUri: `${FILTER_ICONS_BASE_URL}all-tattoos.png`,
+        imageUri: `${FILTER_ICONS_BASE_URL}paywall-image.avif`,
       },
     ];
 
