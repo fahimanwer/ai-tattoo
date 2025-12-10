@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-type FilterMode = "body part" | "styles";
+type FilterMode = "body part" | "styles" | "moods";
 
 interface ExploreFilterContextValue {
   filterMode: FilterMode;
@@ -9,6 +9,8 @@ interface ExploreFilterContextValue {
   setSelectedBodyPart: (bodyPart: string | null) => void;
   selectedStyle: number | null;
   setSelectedStyle: (style: number | null) => void;
+  selectedMood: number | null;
+  setSelectedMood: (mood: number | null) => void;
   handleBodyPartReset: () => void;
 }
 
@@ -20,6 +22,7 @@ export function ExploreFilterProvider({ children }: { children: ReactNode }) {
   const [filterMode, setFilterMode] = useState<FilterMode>("body part");
   const [selectedBodyPart, setSelectedBodyPart] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<number | null>(null);
+  const [selectedMood, setSelectedMood] = useState<number | null>(null);
 
   const handleBodyPartReset = () => {
     setSelectedBodyPart(null);
@@ -30,6 +33,7 @@ export function ExploreFilterProvider({ children }: { children: ReactNode }) {
     // Reset filters when switching modes
     setSelectedBodyPart(null);
     setSelectedStyle(null);
+    setSelectedMood(null);
   };
 
   return (
@@ -41,6 +45,8 @@ export function ExploreFilterProvider({ children }: { children: ReactNode }) {
         setSelectedBodyPart,
         selectedStyle,
         setSelectedStyle,
+        selectedMood,
+        setSelectedMood,
         handleBodyPartReset,
       }}
     >

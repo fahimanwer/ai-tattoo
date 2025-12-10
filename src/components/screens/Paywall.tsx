@@ -214,7 +214,7 @@ export function Paywall() {
                 const tier = entitlementToTier(offering.identifier);
                 const planConfig = getPlanConfig(tier);
                 const isCurrent = isCurrentPlan(offering.identifier);
-                const isBestValue = tier === "pro";
+                const isBestValue = tier === "plus";
 
                 const cardContent = (
                   <GlassView

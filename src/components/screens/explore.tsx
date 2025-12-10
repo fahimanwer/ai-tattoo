@@ -1,12 +1,15 @@
 import { BodyPartFilter } from "@/src/components/explore/BodyPartFilter";
+import { MoodFilter } from "@/src/components/explore/MoodFilter";
 import { StyleFilter } from "@/src/components/explore/StyleFilter";
 import { useExploreFilter } from "@/src/context/ExploreFilterContext";
 import {
   GalleryImage,
   getAllBodyParts,
   getAllGalleryImages,
+  getAllMoodGalleryImages,
   getBodyPartDisplayName,
   getBodyPartImagesFromAllStyles,
+  getMoodImagesByMoodId,
 } from "@/src/utils/bodyPartsUtils";
 import { LegendList } from "@legendapp/list";
 import { Image } from "expo-image";
@@ -23,6 +26,8 @@ export function ExploreScreen() {
     setSelectedBodyPart,
     selectedStyle,
     setSelectedStyle,
+    selectedMood,
+    setSelectedMood,
   } = useExploreFilter();
 
   const allImages = useMemo(() => {
@@ -30,6 +35,12 @@ export function ExploreScreen() {
       const images = getAllGalleryImages();
       if (selectedStyle === null) return images;
       return images.filter((image) => image.styleId === selectedStyle);
+    }
+
+    if (filterMode === "moods") {
+      const images = getAllMoodGalleryImages();
+      if (selectedMood === null) return images;
+      return getMoodImagesByMoodId(selectedMood);
     }
 
     // Filter by body part
@@ -40,7 +51,7 @@ export function ExploreScreen() {
     return bodyPartsToShow
       .flatMap((bodyPart) => getBodyPartImagesFromAllStyles(bodyPart))
       .filter(Boolean) as GalleryImage[];
-  }, [selectedBodyPart, selectedStyle, filterMode]);
+  }, [selectedBodyPart, selectedStyle, selectedMood, filterMode]);
 
   const handleImagePress = useCallback((image: GalleryImage) => {
     router.push({
@@ -53,8 +64,11 @@ export function ExploreScreen() {
     });
   }, []);
 
-  const headerTitle =
-    filterMode === "styles" ? "Explore by styles" : "Explore by body part";
+  const headerTitle = useMemo(() => {
+    if (filterMode === "styles") return "Explore by styles";
+    if (filterMode === "moods") return "Explore by moods";
+    return "Explore by body part";
+  }, [filterMode]);
 
   const ListHeader = useMemo(
     () => (
@@ -66,11 +80,18 @@ export function ExploreScreen() {
               onSelectBodyPart={setSelectedBodyPart}
             />
           </Animated.View>
-        ) : (
+        ) : filterMode === "styles" ? (
           <Animated.View key="style" entering={FadeIn} exiting={FadeOut}>
             <StyleFilter
               selectedStyle={selectedStyle}
               onSelectStyle={setSelectedStyle}
+            />
+          </Animated.View>
+        ) : (
+          <Animated.View key="mood" entering={FadeIn} exiting={FadeOut}>
+            <MoodFilter
+              selectedMood={selectedMood}
+              onSelectMood={setSelectedMood}
             />
           </Animated.View>
         )}
@@ -82,6 +103,8 @@ export function ExploreScreen() {
       setSelectedBodyPart,
       selectedStyle,
       setSelectedStyle,
+      selectedMood,
+      setSelectedMood,
     ]
   );
 
@@ -94,7 +117,7 @@ export function ExploreScreen() {
         numColumns={4}
         data={allImages}
         keyExtractor={(image, index) =>
-          `${image.styleId}-${image.bodyPart}-${image.gender}-${index}`
+          `${image.moodId || image.styleId}-${image.bodyPart}-${image.gender}-${index}`
         }
         ListHeaderComponent={ListHeader}
         contentContainerStyle={{ gap: 10 }}

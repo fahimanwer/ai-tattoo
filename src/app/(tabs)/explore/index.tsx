@@ -9,10 +9,16 @@ import { Stack } from "expo-router";
 function ExploreContent() {
   const { filterMode, setFilterMode, handleBodyPartReset } = useExploreFilter();
 
-  const handleFilterModeChange = (mode: "body part" | "styles") => {
+  const handleFilterModeChange = (mode: "body part" | "styles" | "moods") => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setFilterMode(mode);
     handleBodyPartReset();
+  };
+
+  const getFilterLabel = () => {
+    if (filterMode === "body part") return "Filter: Body part";
+    if (filterMode === "styles") return "Filter: Styles";
+    return "Filter: Moods";
   };
 
   return (
@@ -22,10 +28,7 @@ function ExploreContent() {
           unstable_headerRightItems: (props) => [
             {
               type: "menu",
-              label:
-                filterMode === "body part"
-                  ? "Filter: Body part"
-                  : "Filter: Styles",
+              label: getFilterLabel(),
               icon: {
                 name: "line.3.horizontal.decrease",
                 type: "sfSymbol",
@@ -52,6 +55,16 @@ function ExploreContent() {
                     },
                     onPress: () => handleFilterModeChange("styles"),
                     state: filterMode === "styles" ? "on" : "off",
+                  },
+                  {
+                    type: "action",
+                    label: "Moods",
+                    icon: {
+                      name: "heart.fill",
+                      type: "sfSymbol",
+                    },
+                    onPress: () => handleFilterModeChange("moods"),
+                    state: filterMode === "moods" ? "on" : "off",
                   },
                 ],
               },
