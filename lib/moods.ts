@@ -221,6 +221,103 @@ export const moods: Mood[] = [
     prompt:
       "Create Nature & Serenity tattoo designs inspired by botanical linework, floral compositions, natural cycles, moon phases, plants, mountains, waves, and organic forms. The aesthetic uses fine lines, thin needle minimalism, and soft shading while keeping shapes readable and placement intentional. Common elements: florals, leaves, stems, moons, sun, stars, butterflies, abstract natural geometry, and symbolic compositions representing balance, healing, and inner peace. Designs should feel grounding, peaceful, and deeply personal — minimal yet meaningful.",
   },
+  {
+    id: 202,
+    title: "Dark & Mythic",
+    short_description:
+      "Tattoos inspired by shadow, legend, ancient creatures, forgotten gods, runes, and mythological energy — dramatic contrasts, powerful symbolism, and art that feels eternal.",
+    description:
+      "Dark & Mythic is the feeling of standing at the edge of something ancient — a whisper of forgotten gods, the quiet weight of symbols carved in stone, the presence of creatures older than memory. This mood embraces deep contrasts, strong silhouettes, and mythic imagery such as serpents, ravens, runes, horns, fire, beasts, celestial omens, and arcane symbols. These tattoos are not meant to decorate; they're meant to declare. They channel inner strength, shadow, intuition, and transformation. Dark & Mythic ink lives between fantasy and folklore — where stories become marks, and marks become protection.",
+    style: "Dark & Mythic",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/cover.avif",
+      blurhash: "",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/arm-male-snake.avif",
+        blurhash: "",
+        prompt:
+          "Ultra realistic 4K photography, DARK & MYTHIC mood with cold dramatic lighting and deep shadows. Centered close-up of male forearm featuring blackwork mythological tattoo: serpent coiling around runic symbols. Matte textures, subtle grain, tattoo sharp and dominant.",
+        more_about:
+          "Some symbols don’t just look ancient — they move like something still alive.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/shoulder-female.avif",
+        blurhash: "",
+        prompt:
+          "Ultra realistic 4K photography, DARK & MYTHIC mood with candlelit tones and soft smoke ambience. Centered shot of female shoulder showing fine-line raven with arcane markings. Shadowed environment, tattoo in crisp focus.",
+        more_about:
+          "Where ravens land, stories wake. Ink keeps them circling forever.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/shoulder-dark-male.avif",
+        blurhash: "",
+        prompt:
+          "Ultra realistic 4K photography, DARK & MYTHIC aesthetic with cool desaturated colors and harsh directional lighting. Centered close-up on male chest showing blackwork horned beast tattoo framed with geometric sigils. Strong contrast, tattoo as primary focal point.",
+        more_about:
+          "Power isn’t loud — it’s carved into the brave. Myth is just memory with fangs.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/full-arm-female-dark-snake.avif",
+        blurhash: "",
+        prompt:
+          "Ultra realistic 4K photography, DARK & MYTHIC tone with dim atmospheric lighting. Centered shot of female back featuring lunar runes and serpent coil tattoo, skin texture visible, background minimal and shadowed.",
+        more_about:
+          "Some paths are guided by moonlight — others by what hides behind it.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/hand-eyes-male.avif",
+        blurhash: "",
+        prompt:
+          "Ultra realistic 4K photography, DARK & MYTHIC mood with foggy cool lighting. Centered shot of male hand resting on stone surface, showcasing blackwork talisman tattoo: runes, circles, ancient geometry. Texture strong, tattoo dominant.",
+        more_about:
+          "Protection isn’t worn — it’s inked. Some marks were made to guard, not decorate.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/leg-female-full.avif",
+        blurhash: "",
+        prompt:
+          "Ultra realistic 4K photography, DARK & MYTHIC tone with dramatic chiaroscuro lighting. Centered shot of female thigh displaying dark floral-serpent hybrid tattoo, blending mythic and botanical elements. Tattoo crisp and bold.",
+        more_about:
+          "Beauty grows differently in the dark — sharper, wilder, and unafraid.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/arm-eyes-male.avif",
+        blurhash: "",
+        prompt:
+          "Ultra realistic 4K photography, DARK & MYTHIC mood with cold stone textures and directional shadows. Centered close-up on male neck showing black sigil tattoo resembling ancient protective markings. Matte tones, tattoo as core subject.",
+        more_about:
+          "Some symbols don’t translate — they’re meant to be felt, not read.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/arms-female-2.avif",
+        blurhash: "",
+        prompt:
+          "Ultra realistic 4K photography, DARK & MYTHIC atmosphere with firelit warm contrast. Centered shot of female arm holding a candle, showcasing blackwork wolf tattoo with crescent moon glyphs. Tattoo sharp and dramatic.",
+        more_about:
+          "A wolf is not a warning — it’s a promise. Ink remembers every instinct.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/sleeve-male-dark.avif",
+        blurhash: "",
+        prompt:
+          "Ultra realistic 4K photography, DARK & MYTHIC aesthetic with dim ambient light and drifting dust. Centered shot of male back featuring large winged creature tattoo — raven, demon, or hybrid silhouette. Tattoo dominates frame.",
+        more_about:
+          "Wings aren’t always for flight. Some are for rising through your own shadows.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/full-arm-female-2.avif",
+        blurhash: "",
+        prompt:
+          "Ultra realistic 4K photography, DARK & MYTHIC mood with cool-to-warm gradient lighting. Centered close-up of female ribs showing fine-line runes arranged vertically with small mythic sigils. Subtle grain, tattoo clear and intentional.",
+        more_about:
+          "Runes don’t ask — they reveal. Ink becomes the message you’re ready to carry.",
+      },
+    ],
+    prompt:
+      "Create Dark & Mythic tattoo designs inspired by mythology, ancient creatures, runes, ravens, serpents, horns, sigils, beasts, moons, fire, and occult symbolic shapes. Use strong silhouettes, bold blackwork, fine-line detailing, and contrast-heavy compositions. Designs should feel powerful, mysterious, and eternal — blending folklore and fantasy with modern tattoo techniques. Ensure linework is clear, symbolic shapes readable, and compositions suited for forearms, backs, ribs, neck, chest, and thighs. The overall essence is dramatic, mystical, and iconic.",
+  },
 ];
 
 export const getMoodById = (id: number): Mood | undefined => {
