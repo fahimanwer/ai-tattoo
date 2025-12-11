@@ -33,92 +33,121 @@ export const moods: Mood[] = [
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/abdomen-male.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL mood with warm amber light, faded muted tones. Close-up shot centered on male abdomen displaying blackwork patchwork tattoo style, consistent bold lines and solid black fill. Natural skin texture, subtle film grain, nostalgic analog tone. Tattoo as the primary focus.",
-        more_about: "Some stories don’t age — they sharpen. Ink is how old souls stay loud.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL mood with warm amber light, faded muted tones. Close-up shot centered on male abdomen displaying blackwork patchwork tattoo style, consistent bold lines and solid black fill. Natural skin texture, subtle film grain, nostalgic analog tone. Tattoo as the primary focus.",
+        more_about:
+          "Some stories don't age — they sharpen. Ink is how old souls stay loud.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/arm-camera-female.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL mood expressed through warm amber light and subtle grain. Centered shot of female arm holding a vintage film camera, blackwork patchwork tattoo clearly visible as focal point. Faded muted colors, nostalgic analog environment, tattoo dominates the frame.",
-        more_about: "We capture moments so they don’t escape. Ink makes sure they never run.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL mood expressed through warm amber light and subtle grain. Centered shot of female arm holding a vintage film camera, blackwork patchwork tattoo clearly visible as focal point. Faded muted colors, nostalgic analog environment, tattoo dominates the frame.",
+        more_about:
+          "We capture moments so they don't escape. Ink makes sure they never run.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/arm-coffe-female.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with muted tones, warm soft lighting. Centered shot of female forearm holding a ceramic coffee cup near window, blackwork patchwork tattoo style as main focus, natural skin texture, subtle film grain.",
-        more_about: "Slow mornings, strong memories. Vintage is a rhythm you don’t rush.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with muted tones, warm soft lighting. Centered shot of female forearm holding a ceramic coffee cup near window, blackwork patchwork tattoo style as main focus, natural skin texture, subtle film grain.",
+        more_about:
+          "Slow mornings, strong memories. Vintage is a rhythm you don't rush.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/arm-male-2.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography with VINTAGE SOUL mood, faded muted colors, warm ambient lighting. Centered close-up of male arm displaying blackwork patchwork tattoo style, tattoo sharply in focus, subtle film grain, nostalgic analog tone.",
-        more_about: "Timeless isn’t a look — it’s a conviction. Some styles never retire.",
+        prompt:
+          "Ultra realistic 4K photography with VINTAGE SOUL mood, faded muted colors, warm ambient lighting. Centered close-up of male arm displaying blackwork patchwork tattoo style, tattoo sharply in focus, subtle film grain, nostalgic analog tone.",
+        more_about:
+          "Timeless isn't a look — it's a conviction. Some styles never retire.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/arm-male-book.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL mood with soft warm light, faded muted colors. Centered shot of male hand holding an old book, blackwork patchwork tattoo in sharp focus as primary subject, natural texture, subtle grain.",
-        more_about: "The past still has something to say. Ink keeps the conversation going.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL mood with soft warm light, faded muted colors. Centered shot of male hand holding an old book, blackwork patchwork tattoo in sharp focus as primary subject, natural texture, subtle grain.",
+        more_about:
+          "The past still has something to say. Ink keeps the conversation going.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/arm-male-guitarr.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with amber lighting and film grain. Centered close-up of male arm tuning an acoustic guitar, blackwork patchwork tattoo as main focus, nostalgic environment blurred behind.",
-        more_about: "Analog sound, analog life. The classics hit deeper when they’re permanent.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with amber lighting and film grain. Centered close-up of male arm tuning an acoustic guitar, blackwork patchwork tattoo as main focus, nostalgic environment blurred behind.",
+        more_about:
+          "Analog sound, analog life. The classics hit deeper when they're permanent.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/arm-male.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL vibe with warm tones and subtle grain. Centered shot of male arm featuring blackwork patchwork tattoo style, tattoo healed and clear, nostalgic analog background.",
-        more_about: "You don’t grow out of the things that built you. Ink proves it.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL vibe with warm tones and subtle grain. Centered shot of male arm featuring blackwork patchwork tattoo style, tattoo healed and clear, nostalgic analog background.",
+        more_about:
+          "You don't grow out of the things that built you. Ink proves it.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/arm-vinyl-male.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with muted tones and warm ambient light. Centered shot of male arm placing a vinyl record on a turntable, blackwork patchwork tattoo in sharp focus, nostalgic film grain aesthetic.",
-        more_about: "Some eras weren’t better — they were real. Vinyl and ink don’t pretend.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with muted tones and warm ambient light. Centered shot of male arm placing a vinyl record on a turntable, blackwork patchwork tattoo in sharp focus, nostalgic film grain aesthetic.",
+        more_about:
+          "Some eras weren't better — they were real. Vinyl and ink don't pretend.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/back-male-vinyl.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL lighting with amber hues and subtle grain. Centered shot focused on male upper back showing blackwork patchwork tattoo while interacting with vinyl record setup, nostalgic ambiance and analog textures.",
-        more_about: "Nostalgia is rebellion against forgetting. Ink refuses to fade with time.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL lighting with amber hues and subtle grain. Centered shot focused on male upper back showing blackwork patchwork tattoo while interacting with vinyl record setup, nostalgic ambiance and analog textures.",
+        more_about:
+          "Nostalgia is rebellion against forgetting. Ink refuses to fade with time.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/back-male.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL mood with warm amber glow and soft film grain. Centered shot of male upper back with blackwork patchwork tattoo style, natural skin texture, emotional and nostalgic tone.",
-        more_about: "Turn your back on trends — not history. Ink honors what mattered.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL mood with warm amber glow and soft film grain. Centered shot of male upper back with blackwork patchwork tattoo style, natural skin texture, emotional and nostalgic tone.",
+        more_about:
+          "Turn your back on trends — not history. Ink honors what mattered.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/chest-female.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with soft warm lighting and muted tones. Centered shot of female chest featuring blackwork patchwork tattoo style, tattoo healed, clear and dominant, subtle grain for nostalgic analog feel.",
-        more_about: "Bold doesn’t apologize. Classic doesn’t ask permission to stay.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with soft warm lighting and muted tones. Centered shot of female chest featuring blackwork patchwork tattoo style, tattoo healed, clear and dominant, subtle grain for nostalgic analog feel.",
+        more_about:
+          "Bold doesn't apologize. Classic doesn't ask permission to stay.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/female-arm-book.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL mood with warm muted lighting and soft grain. Centered shot of female arm holding an old book, blackwork patchwork tattoo as primary focus, nostalgic textures and colors.",
-        more_about: "Pages turn but memories don’t. Ink locks the chapters that matter.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL mood with warm muted lighting and soft grain. Centered shot of female arm holding an old book, blackwork patchwork tattoo as primary focus, nostalgic textures and colors.",
+        more_about:
+          "Pages turn but memories don't. Ink locks the chapters that matter.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/forearm-female-coffee.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with amber warm light, muted tones and nostalgic grain. Centered close-up shot of female forearm holding a ceramic coffee mug, blackwork patchwork tattoo in focus.",
-        more_about: "Slow moments are loud memories. Ink is proof you felt them.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with amber warm light, muted tones and nostalgic grain. Centered close-up shot of female forearm holding a ceramic coffee mug, blackwork patchwork tattoo in focus.",
+        more_about:
+          "Slow moments are loud memories. Ink is proof you felt them.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/hand-male-book.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL vibe with warm textured lighting and faded colors. Centered shot of male hand holding an old worn book, blackwork tattoo on hand as main subject, subtle grain and analog feel.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL vibe with warm textured lighting and faded colors. Centered shot of male hand holding an old worn book, blackwork tattoo on hand as main subject, subtle grain and analog feel.",
         more_about: "Hands carry stories nobody reads. Ink makes them visible.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/vintage-soul/thight-female.avif",
         blurhash: "",
-        prompt: "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with soft warm light and cinematic grain, centered close-up of female upper thigh displaying blackwork patchwork tattoo style, tattoo healed and dominant in composition.",
-        more_about: "Vintage isn’t old — it’s undefeated. Ink is the comeback every decade tries to copy.",
+        prompt:
+          "Ultra realistic 4K photography, VINTAGE SOUL atmosphere with soft warm light and cinematic grain, centered close-up of female upper thigh displaying blackwork patchwork tattoo style, tattoo healed and dominant in composition.",
+        more_about:
+          "Vintage isn't old — it's undefeated. Ink is the comeback every decade tries to copy.",
       },
     ],
     prompt:
@@ -128,7 +157,7 @@ export const moods: Mood[] = [
     id: 201,
     title: "Nature & Serenity",
     short_description:
-      "Botanical linework, flowing organic forms, and elements inspired by earth’s calm rhythm — leaves, moons, florals, mountains, waves, and symbols of balance and renewal.",
+      "Botanical linework, flowing organic forms, and elements inspired by earth's calm rhythm — leaves, moons, florals, mountains, waves, and symbols of balance and renewal.",
     description:
       "Nature & Serenity is ink that breathes — quiet symbols with deep emotional roots. This mood captures the grounding stillness of nature through fine botanical linework, lunar phases, flowing plants, delicate florals, abstract mountains, and organic shapes that wrap and move with the body. These tattoos speak softly but remain powerful: reminders of cycles, healing, balance, and rebirth. Whether minimalist or full organic compositions, each piece reconnects skin to earth, like carrying a small ecosystem of meaning wherever you go.",
     style: "Nature & Serenity",
@@ -167,7 +196,7 @@ export const moods: Mood[] = [
         prompt:
           "Ultra realistic 4K photography, NATURE & SERENITY mood with soft earthy lighting. Centered close-up of female arm featuring full botanical tattoo wrap: stems, flowers, seeds flowing around the arm organically. Neutral textures, natural indoor studio feel, tattoo clearly the main focus.",
         more_about:
-          "We are stitched together by roots we can’t see — ink gives them shape.",
+          "We are stitched together by roots we can't see — ink gives them shape.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/nature-and-serenity/legs-female-bed.avif",
@@ -206,8 +235,7 @@ export const moods: Mood[] = [
         blurhash: "",
         prompt:
           "Ultra realistic 4K photography, NATURE & SERENITY mood with soft cool tones. Centered shot of neck and chest showing bold floral linework wrapping around the collarbone and a star near the eye (face not focal). Natural indoor environment, matte texture, tattoo clear and dominant.",
-        more_about:
-          "The body blooms where confidence roots — ink waters both.",
+        more_about: "The body blooms where confidence roots — ink waters both.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/nature-and-serenity/leg-lake-female.avif",
@@ -240,7 +268,7 @@ export const moods: Mood[] = [
         prompt:
           "Ultra realistic 4K photography, DARK & MYTHIC mood with cold dramatic lighting and deep shadows. Centered close-up of male forearm featuring blackwork mythological tattoo: serpent coiling around runic symbols. Matte textures, subtle grain, tattoo sharp and dominant.",
         more_about:
-          "Some symbols don’t just look ancient — they move like something still alive.",
+          "Some symbols don't just look ancient — they move like something still alive.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/shoulder-female.avif",
@@ -256,7 +284,7 @@ export const moods: Mood[] = [
         prompt:
           "Ultra realistic 4K photography, DARK & MYTHIC aesthetic with cool desaturated colors and harsh directional lighting. Centered close-up on male chest showing blackwork horned beast tattoo framed with geometric sigils. Strong contrast, tattoo as primary focal point.",
         more_about:
-          "Power isn’t loud — it’s carved into the brave. Myth is just memory with fangs.",
+          "Power isn't loud — it's carved into the brave. Myth is just memory with fangs.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/full-arm-female-dark-snake.avif",
@@ -272,7 +300,7 @@ export const moods: Mood[] = [
         prompt:
           "Ultra realistic 4K photography, DARK & MYTHIC mood with foggy cool lighting. Centered shot of male hand resting on stone surface, showcasing blackwork talisman tattoo: runes, circles, ancient geometry. Texture strong, tattoo dominant.",
         more_about:
-          "Protection isn’t worn — it’s inked. Some marks were made to guard, not decorate.",
+          "Protection isn't worn — it's inked. Some marks were made to guard, not decorate.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/leg-female-full.avif",
@@ -288,7 +316,7 @@ export const moods: Mood[] = [
         prompt:
           "Ultra realistic 4K photography, DARK & MYTHIC mood with cold stone textures and directional shadows. Centered close-up on male neck showing black sigil tattoo resembling ancient protective markings. Matte tones, tattoo as core subject.",
         more_about:
-          "Some symbols don’t translate — they’re meant to be felt, not read.",
+          "Some symbols don't translate — they're meant to be felt, not read.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/arms-female-2.avif",
@@ -296,7 +324,7 @@ export const moods: Mood[] = [
         prompt:
           "Ultra realistic 4K photography, DARK & MYTHIC atmosphere with firelit warm contrast. Centered shot of female arm holding a candle, showcasing blackwork wolf tattoo with crescent moon glyphs. Tattoo sharp and dramatic.",
         more_about:
-          "A wolf is not a warning — it’s a promise. Ink remembers every instinct.",
+          "A wolf is not a warning — it's a promise. Ink remembers every instinct.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/sleeve-male-dark.avif",
@@ -304,7 +332,7 @@ export const moods: Mood[] = [
         prompt:
           "Ultra realistic 4K photography, DARK & MYTHIC aesthetic with dim ambient light and drifting dust. Centered shot of male back featuring large winged creature tattoo — raven, demon, or hybrid silhouette. Tattoo dominates frame.",
         more_about:
-          "Wings aren’t always for flight. Some are for rising through your own shadows.",
+          "Wings aren't always for flight. Some are for rising through your own shadows.",
       },
       {
         uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dark-mythic/full-arm-female-2.avif",
@@ -312,7 +340,7 @@ export const moods: Mood[] = [
         prompt:
           "Ultra realistic 4K photography, DARK & MYTHIC mood with cool-to-warm gradient lighting. Centered close-up of female ribs showing fine-line runes arranged vertically with small mythic sigils. Subtle grain, tattoo clear and intentional.",
         more_about:
-          "Runes don’t ask — they reveal. Ink becomes the message you’re ready to carry.",
+          "Runes don't ask — they reveal. Ink becomes the message you're ready to carry.",
       },
     ],
     prompt:
