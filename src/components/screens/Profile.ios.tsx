@@ -1,4 +1,5 @@
 import { authClient } from "@/lib/auth-client";
+import { NANOBANANA, NANOBANANA_PRO } from "@/server-utils/constants";
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { getLastSubscription } from "@/src/context/SubscriptionContext";
@@ -226,6 +227,18 @@ export function Profile() {
     return { name: "Free", color: Color.zinc[400], icon: "star" as const };
   }, [hasActiveSubscription, lastSubscription]);
 
+  // Get model display name
+  const modelDisplayName = useMemo(() => {
+    const model = hasActiveSubscription ? NANOBANANA_PRO : NANOBANANA;
+    if (model === NANOBANANA_PRO) {
+      return "🍌 Nano Banana Pro";
+    }
+    if (model === NANOBANANA) {
+      return "Nano Banana";
+    }
+    return model;
+  }, [hasActiveSubscription]);
+
   if (!user) {
     return (
       <Host
@@ -265,6 +278,9 @@ export function Profile() {
                 {planBadge.name}
               </Text>
             </HStack>
+          </LabeledContent>
+          <LabeledContent label="Model">
+            <Text>{modelDisplayName}</Text>
           </LabeledContent>
           {memberSince && (
             <LabeledContent label="Member Since">

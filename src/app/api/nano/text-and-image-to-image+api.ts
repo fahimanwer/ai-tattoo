@@ -5,7 +5,12 @@ import { constants } from "@/server-utils/constants";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { z } from "zod";
 
-const { GENIMI_IMAGE_BASE_URL, GEMINI_API_KEY } = constants;
+const {
+  GEMINI_IMAGE_BASE_URL_NANOBANANA,
+  GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
+  GEMINI_API_KEY,
+  PROMPT_IMPROVE_API_URL,
+} = constants;
 
 // Zod schema for request validation
 const textToImageSchema = z.object({
@@ -28,6 +33,8 @@ export const POST = withAuth(async (request: Request, session: any) => {
   // Get current user entitlement dynamically
   const entitlement = await getCurrentUserEntitlement(session.user.id);
   console.log("🔍 server", "current user entitlement:", entitlement);
+
+  const isFreeTier = entitlement === "free";
 
   try {
     const body = await request.json();
@@ -118,6 +125,36 @@ export const POST = withAuth(async (request: Request, session: any) => {
       );
     }
 
+    // Improve prompt using OpenAI before sending to Gemini
+    let finalPrompt = prompt;
+    try {
+      const improveResponse = await fetch(
+        new URL(PROMPT_IMPROVE_API_URL, request.url).toString(),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: request.headers.get("Cookie") || "",
+            Authorization: request.headers.get("Authorization") || "",
+          },
+          body: JSON.stringify({ prompt, hasExistingImage: true }),
+        }
+      );
+
+      if (improveResponse.ok) {
+        const improveData = await improveResponse.json();
+        finalPrompt = improveData.improvedPrompt || prompt;
+        console.log("✨ server", "Prompt improved:", {
+          original: prompt,
+          improved: finalPrompt,
+        });
+      } else {
+        console.warn("⚠️ server", "Failed to improve prompt, using original");
+      }
+    } catch (error) {
+      console.warn("⚠️ server", "Error improving prompt, using original:", error);
+    }
+
     // Helper: parse data URL or infer MIME from raw base64
     const extractMimeAndData = (
       input: string
@@ -159,12 +196,26 @@ export const POST = withAuth(async (request: Request, session: any) => {
       };
     });
 
-    const response = await fetch(GENIMI_IMAGE_BASE_URL, {
+    const GEMINI_IMAGE_BASE_URL = isFreeTier
+      ? GEMINI_IMAGE_BASE_URL_NANOBANANA
+      : GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO;
+
+    // Add safety and quality instructions to the prompt
+    // Detect if this is a substitution/replacement request
+    const isSubstitutionRequest = /change\s+(?:for|to|with)\s+|replace\s+(?:with|for)\s+|substitute/i.test(finalPrompt);
+    
+    const contextInstructions = isSubstitutionRequest
+      ? `IMPORTANT: The user wants to replace/change a subject or element. Apply the requested change while maintaining the same style, placement, size, composition, and artistic approach of the original tattoo. Keep the overall structure and design flow identical, only change the specific subject/element requested.`
+      : `IMPORTANT: Maintain the exact context, design, style, placement, and visual elements of the original image. Preserve all existing tattoo details, shapes, lines, and composition. Only apply the requested modifications while keeping everything else identical.`;
+    
+    const enhancedPrompt = `${finalPrompt}. ${contextInstructions} Always avoid intimate areas of men and women. Make it as realistic as possible, but without exaggerating. Never generate two or more images in a single output - always generate only one image.`;
+
+    const response = await fetch(GEMINI_IMAGE_BASE_URL, {
       method: "POST",
       body: JSON.stringify({
         contents: [
           {
-            parts: [{ text: prompt }, ...images_base64_parts],
+            parts: [{ text: enhancedPrompt }, ...images_base64_parts],
           },
         ],
         // https://ai.google.dev/api/generate-content#generationconfig

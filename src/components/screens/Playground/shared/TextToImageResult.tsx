@@ -13,7 +13,6 @@ import { font, frame } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { PressableScale } from "pressto";
 import { useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
@@ -22,12 +21,14 @@ interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
   lastGenerationUris: string[]; // Array of file URIs
   onRemoveImage?: (uri: string) => void;
+  onRetry?: () => void;
 }
 
 export function TextToImageResult({
   mutation,
   lastGenerationUris,
   onRemoveImage,
+  onRetry,
 }: TextToImageResultProps) {
   const router = useRouter();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -64,7 +65,9 @@ export function TextToImageResult({
     return () => clearInterval(vibrationInterval);
   }, [mutation.isPending]);
 
-  if (mutation.isError) {
+  // Only show error if there are no generated images and mutation has error
+  // If there are images, show them instead of the error
+  if (mutation.isError && lastGenerationUris.length === 0) {
     return (
       <View
         style={{
@@ -123,33 +126,31 @@ export function TextToImageResult({
             </SwiftButton>
           </Host>
         ) : (
-          /*  <PressableScale
-            onPress={() => {
-              mutation.reset();
-              router.push("/(paywall)");
-            }}
+          <Host
+            matchContents
+            useViewportSizeMeasurement
+            style={{ marginTop: 44 }}
           >
-            <Text
-              type="default"
-              weight="semibold"
-              style={{ color: Color.yellow[400], marginTop: 8 }}
+            <SwiftButton
+              color="indigo"
+              variant="glassProminent"
+              onPress={() => {
+                onRetry?.();
+              }}
             >
-              Upgrade Plan
-            </Text>
-          </PressableScale> */
-          <PressableScale
-            onPress={() => {
-              mutation.reset();
-            }}
-          >
-            <Text
-              type="default"
-              weight="semibold"
-              style={{ color: Color.indigo[400], marginTop: 8 }}
-            >
-              Try Again
-            </Text>
-          </PressableScale>
+              <HStack
+                spacing={8}
+                modifiers={[frame({ width: 200, height: 32 })]}
+              >
+                <SwiftText
+                  color="white"
+                  modifiers={[font({ weight: "semibold", size: 16 })]}
+                >
+                  Try Again
+                </SwiftText>
+              </HStack>
+            </SwiftButton>
+          </Host>
         )}
       </View>
     );
@@ -161,7 +162,7 @@ export function TextToImageResult({
     <Animated.View
       style={{
         flex: 1,
-        paddingHorizontal: 16,
+        paddingHorizontal: 0,
         gap: 12,
       }}
       entering={FadeIn.duration(1000)}
@@ -171,7 +172,6 @@ export function TextToImageResult({
         style={{
           flexDirection: "row",
           flexWrap: "wrap",
-          gap: 8,
           justifyContent: "center",
         }}
       >
@@ -180,7 +180,7 @@ export function TextToImageResult({
             key={uri}
             style={{
               position: "relative",
-              width: lastGenerationUris.length === 1 ? "100%" : "48%",
+              width: "100%",
             }}
           >
             <Image
@@ -189,8 +189,8 @@ export function TextToImageResult({
               cachePolicy="memory-disk"
               style={{
                 width: "100%",
-                height: lastGenerationUris.length === 1 ? 400 : 200,
-                borderRadius: 16,
+                height: lastGenerationUris.length === 1 ? 540 : 200,
+                borderRadius: 18,
                 borderWidth: 1,
                 borderColor: Color.gray[500] + "30",
               }}
@@ -205,11 +205,12 @@ export function TextToImageResult({
         <Text
           type="xs"
           weight="medium"
-          style={{ color: Color.zinc[400], textAlign: "center" }}
+          style={{ color: Color.grayscale[400], textAlign: "center" }}
         >
-          {lastGenerationUris.length === 1
-            ? "1 image selected - add one more to combine"
-            : `${lastGenerationUris.length} images selected (max)`}
+          Change styles, sizes, and colors to create your perfect tattoo
+          {/* {lastGenerationUris.length === 1
+            ? "Add one more to combine"
+            : `${lastGenerationUris.length} images selected (max)`} */}
         </Text>
       )}
     </Animated.View>

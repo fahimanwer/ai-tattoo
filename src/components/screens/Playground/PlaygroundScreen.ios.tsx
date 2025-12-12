@@ -24,6 +24,7 @@ import {
   ImageGenerationMutation,
   PlaygroundContext,
 } from "@/src/context/PlaygroundContext";
+import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { Host } from "@expo/ui/swift-ui";
 import { GlassView } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
@@ -75,9 +76,13 @@ export function PlaygroundScreen() {
     activeMutation,
     handleTattooGeneration,
     removeImageFromActiveGroup,
+    resetMutations,
+    retryLastGeneration,
   } = use(PlaygroundContext);
 
   const { bottom } = useSafeAreaInsets();
+  const { refetch: refetchUsage } = useUsageLimit();
+  const hasCheckedUsage = useRef(false);
 
   // Play playful entrance haptic on first load
   useEffect(() => {
@@ -86,6 +91,43 @@ export function PlaygroundScreen() {
       console.error("Failed to play playground entrance haptic:", error);
     });
   }, []); // Empty dependency array means this runs once on mount
+
+  // Reset the check flag when user logs out
+  useEffect(() => {
+    if (!isAuthenticated) {
+      hasCheckedUsage.current = false;
+    }
+  }, [isAuthenticated]);
+
+  // Verify usage status when entering playground and reset errors if needed
+  useEffect(() => {
+    if (!isAuthenticated || isLoading || hasCheckedUsage.current) return;
+
+    // Mark as checked to prevent multiple calls
+    hasCheckedUsage.current = true;
+
+    // Refetch usage to ensure we have the latest data
+    refetchUsage()
+      .then((result) => {
+        // Check the result directly from the refetch
+        const usageData = result.data;
+        const isCurrentlyAtLimit = usageData?.isLimitReached ?? false;
+
+        // If there's a LIMIT_REACHED error but user is no longer at limit, reset
+        if (
+          activeMutation.isError &&
+          activeMutation.error?.message === "LIMIT_REACHED" &&
+          !isCurrentlyAtLimit
+        ) {
+          // User has updated their plan or period reset, clear the error
+          resetMutations();
+        }
+      })
+      .catch((error) => {
+        console.error("Error refetching usage:", error);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, isLoading]); // Run when component mounts or auth state changes
 
   // Handle mode parameter for quick actions
   useEffect(() => {
@@ -129,6 +171,8 @@ export function PlaygroundScreen() {
           unstable_headerLeftItems: (props) => [
             {
               type: "button",
+              tintColor: "red",
+              variant: "plain",
               onPress: () => {
                 if (sessionGenerations.length > 0) {
                   Alert.alert(
@@ -153,11 +197,7 @@ export function PlaygroundScreen() {
                   dismissToHome();
                 }
               },
-              label: "Go Back",
-              icon: {
-                name: "xmark",
-                type: "sfSymbol",
-              },
+              label: "Cancel",
               selected: false,
             },
           ],
@@ -174,16 +214,21 @@ export function PlaygroundScreen() {
                 items: [
                   {
                     type: "action",
-                    label: "Reset Session",
+                    label: "Share",
                     icon: {
-                      name: "arrow.counterclockwise",
+                      name: "square.and.arrow.up",
                       type: "sfSymbol",
                     },
-                    destructive: true,
-                    onPress: handleReset,
-                    disabled: sessionGenerations.length === 0,
+                    onPress: async () => {
+                      // Share the first image in the active group
+                      if (activeGenerationUris.length > 0) {
+                        await handleShare(activeGenerationUris[0]);
+                      }
+                    },
                     selected: false,
+                    disabled: activeGenerationUris.length === 0,
                   },
+
                   {
                     type: "action",
                     label: "Pick Image",
@@ -204,26 +249,22 @@ export function PlaygroundScreen() {
                     onPress: () => router.push("/(playground)/camera-view"),
                     selected: false,
                   },
+                  {
+                    type: "action",
+                    label: "Reset Session",
+                    icon: {
+                      name: "arrow.counterclockwise",
+                      type: "sfSymbol",
+                    },
+                    destructive: true,
+                    onPress: handleReset,
+                    disabled: sessionGenerations.length === 0,
+                    selected: false,
+                  },
                 ],
               },
             },
 
-            {
-              type: "button",
-              label: "Share",
-              icon: {
-                name: "square.and.arrow.up",
-                type: "sfSymbol",
-              },
-              onPress: async () => {
-                // Share the first image in the active group
-                if (activeGenerationUris.length > 0) {
-                  await handleShare(activeGenerationUris[0]);
-                }
-              },
-              selected: false,
-              disabled: activeGenerationUris.length === 0,
-            },
             {
               type: "button",
               label: "Save",
@@ -248,23 +289,6 @@ export function PlaygroundScreen() {
         {/* Session generations list */}
         {sessionGenerations.length > 0 && (
           <View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderWidth: 1,
-                paddingHorizontal: 16,
-                paddingTop: 4,
-              }}
-            >
-              <Text type="sm" weight="bold">
-                Your Generations
-              </Text>
-              <PressableScale onPress={handleReset}>
-                <Text type="sm">Clear All</Text>
-              </PressableScale>
-            </View>
             <FlatList
               data={sessionGenerations}
               renderItem={({ item: imageGroup, index }) => (
@@ -300,7 +324,10 @@ export function PlaygroundScreen() {
               keyExtractor={(item, index) =>
                 `generation-${index}-${item[0] || ""}`
               }
-              contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+              contentContainerStyle={{
+                paddingHorizontal: 4,
+                gap: 8,
+              }}
               // Performance optimizations
               getItemLayout={(_, index) => ({
                 length: 50,
@@ -322,15 +349,15 @@ export function PlaygroundScreen() {
                 >
                   <GlassView
                     style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 25,
+                      width: 44,
+                      height: 44,
+                      borderRadius: 99,
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                     isInteractive
                   >
-                    <SymbolView name={"plus"} size={30} tintColor="white" />
+                    <SymbolView name={"plus"} size={26} tintColor="white" />
                   </GlassView>
                 </PressableScale>
               )}
@@ -340,22 +367,12 @@ export function PlaygroundScreen() {
         )}
 
         {/* Text to image result */}
-        <View style={{ flex: 1 }}>
-          {/* {sessionGenerations.length > 0 ? (
-            <Text
-              type="sm"
-              style={{ paddingHorizontal: 16, paddingBottom: 4 }}
-              darkColor={Color.zinc[400]}
-            >
-              {activeGenerationIndex !== undefined
-                ? "Mode: Editing - your prompt will modify this image"
-                : "Mode: New Design - your prompt will create a new tattoo"}
-            </Text>
-          ) : null} */}
+        <View style={styles.textToImageResultContainer}>
           <TextToImageResult
             mutation={activeMutation}
             lastGenerationUris={activeGenerationUris}
             onRemoveImage={removeImageFromActiveGroup}
+            onRetry={retryLastGeneration}
           />
         </View>
 
@@ -487,5 +504,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 8,
     borderRadius: 20,
+  },
+  textToImageResultContainer: {
+    flex: 1,
+    paddingVertical: 2,
   },
 });

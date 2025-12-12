@@ -1,9 +1,9 @@
-import { Color } from "@/src/constants/TWPalette";
 import { Button, ContextMenu, Host } from "@expo/ui/swift-ui";
 import { frame, padding } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
 import { Image as ExpoImage } from "expo-image";
 import { memo } from "react";
+import { View } from "react-native";
 import { SessionHistoryItemProps } from "./SessionHistoryItem.types";
 
 // Memoized component to prevent unnecessary re-renders
@@ -64,17 +64,24 @@ const SessionHistoryItemComponent = ({
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Button onPress={onPress}>
-            <ExpoImage
-              source={{ uri }}
-              cachePolicy="memory-disk"
+            <View
               style={{
-                width: 50,
-                height: 50,
-                borderRadius: 25,
-                borderWidth: 3,
-                borderColor: isActive ? Color.yellow[300] : "transparent",
+                width: 44,
+                height: 44,
+                borderRadius: 99,
+                overflow: "hidden",
+                boxShadow: isActive ? `0 0 0 3px yellow` : "none",
               }}
-            />
+            >
+              <ExpoImage
+                source={{ uri }}
+                cachePolicy="memory-disk"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </View>
           </Button>
         </ContextMenu.Trigger>
       </ContextMenu>

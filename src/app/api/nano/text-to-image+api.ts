@@ -5,7 +5,11 @@ import { constants } from "@/server-utils/constants";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { z } from "zod";
 
-const { GENIMI_IMAGE_BASE_URL, GEMINI_API_KEY } = constants;
+const {
+  GEMINI_IMAGE_BASE_URL_NANOBANANA,
+  GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
+  GEMINI_API_KEY,
+    PROMPT_IMPROVE_API_URL } = constants;
 
 // Zod schema for request validation
 const textToImageSchema = z.object({
@@ -15,6 +19,8 @@ const textToImageSchema = z.object({
 export const POST = withAuth(async (request: Request, session: any) => {
   console.log("🌐 server", "authenticated user:", session.user.email);
   console.log("🌐 server", "user id:", session.user.id);
+
+  let isFreeTier = false;
 
   const prisma = new PrismaClient({
     datasourceUrl: process.env.DATABASE_URL,
@@ -36,6 +42,7 @@ export const POST = withAuth(async (request: Request, session: any) => {
 
     if (entitlement === "free") {
       // For free tier, ignore period dates (one-time credits)
+      isFreeTier = true;
       usage = await prisma.usage.findFirst({
         where: {
           userId: session.user.id,
@@ -115,20 +122,55 @@ export const POST = withAuth(async (request: Request, session: any) => {
       );
     }
 
-    // Generate image with validated prompt
-    const response = await fetch(GENIMI_IMAGE_BASE_URL, {
+    // Improve prompt using OpenAI before sending to Gemini
+    let finalPrompt = prompt;
+    try {
+      const improveResponse = await fetch(
+        new URL(PROMPT_IMPROVE_API_URL, request.url).toString(),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: request.headers.get("Cookie") || "",
+            Authorization: request.headers.get("Authorization") || "",
+          },
+          body: JSON.stringify({ prompt, hasExistingImage: false }),
+        }
+      );
+
+      if (improveResponse.ok) {
+        const improveData = await improveResponse.json();
+        finalPrompt = improveData.improvedPrompt || prompt;
+        console.log("✨ server", "Prompt improved:", {
+          original: prompt,
+          improved: finalPrompt,
+        });
+      } else {
+        console.warn("⚠️ server", "Failed to improve prompt, using original");
+      }
+    } catch (error) {
+      console.warn("⚠️ server", "Error improving prompt, using original:", error);
+    }
+
+    // Generate image with improved prompt
+    let GEMINI_IMAGE_BASE_URL = isFreeTier ? GEMINI_IMAGE_BASE_URL_NANOBANANA : GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO;
+    
+    // Add safety and quality instructions to the prompt
+    const enhancedPrompt = `${finalPrompt}. IMPORTANT: Always avoid intimate areas of men and women. Make it as realistic as possible, but without exaggerating. Never generate two or more images in a single output - always generate only one image.`;
+    
+    const response = await fetch(GEMINI_IMAGE_BASE_URL, {
       method: "POST",
       body: JSON.stringify({
         contents: [
           {
-            parts: [{ text: prompt }],
+            parts: [{ text: enhancedPrompt }],
           },
         ],
         // https://ai.google.dev/api/generate-content#generationconfig
         generationConfig: {
           imageConfig: {
-            aspectRatio: "1:1",
-            image_size: "1K",
+            aspectRatio: isFreeTier ? "1:1" : "4:3",
+            ...(isFreeTier ? { image_size: "1K" } : {}),
           },
         },
       }),
@@ -162,7 +204,7 @@ export const POST = withAuth(async (request: Request, session: any) => {
     );
 
     // Use transaction to ensure atomicity
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       // Update the existing record we found earlier
       await tx.usage.update({
         where: {
