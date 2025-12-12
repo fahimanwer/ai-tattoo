@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AnimatedText } from "./AnimatedText";
+import { PlaygroundSuggestions } from "./suggestions/PlaygroundSuggestions";
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
   lastGenerationUris: string[]; // Array of file URIs
@@ -156,7 +157,7 @@ export function TextToImageResult({
     );
   }
   if (mutation.isPending) {
-    return <LoadingChangingText lastGenerationUris={lastGenerationUris} />;
+    return <TextLoadingEmpty lastGenerationUris={lastGenerationUris} />;
   }
   return lastGenerationUris.length > 0 ? (
     <Animated.View
@@ -215,16 +216,27 @@ export function TextToImageResult({
       )}
     </Animated.View>
   ) : (
-    <AnimatedText
-      style={{ flex: 0.3 }}
-      text="Describe your tattoo or choose a suggestion below"
-      color={isKeyboardVisible ? Color.pink[400] : Color.zinc[400]}
-      colorDark={isKeyboardVisible ? Color.purple[700] : Color.zinc[700]}
-    />
+    <View
+      style={{
+        width: "100%",
+        height: "80%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <AnimatedText
+        style={{ flex: 0.2 }}
+        text="Describe your tattoo or choose a suggestion below"
+        color={isKeyboardVisible ? Color.pink[400] : Color.zinc[400]}
+        colorDark={isKeyboardVisible ? Color.purple[700] : Color.zinc[700]}
+      />
+      <PlaygroundSuggestions onSelect={() => {}} />
+    </View>
   );
 }
 
-function LoadingChangingText({
+function TextLoadingEmpty({
   lastGenerationUris,
 }: {
   lastGenerationUris: string[];
@@ -271,8 +283,7 @@ function LoadingChangingText({
     <View
       style={{
         flex: 1,
-        padding: 32,
-        gap: 32,
+        width: "100%",
       }}
     >
       {hasImages && (
