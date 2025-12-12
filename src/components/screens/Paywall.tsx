@@ -182,7 +182,7 @@ export function Paywall() {
         style={{
           flex: 1,
           padding: 16,
-          paddingTop: top * 4,
+          paddingTop: top * 2,
           position: "relative",
           zIndex: 2,
           display: "flex",

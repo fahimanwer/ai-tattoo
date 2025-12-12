@@ -3,6 +3,13 @@ import { Icon } from "@/src/components/ui/Icon";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { ImageGenerationMutation } from "@/src/context/PlaygroundContext";
+import {
+  Host,
+  HStack,
+  Button as SwiftButton,
+  Text as SwiftText,
+} from "@expo/ui/swift-ui";
+import { font, frame } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -64,18 +71,10 @@ export function TextToImageResult({
           height: "85%",
           alignItems: "center",
           justifyContent: "center",
-
-          gap: 8,
+          gap: 2,
         }}
       >
-        <View
-          style={{
-            width: 48,
-            height: 48,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        <View>
           <Icon
             symbol="exclamationmark.triangle"
             size={32}
@@ -97,7 +96,34 @@ export function TextToImageResult({
         </Text>
 
         {mutation.error?.message === "LIMIT_REACHED" ? (
-          <PressableScale
+          <Host
+            matchContents
+            useViewportSizeMeasurement
+            style={{ marginTop: 44 }}
+          >
+            <SwiftButton
+              color="yellow"
+              variant="glassProminent"
+              onPress={() => {
+                mutation.reset();
+                router.push("/(paywall)");
+              }}
+            >
+              <HStack
+                spacing={8}
+                modifiers={[frame({ width: 200, height: 32 })]}
+              >
+                <SwiftText
+                  color="black"
+                  modifiers={[font({ weight: "semibold", size: 16 })]}
+                >
+                  Upgrade Plan
+                </SwiftText>
+              </HStack>
+            </SwiftButton>
+          </Host>
+        ) : (
+          /*  <PressableScale
             onPress={() => {
               mutation.reset();
               router.push("/(paywall)");
@@ -110,8 +136,7 @@ export function TextToImageResult({
             >
               Upgrade Plan
             </Text>
-          </PressableScale>
-        ) : (
+          </PressableScale> */
           <PressableScale
             onPress={() => {
               mutation.reset();
