@@ -1544,38 +1544,41 @@ export const getTattooStyleById = (id: number): FeaturedTattoo | undefined => {
 };
 
 export const promptToCombineTwoImages = `
-You will receive two uploaded images.
-Identify which image contains a tattoo on skin (Image A) and which image shows a body part without a tattoo (Image B), regardless of upload order.
+You will receive two images in any order:
+- One shows a tattoo on skin (Tattoo Source).
+- One shows a body part without a tattoo (Target Body).
 
-Image A → Extract ONLY the tattoo design, removing all skin, lighting, or body context.
-Image B → Use it as the target body photo.
+Identify each image automatically.
 
-Place the extracted tattoo onto the most visible, unobstructed, naturally exposed skin area of Image B.
+From the Tattoo Source:
+Extract ONLY the tattoo design.
+Remove all skin, lighting, shadows, and body context.
+Treat the tattoo as a clean, flat reference.
 
-From the first uploaded image, extract only the tattoo artwork, isolating the design and removing any skin, lighting, body shape, or photographic context. Treat this tattoo strictly as a clean, flat reference.
+From the Target Body:
+Select the most visible, unobstructed, naturally exposed skin area.
 
-Then integrate the tattoo onto the most naturally visible and unobstructed skin area of the second uploaded photo, automatically detecting the region with the clearest surface exposure.
+Apply the tattoo onto the selected skin so it appears fully integrated:
+- Conform to body anatomy, muscle flow, and natural skin curvature
+- Wrap and subtly distort with folds, tension, and stretch zones (never flat)
+- Preserve all skin details: pores, hair, texture, wrinkles, color variation
 
-The tattoo must conform perfectly to the real anatomy of the selected skin:
-	•	follow the exact slope and orientation of the underlying muscles,
-	•	wrap around natural skin curvature and micro-folds,
-	•	adapt to tension zones where skin stretches or compresses,
-	•	subtly distort according to body geometry (never flat).
+Blend the tattoo as a fresh but healed piece:
+- Very subtle edge redness
+- Natural ink diffusion into pores
+- Matte, low-shine ink finish
+- Slight desaturation in stretched areas
+- Realistic opacity based on lighting
 
-Blend the tattoo as a fresh but healed-looking piece:
-	•	slight redness or mild irritation around edges (very subtle, natural),
-	•	micro-diffusion of ink into pores,
-	•	matte, low-shine ink finish (no gloss, no plastic look),
-	•	slight desaturation on stretched areas,
-	•	realistic ink opacity depending on light direction.
-
-Maintain all real skin details from the second image:
-pores, tiny hairs, natural uneven texture, micro-wrinkles, bumps, shadows, and color variation.
-The tattoo must appear printed into the skin—not on top of it.
-
-Match the exact lighting of the second image:
+Match the exact lighting of the Target Body:
 direction, softness, shadows, color temperature, and exposure.
-No floating, no overlay artifacts, no mismatched shadows.
+No floating, overlay artifacts, or mismatched shadows.
 
-Output only the tattooed skin region in ultra-high resolution, with realistic depth, texture, and anatomy.
+Output rules:
+- Preserve the original framing and camera distance of the Target Body
+- No zoom, no crop, no pan, no perspective change
+- Only modify the skin by integrating the tattoo
+- All other pixels must remain compositionally identical
+
+Output only the tattooed skin region in ultra-high resolution with realistic depth and texture.
 `;

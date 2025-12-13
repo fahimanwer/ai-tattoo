@@ -191,8 +191,12 @@ export async function incrementUsage(
 export async function improvePrompt(
   prompt: string,
   requestUrl: string,
-  hasExistingImage: boolean = false
+  hasExistingImage: boolean = false,
+  improvePrompt: boolean = true
 ): Promise<string> {
+  if (!improvePrompt) {
+    return prompt;
+  }
   try {
     const response = await fetch(
       new URL(PROMPT_IMPROVE_API_URL, requestUrl).toString(),
@@ -303,7 +307,13 @@ export function enhancePromptForTextToImage(prompt: string): string {
 /**
  * Enhances a prompt with context-aware instructions for image editing
  */
-export function enhancePromptForImageEditing(prompt: string): string {
+export function enhancePromptForImageEditing(
+  prompt: string,
+  improvePrompt: boolean = true
+): string {
+  if (!improvePrompt) {
+    return prompt;
+  }
   const isSubstitutionRequest =
     /change\s+(?:for|to|with)\s+|replace\s+(?:with|for)\s+|substitute/i.test(
       prompt

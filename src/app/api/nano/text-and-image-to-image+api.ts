@@ -4,7 +4,7 @@ import {
   checkUserUsage,
   enhancePromptForImageEditing,
   extractImageFromGeminiResponse,
-  improvePrompt,
+  improvePrompt as handleImprovePrompt,
   incrementUsage,
   toGeminiImageParts,
   type Session,
@@ -22,6 +22,7 @@ const textAndImageToImageSchema = z.object({
   images_base64: z
     .array(z.string())
     .min(1, "Images base64 are required and cannot be empty"),
+  improvePrompt: z.boolean().optional().default(true),
 });
 
 export const POST = withAuth(async (request: Request, session: Session) => {
@@ -36,12 +37,25 @@ export const POST = withAuth(async (request: Request, session: Session) => {
 
   try {
     const body = await request.json();
-    const { prompt, images_base64 } = textAndImageToImageSchema.parse(body);
+    const { prompt, images_base64, improvePrompt } =
+      textAndImageToImageSchema.parse(body);
     console.log("server", "received prompt", prompt);
 
+    // Disable prompt improvement when combining images
+    const disabledImprovePrompt =
+      images_base64.length > 1 ? false : improvePrompt;
+
     // Improve and enhance prompt
-    const improvedPrompt = await improvePrompt(prompt, request.url, true);
-    const enhancedPrompt = enhancePromptForImageEditing(improvedPrompt);
+    const improvedPrompt = await handleImprovePrompt(
+      prompt,
+      request.url,
+      true,
+      disabledImprovePrompt
+    );
+    const enhancedPrompt = enhancePromptForImageEditing(
+      improvedPrompt,
+      disabledImprovePrompt
+    );
 
     // Convert images to Gemini format
     const imageParts = toGeminiImageParts(images_base64);

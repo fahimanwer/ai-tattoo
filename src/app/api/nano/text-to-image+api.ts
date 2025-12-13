@@ -4,7 +4,7 @@ import {
   checkUserUsage,
   enhancePromptForTextToImage,
   extractImageFromGeminiResponse,
-  improvePrompt,
+  improvePrompt as handleImprovePrompt,
   incrementUsage,
   type Session,
 } from "@/server-utils/generation-utils";
@@ -18,6 +18,7 @@ const {
 
 const textToImageSchema = z.object({
   prompt: z.string().min(1, "Prompt is required and cannot be empty"),
+  improvePrompt: z.boolean().optional().default(true),
 });
 
 export const POST = withAuth(async (request: Request, session: Session) => {
@@ -32,11 +33,16 @@ export const POST = withAuth(async (request: Request, session: Session) => {
 
   try {
     const body = await request.json();
-    const { prompt } = textToImageSchema.parse(body);
+    const { prompt, improvePrompt } = textToImageSchema.parse(body);
     console.log("server", "received prompt", prompt);
 
     // Improve and enhance prompt
-    const improvedPrompt = await improvePrompt(prompt, request.url, false);
+    const improvedPrompt = await handleImprovePrompt(
+      prompt,
+      request.url,
+      false,
+      improvePrompt
+    );
     const enhancedPrompt = enhancePromptForTextToImage(improvedPrompt);
 
     // Generate image
