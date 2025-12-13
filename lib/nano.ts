@@ -1,14 +1,17 @@
-import type { PlanTier } from "@/constants/plan-limits";
+import type { PlanTier } from "@/src/constants/plan-limits";
 import { apiFetch } from "./api-client";
 import { createJsonMutation } from "./mutations";
 
-export type TextToImageInput = { prompt: string };
+export type TextToImageInput = { prompt: string; improvePrompt: boolean };
 export type TextToImageResponse = { imageData: string };
 
 export const textToImage = createJsonMutation<
   TextToImageInput,
   TextToImageResponse
->("/api/nano/text-to-image", "POST", ({ prompt }) => ({ prompt }));
+>("/api/nano/text-to-image", "POST", ({ prompt, improvePrompt }) => ({
+  prompt,
+  improvePrompt,
+}));
 
 /**
  * Text and Image to Image
@@ -16,16 +19,22 @@ export const textToImage = createJsonMutation<
 export type TextAndImageToImageInput = {
   prompt: string;
   images_base64: string[];
+  improvePrompt: boolean;
 };
 export type TextAndImageToImageResponse = { imageData: string };
 
 export const textAndImageToImage = createJsonMutation<
   TextAndImageToImageInput,
   TextAndImageToImageResponse
->("/api/nano/text-and-image-to-image", "POST", ({ prompt, images_base64 }) => ({
-  prompt,
-  images_base64,
-}));
+>(
+  "/api/nano/text-and-image-to-image",
+  "POST",
+  ({ prompt, images_base64, improvePrompt }) => ({
+    prompt,
+    images_base64,
+    improvePrompt,
+  })
+);
 
 /**
  * User Usage API

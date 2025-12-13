@@ -624,6 +624,25 @@ export function Profile() {
               }
             />
           </LabeledContent>
+          <LabeledContent label="Prompt Enhancement">
+            <Switch
+              key={settings.improvePrompt ? "on" : "off"}
+              value={settings.improvePrompt}
+              onValueChange={() => {
+                const newValue = !settings.improvePrompt;
+                updateSettings({ improvePrompt: newValue });
+
+                if (!newValue) {
+                  // Show info when turning off
+                  Alert.alert(
+                    "Prompt Enhancement Disabled",
+                    "We enhance your prompts to create better tattoo designs. With this off, you have full control but results may vary.\n\nYou can turn it back on anytime.",
+                    [{ text: "OK" }]
+                  );
+                }
+              }}
+            />
+          </LabeledContent>
         </Section>
 
         <Section title="Legal">

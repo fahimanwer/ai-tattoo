@@ -189,7 +189,6 @@ function AppContent() {
         name="terms-of-service"
         options={{ presentation: "modal" }}
       />
-      <Stack.Screen name="profile" options={{ presentation: "modal" }} />
     </Stack>
   );
 }

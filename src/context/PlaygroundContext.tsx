@@ -9,6 +9,7 @@ import {
   TextAndImageToImageInput,
   TextAndImageToImageResponse,
   textToImage,
+  TextToImageInput,
   TextToImageResponse,
 } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
@@ -22,6 +23,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as React from "react";
 import { Alert, Keyboard } from "react-native";
 import { toast } from "sonner-native";
+import { AppSettingsContext } from "./AppSettings";
 
 // Union type that accepts either mutation type
 export type ImageGenerationMutation =
@@ -80,13 +82,14 @@ export function PlaygroundProvider({
 }) {
   // Hooks
   const queryClient = useQueryClient();
-
+  const { settings } = React.use(AppSettingsContext);
   const [prompt, setPrompt] = React.useState("");
   const [lastPrompt, setLastPrompt] = React.useState<string>("");
   const [lastActiveImageGroup, setLastActiveImageGroup] = React.useState<
     string[] | undefined
   >(undefined);
-  const [lastWasTextToImage, setLastWasTextToImage] = React.useState<boolean>(true);
+  const [lastWasTextToImage, setLastWasTextToImage] =
+    React.useState<boolean>(true);
   const [sessionGenerations, setSessionGenerations] = React.useState<
     string[][]
   >([]);
@@ -98,9 +101,13 @@ export function PlaygroundProvider({
    * Text to image mutation
    */
   const textToImageMutation = useMutation({
-    mutationFn: async (prompt: string) => {
+    mutationFn: async ({
+      prompt,
+      improvePrompt = settings.improvePrompt ?? true,
+    }: TextToImageInput) => {
       return textToImage({
-        prompt: prompt,
+        prompt,
+        improvePrompt,
       });
     },
     onSuccess: async (data) => {
@@ -126,10 +133,15 @@ export function PlaygroundProvider({
    * Text and image to image mutation
    */
   const textAndImageToImageMutation = useMutation({
-    mutationFn: async ({ prompt, images_base64 }: TextAndImageToImageInput) => {
+    mutationFn: async ({
+      prompt,
+      images_base64,
+      improvePrompt,
+    }: TextAndImageToImageInput) => {
       return textAndImageToImage({
         prompt,
         images_base64,
+        improvePrompt,
       });
     },
     onSuccess: async (data) => {
@@ -165,7 +177,9 @@ export function PlaygroundProvider({
     // Save the prompt and active image group for retry
     const isTextToImage = !activeImageGroup || activeImageGroup.length === 0;
     setLastPrompt(prompt);
-    setLastActiveImageGroup(activeImageGroup ? [...activeImageGroup] : undefined);
+    setLastActiveImageGroup(
+      activeImageGroup ? [...activeImageGroup] : undefined
+    );
     setLastWasTextToImage(isTextToImage);
 
     setPrompt("");
@@ -176,7 +190,10 @@ export function PlaygroundProvider({
     if (isTextToImage) {
       // Clear active selection when starting a fresh generation
       setActiveGenerationIndex(undefined);
-      textToImageMutation.mutate(prompt);
+      textToImageMutation.mutate({
+        prompt,
+        improvePrompt: settings.improvePrompt,
+      });
     } else {
       // Use our custome prompt to combine two images
       const promptToUse =
@@ -190,13 +207,17 @@ export function PlaygroundProvider({
       textAndImageToImageMutation.mutate({
         prompt: promptToUse,
         images_base64: base64Images,
+        improvePrompt: settings.improvePrompt,
       });
     }
   }
 
   async function retryLastGeneration() {
     // Check if we have enough info to retry
-    if (!lastPrompt && (!lastActiveImageGroup || lastActiveImageGroup.length === 0)) {
+    if (
+      !lastPrompt &&
+      (!lastActiveImageGroup || lastActiveImageGroup.length === 0)
+    ) {
       return;
     }
 
@@ -209,7 +230,10 @@ export function PlaygroundProvider({
     if (lastWasTextToImage) {
       // Text to image generation
       setActiveGenerationIndex(undefined);
-      textToImageMutation.mutate(lastPrompt);
+      textToImageMutation.mutate({
+        prompt: lastPrompt,
+        improvePrompt: settings.improvePrompt,
+      });
     } else if (lastActiveImageGroup && lastActiveImageGroup.length > 0) {
       // Text and image to image generation
       // Use our custome prompt to combine two images
@@ -226,6 +250,7 @@ export function PlaygroundProvider({
         textAndImageToImageMutation.mutate({
           prompt: promptToUse,
           images_base64: base64Images,
+          improvePrompt: settings.improvePrompt,
         });
       } catch (error) {
         console.error("Error converting images to base64 for retry:", error);
