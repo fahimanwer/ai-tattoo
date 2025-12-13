@@ -171,8 +171,12 @@ export function PlaygroundScreen() {
           unstable_headerLeftItems: (props) => [
             {
               type: "button",
-              tintColor: "red",
               variant: "plain",
+              label: "Close",
+              icon: {
+                name: "xmark",
+                type: "sfSymbol",
+              },
               onPress: () => {
                 if (sessionGenerations.length > 0) {
                   Alert.alert(
@@ -197,8 +201,6 @@ export function PlaygroundScreen() {
                   dismissToHome();
                 }
               },
-              label: "Cancel",
-              selected: false,
             },
           ],
           unstable_headerRightItems: (props) => [
@@ -442,9 +444,8 @@ function ActionControls({
         gap: 16,
       }}
     >
-      <Text style={{ textAlign: "center" }}>
-        You&apos;ve selected 2 images! You can now combine them to see how a
-        tattoo would look on your body.
+      <Text style={{ textAlign: "center", fontWeight: "600" }}>
+        Ready to preview your tattoo
       </Text>
 
       <Text
@@ -452,14 +453,13 @@ function ActionControls({
         style={{ textAlign: "center" }}
         darkColor={Color.zinc[400]}
       >
-        For the best results, use a photo of a body part that matches the
-        example you selected. Our tattoo examples already include specific body
-        parts, so using a similar angle and area in your own photo will create
-        more accurate and realistic results. Make sure the body part is clean,
-        uncovered, and clearly visible.
+        We&apos;ll place your selected tattoo onto the body photo you chose. For
+        the most realistic result, make sure the body area is uncovered,
+        well-lit, and clearly visible.
       </Text>
+
       <Button
-        title="Combine Images"
+        title="Try It On"
         onPress={handleTattooGeneration}
         color="yellow"
         variant="solid"

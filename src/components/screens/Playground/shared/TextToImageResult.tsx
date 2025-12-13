@@ -13,11 +13,11 @@ import { font, frame } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { PressableScale } from "pressto";
+import { Activity, useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AnimatedText } from "./AnimatedText";
-import { PlaygroundSuggestions } from "./suggestions/PlaygroundSuggestions";
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
   lastGenerationUris: string[]; // Array of file URIs
@@ -127,31 +127,19 @@ export function TextToImageResult({
             </SwiftButton>
           </Host>
         ) : (
-          <Host
-            matchContents
-            useViewportSizeMeasurement
-            style={{ marginTop: 44 }}
+          <PressableScale
+            onPress={() => {
+              mutation.reset();
+            }}
           >
-            <SwiftButton
-              color="indigo"
-              variant="glassProminent"
-              onPress={() => {
-                onRetry?.();
-              }}
+            <Text
+              type="default"
+              weight="semibold"
+              style={{ color: Color.indigo[400], marginTop: 8 }}
             >
-              <HStack
-                spacing={8}
-                modifiers={[frame({ width: 200, height: 32 })]}
-              >
-                <SwiftText
-                  color="white"
-                  modifiers={[font({ weight: "semibold", size: 16 })]}
-                >
-                  Try Again
-                </SwiftText>
-              </HStack>
-            </SwiftButton>
-          </Host>
+              Try Again
+            </Text>
+          </PressableScale>
         )}
       </View>
     );
@@ -181,7 +169,7 @@ export function TextToImageResult({
             key={uri}
             style={{
               position: "relative",
-              width: "100%",
+              width: lastGenerationUris.length === 1 ? "100%" : "48%",
             }}
           >
             <Image
@@ -189,8 +177,8 @@ export function TextToImageResult({
               placeholder={{ blurhash: BLURHASH }}
               cachePolicy="memory-disk"
               style={{
-                width: "100%",
-                height: lastGenerationUris.length === 1 ? 540 : 200,
+                width: lastGenerationUris.length === 1 ? "100%" : "96%",
+                aspectRatio: 1,
                 borderRadius: 18,
                 borderWidth: 1,
                 borderColor: Color.gray[500] + "30",
@@ -202,37 +190,24 @@ export function TextToImageResult({
           </View>
         ))}
       </View>
-      {lastGenerationUris.length > 0 && (
+      <Activity mode={lastGenerationUris.length === 1 ? "visible" : "hidden"}>
         <Text
           type="xs"
           weight="medium"
           style={{ color: Color.grayscale[400], textAlign: "center" }}
         >
-          Change styles, sizes, and colors to create your perfect tattoo
-          {/* {lastGenerationUris.length === 1
-            ? "Add one more to combine"
-            : `${lastGenerationUris.length} images selected (max)`} */}
+          Tip: Try &quot;minimalist&quot;, &quot;fine line&quot;, or
+          &quot;watercolor&quot; to refine your style
         </Text>
-      )}
+      </Activity>
     </Animated.View>
   ) : (
-    <View
-      style={{
-        width: "100%",
-        height: "80%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <AnimatedText
-        style={{ flex: 0.2 }}
-        text="Describe your tattoo or choose a suggestion below"
-        color={isKeyboardVisible ? Color.pink[400] : Color.zinc[400]}
-        colorDark={isKeyboardVisible ? Color.purple[700] : Color.zinc[700]}
-      />
-      <PlaygroundSuggestions onSelect={() => {}} />
-    </View>
+    <AnimatedText
+      style={{ flex: 0.2 }}
+      text="Describe your tattoo or choose a suggestion below"
+      color={isKeyboardVisible ? Color.pink[400] : Color.zinc[400]}
+      colorDark={isKeyboardVisible ? Color.purple[700] : Color.zinc[700]}
+    />
   );
 }
 
