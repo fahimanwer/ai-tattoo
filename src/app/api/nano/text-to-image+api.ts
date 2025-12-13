@@ -1,179 +1,57 @@
-import { getCurrentUserEntitlement } from "@/lib/entitlement-utils";
-import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAuth } from "@/server-utils/auth-middleware";
 import { constants } from "@/server-utils/constants";
-import { withAccelerate } from "@prisma/extension-accelerate";
+import {
+  checkUserUsage,
+  enhancePromptForTextToImage,
+  extractImageFromGeminiResponse,
+  improvePrompt,
+  incrementUsage,
+  type Session,
+} from "@/server-utils/generation-utils";
 import { z } from "zod";
 
 const {
   GEMINI_IMAGE_BASE_URL_NANOBANANA,
   GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
   GEMINI_API_KEY,
-  PROMPT_IMPROVE_API_URL,
 } = constants;
 
-// Zod schema for request validation
 const textToImageSchema = z.object({
   prompt: z.string().min(1, "Prompt is required and cannot be empty"),
 });
 
-export const POST = withAuth(async (request: Request, session: any) => {
+export const POST = withAuth(async (request: Request, session: Session) => {
   console.log("🌐 server", "authenticated user:", session.user.email);
-  console.log("🌐 server", "user id:", session.user.id);
 
-  let isFreeTier = false;
-
-  const prisma = new PrismaClient({
-    datasourceUrl: process.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-
-  const now = new Date();
-
-  // Get current user entitlement dynamically
-  const entitlement = await getCurrentUserEntitlement(session.user.id);
-  console.log("🔍 server", "current user entitlement:", entitlement);
+  // Check usage and limits
+  const usageCheck = await checkUserUsage(session);
+  if (!usageCheck.success) {
+    return usageCheck.error;
+  }
+  const { usage, isFreeTier } = usageCheck;
 
   try {
     const body = await request.json();
     const { prompt } = textToImageSchema.parse(body);
     console.log("server", "received prompt", prompt);
 
-    // Find usage record based on entitlement type
-    let usage;
+    // Improve and enhance prompt
+    const improvedPrompt = await improvePrompt(prompt, request.url, false);
+    const enhancedPrompt = enhancePromptForTextToImage(improvedPrompt);
 
-    if (entitlement === "free") {
-      // For free tier, ignore period dates (one-time credits)
-      isFreeTier = true;
-      usage = await prisma.usage.findFirst({
-        where: {
-          userId: session.user.id,
-          entitlement: "free",
-        },
-        orderBy: {
-          periodStart: "desc",
-        },
-      });
-    } else {
-      // For paid tiers, check active period
-      usage = await prisma.usage.findFirst({
-        where: {
-          userId: session.user.id,
-          periodStart: { lte: now },
-          periodEnd: { gte: now },
-        },
-        orderBy: {
-          periodStart: "desc",
-        },
-      });
-    }
-
-    console.log("🔍 server", "usage record found:", usage ? "YES" : "NO");
-
-    if (usage) {
-      console.log("🔍 server", "usage record details:", {
-        entitlement: usage.entitlement,
-        count: usage.count,
-        limit: usage.limit,
-        periodStart: usage.periodStart.toISOString(),
-        periodEnd: usage.periodEnd.toISOString(),
-        revenuecatUserId: usage.revenuecatUserId,
-      });
-    }
-
-    // If no usage record found, return error (should be created at signup)
-    if (!usage) {
-      console.error("❌ server", "No usage record found for user:", {
-        userId: session.user.id,
-        email: session.user.email,
-        entitlement,
-      });
-      return Response.json(
-        {
-          success: false,
-          message: "Usage record not found. Please contact support.",
-          error: "NO_USAGE_RECORD",
-        },
-        { status: 500 }
-      );
-    }
-
-    // Check if user has reached their generation limit
-    console.log("🔍 server", "checking limit:", {
-      currentCount: usage.count,
-      limit: usage.limit,
-      isLimitReached: usage.count >= usage.limit,
-    });
-
-    if (usage.count >= usage.limit) {
-      console.log("⚠️ server", "LIMIT REACHED - rejecting request:", {
-        userId: session.user.id,
-        email: session.user.email,
-        entitlement: usage.entitlement,
-        count: usage.count,
-        limit: usage.limit,
-      });
-      return Response.json(
-        {
-          success: false,
-          message:
-            "Generation limit reached for current period. Please upgrade your plan or wait for the next period.",
-          error: "LIMIT_REACHED",
-        },
-        { status: 429 }
-      );
-    }
-
-    // Improve prompt using OpenAI before sending to Gemini
-    let finalPrompt = prompt;
-    try {
-      const improveResponse = await fetch(
-        new URL(PROMPT_IMPROVE_API_URL, request.url).toString(),
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt, hasExistingImage: false }),
-        }
-      );
-
-      if (improveResponse.ok) {
-        const improveData = await improveResponse.json();
-        finalPrompt = improveData.improvedPrompt || prompt;
-        console.log("✨ server", "Prompt improved:", {
-          original: prompt,
-          improved: finalPrompt,
-        });
-      } else {
-        console.warn(
-          "⚠️ server",
-          "Failed to improve prompt, using original",
-          improveResponse.statusText
-        );
-      }
-    } catch (error) {
-      console.warn(
-        "⚠️ server",
-        "Error improving prompt, using original:",
-        error
-      );
-    }
-
-    // Generate image with improved prompt
-    let GEMINI_IMAGE_BASE_URL = isFreeTier
+    // Generate image
+    const geminiUrl = isFreeTier
       ? GEMINI_IMAGE_BASE_URL_NANOBANANA
       : GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO;
 
-    // Add safety and quality instructions to the prompt
-    const enhancedPrompt = `${finalPrompt}. IMPORTANT: Always avoid intimate areas of men and women. Make it as realistic as possible, but without exaggerating. Never generate two or more images in a single output - always generate only one image.`;
-
-    const response = await fetch(GEMINI_IMAGE_BASE_URL, {
+    const response = await fetch(geminiUrl, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": GEMINI_API_KEY,
+      },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: enhancedPrompt }],
-          },
-        ],
-        // https://ai.google.dev/api/generate-content#generationconfig
+        contents: [{ parts: [{ text: enhancedPrompt }] }],
         generationConfig: {
           imageConfig: {
             aspectRatio: isFreeTier ? "1:1" : "4:3",
@@ -181,74 +59,38 @@ export const POST = withAuth(async (request: Request, session: any) => {
           },
         },
       }),
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": GEMINI_API_KEY,
-      },
     });
 
     const data = await response.json();
-
-    // Extract the base64 image data from the response
-    // The response has multiple parts: [text, inlineData], so we need to find the inlineData part
-    const parts = data?.candidates?.[0]?.content?.parts;
-    const imagePart = parts?.find((part: any) => part.inlineData);
-    const imageData = imagePart?.inlineData?.data;
+    const imageData = extractImageFromGeminiResponse(data);
 
     if (!imageData) {
       console.log("server", "No image data found in response");
-      return new Response(JSON.stringify({ error: "No image data received" }), {
-        status: 500,
-      });
+      return Response.json(
+        { error: "No image data received" },
+        { status: 500 }
+      );
     }
 
-    // Return the base64 image data
     console.log(
       "server",
       "Successfully generated image, size:",
-      imageData?.length,
+      imageData.length,
       "characters"
     );
 
-    // Use transaction to ensure atomicity
-    await prisma.$transaction(async (tx: any) => {
-      // Update the existing record we found earlier
-      await tx.usage.update({
-        where: {
-          userId_entitlement_periodStart: {
-            userId: usage.userId,
-            entitlement: usage.entitlement,
-            periodStart: usage.periodStart,
-          },
-        },
-        data: { count: { increment: 1 } },
-      });
-    });
-
-    console.log("✅ server", "Usage incremented successfully:", {
-      userId: session.user.id,
-      email: session.user.email,
-      entitlement: usage.entitlement,
-      previousCount: usage.count,
-      newCount: usage.count + 1,
-      limit: usage.limit,
-      remaining: usage.limit - (usage.count + 1),
-    });
+    // Increment usage after successful generation
+    await incrementUsage(usage, session);
 
     return Response.json({ imageData }, { status: 200 });
   } catch (error) {
-    // Handle validation errors
     if (error instanceof z.ZodError) {
-      return new Response(
-        JSON.stringify({
-          error: "Invalid request",
-          details: error.issues,
-        }),
+      return Response.json(
+        { error: "Invalid request", details: error.issues },
         { status: 400 }
       );
     }
 
-    // Handle API errors
     console.error("server", "text-to-image api error", error);
     return Response.json(
       { success: false, message: "Failed to generate text to image" },
