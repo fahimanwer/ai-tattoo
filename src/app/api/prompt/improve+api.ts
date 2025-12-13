@@ -1,4 +1,3 @@
-import { withAuth } from "@/server-utils/auth-middleware";
 import { constants } from "@/server-utils/constants";
 import { z } from "zod";
 
@@ -11,8 +10,8 @@ const improvePromptSchema = z.object({
   hasExistingImage: z.boolean().optional().default(false),
 });
 
-export const POST = withAuth(async (request: Request, session: any) => {
-  console.log("🔧 prompt-improve", "Request received from user:", session.user.email);
+export async function POST(request: Request) {
+  console.log("🔧 prompt-improve", "Request received");
 
   try {
     const body = await request.json();
@@ -21,14 +20,14 @@ export const POST = withAuth(async (request: Request, session: any) => {
     console.log("🔧 prompt-improve", "Has existing image:", hasExistingImage);
 
     if (!OPENAI_API_KEY) {
-      console.warn("⚠️ prompt-improve", "OPENAI_API_KEY not set, returning original prompt");
-      return new Response(
-        JSON.stringify({ improvedPrompt: prompt }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }
+      console.warn(
+        "⚠️ prompt-improve",
+        "OPENAI_API_KEY not set, returning original prompt"
       );
+      return new Response(JSON.stringify({ improvedPrompt: prompt }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Call OpenAI to improve the prompt
@@ -51,7 +50,9 @@ export const POST = withAuth(async (request: Request, session: any) => {
 5. If the prompt is for a standalone tattoo design, enhance it with style and artistic details
 6. Output ONLY the improved prompt - no explanations, no quotes, no markdown formatting
 
-${hasExistingImage ? `IMPORTANT CONTEXT: The user already has a generated tattoo image. Analyze the prompt carefully:
+${
+  hasExistingImage
+    ? `IMPORTANT CONTEXT: The user already has a generated tattoo image. Analyze the prompt carefully:
 
 MODIFICATIONS (preserve design/subject, only change specific aspects):
 - "add color" means: add vibrant colors to the existing tattoo design while maintaining its current design, style, placement, and subject matter
@@ -64,7 +65,9 @@ SUBSTITUTIONS/REPLACEMENTS (change the main subject/element):
 - "change for a [Y]" means: replace the current subject with Y, keeping style, placement, and composition the same
 - When the user explicitly wants to change/replace the subject, DO preserve the style, placement, and composition, but DO change the subject as requested
 
-If the prompt is clearly a new design request, treat it as such` : `CONTEXT: This is a new tattoo generation request. The user is creating a tattoo from scratch.`}
+If the prompt is clearly a new design request, treat it as such`
+    : `CONTEXT: This is a new tattoo generation request. The user is creating a tattoo from scratch.`
+}
 
 Rules:
 - Always describe realistic tattoos (never full image changes)
@@ -86,13 +89,10 @@ Rules:
       const errorData = await response.json().catch(() => ({}));
       console.error("❌ prompt-improve", "OpenAI API error:", errorData);
       // Fallback to original prompt if OpenAI fails
-      return new Response(
-        JSON.stringify({ improvedPrompt: prompt }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ improvedPrompt: prompt }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const data = await response.json();
@@ -101,13 +101,10 @@ Rules:
 
     console.log("✅ prompt-improve", "Improved prompt:", improvedPrompt);
 
-    return new Response(
-      JSON.stringify({ improvedPrompt }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ improvedPrompt }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     // Handle validation errors
     if (error instanceof z.ZodError) {
@@ -128,22 +125,15 @@ Rules:
     try {
       const body = await request.json();
       const originalPrompt = body.prompt || "";
-      return new Response(
-        JSON.stringify({ improvedPrompt: originalPrompt }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ improvedPrompt: originalPrompt }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     } catch {
-      return new Response(
-        JSON.stringify({ improvedPrompt: "" }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ improvedPrompt: "" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     }
   }
-});
-
+}

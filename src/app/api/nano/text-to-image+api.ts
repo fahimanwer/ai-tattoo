@@ -9,7 +9,8 @@ const {
   GEMINI_IMAGE_BASE_URL_NANOBANANA,
   GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
   GEMINI_API_KEY,
-    PROMPT_IMPROVE_API_URL } = constants;
+  PROMPT_IMPROVE_API_URL,
+} = constants;
 
 // Zod schema for request validation
 const textToImageSchema = z.object({
@@ -129,11 +130,7 @@ export const POST = withAuth(async (request: Request, session: any) => {
         new URL(PROMPT_IMPROVE_API_URL, request.url).toString(),
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Cookie: request.headers.get("Cookie") || "",
-            Authorization: request.headers.get("Authorization") || "",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt, hasExistingImage: false }),
         }
       );
@@ -146,18 +143,28 @@ export const POST = withAuth(async (request: Request, session: any) => {
           improved: finalPrompt,
         });
       } else {
-        console.warn("⚠️ server", "Failed to improve prompt, using original");
+        console.warn(
+          "⚠️ server",
+          "Failed to improve prompt, using original",
+          improveResponse.statusText
+        );
       }
     } catch (error) {
-      console.warn("⚠️ server", "Error improving prompt, using original:", error);
+      console.warn(
+        "⚠️ server",
+        "Error improving prompt, using original:",
+        error
+      );
     }
 
     // Generate image with improved prompt
-    let GEMINI_IMAGE_BASE_URL = isFreeTier ? GEMINI_IMAGE_BASE_URL_NANOBANANA : GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO;
-    
+    let GEMINI_IMAGE_BASE_URL = isFreeTier
+      ? GEMINI_IMAGE_BASE_URL_NANOBANANA
+      : GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO;
+
     // Add safety and quality instructions to the prompt
     const enhancedPrompt = `${finalPrompt}. IMPORTANT: Always avoid intimate areas of men and women. Make it as realistic as possible, but without exaggerating. Never generate two or more images in a single output - always generate only one image.`;
-    
+
     const response = await fetch(GEMINI_IMAGE_BASE_URL, {
       method: "POST",
       body: JSON.stringify({

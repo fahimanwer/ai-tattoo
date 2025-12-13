@@ -132,12 +132,8 @@ export const POST = withAuth(async (request: Request, session: any) => {
         new URL(PROMPT_IMPROVE_API_URL, request.url).toString(),
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Cookie: request.headers.get("Cookie") || "",
-            Authorization: request.headers.get("Authorization") || "",
-          },
-          body: JSON.stringify({ prompt, hasExistingImage: true }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt, hasExistingImage: false }),
         }
       );
 
@@ -152,7 +148,11 @@ export const POST = withAuth(async (request: Request, session: any) => {
         console.warn("⚠️ server", "Failed to improve prompt, using original");
       }
     } catch (error) {
-      console.warn("⚠️ server", "Error improving prompt, using original:", error);
+      console.warn(
+        "⚠️ server",
+        "Error improving prompt, using original:",
+        error
+      );
     }
 
     // Helper: parse data URL or infer MIME from raw base64
@@ -202,12 +202,15 @@ export const POST = withAuth(async (request: Request, session: any) => {
 
     // Add safety and quality instructions to the prompt
     // Detect if this is a substitution/replacement request
-    const isSubstitutionRequest = /change\s+(?:for|to|with)\s+|replace\s+(?:with|for)\s+|substitute/i.test(finalPrompt);
-    
+    const isSubstitutionRequest =
+      /change\s+(?:for|to|with)\s+|replace\s+(?:with|for)\s+|substitute/i.test(
+        finalPrompt
+      );
+
     const contextInstructions = isSubstitutionRequest
       ? `IMPORTANT: The user wants to replace/change a subject or element. Apply the requested change while maintaining the same style, placement, size, composition, and artistic approach of the original tattoo. Keep the overall structure and design flow identical, only change the specific subject/element requested.`
       : `IMPORTANT: Maintain the exact context, design, style, placement, and visual elements of the original image. Preserve all existing tattoo details, shapes, lines, and composition. Only apply the requested modifications while keeping everything else identical.`;
-    
+
     const enhancedPrompt = `${finalPrompt}. ${contextInstructions} Always avoid intimate areas of men and women. Make it as realistic as possible, but without exaggerating. Never generate two or more images in a single output - always generate only one image.`;
 
     const response = await fetch(GEMINI_IMAGE_BASE_URL, {
@@ -255,7 +258,7 @@ export const POST = withAuth(async (request: Request, session: any) => {
       "characters"
     );
     // Use transaction to ensure atomicity
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       // Update the existing record we found earlier
       await tx.usage.update({
         where: {
