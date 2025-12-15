@@ -1,4 +1,5 @@
 import { getCurrentUserEntitlement } from "@/lib/entitlement-utils";
+import { slog } from "@/lib/log";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { constants } from "./constants";
@@ -55,7 +56,7 @@ export async function checkUserUsage(
   const now = new Date();
 
   const entitlement = await getCurrentUserEntitlement(session.user.id);
-  console.log("🔍 server", "current user entitlement:", entitlement);
+  slog("generation-utils", `current user entitlement: ${entitlement}`);
 
   const isFreeTier = entitlement === "free";
 
@@ -82,15 +83,11 @@ export async function checkUserUsage(
     });
   }
 
-  console.log("🔍 server", "usage record found:", usage ? "YES" : "NO");
-
   if (usage) {
-    console.log("🔍 server", "usage record details:", {
+    slog("generation-utils", "usage record details", {
       entitlement: usage.entitlement,
       count: usage.count,
       limit: usage.limit,
-      periodStart: usage.periodStart.toISOString(),
-      periodEnd: usage.periodEnd.toISOString(),
       revenuecatUserId: usage.revenuecatUserId,
     });
   }
@@ -115,15 +112,8 @@ export async function checkUserUsage(
     };
   }
 
-  // Check if user has reached their generation limit
-  console.log("🔍 server", "checking limit:", {
-    currentCount: usage.count,
-    limit: usage.limit,
-    isLimitReached: usage.count >= usage.limit,
-  });
-
   if (usage.count >= usage.limit) {
-    console.log("⚠️ server", "LIMIT REACHED - rejecting request:", {
+    slog("generation-utils", "LIMIT REACHED - rejecting request", {
       userId: session.user.id,
       email: session.user.email,
       entitlement: usage.entitlement,
@@ -169,7 +159,7 @@ export async function incrementUsage(
     });
   });
 
-  console.log("✅ server", "Usage incremented successfully:", {
+  slog("generation-utils", "Usage incremented successfully", {
     userId: session.user.id,
     email: session.user.email,
     entitlement: usage.entitlement,
@@ -210,21 +200,23 @@ export async function improvePrompt(
     if (response.ok) {
       const data = await response.json();
       const improvedPrompt = data.improvedPrompt || prompt;
-      console.log("✨ server", "Prompt improved:", {
+      slog("generation-utils", "Prompt improved", {
         original: prompt,
         improved: improvedPrompt,
       });
       return improvedPrompt;
     }
 
-    console.warn(
-      "⚠️ server",
-      "Failed to improve prompt, using original:",
-      response.statusText
-    );
+    slog("generation-utils", "Failed to improve prompt, using original", {
+      original: prompt,
+      response: response.statusText,
+    });
     return prompt;
   } catch (error) {
-    console.warn("⚠️ server", "Error improving prompt, using original:", error);
+    slog("generation-utils", "Error improving prompt, using original", {
+      original: prompt,
+      error: error,
+    });
     return prompt;
   }
 }

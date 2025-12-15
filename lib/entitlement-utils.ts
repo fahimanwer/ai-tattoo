@@ -27,11 +27,6 @@ export async function getCurrentUserEntitlement(
     });
 
     if (paidUsage) {
-      console.log(
-        `✅ entitlement: ${paidUsage.entitlement} (${paidUsage.count}/${
-          paidUsage.limit
-        } used) for ${userId.slice(0, 8)}…`
-      );
       switch (paidUsage.entitlement.toLowerCase()) {
         case "pro":
           return "Pro";

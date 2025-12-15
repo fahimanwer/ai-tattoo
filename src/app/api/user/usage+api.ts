@@ -1,3 +1,4 @@
+import { slog } from "@/lib/log";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAuth } from "@/server-utils/auth-middleware";
 import {
@@ -127,7 +128,7 @@ export const POST = withAuth(async (request: Request, session: any) => {
       },
     };
 
-    console.log("[server]", "usage response", response);
+    slog("usage+api", "fetched usage", { used, limit });
 
     return new Response(JSON.stringify(response), {
       status: 200,

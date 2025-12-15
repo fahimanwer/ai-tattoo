@@ -1,3 +1,4 @@
+import { slog } from "@/lib/log";
 import { auth } from "../lib/auth";
 
 /**
@@ -15,13 +16,15 @@ export async function authenticateRequest(request: Request) {
       minute: "2-digit",
       timeZone: "America/Chicago",
     });
-    console.log(
-      `🔐 authenticated request by ${session.session.userId} at ${time} CT`
+
+    slog(
+      "auth-middleware",
+      `authenticated request by ${session.session.userId} at ${time} CT`
     );
   }
 
   if (!session) {
-    console.log("🔐 auth middleware: No session found, returning 401");
+    slog("auth-middleware", "No session found, returning 401");
     return {
       error: new Response(
         JSON.stringify({ error: "Unauthorized - Please sign in" }),
