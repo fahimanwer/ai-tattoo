@@ -75,16 +75,16 @@ export function CameraViewScreen() {
   if (permission?.status === PermissionStatus.UNDETERMINED) {
     return (
       <View style={styles.emptyContainer}>
-        <SymbolView name="camera.fill" size={60} />
+        <SymbolView name="camera.fill" size={60} tintColor={"white"} />
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
-          Let&apos;s Get Started!
+          Let&apos;s Get Started
         </Text>
         <Text style={styles.emptyDescription}>
-          To open the camera for the first time, we just need your permission.
+          We need access to your camera to take photos.
         </Text>
         <Button
           onPress={requestPermission}
-          title="Enable Camera"
+          title="Continue"
           variant="link"
           color="yellow"
         />
@@ -104,13 +104,17 @@ export function CameraViewScreen() {
           },
         ]}
       >
-        <SymbolView name="exclamationmark.triangle.fill" size={60} />
+        <SymbolView
+          name="exclamationmark.triangle.fill"
+          size={60}
+          tintColor={"white"}
+        />
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
           Camera Access Needed
         </Text>
         <Text style={styles.emptyDescription}>
-          Camera permission was denied. To continue, please enable it in your
-          device settings.
+          This feature requires access to your camera. You can manage camera
+          access in your device settings.
         </Text>
         <Button
           onPress={() => Linking.openURL("app-settings:")}
@@ -303,7 +307,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 40,
+    padding: 16,
     minHeight: 300,
   },
   emptyTitle: {

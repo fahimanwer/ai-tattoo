@@ -51,18 +51,21 @@ export function TattooHistory() {
     if (permission?.status === MediaLibrary.PermissionStatus.UNDETERMINED) {
       return (
         <View style={styles.emptyContainer}>
-          <SymbolView name="photo.fill.on.rectangle.fill" size={60} />
+          <SymbolView
+            name="photo.fill.on.rectangle.fill"
+            size={60}
+            tintColor={"white"}
+          />
           <Text type="lg" weight="semibold" style={styles.emptyTitle}>
-            Let&apos;s Access Your Photos
+            Let&apos;s Get Started
           </Text>
           <Text style={styles.emptyDescription}>
-            To help you view and save your tattoos, we&apos;ll need access to
-            your photo library. You can enable it below whenever you&apos;re
-            ready.
+            We need access to your photo library so you can view and save your
+            tattoos.
           </Text>
           <Button
             onPress={requestPermission}
-            title="Enable Photo Access"
+            title="Continue"
             variant="link"
             color="yellow"
           />
@@ -73,16 +76,21 @@ export function TattooHistory() {
     if (permission?.status === MediaLibrary.PermissionStatus.DENIED) {
       return (
         <View style={styles.emptyContainer}>
+          <SymbolView
+            name="exclamationmark.triangle.fill"
+            size={60}
+            tintColor={"white"}
+          />
           <Text type="lg" weight="semibold" style={styles.emptyTitle}>
-            Photo Library Permission Denied
+            Photo Access Needed
           </Text>
           <Text style={styles.emptyDescription}>
-            We need your permission to access your photo library to view and
-            save your tattoos. Please grant permission in settings to continue.
+            This feature requires access to your photo library to view and save
+            your tattoos. You can manage photo access in your device settings.
           </Text>
           <Button
             onPress={() => Linking.openURL("app-settings:")}
-            title="Open Settings to grant permission"
+            title="Open Settings"
             variant="link"
             color="yellow"
           />
@@ -167,6 +175,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 16,
     minHeight: 400,
   },
   emptyTitle: {
