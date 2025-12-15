@@ -229,6 +229,30 @@ export async function improvePrompt(
  * Extracts base64 image data from Gemini API response
  */
 export function extractImageFromGeminiResponse(data: any): string | null {
+  // Log Gemini response without the (very large) base64 'parts' array
+  const { candidates, ...rest } = data || {};
+  let candidatesLog = candidates;
+  if (Array.isArray(candidates) && candidates[0]?.content) {
+    // Shallow clone and remove 'parts'
+    candidatesLog = [
+      {
+        ...candidates[0],
+        content: { ...candidates[0].content },
+      },
+      ...candidates.slice(1),
+    ];
+    if (candidatesLog[0]?.content?.parts) {
+      candidatesLog[0].content = {
+        ...candidatesLog[0].content,
+        parts: "[[omitted base64 image data]]",
+      };
+    }
+  }
+  slog("generation-utils", "extracting image from Gemini response", {
+    ...rest,
+    // only log the non-base64 aspects; add candidates minus large 'parts'
+    candidates: candidatesLog,
+  });
   const parts = data?.candidates?.[0]?.content?.parts;
   const imagePart = parts?.find((part: any) => part.inlineData);
   return imagePart?.inlineData?.data || null;

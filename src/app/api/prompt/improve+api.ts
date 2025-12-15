@@ -1,3 +1,4 @@
+import { slog } from "@/lib/log";
 import { constants } from "@/server-utils/constants";
 import { z } from "zod";
 
@@ -11,17 +12,15 @@ const improvePromptSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  console.log("🔧 prompt-improve", "Request received");
-
   try {
     const body = await request.json();
     const { prompt, hasExistingImage } = improvePromptSchema.parse(body);
-    console.log("🔧 prompt-improve", "Original prompt:", prompt);
-    console.log("🔧 prompt-improve", "Has existing image:", hasExistingImage);
+    slog("prompt-improve+api", "Original prompt", { prompt });
+    slog("prompt-improve+api", "Has existing image", { hasExistingImage });
 
     if (!OPENAI_API_KEY) {
-      console.warn(
-        "⚠️ prompt-improve",
+      slog(
+        "prompt-improve+api",
         "OPENAI_API_KEY not set, returning original prompt"
       );
       return new Response(JSON.stringify({ improvedPrompt: prompt }), {
@@ -86,8 +85,8 @@ Rules:
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error("❌ prompt-improve", "OpenAI API error:", errorData);
+      const errorData = await response.json();
+      slog("prompt-improve+api", "OpenAI API error", { response: errorData });
       // Fallback to original prompt if OpenAI fails
       return new Response(JSON.stringify({ improvedPrompt: prompt }), {
         status: 200,
@@ -99,7 +98,7 @@ Rules:
     const improvedPrompt =
       data.choices?.[0]?.message?.content?.trim() || prompt;
 
-    console.log("✅ prompt-improve", "Improved prompt:", improvedPrompt);
+    slog("prompt-improve+api", "Improved prompt", { improvedPrompt });
 
     return new Response(JSON.stringify({ improvedPrompt }), {
       status: 200,
@@ -121,7 +120,7 @@ Rules:
     }
 
     // Handle other errors - fallback to original prompt
-    console.error("❌ prompt-improve", "Error improving prompt:", error);
+    slog("prompt-improve+api", "Error improving prompt", { error });
     try {
       const body = await request.json();
       const originalPrompt = body.prompt || "";
