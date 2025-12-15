@@ -13,14 +13,7 @@ export async function getCurrentUserEntitlement(
   }).$extends(withAccelerate());
 
   try {
-    // Get all active usage records for the user
     const now = new Date();
-    console.log(
-      "🔍 entitlement-utils",
-      "checking entitlement for user:",
-      userId
-    );
-    console.log("🔍 entitlement-utils", "current time:", now.toISOString());
 
     // First, try to find paid tier records (exclude free)
     const paidUsage = await prisma.usage.findFirst({
@@ -33,28 +26,12 @@ export async function getCurrentUserEntitlement(
       orderBy: { periodStart: "desc" },
     });
 
-    // If paid tier exists, use it
     if (paidUsage) {
       console.log(
-        "🔍 entitlement-utils",
-        "active paid tier found:",
-        paidUsage.entitlement
+        `✅ entitlement: ${paidUsage.entitlement} (${paidUsage.count}/${
+          paidUsage.limit
+        } used) for ${userId.slice(0, 8)}…`
       );
-      console.log("🔍 entitlement-utils", "paid usage details:", {
-        entitlement: paidUsage.entitlement,
-        periodStart: paidUsage.periodStart.toISOString(),
-        periodEnd: paidUsage.periodEnd.toISOString(),
-        count: paidUsage.count,
-        limit: paidUsage.limit,
-      });
-
-      console.log(
-        "✅ entitlement-utils",
-        "active entitlement found:",
-        paidUsage.entitlement
-      );
-
-      // Map to standard entitlement names
       switch (paidUsage.entitlement.toLowerCase()) {
         case "pro":
           return "Pro";
@@ -77,44 +54,19 @@ export async function getCurrentUserEntitlement(
 
     if (freeUsage) {
       console.log(
-        "🔍 entitlement-utils",
-        "free tier record found (no active paid tier)"
+        `✅ entitlement: free (${freeUsage.count}/${
+          freeUsage.limit
+        } used) for ${userId.slice(0, 8)}…`
       );
-      console.log("🔍 entitlement-utils", "free usage details:", {
-        entitlement: freeUsage.entitlement,
-        periodStart: freeUsage.periodStart.toISOString(),
-        periodEnd: freeUsage.periodEnd.toISOString(),
-        count: freeUsage.count,
-        limit: freeUsage.limit,
-      });
-      console.log("✅ entitlement-utils", "active entitlement found:", "free");
       return "free";
     }
 
-    // No records found at all
     console.log(
-      "⚠️ entitlement-utils",
-      "no usage records found, returning free tier"
+      `⚠️ entitlement: no active record for ${userId.slice(
+        0,
+        8
+      )}…, defaulting to free`
     );
-
-    // Log most recent for debugging
-    const mostRecent = await prisma.usage.findFirst({
-      where: { userId },
-      orderBy: { periodStart: "desc" },
-    });
-
-    if (mostRecent) {
-      const minutesSinceExpired = Math.floor(
-        (now.getTime() - mostRecent.periodEnd.getTime()) / (1000 * 60)
-      );
-      console.log("🔍 entitlement-utils", "most recent record (expired):", {
-        entitlement: mostRecent.entitlement,
-        periodEnd: mostRecent.periodEnd.toISOString(),
-        expiredMinutesAgo: minutesSinceExpired,
-      });
-    }
-
-    // Always return free when no active period
     return "free";
   } catch (error) {
     console.error("Error getting user entitlement:", error);

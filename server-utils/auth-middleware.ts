@@ -9,7 +9,16 @@ export async function authenticateRequest(request: Request) {
     headers: request.headers,
   });
 
-  console.log("🔐 auth middleware: Session found:", session?.session);
+  if (session?.session) {
+    const time = new Date().toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "America/Chicago",
+    });
+    console.log(
+      `🔐 authenticated request by ${session.session.userId} at ${time} CT`
+    );
+  }
 
   if (!session) {
     console.log("🔐 auth middleware: No session found, returning 401");

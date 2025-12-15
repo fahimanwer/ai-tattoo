@@ -2,7 +2,7 @@
   "expo": {
     "name": "AI Tattoo",
     "slug": "ai-tattoo",
-    "version": "1.2.0",
+    "version": "1.1.5",
     "orientation": "portrait",
     "scheme": "aitattoo",
     "userInterfaceStyle": "dark",
