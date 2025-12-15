@@ -1,3 +1,4 @@
+import { slog } from "@/lib/log";
 import { withAuth } from "@/server-utils/auth-middleware";
 import { constants } from "@/server-utils/constants";
 import {
@@ -22,7 +23,7 @@ const textToImageSchema = z.object({
 });
 
 export const POST = withAuth(async (request: Request, session: Session) => {
-  console.log("🌐 server", "authenticated user:", session.user.email);
+  slog("text-to-image+api", `authenticated request by ${session.user.email}`);
 
   // Check usage and limits
   const usageCheck = await checkUserUsage(session);
@@ -34,7 +35,7 @@ export const POST = withAuth(async (request: Request, session: Session) => {
   try {
     const body = await request.json();
     const { prompt, improvePrompt } = textToImageSchema.parse(body);
-    console.log("server", "received prompt", prompt);
+    slog("text-to-image+api", `received prompt: ${prompt}`);
 
     // Improve and enhance prompt
     const improvedPrompt = await handleImprovePrompt(
@@ -71,18 +72,16 @@ export const POST = withAuth(async (request: Request, session: Session) => {
     const imageData = extractImageFromGeminiResponse(data);
 
     if (!imageData) {
-      console.log("server", "No image data found in response");
+      slog("text-to-image+api", "No image data found in response");
       return Response.json(
         { error: "No image data received" },
         { status: 500 }
       );
     }
 
-    console.log(
-      "server",
-      "Successfully generated image, size:",
-      imageData.length,
-      "characters"
+    slog(
+      "text-to-image+api",
+      `Successfully generated image, size: ${imageData.length} characters`
     );
 
     // Increment usage after successful generation
@@ -97,7 +96,7 @@ export const POST = withAuth(async (request: Request, session: Session) => {
       );
     }
 
-    console.error("server", "text-to-image api error", error);
+    slog("text-to-image+api", "text-to-image api error", { error });
     return Response.json(
       { success: false, message: "Failed to generate text to image" },
       { status: 500 }

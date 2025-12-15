@@ -1,3 +1,4 @@
+import { slog } from "@/lib/log";
 import { withAuth } from "@/server-utils/auth-middleware";
 import { constants } from "@/server-utils/constants";
 import {
@@ -93,11 +94,9 @@ export const POST = withAuth(async (request: Request, session: Session) => {
       );
     }
 
-    console.log(
-      "server",
-      "Successfully generated image, size:",
-      imageData.length,
-      "characters"
+    slog(
+      "text-and-image-to-image+api",
+      `Successfully generated image, size: ${imageData.length} characters`
     );
 
     // Increment usage after successful generation

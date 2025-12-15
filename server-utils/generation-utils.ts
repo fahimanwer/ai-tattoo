@@ -1,4 +1,5 @@
 import { getCurrentUserEntitlement } from "@/lib/entitlement-utils";
+import { slog } from "@/lib/log";
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { constants } from "./constants";
@@ -55,7 +56,7 @@ export async function checkUserUsage(
   const now = new Date();
 
   const entitlement = await getCurrentUserEntitlement(session.user.id);
-  console.log("🔍 server", "current user entitlement:", entitlement);
+  slog("generation-utils", `current user entitlement: ${entitlement}`);
 
   const isFreeTier = entitlement === "free";
 
@@ -82,15 +83,11 @@ export async function checkUserUsage(
     });
   }
 
-  console.log("🔍 server", "usage record found:", usage ? "YES" : "NO");
-
   if (usage) {
-    console.log("🔍 server", "usage record details:", {
+    slog("generation-utils", "usage record details", {
       entitlement: usage.entitlement,
       count: usage.count,
       limit: usage.limit,
-      periodStart: usage.periodStart.toISOString(),
-      periodEnd: usage.periodEnd.toISOString(),
       revenuecatUserId: usage.revenuecatUserId,
     });
   }
@@ -115,15 +112,8 @@ export async function checkUserUsage(
     };
   }
 
-  // Check if user has reached their generation limit
-  console.log("🔍 server", "checking limit:", {
-    currentCount: usage.count,
-    limit: usage.limit,
-    isLimitReached: usage.count >= usage.limit,
-  });
-
   if (usage.count >= usage.limit) {
-    console.log("⚠️ server", "LIMIT REACHED - rejecting request:", {
+    slog("generation-utils", "LIMIT REACHED - rejecting request", {
       userId: session.user.id,
       email: session.user.email,
       entitlement: usage.entitlement,
@@ -169,7 +159,7 @@ export async function incrementUsage(
     });
   });
 
-  console.log("✅ server", "Usage incremented successfully:", {
+  slog("generation-utils", "Usage incremented successfully", {
     userId: session.user.id,
     email: session.user.email,
     entitlement: usage.entitlement,
@@ -210,21 +200,23 @@ export async function improvePrompt(
     if (response.ok) {
       const data = await response.json();
       const improvedPrompt = data.improvedPrompt || prompt;
-      console.log("✨ server", "Prompt improved:", {
+      slog("generation-utils", "Prompt improved", {
         original: prompt,
         improved: improvedPrompt,
       });
       return improvedPrompt;
     }
 
-    console.warn(
-      "⚠️ server",
-      "Failed to improve prompt, using original:",
-      response.statusText
-    );
+    slog("generation-utils", "Failed to improve prompt, using original", {
+      original: prompt,
+      response: response.statusText,
+    });
     return prompt;
   } catch (error) {
-    console.warn("⚠️ server", "Error improving prompt, using original:", error);
+    slog("generation-utils", "Error improving prompt, using original", {
+      original: prompt,
+      error: error,
+    });
     return prompt;
   }
 }
@@ -237,6 +229,30 @@ export async function improvePrompt(
  * Extracts base64 image data from Gemini API response
  */
 export function extractImageFromGeminiResponse(data: any): string | null {
+  // Log Gemini response without the (very large) base64 'parts' array
+  const { candidates, ...rest } = data || {};
+  let candidatesLog = candidates;
+  if (Array.isArray(candidates) && candidates[0]?.content) {
+    // Shallow clone and remove 'parts'
+    candidatesLog = [
+      {
+        ...candidates[0],
+        content: { ...candidates[0].content },
+      },
+      ...candidates.slice(1),
+    ];
+    if (candidatesLog[0]?.content?.parts) {
+      candidatesLog[0].content = {
+        ...candidatesLog[0].content,
+        parts: "[[omitted base64 image data]]",
+      };
+    }
+  }
+  slog("generation-utils", "extracting image from Gemini response", {
+    ...rest,
+    // only log the non-base64 aspects; add candidates minus large 'parts'
+    candidates: candidatesLog,
+  });
   const parts = data?.candidates?.[0]?.content?.parts;
   const imagePart = parts?.find((part: any) => part.inlineData);
   return imagePart?.inlineData?.data || null;
