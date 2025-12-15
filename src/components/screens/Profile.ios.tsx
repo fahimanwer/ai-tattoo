@@ -218,7 +218,7 @@ export function Profile() {
       if (name.toLowerCase().includes("starter")) {
         return {
           name: "Starter",
-          color: Color.yellow[500],
+          color: "yellow",
           icon: "star.leadinghalf.filled" as const,
         };
       }
@@ -496,8 +496,7 @@ export function Profile() {
           footer={
             isSecretExpanded ? (
               <Text color={Color.zinc[400]}>
-                We manually verify all reviews. Limit increases are applied
-                within 24-48 hours. One reward per account.
+                Your feedback helps us improve the app for everyone.
               </Text>
             ) : null
           }
@@ -509,45 +508,34 @@ export function Profile() {
           >
             <VStack spacing={16} alignment="leading">
               <Text color={Color.zinc[300]}>
-                {"Want free generations? Here's how:"}
+                {"We'd love to hear from you!"}
               </Text>
 
-              <LabeledContent
-                label="⭐ Leave a Review"
-                modifiers={[font({ weight: "bold" })]}
-              >
-                <Text
-                  color={Color.green[500]}
-                  modifiers={[font({ weight: "bold" })]}
-                >
-                  +10 gens
-                </Text>
-              </LabeledContent>
               <Text color={Color.zinc[400]}>
                 {
-                  "Drop us a 5-star review on the App Store, screenshot it, and email it to us with your account email."
+                  "If you're enjoying AI Tattoo, a review on the App Store helps other tattoo lovers discover us. You can also reach out anytime with feedback or feature ideas."
                 }
               </Text>
             </VStack>
 
             <FormButton
-              title="Leave a Review"
+              title="Rate on App Store"
               systemImage="star.fill"
               onPress={handleRateApp}
-              color={Color.green[500]}
+              color={"yellow"}
             />
             <FormButton
-              title="Email Screenshot"
+              title="Send Feedback"
               systemImage="envelope.fill"
               onPress={() => {
-                const subject = "AI Tattoo Review Screenshot 🎁";
-                const body = `Hi!\n\nI left a review for AI Tattoo! Here's my screenshot.\n\nMy account email: ${user?.email}\n\nMy user ID: ${user?.id}\n\n[Attach your screenshot]\n\nThanks!`;
+                const subject = "AI Tattoo Feedback";
+                const body = `Hi!\n\nI have some feedback about AI Tattoo:\n\n[Your feedback here]\n\nThanks!`;
                 const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
                   subject
                 )}&body=${encodeURIComponent(body)}`;
                 Linking.openURL(mailtoUrl);
               }}
-              color="yellow"
+              color={Color.zinc[500]}
             />
           </DisclosureGroup>
         </Section>

@@ -371,7 +371,7 @@ export function Paywall() {
               }
             }}
             variant="link"
-            color="yellow"
+            color={"yellow"}
           />
 
           <View style={styles.legalLinks}>
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     experimental_backgroundImage: `linear-gradient(to top, transparent, ${
       Color.yellow[400] + "30"
     })`,
-    boxShadow: `0 0 0 3px ${Color.yellow[400]}`,
+    boxShadow: `0 0 0 3px yellow`,
   },
   badgeMostPopular: {
     position: "absolute",
