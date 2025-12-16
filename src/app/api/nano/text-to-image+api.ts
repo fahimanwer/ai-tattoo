@@ -63,7 +63,7 @@ export const POST = withAuth(async (request: Request, session: Session) => {
         generationConfig: {
           imageConfig: {
             aspectRatio: isFreeTier ? "1:1" : "4:3",
-            image_size: "1K",
+            imageSize: "1K",
           },
         },
       }),
