@@ -32,6 +32,70 @@ export type Session = {
 };
 
 // ============================================================================
+// Gemini API Types
+// ============================================================================
+
+/**
+ * Gemini API error status codes (canonical error codes)
+ */
+export type GeminiErrorStatus =
+  | "INVALID_ARGUMENT"
+  | "FAILED_PRECONDITION"
+  | "UNAUTHENTICATED"
+  | "PERMISSION_DENIED"
+  | "NOT_FOUND"
+  | "RESOURCE_EXHAUSTED"
+  | "INTERNAL"
+  | "UNKNOWN"
+  | "UNAVAILABLE"
+  | "DEADLINE_EXCEEDED";
+
+/**
+ * Gemini image generation finish reasons
+ */
+export type GeminiFinishReason =
+  | "STOP"
+  | "SAFETY"
+  | "RECITATION"
+  | "OTHER"
+  | "MAX_TOKENS"
+  | "BLOCKLIST";
+
+/**
+ * Structured error from Gemini API
+ */
+export interface GeminiError {
+  httpStatus: number;
+  status: GeminiErrorStatus;
+  message: string;
+  reason?: string;
+  isRetryable: boolean;
+  retryAfterMs?: number;
+}
+
+/**
+ * Result type for Gemini API operations
+ */
+export type GeminiImageResult =
+  | { success: true; imageData: string }
+  | { success: false; error: GeminiError };
+
+/**
+ * User-friendly error messages for different error types
+ */
+export const GEMINI_USER_ERROR_MESSAGES: Record<string, string> = {
+  SAFETY: "This prompt couldn't be processed. Try a different description.",
+  RESOURCE_EXHAUSTED: "Server is busy. Please try again in a moment.",
+  INVALID_ARGUMENT: "Invalid request. Please try a different prompt.",
+  UNAUTHENTICATED: "Authentication error. Please try again later.",
+  PERMISSION_DENIED: "Service temporarily unavailable. Please try again later.",
+  NOT_FOUND: "Service configuration error. Please contact support.",
+  UNAVAILABLE: "Service temporarily unavailable. Please try again.",
+  DEADLINE_EXCEEDED: "Request timed out. Please try again.",
+  DEFAULT: "Something went wrong. Please try again.",
+};
+
+// ============================================================================
 // Prisma Client
 // ============================================================================
 
@@ -226,7 +290,396 @@ export async function improvePrompt(
 // ============================================================================
 
 /**
+ * HTTP status codes that are retryable
+ */
+const RETRYABLE_HTTP_CODES = new Set([429, 500, 503, 504]);
+
+/**
+ * Gemini error statuses that are retryable
+ */
+const RETRYABLE_ERROR_STATUSES = new Set<GeminiErrorStatus>([
+  "RESOURCE_EXHAUSTED",
+  "INTERNAL",
+  "UNKNOWN",
+  "UNAVAILABLE",
+  "DEADLINE_EXCEEDED",
+]);
+
+/**
+ * Parses a Gemini API error response and returns a structured GeminiError
+ */
+function parseGeminiError(
+  httpStatus: number,
+  data: any,
+  attempt: number = 0
+): GeminiError {
+  const error = data?.error;
+  const status: GeminiErrorStatus = error?.status || "UNKNOWN";
+  const message = error?.message || "Unknown error occurred";
+
+  // Extract detailed reason from ErrorInfo if available
+  const errorInfo = error?.details?.find(
+    (d: any) => d["@type"] === "type.googleapis.com/google.rpc.ErrorInfo"
+  );
+  const reason = errorInfo?.reason;
+
+  // Determine if this error is retryable
+  const isRetryable =
+    RETRYABLE_HTTP_CODES.has(httpStatus) ||
+    RETRYABLE_ERROR_STATUSES.has(status);
+
+  // Calculate retry delay with exponential backoff (1s, 2s, 4s)
+  const retryAfterMs = isRetryable ? Math.pow(2, attempt) * 1000 : undefined;
+
+  return {
+    httpStatus,
+    status,
+    message,
+    reason,
+    isRetryable,
+    retryAfterMs,
+  };
+}
+
+/**
+ * Handles a Gemini API response and returns a structured result.
+ * Parses both success responses (extracting image) and error responses.
+ *
+ * @param response - The fetch Response object
+ * @param data - The parsed JSON data from the response
+ * @param attempt - Current retry attempt (for calculating backoff)
+ * @returns GeminiImageResult with either success + imageData or failure + error
+ */
+export function handleGeminiResponse(
+  response: Response,
+  data: any,
+  attempt: number = 0
+): GeminiImageResult {
+  // Handle HTTP errors
+  if (!response.ok) {
+    const error = parseGeminiError(response.status, data, attempt);
+
+    slog("generation-utils", "Gemini API error", {
+      httpStatus: error.httpStatus,
+      status: error.status,
+      message: error.message,
+      reason: error.reason,
+      isRetryable: error.isRetryable,
+      attempt,
+    });
+
+    return { success: false, error };
+  }
+
+  // Check for prompt-level blocking (safety filters)
+  if (data?.promptFeedback?.blockReason) {
+    const blockReason = data.promptFeedback.blockReason;
+
+    slog("generation-utils", "Gemini prompt blocked", {
+      blockReason,
+      safetyRatings: data.promptFeedback.safetyRatings,
+    });
+
+    return {
+      success: false,
+      error: {
+        httpStatus: 200,
+        status: "INVALID_ARGUMENT",
+        message: `Prompt blocked: ${blockReason}`,
+        reason: "SAFETY",
+        isRetryable: false,
+      },
+    };
+  }
+
+  // Check if candidates exist
+  const candidates = data?.candidates;
+  if (!candidates || candidates.length === 0) {
+    slog("generation-utils", "Gemini returned empty candidates", {
+      promptFeedback: data?.promptFeedback,
+      usageMetadata: data?.usageMetadata,
+    });
+
+    return {
+      success: false,
+      error: {
+        httpStatus: 200,
+        status: "UNKNOWN",
+        message: "No candidates returned from Gemini",
+        isRetryable: true,
+        retryAfterMs: Math.pow(2, attempt) * 1000,
+      },
+    };
+  }
+
+  // Check finish reason
+  const finishReason = candidates[0]?.finishReason as
+    | GeminiFinishReason
+    | undefined;
+  if (finishReason && finishReason !== "STOP") {
+    const safetyRatings = candidates[0]?.safetyRatings;
+
+    slog("generation-utils", "Gemini generation stopped", {
+      finishReason,
+      safetyRatings,
+    });
+
+    // SAFETY blocks are not retryable - prompt needs to change
+    if (finishReason === "SAFETY") {
+      return {
+        success: false,
+        error: {
+          httpStatus: 200,
+          status: "INVALID_ARGUMENT",
+          message: `Generation stopped: ${finishReason}`,
+          reason: "SAFETY",
+          isRetryable: false,
+        },
+      };
+    }
+
+    // OTHER, RECITATION might be transient
+    return {
+      success: false,
+      error: {
+        httpStatus: 200,
+        status: "UNKNOWN",
+        message: `Generation stopped: ${finishReason}`,
+        reason: finishReason,
+        isRetryable: finishReason === "OTHER",
+        retryAfterMs:
+          finishReason === "OTHER" ? Math.pow(2, attempt) * 1000 : undefined,
+      },
+    };
+  }
+
+  // Extract image data
+  const parts = candidates[0]?.content?.parts;
+  const imagePart = parts?.find((part: any) => part.inlineData);
+  const imageData = imagePart?.inlineData?.data;
+
+  if (!imageData) {
+    // Log response structure for debugging (without base64 data)
+    const candidatesLog = candidates.map((c: any, i: number) => ({
+      index: i,
+      finishReason: c.finishReason,
+      hasParts: !!c.content?.parts,
+      partsCount: c.content?.parts?.length,
+      partTypes: c.content?.parts?.map((p: any) =>
+        p.inlineData ? "inlineData" : p.text ? "text" : "unknown"
+      ),
+    }));
+
+    slog("generation-utils", "No image data in Gemini response", {
+      candidatesLog,
+      usageMetadata: data?.usageMetadata,
+    });
+
+    return {
+      success: false,
+      error: {
+        httpStatus: 200,
+        status: "UNKNOWN",
+        message: "No image data found in response",
+        isRetryable: true,
+        retryAfterMs: Math.pow(2, attempt) * 1000,
+      },
+    };
+  }
+
+  slog(
+    "generation-utils",
+    `Successfully extracted image data (${imageData.length} chars)`
+  );
+
+  return { success: true, imageData };
+}
+
+/**
+ * Default maximum number of retries for Gemini API calls
+ */
+const DEFAULT_MAX_RETRIES = 1;
+
+/**
+ * Fetches from Gemini API with automatic retry for retryable errors.
+ * Uses exponential backoff: 1s, 2s, 4s delays between retries.
+ *
+ * @param url - Gemini API endpoint URL
+ * @param options - Fetch options (method, headers, body)
+ * @param maxRetries - Maximum number of retry attempts (default: 2)
+ * @returns GeminiImageResult with either success + imageData or failure + error
+ */
+export async function fetchGeminiWithRetry(
+  url: string,
+  options: RequestInit,
+  maxRetries: number = DEFAULT_MAX_RETRIES
+): Promise<GeminiImageResult> {
+  let lastError: GeminiError | null = null;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      slog("generation-utils", `Gemini API request (attempt ${attempt + 1})`, {
+        url: url.replace(/key=[^&]+/, "key=***"),
+        attempt,
+        maxRetries,
+      });
+
+      const response = await fetch(url, options);
+
+      // Try to parse JSON response
+      let data: any;
+      try {
+        data = await response.json();
+      } catch {
+        slog("generation-utils", "Failed to parse Gemini response as JSON", {
+          status: response.status,
+          statusText: response.statusText,
+        });
+
+        // Return a structured error for JSON parse failures
+        return {
+          success: false,
+          error: {
+            httpStatus: response.status,
+            status: "INTERNAL",
+            message: "Failed to parse API response",
+            isRetryable: true,
+            retryAfterMs: Math.pow(2, attempt) * 1000,
+          },
+        };
+      }
+
+      // Handle the response
+      const result = handleGeminiResponse(response, data, attempt);
+
+      // If successful, return immediately
+      if (result.success) {
+        return result;
+      }
+
+      // If not retryable, return the error immediately
+      if (!result.error.isRetryable) {
+        slog("generation-utils", "Non-retryable error, failing fast", {
+          status: result.error.status,
+          reason: result.error.reason,
+        });
+        return result;
+      }
+
+      // Save the error for potential final return
+      lastError = result.error;
+
+      // If we have retries left, wait and retry
+      if (attempt < maxRetries) {
+        const delayMs =
+          result.error.retryAfterMs || Math.pow(2, attempt) * 1000;
+        slog("generation-utils", `Retrying after ${delayMs}ms`, {
+          attempt: attempt + 1,
+          maxRetries,
+          status: result.error.status,
+        });
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    } catch (networkError) {
+      // Handle network-level errors (connection failed, timeout, etc.)
+      slog("generation-utils", "Network error during Gemini API call", {
+        error:
+          networkError instanceof Error
+            ? networkError.message
+            : String(networkError),
+        attempt,
+      });
+
+      lastError = {
+        httpStatus: 0,
+        status: "UNAVAILABLE",
+        message:
+          networkError instanceof Error
+            ? networkError.message
+            : "Network error",
+        isRetryable: true,
+        retryAfterMs: Math.pow(2, attempt) * 1000,
+      };
+
+      // If we have retries left, wait and retry
+      if (attempt < maxRetries) {
+        const delayMs = Math.pow(2, attempt) * 1000;
+        slog(
+          "generation-utils",
+          `Retrying after network error in ${delayMs}ms`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+
+  // All retries exhausted
+  slog("generation-utils", "All retries exhausted", {
+    maxRetries,
+    lastError,
+  });
+
+  return {
+    success: false,
+    error: lastError || {
+      httpStatus: 0,
+      status: "UNKNOWN",
+      message: "All retries exhausted",
+      isRetryable: false,
+    },
+  };
+}
+
+/**
+ * Helper to create a user-friendly error Response from a GeminiError
+ */
+export function createGeminiErrorResponse(error: GeminiError): Response {
+  const userMessage =
+    GEMINI_USER_ERROR_MESSAGES[error.reason || ""] ||
+    GEMINI_USER_ERROR_MESSAGES[error.status] ||
+    GEMINI_USER_ERROR_MESSAGES.DEFAULT;
+
+  // Map Gemini errors to appropriate HTTP status codes for the client
+  let httpStatus: number;
+  switch (error.status) {
+    case "INVALID_ARGUMENT":
+    case "FAILED_PRECONDITION":
+      httpStatus = 400;
+      break;
+    case "UNAUTHENTICATED":
+      httpStatus = 401;
+      break;
+    case "PERMISSION_DENIED":
+      httpStatus = 403;
+      break;
+    case "NOT_FOUND":
+      httpStatus = 404;
+      break;
+    case "RESOURCE_EXHAUSTED":
+      httpStatus = 429;
+      break;
+    case "UNAVAILABLE":
+    case "DEADLINE_EXCEEDED":
+      httpStatus = 503;
+      break;
+    default:
+      httpStatus = 500;
+  }
+
+  return Response.json(
+    {
+      success: false,
+      error: userMessage,
+      errorCode: error.reason || error.status,
+      retryable: error.isRetryable,
+    },
+    { status: httpStatus }
+  );
+}
+
+/**
  * Extracts base64 image data from Gemini API response
+ * @deprecated Use handleGeminiResponse instead for better error handling
  */
 export function extractImageFromGeminiResponse(data: any): string | null {
   // Log Gemini response without the (very large) base64 'parts' array

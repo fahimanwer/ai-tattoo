@@ -3,8 +3,9 @@ import { withAuth } from "@/server-utils/auth-middleware";
 import { constants } from "@/server-utils/constants";
 import {
   checkUserUsage,
+  createGeminiErrorResponse,
   enhancePromptForTextToImage,
-  extractImageFromGeminiResponse,
+  fetchGeminiWithRetry,
   improvePrompt as handleImprovePrompt,
   incrementUsage,
   type Session,
@@ -46,12 +47,12 @@ export const POST = withAuth(async (request: Request, session: Session) => {
     );
     const enhancedPrompt = enhancePromptForTextToImage(improvedPrompt);
 
-    // Generate image
+    // Generate image with retry logic
     const geminiUrl = isFreeTier
       ? GEMINI_IMAGE_BASE_URL_NANOBANANA
       : GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO;
 
-    const response = await fetch(geminiUrl, {
+    const result = await fetchGeminiWithRetry(geminiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -68,26 +69,22 @@ export const POST = withAuth(async (request: Request, session: Session) => {
       }),
     });
 
-    const data = await response.json();
-    const imageData = extractImageFromGeminiResponse(data);
-
-    if (!imageData) {
-      slog("text-to-image+api", "No image data found in response");
-      return Response.json(
-        { error: "No image data received" },
-        { status: 500 }
-      );
+    if (!result.success) {
+      slog("text-to-image+api", "Image generation failed", {
+        error: result.error,
+      });
+      return createGeminiErrorResponse(result.error);
     }
 
     slog(
       "text-to-image+api",
-      `Successfully generated image, size: ${imageData.length} characters`
+      `Successfully generated image, size: ${result.imageData.length} characters`
     );
 
     // Increment usage after successful generation
     await incrementUsage(usage, session);
 
-    return Response.json({ imageData }, { status: 200 });
+    return Response.json({ imageData: result.imageData }, { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return Response.json(
