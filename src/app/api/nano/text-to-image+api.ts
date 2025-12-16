@@ -47,27 +47,26 @@ export const POST = withAuth(async (request: Request, session: Session) => {
     );
     const enhancedPrompt = enhancePromptForTextToImage(improvedPrompt);
 
-    // Generate image with retry logic
-    const geminiUrl = isFreeTier
-      ? GEMINI_IMAGE_BASE_URL_NANOBANANA
-      : GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO;
-
-    const result = await fetchGeminiWithRetry(geminiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": GEMINI_API_KEY,
-      },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: enhancedPrompt }] }],
-        generationConfig: {
-          imageConfig: {
-            aspectRatio: isFreeTier ? "1:1" : "4:3",
-            imageSize: "1K",
-          },
+    const result = await fetchGeminiWithRetry(
+      GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_API_KEY,
         },
-      }),
-    });
+        // https://ai.google.dev/api/generate-content#v1beta.GenerationConfig
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: enhancedPrompt }] }],
+          generationConfig: {
+            imageConfig: {
+              aspectRatio: "1:1",
+              imageSize: "1K",
+            },
+          },
+        }),
+      }
+    );
 
     if (!result.success) {
       slog("text-to-image+api", "Image generation failed", {

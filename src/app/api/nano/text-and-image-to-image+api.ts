@@ -13,11 +13,7 @@ import {
 } from "@/server-utils/generation-utils";
 import { z } from "zod";
 
-const {
-  GEMINI_IMAGE_BASE_URL_NANOBANANA,
-  GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
-  GEMINI_API_KEY,
-} = constants;
+const { GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO, GEMINI_API_KEY } = constants;
 
 const textAndImageToImageSchema = z.object({
   prompt: z.string().min(1, "Prompt is required and cannot be empty"),
@@ -62,27 +58,25 @@ export const POST = withAuth(async (request: Request, session: Session) => {
     // Convert images to Gemini format
     const imageParts = toGeminiImageParts(images_base64);
 
-    // Generate image with retry logic
-    const geminiUrl = isFreeTier
-      ? GEMINI_IMAGE_BASE_URL_NANOBANANA
-      : GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO;
-
-    const result = await fetchGeminiWithRetry(geminiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": GEMINI_API_KEY,
-      },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: enhancedPrompt }, ...imageParts] }],
-        generationConfig: {
-          imageConfig: {
-            aspectRatio: "1:1",
-            imageSize: "1K",
-          },
+    const result = await fetchGeminiWithRetry(
+      GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_API_KEY,
         },
-      }),
-    });
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: enhancedPrompt }, ...imageParts] }],
+          generationConfig: {
+            imageConfig: {
+              aspectRatio: "1:1",
+              imageSize: "1K",
+            },
+          },
+        }),
+      }
+    );
 
     if (!result.success) {
       slog("text-and-image-to-image+api", "Image generation failed", {
