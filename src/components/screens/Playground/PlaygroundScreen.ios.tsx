@@ -1,15 +1,12 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { use, useEffect, useRef } from "react";
+import { Activity, use, useEffect, useId, useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
   FlatList,
-  Platform,
-  StatusBar,
   StyleSheet,
   View,
 } from "react-native";
-import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
 
 import { authClient } from "@/lib/auth-client";
@@ -25,14 +22,33 @@ import {
   PlaygroundContext,
 } from "@/src/context/PlaygroundContext";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
-import { Host } from "@expo/ui/swift-ui";
+import {
+  GlassEffectContainer,
+  Host,
+  HStack,
+  Image,
+  Namespace,
+  Button as SwiftUIButton,
+  TextField,
+  VStack,
+} from "@expo/ui/swift-ui";
+import {
+  Animation,
+  animation,
+  buttonStyle,
+  clipShape,
+  glassEffect,
+  offset,
+  padding,
+  tint,
+} from "@expo/ui/swift-ui/modifiers";
 import { GlassView } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { TextToImageResult } from "./shared/TextToImageResult";
 
 // Prepare suggestions for native view
 const suggestions = formattedSuggestions(featuredTattoos);
@@ -368,15 +384,23 @@ export function PlaygroundScreen() {
         )}
 
         {/* Text to image result */}
-        <View style={styles.textToImageResultContainer}>
-          <TextToImageResult
-            mutation={activeMutation}
-            lastGenerationUris={activeGenerationUris}
-            onRemoveImage={removeImageFromActiveGroup}
-          />
-        </View>
+        {/* <PressableScale
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            alert("test");
+          }}
+          style={{ backgroundColor: "red", padding: 16 }}
+        >
+          <View style={styles.textToImageResultContainer}>
+            <TextToImageResult
+              mutation={activeMutation}
+              lastGenerationUris={activeGenerationUris}
+              onRemoveImage={removeImageFromActiveGroup}
+            />
+          </View>
+        </PressableScale> */}
 
-        {!isAuthenticated ? (
+        <Activity mode={!isAuthenticated ? "visible" : "hidden"}>
           <Animated.View
             entering={FadeIn.duration(1000)}
             exiting={FadeOut.duration(1000)}
@@ -401,7 +425,9 @@ export function PlaygroundScreen() {
               onPress={() => router.push("/auth-sheet")}
             />
           </Animated.View>
-        ) : (
+        </Activity>
+
+        <Activity mode={isAuthenticated ? "visible" : "hidden"}>
           <ActionControls
             activeGenerationUris={activeGenerationUris}
             bottom={bottom}
@@ -411,7 +437,7 @@ export function PlaygroundScreen() {
             prompt={prompt}
             pickImageFromGallery={pickImageFromGallery}
           />
-        )}
+        </Activity>
       </View>
     </>
   );
@@ -434,6 +460,8 @@ function ActionControls({
   prompt: string;
   pickImageFromGallery: () => Promise<boolean>;
 }) {
+  const namespaceId = useId();
+
   return activeGenerationUris.length >= 2 ? (
     <View
       style={{
@@ -466,32 +494,143 @@ function ActionControls({
       />
     </View>
   ) : (
-    <Host
+    <KeyboardStickyView
       style={{
-        height: activeMutation.isError ? "70%" : "80%",
         position: "absolute",
-        bottom: 0,
+        bottom: bottom,
         left: 0,
         right: 0,
+        paddingHorizontal: 16,
       }}
+      offset={{ opened: bottom - 16, closed: 0 }}
     >
-      <InputControls
-        onChangeText={setPrompt}
-        onPressImageGallery={pickImageFromGallery}
-        onSubmit={handleTattooGeneration}
-        isSubmitDisabled={prompt.length === 0}
-        suggestions={suggestions}
-        onPressSecondIcon={() => router.push("/(playground)/camera-view")}
-        // autoFocus // this is buggy need to fix later
-      />
-    </Host>
+      <Host matchContents ignoreSafeAreaKeyboardInsets>
+        <Namespace id={namespaceId}>
+          <GlassEffectContainer>
+            <HStack
+              spacing={8}
+              alignment="bottom"
+              modifiers={
+                [
+                  // padding({ vertical: 12, horizontal: 16 }),
+                  // glassEffect({
+                  //   glass: {
+                  //     variant: "regular",
+                  //     interactive: true,
+                  //   },
+                  //   shape: "capsule",
+                  // }),
+                  // clipShape("rectangle", 50),
+                ]
+              }
+            >
+              <SwiftUIButton
+                onPress={() => {
+                  alert("test");
+                }}
+                modifiers={[tint("white"), buttonStyle("glass")]}
+              >
+                <Image
+                  systemName="plus"
+                  size={20}
+                  modifiers={[
+                    padding({ vertical: 6, horizontal: 0 }),
+                    clipShape("circle"),
+                  ]}
+                />
+              </SwiftUIButton>
+
+              <VStack
+                modifiers={[
+                  glassEffect({
+                    glass: {
+                      variant: "regular",
+                      interactive: true,
+                    },
+                    shape: "roundedRectangle",
+                    cornerRadius: 20,
+                  }),
+                  animation(
+                    Animation.spring({
+                      duration: 0.5,
+                      dampingFraction: 0.5,
+                      blendDuration: 0.5,
+                      bounce: 0.5,
+                    }),
+                    prompt.length > 0
+                  ),
+                ]}
+              >
+                <TextField
+                  placeholder="Enter text"
+                  multiline
+                  allowNewlines
+                  numberOfLines={5}
+                  autoFocus
+                  modifiers={[padding({ vertical: 12, horizontal: 16 })]}
+                  onChangeText={setPrompt}
+                  onSubmit={handleTattooGeneration}
+                />
+              </VStack>
+
+              {prompt.length > 0 && (
+                <SwiftUIButton
+                  onPress={() => {
+                    alert("test");
+                  }}
+                  modifiers={[
+                    tint("yellow"),
+                    buttonStyle("glassProminent"),
+                    offset({ x: prompt.length > 0 ? 0 : 100 }),
+                    animation(
+                      Animation.spring({
+                        duration: 0.5,
+                        dampingFraction: 0.5,
+                        blendDuration: 0.5,
+                        bounce: 0.5,
+                      }),
+                      prompt.length > 0
+                    ),
+                  ]}
+                >
+                  <Image
+                    systemName="arrow.up"
+                    size={16}
+                    color={"black"}
+                    modifiers={[padding({ vertical: 6, horizontal: 2 })]}
+                  />
+                </SwiftUIButton>
+              )}
+            </HStack>
+          </GlassEffectContainer>
+        </Namespace>
+      </Host>
+    </KeyboardStickyView>
+    // <Host
+    //   style={{
+    //     height: activeMutation.isError ? "70%" : "80%",
+    //     position: "absolute",
+    //     bottom: 0,
+    //     left: 0,
+    //     right: 0,
+    //   }}
+    // >
+    //   <InputControls
+    //     onChangeText={setPrompt}
+    //     onPressImageGallery={pickImageFromGallery}
+    //     onSubmit={handleTattooGeneration}
+    //     isSubmitDisabled={prompt.length === 0}
+    //     suggestions={suggestions}
+    //     onPressSecondIcon={() => router.push("/(playground)/camera-view")}
+    //     // autoFocus // this is buggy need to fix later
+    //   />
+    // </Host>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   listStyle: {
     padding: 16,
