@@ -6,7 +6,7 @@ import {
   Image,
   ImageProps,
 } from "@expo/ui/swift-ui";
-import { padding } from "@expo/ui/swift-ui/modifiers";
+import { buttonStyle, controlSize, padding } from "@expo/ui/swift-ui/modifiers";
 import { StyleProp, ViewStyle } from "react-native";
 
 const SIZE = theme.fontSize20;
@@ -26,8 +26,10 @@ export function HeaderButton({
     <Host matchContents style={[{ height: SIZE, width: SIZE }, style]}>
       <Button
         {...buttonProps}
-        variant={buttonProps?.variant || "glass"}
-        controlSize="small"
+        modifiers={[
+          controlSize("small"),
+          buttonStyle(buttonProps?.variant || "borderedProminent"),
+        ]}
       >
         <Image
           {...imageProps}

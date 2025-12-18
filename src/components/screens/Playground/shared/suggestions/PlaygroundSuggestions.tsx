@@ -1,6 +1,6 @@
 import { Text } from "@/src/components/ui/Text";
 import { Button, Host } from "@expo/ui/swift-ui";
-import { frame } from "@expo/ui/swift-ui/modifiers";
+import { buttonStyle, frame } from "@expo/ui/swift-ui/modifiers";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import Animated from "react-native-reanimated";
@@ -102,8 +102,7 @@ const SuggestionItem = React.memo(
       <Host style={{ marginRight: 44 }} matchContents>
         <Button
           onPress={() => onSelect(item.prompt)}
-          variant="glass"
-          modifiers={[frame({ width: 190, height: 44 })]}
+          modifiers={[frame({ width: 190, height: 44 }), buttonStyle("glass")]}
         >
           <Text type="sm" style={{ textAlign: "center" }}>
             {item.label}

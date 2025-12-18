@@ -14,7 +14,7 @@ import {
   HStack,
   Label,
   LabeledContent,
-  LinearProgress,
+  Progress,
   Section,
   Switch,
   Text,
@@ -305,8 +305,9 @@ export function Profile() {
             }
           >
             <HStack spacing={16}>
-              <LinearProgress
+              <Progress
                 progress={remaining / limit}
+                variant="linear"
                 color={
                   remaining < 4
                     ? "yellow"

@@ -30,27 +30,24 @@ const SessionHistoryItemComponent = ({
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               onSelect();
             }}
-          >
-            Preview
-          </Button>
+            label="Preview"
+          />
           <Button
             systemImage="square.and.arrow.down"
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               onSave();
             }}
-          >
-            Save to Gallery
-          </Button>
+            label="Save to Gallery"
+          />
           <Button
             systemImage="square.and.arrow.up"
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               onShare();
             }}
-          >
-            Share
-          </Button>
+            label="Share"
+          />
           <Button
             systemImage="trash"
             onPress={() => {
@@ -58,9 +55,8 @@ const SessionHistoryItemComponent = ({
               onDelete();
             }}
             role="destructive"
-          >
-            Delete
-          </Button>
+            label="Delete"
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Button onPress={onPress}>
