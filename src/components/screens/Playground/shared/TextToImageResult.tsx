@@ -1,35 +1,26 @@
 import { BLURHASH } from "@/lib/image-cache";
-import { Icon } from "@/src/components/ui/Icon";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { ImageGenerationMutation } from "@/src/context/PlaygroundContext";
-import {
-  Host,
-  HStack,
-  Button as SwiftButton,
-  Text as SwiftText,
-} from "@expo/ui/swift-ui";
-import { font, frame } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { PressableScale } from "pressto";
-import { Activity, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AnimatedText } from "./AnimatedText";
+
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
   lastGenerationUris: string[]; // Array of file URIs
   onRemoveImage?: (uri: string) => void;
-  onRetry?: () => void;
 }
 
 export function TextToImageResult({
   mutation,
   lastGenerationUris,
   onRemoveImage,
-  onRetry,
 }: TextToImageResultProps) {
   const router = useRouter();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -66,33 +57,16 @@ export function TextToImageResult({
     return () => clearInterval(vibrationInterval);
   }, [mutation.isPending]);
 
-  // Only show error if there are no generated images and mutation has error
-  // If there are images, show them instead of the error
-  if (mutation.isError && lastGenerationUris.length === 0) {
+  if (mutation.isError) {
     return (
       <View
         style={{
-          height: "85%",
+          flex: 1,
           alignItems: "center",
-          justifyContent: "center",
-          gap: 2,
+          gap: 8,
         }}
       >
-        <View>
-          <Icon
-            symbol="exclamationmark.triangle"
-            size={32}
-            color={Color.amber[600]}
-          />
-        </View>
-        <Text
-          type="sm"
-          style={{
-            color: Color.amber[600],
-            textAlign: "center",
-            paddingHorizontal: 32,
-          }}
-        >
+        <Text type="sm" style={{ color: Color.red[600], textAlign: "center" }}>
           {mutation.error?.message === "LIMIT_REACHED"
             ? "You have reached your generation limit for the current period. Please upgrade your plan or wait for the next period."
             : "Something went wrong: " + mutation.error?.message ||
@@ -100,43 +74,23 @@ export function TextToImageResult({
         </Text>
 
         {mutation.error?.message === "LIMIT_REACHED" ? (
-          <Host
-            matchContents
-            useViewportSizeMeasurement
-            style={{ marginTop: 44 }}
+          <PressableScale
+            onPress={() => {
+              mutation.reset();
+              router.push("/(paywall)");
+            }}
           >
-            <SwiftButton
-              color="yellow"
-              variant="glassProminent"
-              onPress={() => {
-                mutation.reset();
-                router.push("/(paywall)");
-              }}
-            >
-              <HStack
-                spacing={8}
-                modifiers={[frame({ width: 200, height: 32 })]}
-              >
-                <SwiftText
-                  color="black"
-                  modifiers={[font({ weight: "semibold", size: 16 })]}
-                >
-                  Upgrade Plan
-                </SwiftText>
-              </HStack>
-            </SwiftButton>
-          </Host>
+            <Text type="default" style={{ color: Color.yellow[400] }}>
+              Upgrade Plan
+            </Text>
+          </PressableScale>
         ) : (
           <PressableScale
             onPress={() => {
               mutation.reset();
             }}
           >
-            <Text
-              type="default"
-              weight="semibold"
-              style={{ color: Color.indigo[400], marginTop: 8 }}
-            >
+            <Text type="default" style={{ color: Color.yellow[400] }}>
               Try Again
             </Text>
           </PressableScale>
@@ -145,13 +99,13 @@ export function TextToImageResult({
     );
   }
   if (mutation.isPending) {
-    return <TextLoadingEmpty lastGenerationUris={lastGenerationUris} />;
+    return <LoadingChangingText lastGenerationUris={lastGenerationUris} />;
   }
   return lastGenerationUris.length > 0 ? (
     <Animated.View
       style={{
         flex: 1,
-        paddingHorizontal: 0,
+        paddingHorizontal: 16,
         gap: 12,
       }}
       entering={FadeIn.duration(1000)}
@@ -161,6 +115,7 @@ export function TextToImageResult({
         style={{
           flexDirection: "row",
           flexWrap: "wrap",
+          gap: 8,
           justifyContent: "center",
         }}
       >
@@ -177,9 +132,9 @@ export function TextToImageResult({
               placeholder={{ blurhash: BLURHASH }}
               cachePolicy="memory-disk"
               style={{
-                width: lastGenerationUris.length === 1 ? "100%" : "96%",
-                aspectRatio: 1,
-                borderRadius: 18,
+                width: "100%",
+                height: lastGenerationUris.length === 1 ? 400 : 200,
+                borderRadius: 16,
                 borderWidth: 1,
                 borderColor: Color.gray[500] + "30",
               }}
@@ -190,20 +145,21 @@ export function TextToImageResult({
           </View>
         ))}
       </View>
-      <Activity mode={lastGenerationUris.length === 1 ? "visible" : "hidden"}>
+      {lastGenerationUris.length > 0 && (
         <Text
           type="xs"
           weight="medium"
-          style={{ color: Color.grayscale[400], textAlign: "center" }}
+          style={{ color: Color.zinc[400], textAlign: "center" }}
         >
-          Tip: Try &quot;minimalist&quot;, &quot;fine line&quot;, or
-          &quot;watercolor&quot; to refine your style
+          {lastGenerationUris.length === 1
+            ? "1 image selected - add one more to combine"
+            : `${lastGenerationUris.length} images selected (max)`}
         </Text>
-      </Activity>
+      )}
     </Animated.View>
   ) : (
     <AnimatedText
-      style={{ flex: 0.2 }}
+      style={{ flex: 0.3 }}
       text="Describe your tattoo or choose a suggestion below"
       color={isKeyboardVisible ? Color.pink[400] : Color.zinc[400]}
       colorDark={isKeyboardVisible ? Color.purple[700] : Color.zinc[700]}
@@ -211,7 +167,7 @@ export function TextToImageResult({
   );
 }
 
-function TextLoadingEmpty({
+function LoadingChangingText({
   lastGenerationUris,
 }: {
   lastGenerationUris: string[];
@@ -258,7 +214,8 @@ function TextLoadingEmpty({
     <View
       style={{
         flex: 1,
-        width: "100%",
+        padding: 32,
+        gap: 32,
       }}
     >
       {hasImages && (

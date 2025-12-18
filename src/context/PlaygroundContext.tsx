@@ -53,7 +53,6 @@ export interface PlaygroundContextValue {
   handleTattooGeneration: () => void;
   removeImageFromActiveGroup: (uri: string) => void;
   resetMutations: () => void;
-  retryLastGeneration: () => void;
 }
 
 export const PlaygroundContext = React.createContext<PlaygroundContextValue>({
@@ -72,7 +71,6 @@ export const PlaygroundContext = React.createContext<PlaygroundContextValue>({
   handleTattooGeneration: () => {},
   removeImageFromActiveGroup: () => {},
   resetMutations: () => {},
-  retryLastGeneration: () => {},
 });
 
 export function PlaygroundProvider({
@@ -84,12 +82,6 @@ export function PlaygroundProvider({
   const queryClient = useQueryClient();
   const { settings } = React.use(AppSettingsContext);
   const [prompt, setPrompt] = React.useState("");
-  const [lastPrompt, setLastPrompt] = React.useState<string>("");
-  const [lastActiveImageGroup, setLastActiveImageGroup] = React.useState<
-    string[] | undefined
-  >(undefined);
-  const [lastWasTextToImage, setLastWasTextToImage] =
-    React.useState<boolean>(true);
   const [sessionGenerations, setSessionGenerations] = React.useState<
     string[][]
   >([]);
@@ -174,13 +166,7 @@ export function PlaygroundProvider({
         ? sessionGenerations[activeGenerationIndex]
         : undefined;
 
-    // Save the prompt and active image group for retry
     const isTextToImage = !activeImageGroup || activeImageGroup.length === 0;
-    setLastPrompt(prompt);
-    setLastActiveImageGroup(
-      activeImageGroup ? [...activeImageGroup] : undefined
-    );
-    setLastWasTextToImage(isTextToImage);
 
     setPrompt("");
     Keyboard.dismiss();
@@ -209,56 +195,6 @@ export function PlaygroundProvider({
         images_base64: base64Images,
         improvePrompt: settings.improvePrompt,
       });
-    }
-  }
-
-  async function retryLastGeneration() {
-    // Check if we have enough info to retry
-    if (
-      !lastPrompt &&
-      (!lastActiveImageGroup || lastActiveImageGroup.length === 0)
-    ) {
-      return;
-    }
-
-    // Reset both mutations to clear any error state
-    textToImageMutation.reset();
-    textAndImageToImageMutation.reset();
-    Keyboard.dismiss();
-
-    // Use the same type of generation as before
-    if (lastWasTextToImage) {
-      // Text to image generation
-      setActiveGenerationIndex(undefined);
-      textToImageMutation.mutate({
-        prompt: lastPrompt,
-        improvePrompt: settings.improvePrompt,
-      });
-    } else if (lastActiveImageGroup && lastActiveImageGroup.length > 0) {
-      // Text and image to image generation
-      // Use our custome prompt to combine two images
-      const promptToUse =
-        lastActiveImageGroup.length === 2
-          ? promptToCombineTwoImages
-          : lastPrompt;
-
-      // Convert all file URIs in the group back to base64 for the API call
-      try {
-        const base64Images = await Promise.all(
-          lastActiveImageGroup.map((uri) => getCachedImageAsBase64(uri))
-        );
-        textAndImageToImageMutation.mutate({
-          prompt: promptToUse,
-          images_base64: base64Images,
-          improvePrompt: settings.improvePrompt,
-        });
-      } catch (error) {
-        console.error("Error converting images to base64 for retry:", error);
-        toast.error("Failed to retry generation", {
-          dismissible: true,
-          duration: 5000,
-        });
-      }
     }
   }
 
@@ -453,7 +389,6 @@ export function PlaygroundProvider({
         handleTattooGeneration,
         removeImageFromActiveGroup,
         resetMutations,
-        retryLastGeneration,
       }}
     >
       {children}

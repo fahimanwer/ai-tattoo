@@ -77,7 +77,6 @@ export function PlaygroundScreen() {
     handleTattooGeneration,
     removeImageFromActiveGroup,
     resetMutations,
-    retryLastGeneration,
   } = use(PlaygroundContext);
 
   const { bottom } = useSafeAreaInsets();
@@ -374,7 +373,6 @@ export function PlaygroundScreen() {
             mutation={activeMutation}
             lastGenerationUris={activeGenerationUris}
             onRemoveImage={removeImageFromActiveGroup}
-            onRetry={retryLastGeneration}
           />
         </View>
 
