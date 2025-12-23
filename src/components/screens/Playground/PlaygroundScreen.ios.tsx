@@ -1,19 +1,13 @@
-import {
-  router,
-  Stack,
-  useLocalSearchParams,
-  useNavigation,
-} from "expo-router";
-import { Activity, use, useEffect, useId, useRef } from "react";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Activity, use, useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
   Pressable,
   StyleSheet,
   View,
 } from "react-native";
-import { SessionHistoryItem } from "./session-history/SessionHistoryItem";
+import { SessionHistoryList } from "./session-history/SessionHistoryList";
 
 import { authClient } from "@/lib/auth-client";
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
@@ -22,38 +16,7 @@ import { FeaturedSuggestion } from "@/modules/animated-input/src/AnimatedInput.t
 import CoreHaptics from "@/modules/native-core-haptics";
 import { Button } from "@/src/components/ui/Button";
 import { Text } from "@/src/components/ui/Text";
-import { Color } from "@/src/constants/TWPalette";
-import {
-  ImageGenerationMutation,
-  PlaygroundContext,
-} from "@/src/context/PlaygroundContext";
-import {
-  GlassEffectContainer,
-  Host,
-  HStack,
-  Image,
-  Namespace,
-  Button as SwiftUIButton,
-  TextField,
-  TextFieldRef,
-  VStack,
-} from "@expo/ui/swift-ui";
-import {
-  Animation,
-  animation,
-  background,
-  buttonStyle,
-  clipShape,
-  controlSize,
-  glassEffect,
-  offset,
-  padding,
-  shapes,
-  tint,
-} from "@expo/ui/swift-ui/modifiers";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
-import * as Haptics from "expo-haptics";
-import { KeyboardStickyView } from "react-native-keyboard-controller";
+import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { InputControls } from "./input-controls/InputControls";
@@ -273,123 +236,14 @@ export function PlaygroundScreen() {
       />
       <View style={styles.container}>
         {/* Session generations list */}
-        {sessionGenerations.length > 0 && (
-          <View
-            style={{
-              position: "absolute",
-              top: -10,
-              zIndex: 1,
-            }}
-          >
-            <FlatList
-              data={sessionGenerations}
-              renderItem={({ item: imageGroup, index }) => (
-                <SessionHistoryItem
-                  uri={imageGroup[0]} // Show first image of the group
-                  imageCount={imageGroup.length}
-                  onSave={() => handleSave(imageGroup[0])}
-                  onShare={() => handleShare(imageGroup[0])}
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                    setActiveGenerationIndex(() => index);
-                  }}
-                  onDelete={() => {
-                    const newGenerations = sessionGenerations.filter(
-                      (_, i) => i !== index
-                    );
-                    setSessionGenerations(newGenerations);
-                    // Update active index if needed
-                    if (activeGenerationIndex === index) {
-                      setActiveGenerationIndex(undefined);
-                    } else if (
-                      activeGenerationIndex !== undefined &&
-                      activeGenerationIndex > index
-                    ) {
-                      setActiveGenerationIndex(activeGenerationIndex - 1);
-                    }
-                  }}
-                  onSelect={() => setActiveGenerationIndex(index)}
-                  isActive={activeGenerationIndex === index}
-                />
-              )}
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) =>
-                `generation-${index}-${item[0] || ""}`
-              }
-              contentContainerStyle={{
-                paddingHorizontal: 4,
-                gap: 8,
-              }}
-              // Performance optimizations
-              getItemLayout={(_, index) => ({
-                length: 50,
-                offset: 50 * index + 16 * index, // item width + gap
-                index,
-              })}
-              removeClippedSubviews={true}
-              maxToRenderPerBatch={10}
-              windowSize={5}
-              initialNumToRender={10}
-              ListFooterComponentStyle={{
-                justifyContent: "center",
-              }}
-              ListFooterComponent={() => (
-                <Activity
-                  mode={
-                    activeGenerationIndex !== undefined ? "visible" : "hidden"
-                  }
-                >
-                  <Host matchContents>
-                    <SwiftUIButton
-                      onPress={() => {
-                        setActiveGenerationIndex(undefined);
-                      }}
-                      modifiers={[
-                        tint("white"),
-                        buttonStyle(
-                          isLiquidGlassAvailable() ? "glass" : "bordered"
-                        ),
-                        background(
-                          isLiquidGlassAvailable() ? "transparent" : "#000000"
-                        ),
-                        clipShape("circle"),
-                        controlSize("small"),
-                      ]}
-                    >
-                      <Image
-                        systemName="arrow.circlepath"
-                        size={20}
-                        modifiers={[
-                          padding({ vertical: 6, horizontal: 0 }),
-                          clipShape("circle"),
-                        ]}
-                      />
-                    </SwiftUIButton>
-                  </Host>
-                </Activity>
-                // <PressableScale
-                //   onPress={() => {
-                //     setActiveGenerationIndex(undefined);
-                //   }}
-                // >
-                //   <GlassView
-                //     style={{
-                //       width: 44,
-                //       height: 44,
-                //       borderRadius: 99,
-                //       alignItems: "center",
-                //       justifyContent: "center",
-                //     }}
-                //     isInteractive
-                //   >
-                //     <SymbolView name={"plus"} size={26} tintColor="white" />
-                //   </GlassView>
-                // </PressableScale>
-              )}
-              horizontal
-            />
-          </View>
-        )}
+        <SessionHistoryList
+          sessionGenerations={sessionGenerations}
+          activeGenerationIndex={activeGenerationIndex}
+          setActiveGenerationIndex={setActiveGenerationIndex}
+          setSessionGenerations={setSessionGenerations}
+          handleSave={handleSave}
+          handleShare={handleShare}
+        />
 
         {/* Text to image result */}
         <Pressable
@@ -444,229 +298,6 @@ export function PlaygroundScreen() {
         </Activity>
       </View>
     </>
-  );
-}
-
-function ActionControls({
-  activeGenerationUris,
-  bottom,
-  handleTattooGeneration,
-  activeMutation,
-  setPrompt,
-  prompt,
-  pickImageFromGallery,
-}: {
-  activeGenerationUris: string[];
-  bottom: number;
-  handleTattooGeneration: () => void;
-  activeMutation: ImageGenerationMutation;
-  setPrompt: React.Dispatch<React.SetStateAction<string>>;
-  prompt: string;
-  pickImageFromGallery: () => Promise<boolean>;
-}) {
-  const namespaceId = useId();
-  const textFieldRef = useRef<TextFieldRef>(null);
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      // Only focus if the TextField is actually rendered (when we have less than 2 images)
-      if (activeGenerationUris.length < 2) {
-        // Small delay to ensure the native view hierarchy is ready
-        setTimeout(() => {
-          textFieldRef.current?.focus();
-        }, 100);
-      }
-    });
-    return unsubscribe;
-  }, [navigation, activeGenerationUris.length]);
-
-  return activeGenerationUris.length >= 2 ? (
-    <View
-      style={{
-        paddingBottom: bottom,
-        paddingHorizontal: 16,
-        gap: 16,
-      }}
-    >
-      <Text style={{ textAlign: "center", fontWeight: "600" }}>
-        Ready to preview your tattoo
-      </Text>
-
-      <Text
-        type="sm"
-        style={{ textAlign: "center" }}
-        darkColor={Color.zinc[400]}
-      >
-        We&apos;ll place your selected tattoo onto the body photo you chose. For
-        the most realistic result, make sure the body area is uncovered,
-        well-lit, and clearly visible.
-      </Text>
-
-      <Button
-        title="Try It On"
-        onPress={handleTattooGeneration}
-        color="yellow"
-        variant="solid"
-        loading={activeMutation.isPending}
-        disabled={activeMutation.isPending}
-      />
-    </View>
-  ) : (
-    <KeyboardStickyView
-      style={{
-        position: "absolute",
-        bottom: bottom,
-        left: 0,
-        right: 0,
-        paddingHorizontal: 16,
-        backgroundColor: "red",
-      }}
-      offset={{ opened: bottom - 16, closed: 0 }}
-    >
-      <Host matchContents ignoreSafeAreaKeyboardInsets>
-        <Namespace id={namespaceId}>
-          <GlassEffectContainer>
-            <HStack
-              spacing={8}
-              alignment="bottom"
-              modifiers={
-                [
-                  // padding({ vertical: 12, horizontal: 16 }),
-                  // glassEffect({
-                  //   glass: {
-                  //     variant: "regular",
-                  //     interactive: true,
-                  //   },
-                  //   shape: "capsule",
-                  // }),
-                  // clipShape("rectangle", 50),
-                ]
-              }
-            >
-              <SwiftUIButton
-                onPress={() => {
-                  textFieldRef.current?.blur();
-                  router.push("/(playground)/sheet");
-                }}
-                modifiers={[
-                  tint("white"),
-                  buttonStyle(isLiquidGlassAvailable() ? "glass" : "bordered"),
-                  background(
-                    isLiquidGlassAvailable() ? "transparent" : "#000000"
-                  ),
-                  clipShape("circle"),
-                ]}
-              >
-                <Image
-                  systemName="plus"
-                  size={20}
-                  modifiers={[
-                    padding({ vertical: 6, horizontal: 0 }),
-                    clipShape("circle"),
-                  ]}
-                />
-              </SwiftUIButton>
-
-              <VStack
-                modifiers={[
-                  glassEffect({
-                    glass: {
-                      variant: "regular",
-                      interactive: true,
-                    },
-                    shape: "roundedRectangle",
-                    cornerRadius: 20,
-                  }),
-                  background(
-                    isLiquidGlassAvailable() ? "transparent" : "black",
-                    shapes.roundedRectangle({
-                      cornerRadius: 20,
-                      roundedCornerStyle: "continuous",
-                    })
-                  ),
-                  animation(
-                    Animation.spring({
-                      duration: 0.5,
-                      dampingFraction: 0.5,
-                      blendDuration: 0.5,
-                      bounce: 0.5,
-                    }),
-                    prompt.length > 0
-                  ),
-                ]}
-              >
-                <TextField
-                  ref={textFieldRef}
-                  placeholder="Enter text"
-                  multiline
-                  allowNewlines
-                  numberOfLines={5}
-                  autoFocus
-                  modifiers={[padding({ vertical: 12, horizontal: 16 })]}
-                  onChangeText={setPrompt}
-                  onSubmit={handleTattooGeneration}
-                />
-              </VStack>
-
-              {prompt.length > 0 && (
-                <SwiftUIButton
-                  onPress={() => {
-                    alert("test");
-                  }}
-                  modifiers={[
-                    tint("yellow"),
-                    buttonStyle(
-                      isLiquidGlassAvailable() ? "glassProminent" : "bordered"
-                    ),
-                    background(
-                      isLiquidGlassAvailable() ? "transparent" : "yellow"
-                    ),
-                    clipShape("circle"),
-                    offset({ x: prompt.length > 0 ? 0 : 100 }),
-                    animation(
-                      Animation.spring({
-                        duration: 0.5,
-                        dampingFraction: 0.5,
-                        blendDuration: 0.5,
-                        bounce: 0.5,
-                      }),
-                      prompt.length > 0
-                    ),
-                  ]}
-                >
-                  <Image
-                    systemName="arrow.up"
-                    size={16}
-                    color={"black"}
-                    modifiers={[padding({ vertical: 6, horizontal: 2 })]}
-                  />
-                </SwiftUIButton>
-              )}
-            </HStack>
-          </GlassEffectContainer>
-        </Namespace>
-      </Host>
-    </KeyboardStickyView>
-    // <Host
-    //   style={{
-    //     height: activeMutation.isError ? "70%" : "80%",
-    //     position: "absolute",
-    //     bottom: 0,
-    //     left: 0,
-    //     right: 0,
-    //   }}
-    // >
-    //   <InputControls
-    //     onChangeText={setPrompt}
-    //     onPressImageGallery={pickImageFromGallery}
-    //     onSubmit={handleTattooGeneration}
-    //     isSubmitDisabled={prompt.length === 0}
-    //     suggestions={suggestions}
-    //     onPressSecondIcon={() => router.push("/(playground)/camera-view")}
-    //     // autoFocus // this is buggy need to fix later
-    //   />
-    // </Host>
   );
 }
 
