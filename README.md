@@ -224,23 +224,95 @@ Refer to the [EAS hosting documentation](https://docs.expo.dev/eas/) for more de
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [Better Auth Documentation](https://www.better-auth.com/docs)
 
-## 💰 Pricing Tiers
+## 💰 Monetization Strategy
 
-**FREE** → 3–5 free generations on signup
+### Free Tier
 
-**STARTER**
+**FREE** → 3–5 free generations on signup to let users experience the product
 
-- $4.99/month → 75 generations
+### Subscription Plans
 
-**PLUS**
+We offer a simplified, conversion-optimized paywall with just two options:
 
-- $9.99/month → 200 generations
+| Plan                | Price     | Generation Cap | Cost per Gen | Revenue After Fees | **Profit Margin** |
+| ------------------- | --------- | -------------- | ------------ | ------------------ | ----------------- |
+| **Weekly Premium**  | $9.99/wk  | 35 gens/week   | ~$4.73       | ~$8.39             | **≈ 43%**         |
+| **Monthly Premium** | $19.99/mo | 80 gens/month  | ~$10.80      | ~$16.79            | **≈ 34%**         |
 
-**PRO**
+**Cost breakdown:**
 
-- $29.99/month → 600 generations
+- Gemini image generation: ~$0.135 per image (1K–2K resolution)
+- Apple App Store: 15% fee
+- RevenueCat: 1% fee
+- Hosting + DB: ~$0.30 per user
 
-**Example**
+### Revenue Projections at Scale
+
+Hypothetical analysis showing revenue and profit at different user counts (assuming full usage of generation caps):
+
+| Plan        | Users | Gross Revenue | Total Cost | Net Profit | Margin |
+| ----------- | ----- | ------------- | ---------- | ---------- | ------ |
+| **Weekly**  | 1     | $9.99         | $4.73      | $5.26      | 52.7%  |
+| **Weekly**  | 10    | $99.90        | $47.30     | $52.60     | 52.7%  |
+| **Weekly**  | 100   | $999.00       | $473.00    | $526.00    | 52.7%  |
+| **Monthly** | 1     | $19.99        | $10.80     | $9.19      | 46.0%  |
+| **Monthly** | 10    | $199.90       | $108.00    | $91.90     | 46.0%  |
+| **Monthly** | 100   | $1,999.00     | $1,080.00  | $919.00    | 46.0%  |
+
+**Key insights:**
+
+- Both plans maintain healthy margins even with full generation usage
+- Weekly plan has higher margin per subscriber (52.7% vs 46%)
+- Monthly plan generates more revenue per user ($19.99 vs $9.99)
+- Most users won't hit generation caps, improving actual margins further
+
+### User-Facing Messaging
+
+**What users see:**
+
+- Marketing: **"Unlimited Tattoo Designs and Styles"**
+- NO mention of "credits" or "generations" in the UI
+- Clean, simple value proposition focused on unlimited access
+
+**Fair-use implementation:**
+
+- Paywall footer: _"AI design generation is subject to fair-use limits to keep the service fast for everyone."_
+- When limit is reached: _"You've reached today's fair-use limit. More available in X hours/days."_
+
+### Why This Works
+
+1. **Simplified messaging** → Higher conversion rates (no confusing credit systems)
+2. **Fair-use caps** → Keeps costs predictable and sustainable
+3. **Most users won't hit limits** → Average users generate fewer designs, staying well within caps
+4. **Profitable at scale** → Both tiers maintain healthy margins even with full usage
+5. **Weekly option** → Lower barrier to entry, proven to convert better than monthly-only
+6. **Transparent soft limits** → Users understand there are reasonable usage limits without feeling restricted
+
+### Implementation Notes
+
+**Backend enforcement:**
+
+- Weekly subscribers: Hard cap at 35 generations per week
+- Monthly subscribers: Hard cap at 80 generations per month
+- Reset timers based on subscription renewal date
+- Track usage in database to prevent abuse
+
+**User experience:**
+
+- Marketing materials emphasize "unlimited designs" and premium features
+- No visible credit counter or generation tracking in main UI
+- Soft limit messaging appears only when approaching/hitting the cap
+- Graceful degradation with helpful messaging and clear reset timeframe
+
+---
+
+## 💡 Historical Pricing Analysis
+
+**_Note: The following sections document our pricing evolution and learnings. The current active pricing is shown above._**
+
+### Old Pricing Model (Deprecated)
+
+**Example of initial pricing (not in use):**
 
 | Plan    | Price  | Generations | Approx. Cost @ $0.039/img | Margin | Users |
 | ------- | ------ | ----------- | ------------------------- | ------ | ----- |
@@ -252,7 +324,7 @@ You can also:
 • Fair use cap (e.g. “up to 1200 generations/month”).
 • Offer annual discount ($99/yr Pro).
 
-## ⚠️ Correction: Why These Numbers Were Wrong
+### ⚠️ Lesson Learned: Why These Numbers Were Wrong
 
 The original pricing model assumed **~$0.039 per image**, but after reviewing [Google’s actual Gemini pricing:](https://ai.google.dev/gemini-api/docs/pricing#standard_1)
 
@@ -282,7 +354,7 @@ So we need a **new pricing strategy**.
 
 ---
 
-## ✅ Path Forward — Weekly + Monthly Pricing (Industry Standard)
+### Alternative Pricing Models Considered (Not Implemented)
 
 The new model:
 
@@ -300,7 +372,7 @@ We'll show:
 
 ---
 
-## 📆 Recommended Weekly Pricing (US Market)
+**Multi-tier weekly model (considered but not implemented):**
 
 | Plan               | Price (wk) | Gens/wk | Your Cost | Your Revenue After Apple/RC | **Profit/wk** |
 | ------------------ | ---------- | ------- | --------- | --------------------------- | ------------- |
@@ -308,13 +380,7 @@ We'll show:
 | **Plus Weekly**    | **$6.99**  | 35 gens | $4.73     | $5.87                       | **+$1.14**    |
 | **Pro Weekly**     | **$9.99**  | 50 gens | $6.75     | $8.39                       | **+$1.64**    |
 
----
-
-## 📅 Recommended Monthly Pricing
-
-These are priced to be cheaper than weekly on a per-generation basis, but still profitable.
-
-### Monthly pricing must match the value of the weekly plans.
+**Multi-tier monthly model (considered but not implemented):**
 
 | Monthly             | Price      | Gens     | Your Cost | Your Revenue After Apple/RC | **Profit/mo** |
 | ------------------- | ---------- | -------- | --------- | --------------------------- | ------------- |
