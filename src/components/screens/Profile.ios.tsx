@@ -20,7 +20,7 @@ import {
   Text,
   VStack,
 } from "@expo/ui/swift-ui";
-import { font, foregroundStyle } from "@expo/ui/swift-ui/modifiers";
+import { font, foregroundStyle, tint } from "@expo/ui/swift-ui/modifiers";
 import * as Application from "expo-application";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
@@ -338,6 +338,7 @@ export function Profile() {
               isExpanded={isPlanDetailsExpanded}
               onStateChange={setIsPlanDetailsExpanded}
               label="Plan Details"
+              modifiers={[tint("white")]}
             >
               <LabeledContent label="Plan">
                 <Text modifiers={[font({ weight: "bold" })]} color={planColor}>
@@ -506,6 +507,7 @@ export function Profile() {
             isExpanded={isSecretExpanded}
             onStateChange={setIsSecretExpanded}
             label="🎁    Enjoying the app?"
+            modifiers={[tint("white")]}
           >
             <VStack spacing={16} alignment="leading">
               <Text color={Color.zinc[300]}>
@@ -546,6 +548,7 @@ export function Profile() {
             isExpanded={isArtistExpanded}
             onStateChange={setIsArtistExpanded}
             label="🎨    Are you an artist?"
+            modifiers={[tint("white")]}
           >
             <VStack spacing={16} alignment="leading">
               <Text color={Color.zinc[300]}>
