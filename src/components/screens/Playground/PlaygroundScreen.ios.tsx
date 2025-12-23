@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Pressable,
   StyleSheet,
   View,
 } from "react-native";
@@ -43,19 +44,19 @@ import {
   background,
   buttonStyle,
   clipShape,
+  controlSize,
   glassEffect,
   offset,
   padding,
   shapes,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
+import { isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
-import { SymbolView } from "expo-symbols";
-import { PressableScale } from "pressto";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { InputControls } from "./input-controls/InputControls";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
 // Prepare suggestions for native view
@@ -273,7 +274,13 @@ export function PlaygroundScreen() {
       <View style={styles.container}>
         {/* Session generations list */}
         {sessionGenerations.length > 0 && (
-          <View>
+          <View
+            style={{
+              position: "absolute",
+              top: -10,
+              zIndex: 1,
+            }}
+          >
             <FlatList
               data={sessionGenerations}
               renderItem={({ item: imageGroup, index }) => (
@@ -327,24 +334,57 @@ export function PlaygroundScreen() {
                 justifyContent: "center",
               }}
               ListFooterComponent={() => (
-                <PressableScale
-                  onPress={() => {
-                    setActiveGenerationIndex(undefined);
-                  }}
+                <Activity
+                  mode={
+                    activeGenerationIndex !== undefined ? "visible" : "hidden"
+                  }
                 >
-                  <GlassView
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 99,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                    isInteractive
-                  >
-                    <SymbolView name={"plus"} size={26} tintColor="white" />
-                  </GlassView>
-                </PressableScale>
+                  <Host matchContents>
+                    <SwiftUIButton
+                      onPress={() => {
+                        setActiveGenerationIndex(undefined);
+                      }}
+                      modifiers={[
+                        tint("white"),
+                        buttonStyle(
+                          isLiquidGlassAvailable() ? "glass" : "bordered"
+                        ),
+                        background(
+                          isLiquidGlassAvailable() ? "transparent" : "#000000"
+                        ),
+                        clipShape("circle"),
+                        controlSize("small"),
+                      ]}
+                    >
+                      <Image
+                        systemName="arrow.circlepath"
+                        size={20}
+                        modifiers={[
+                          padding({ vertical: 6, horizontal: 0 }),
+                          clipShape("circle"),
+                        ]}
+                      />
+                    </SwiftUIButton>
+                  </Host>
+                </Activity>
+                // <PressableScale
+                //   onPress={() => {
+                //     setActiveGenerationIndex(undefined);
+                //   }}
+                // >
+                //   <GlassView
+                //     style={{
+                //       width: 44,
+                //       height: 44,
+                //       borderRadius: 99,
+                //       alignItems: "center",
+                //       justifyContent: "center",
+                //     }}
+                //     isInteractive
+                //   >
+                //     <SymbolView name={"plus"} size={26} tintColor="white" />
+                //   </GlassView>
+                // </PressableScale>
               )}
               horizontal
             />
@@ -352,21 +392,18 @@ export function PlaygroundScreen() {
         )}
 
         {/* Text to image result */}
-        <PressableScale
+        <Pressable
+          style={styles.textToImageResultContainer}
           onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             alert("test");
           }}
-          style={{ backgroundColor: "red", padding: 16 }}
         >
-          <View style={styles.textToImageResultContainer}>
-            <TextToImageResult
-              mutation={activeMutation}
-              lastGenerationUris={activeGenerationUris}
-              onRemoveImage={removeImageFromActiveGroup}
-            />
-          </View>
-        </PressableScale>
+          <TextToImageResult
+            mutation={activeMutation}
+            lastGenerationUris={activeGenerationUris}
+            onRemoveImage={removeImageFromActiveGroup}
+          />
+        </Pressable>
 
         <Activity mode={!isAuthenticated ? "visible" : "hidden"}>
           <Animated.View
@@ -396,14 +433,13 @@ export function PlaygroundScreen() {
         </Activity>
 
         <Activity mode={isAuthenticated ? "visible" : "hidden"}>
-          <ActionControls
-            activeGenerationUris={activeGenerationUris}
-            bottom={bottom}
-            handleTattooGeneration={handleTattooGeneration}
-            activeMutation={activeMutation}
-            setPrompt={setPrompt}
-            prompt={prompt}
-            pickImageFromGallery={pickImageFromGallery}
+          <InputControls
+            onChangeText={setPrompt}
+            onSubmit={handleTattooGeneration}
+            isSubmitDisabled={prompt.length === 0}
+            suggestions={suggestions}
+            onPressSecondIcon={() => router.push("/(playground)/camera-view")}
+            autoFocus={true}
           />
         </Activity>
       </View>
@@ -484,6 +520,7 @@ function ActionControls({
         left: 0,
         right: 0,
         paddingHorizontal: 16,
+        backgroundColor: "red",
       }}
       offset={{ opened: bottom - 16, closed: 0 }}
     >
@@ -650,5 +687,6 @@ const styles = StyleSheet.create({
   textToImageResultContainer: {
     flex: 1,
     paddingVertical: 2,
+    backgroundColor: "red",
   },
 });

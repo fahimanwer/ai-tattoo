@@ -9,4 +9,5 @@ export interface InputControlsProps {
   isSubmitDisabled?: boolean;
   suggestions?: FeaturedSuggestion[];
   onPressSecondIcon?: () => void;
+  prompt?: string;
 }
