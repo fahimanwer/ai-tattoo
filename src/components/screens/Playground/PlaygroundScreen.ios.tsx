@@ -1,4 +1,9 @@
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import {
+  router,
+  Stack,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import { Activity, use, useEffect, useId, useRef } from "react";
 import {
   ActivityIndicator,
@@ -21,7 +26,6 @@ import {
   ImageGenerationMutation,
   PlaygroundContext,
 } from "@/src/context/PlaygroundContext";
-import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import {
   GlassEffectContainer,
   Host,
@@ -30,25 +34,29 @@ import {
   Namespace,
   Button as SwiftUIButton,
   TextField,
+  TextFieldRef,
   VStack,
 } from "@expo/ui/swift-ui";
 import {
   Animation,
   animation,
+  background,
   buttonStyle,
   clipShape,
   glassEffect,
   offset,
   padding,
+  shapes,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
-import { GlassView } from "expo-glass-effect";
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { TextToImageResult } from "./shared/TextToImageResult";
 
 // Prepare suggestions for native view
 const suggestions = formattedSuggestions(featuredTattoos);
@@ -92,12 +100,9 @@ export function PlaygroundScreen() {
     activeMutation,
     handleTattooGeneration,
     removeImageFromActiveGroup,
-    resetMutations,
   } = use(PlaygroundContext);
 
   const { bottom } = useSafeAreaInsets();
-  const { refetch: refetchUsage } = useUsageLimit();
-  const hasCheckedUsage = useRef(false);
 
   // Play playful entrance haptic on first load
   useEffect(() => {
@@ -106,43 +111,6 @@ export function PlaygroundScreen() {
       console.error("Failed to play playground entrance haptic:", error);
     });
   }, []); // Empty dependency array means this runs once on mount
-
-  // Reset the check flag when user logs out
-  useEffect(() => {
-    if (!isAuthenticated) {
-      hasCheckedUsage.current = false;
-    }
-  }, [isAuthenticated]);
-
-  // Verify usage status when entering playground and reset errors if needed
-  useEffect(() => {
-    if (!isAuthenticated || isLoading || hasCheckedUsage.current) return;
-
-    // Mark as checked to prevent multiple calls
-    hasCheckedUsage.current = true;
-
-    // Refetch usage to ensure we have the latest data
-    refetchUsage()
-      .then((result) => {
-        // Check the result directly from the refetch
-        const usageData = result.data;
-        const isCurrentlyAtLimit = usageData?.isLimitReached ?? false;
-
-        // If there's a LIMIT_REACHED error but user is no longer at limit, reset
-        if (
-          activeMutation.isError &&
-          activeMutation.error?.message === "LIMIT_REACHED" &&
-          !isCurrentlyAtLimit
-        ) {
-          // User has updated their plan or period reset, clear the error
-          resetMutations();
-        }
-      })
-      .catch((error) => {
-        console.error("Error refetching usage:", error);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, isLoading]); // Run when component mounts or auth state changes
 
   // Handle mode parameter for quick actions
   useEffect(() => {
@@ -157,7 +125,7 @@ export function PlaygroundScreen() {
       }, 300);
     } else if (mode === "edit") {
       hasHandledMode.current = true;
-      // Open gallery for edit mode
+      // OPEn gallery for edit mode
       setTimeout(() => {
         pickImageFromGallery();
       }, 300);
@@ -384,7 +352,7 @@ export function PlaygroundScreen() {
         )}
 
         {/* Text to image result */}
-        {/* <PressableScale
+        <PressableScale
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             alert("test");
@@ -398,7 +366,7 @@ export function PlaygroundScreen() {
               onRemoveImage={removeImageFromActiveGroup}
             />
           </View>
-        </PressableScale> */}
+        </PressableScale>
 
         <Activity mode={!isAuthenticated ? "visible" : "hidden"}>
           <Animated.View
@@ -461,6 +429,21 @@ function ActionControls({
   pickImageFromGallery: () => Promise<boolean>;
 }) {
   const namespaceId = useId();
+  const textFieldRef = useRef<TextFieldRef>(null);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      // Only focus if the TextField is actually rendered (when we have less than 2 images)
+      if (activeGenerationUris.length < 2) {
+        // Small delay to ensure the native view hierarchy is ready
+        setTimeout(() => {
+          textFieldRef.current?.focus();
+        }, 100);
+      }
+    });
+    return unsubscribe;
+  }, [navigation, activeGenerationUris.length]);
 
   return activeGenerationUris.length >= 2 ? (
     <View
@@ -526,9 +509,17 @@ function ActionControls({
             >
               <SwiftUIButton
                 onPress={() => {
-                  alert("test");
+                  textFieldRef.current?.blur();
+                  router.push("/(playground)/sheet");
                 }}
-                modifiers={[tint("white"), buttonStyle("glass")]}
+                modifiers={[
+                  tint("white"),
+                  buttonStyle(isLiquidGlassAvailable() ? "glass" : "bordered"),
+                  background(
+                    isLiquidGlassAvailable() ? "transparent" : "#000000"
+                  ),
+                  clipShape("circle"),
+                ]}
               >
                 <Image
                   systemName="plus"
@@ -550,6 +541,13 @@ function ActionControls({
                     shape: "roundedRectangle",
                     cornerRadius: 20,
                   }),
+                  background(
+                    isLiquidGlassAvailable() ? "transparent" : "black",
+                    shapes.roundedRectangle({
+                      cornerRadius: 20,
+                      roundedCornerStyle: "continuous",
+                    })
+                  ),
                   animation(
                     Animation.spring({
                       duration: 0.5,
@@ -562,6 +560,7 @@ function ActionControls({
                 ]}
               >
                 <TextField
+                  ref={textFieldRef}
                   placeholder="Enter text"
                   multiline
                   allowNewlines
@@ -580,7 +579,13 @@ function ActionControls({
                   }}
                   modifiers={[
                     tint("yellow"),
-                    buttonStyle("glassProminent"),
+                    buttonStyle(
+                      isLiquidGlassAvailable() ? "glassProminent" : "bordered"
+                    ),
+                    background(
+                      isLiquidGlassAvailable() ? "transparent" : "yellow"
+                    ),
+                    clipShape("circle"),
                     offset({ x: prompt.length > 0 ? 0 : 100 }),
                     animation(
                       Animation.spring({

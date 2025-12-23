@@ -18,6 +18,19 @@ export default function PlaygroundLayout() {
           title: "",
         }}
       />
+      <Stack.Screen
+        name="sheet"
+        options={{
+          presentation: "formSheet",
+          contentStyle: {
+            backgroundColor: isGlassEffectAPIAvailable()
+              ? "transparent"
+              : "black",
+          },
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.45],
+        }}
+      />
     </Stack>
   );
 }
