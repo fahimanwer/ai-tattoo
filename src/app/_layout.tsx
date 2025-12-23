@@ -1,7 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { ActivityIndicator, Platform, View } from "react-native";
-import "react-native-reanimated";
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
 import { Toaster } from "sonner-native";
 
 // Native imports
@@ -23,6 +26,14 @@ import { use, useEffect, useState } from "react";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import Purchases from "react-native-purchases";
 import { vexo } from "vexo-analytics";
+
+// Disable Reanimated strict mode warnings
+// These warnings are triggered by the pressto library's PressableScale component
+// which uses patterns that are technically correct but trigger strict mode warnings
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // Disable strict mode to suppress false-positive warnings
+});
 
 if (!__DEV__) vexo(process.env.EXPO_PUBLIC_VEXO!);
 
