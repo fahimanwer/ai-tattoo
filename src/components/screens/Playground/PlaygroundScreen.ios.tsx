@@ -233,7 +233,7 @@ export function PlaygroundScreen() {
               prompt={prompt}
               onSubmit={handleTattooGeneration}
               isSubmitDisabled={prompt.length === 0 || isPending || isLoading}
-              autoFocus={true}
+              autoFocus={false} // this is causing side effects when true
             />
           </Activity>
         </View>

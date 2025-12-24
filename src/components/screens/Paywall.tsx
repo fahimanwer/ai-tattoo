@@ -33,22 +33,12 @@ export function Paywall() {
     offeringIdentifier: string
   ) => {
     try {
-      console.log("Attempting to purchase:", pkg.identifier);
-
       // Make the purchase
       const { customerInfo: updatedCustomerInfo } =
         await Purchases.purchasePackage(pkg);
 
       console.log("Purchase successful!");
       console.log("Updated customer info:", updatedCustomerInfo);
-
-      // Refresh subscription status
-      await refreshSubscriptionStatus();
-
-      // Invalidate usage query to refresh usage data on profile screen
-      await queryClient.invalidateQueries({
-        queryKey: ["user", "usage"],
-      });
 
       // Show success message
       Alert.alert(
@@ -57,7 +47,16 @@ export function Paywall() {
         [
           {
             text: "OK",
-            onPress: () => router.back(),
+            onPress: async () => {
+              // Refresh subscription status
+              await refreshSubscriptionStatus();
+
+              // Invalidate usage query to refresh usage data on profile screen
+              await queryClient.invalidateQueries({
+                queryKey: ["user", "usage"],
+              });
+              router.back();
+            },
           },
         ]
       );

@@ -127,7 +127,7 @@ export function InputControls({
                   multiline
                   allowNewlines
                   numberOfLines={5}
-                  autoFocus={autoFocus}
+                  autoFocus={false}
                   modifiers={[padding({ vertical: 12, horizontal: 16 })]}
                   onChangeText={onChangeText}
                   onSubmit={handleSubmit}
