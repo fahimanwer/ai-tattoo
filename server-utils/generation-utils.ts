@@ -760,6 +760,82 @@ export function toGeminiImageParts(
 }
 
 // ============================================================================
+// Animal Detection Validation
+// ============================================================================
+
+/**
+ * Validates that images don't contain animals using GPT-4o-mini Vision API
+ */
+export async function validateNoAnimals(
+  images_base64: string[]
+): Promise<{ valid: true } | { valid: false; error: string }> {
+  const { OPENAI_API_KEY } = constants;
+  const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+
+  if (!OPENAI_API_KEY) {
+    slog("generation-utils", "OPENAI_API_KEY not set, skipping animal validation");
+    return { valid: true };
+  }
+
+  for (const imageBase64 of images_base64) {
+    const { mime_type, data } = extractMimeAndData(imageBase64);
+
+    try {
+      const response = await fetch(OPENAI_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "Does this image contain any animals, pets, or wildlife? Answer only 'yes' or 'no'.",
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:${mime_type};base64,${data}`,
+                  },
+                },
+              ],
+            },
+          ],
+          max_tokens: 10,
+        }),
+      });
+
+      if (!response.ok) {
+        slog("generation-utils", "OpenAI API error during animal validation", {
+          status: response.status,
+        });
+        continue;
+      }
+
+      const result = await response.json();
+      const answer = result.choices?.[0]?.message?.content?.toLowerCase().trim() || "";
+
+      if (answer.includes("yes")) {
+        return {
+          valid: false,
+          error: "Images containing animals are not allowed. Please use photos of human body parts only.",
+        };
+      }
+    } catch (error) {
+      slog("generation-utils", "Error validating animal detection", { error });
+      continue;
+    }
+  }
+
+  return { valid: true };
+}
+
+// ============================================================================
 // Prompt Enhancement
 // ============================================================================
 

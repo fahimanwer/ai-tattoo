@@ -9,6 +9,7 @@ import {
   improvePrompt as handleImprovePrompt,
   incrementUsage,
   toGeminiImageParts,
+  validateNoAnimals,
   type Session,
 } from "@/server-utils/generation-utils";
 import { z } from "zod";
@@ -38,6 +39,15 @@ export const POST = withAuth(async (request: Request, session: Session) => {
     const { prompt, images_base64, improvePrompt } =
       textAndImageToImageSchema.parse(body);
     console.log("server", "received prompt", prompt);
+
+    // Validate no animals in images
+    const animalCheck = await validateNoAnimals(images_base64);
+    if (!animalCheck.valid) {
+      return Response.json(
+        { success: false, error: animalCheck.error },
+        { status: 400 }
+      );
+    }
 
     // Disable prompt improvement when combining images
     const disabledImprovePrompt =
