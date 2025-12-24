@@ -284,7 +284,6 @@ export function PlaygroundScreen() {
               prompt={prompt}
               onSubmit={handleTattooGeneration}
               isSubmitDisabled={prompt.length === 0 || isPending}
-              onPressSecondIcon={() => router.push("/(playground)/camera-view")}
               autoFocus={true}
             />
           </Activity>

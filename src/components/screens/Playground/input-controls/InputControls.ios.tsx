@@ -31,13 +31,10 @@ import { InputControlsHandle, InputControlsProps } from "./inputContols.types";
 
 export function InputControls({
   ref,
-  onPressImageGallery,
-  onChangeFocus,
   onChangeText,
   onSubmit,
   autoFocus,
   isSubmitDisabled = false,
-  onPressSecondIcon,
   prompt = "",
 }: InputControlsProps & { ref?: Ref<InputControlsHandle> }) {
   const { bottom } = useSafeAreaInsets();
