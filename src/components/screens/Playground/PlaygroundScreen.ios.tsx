@@ -278,7 +278,7 @@ export function PlaygroundScreen() {
               onChangeText={setPrompt}
               prompt={prompt}
               onSubmit={handleTattooGeneration}
-              isSubmitDisabled={prompt.length === 0 || isPending}
+              isSubmitDisabled={prompt.length === 0 || isPending || isLoading}
               autoFocus={true}
             />
           </Activity>

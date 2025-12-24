@@ -1,15 +1,9 @@
-import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import { router, Stack } from "expo-router";
-import { use } from "react";
 import { Pressable, Text, View } from "react-native";
 
 export default function Sheet() {
-  const { focusInput } = use(PlaygroundContext);
-
   function handleDismiss() {
-    focusInput();
     router.back();
-    // Focus input after sheet dismisses
   }
 
   return (
@@ -19,7 +13,6 @@ export default function Sheet() {
           unstable_headerLeftItems: () => [
             {
               type: "button",
-              variant: "plain",
               label: "Close",
               icon: {
                 name: "xmark",

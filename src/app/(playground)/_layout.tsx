@@ -28,7 +28,7 @@ export default function PlaygroundLayout() {
               : "black",
           },
           sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.45],
+          sheetAllowedDetents: [0.45, 1],
         }}
       />
     </Stack>
