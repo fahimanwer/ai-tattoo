@@ -232,6 +232,7 @@ export default function RootLayout() {
                             Haptics.selectionAsync();
                           },
                         }}
+                        config={{ minScale: 0.97 }}
                       >
                         <PlaygroundProvider>
                           <AppContent />

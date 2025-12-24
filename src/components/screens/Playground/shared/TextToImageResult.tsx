@@ -142,7 +142,7 @@ export function TextToImageResult({
                   width: lastGenerationUris.length === 1 ? "100%" : "48%",
                 }}
               >
-                <Pressable
+                <PressableScale
                   onPress={() => {
                     blurInput();
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -151,6 +151,7 @@ export function TextToImageResult({
                       params: { imageUri: uri },
                     });
                   }}
+                  animationType="timing"
                 >
                   <Image
                     source={{ uri }}
@@ -167,7 +168,7 @@ export function TextToImageResult({
                     contentPosition="center"
                     transition={350}
                   />
-                </Pressable>
+                </PressableScale>
                 <Pressable
                   onPress={() => {
                     blurInput();
