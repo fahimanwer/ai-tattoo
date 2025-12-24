@@ -28,6 +28,7 @@ import { router } from "expo-router";
 import React, { use, useId, useImperativeHandle, useRef } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { PlaygroundSuggestions } from "../shared/suggestions/PlaygroundSuggestions";
 import { InputControlsProps } from "./inputContols.types";
 
 export function InputControls({
@@ -66,6 +67,15 @@ export function InputControls({
       }}
       offset={{ opened: bottom - 16, closed: 0 }}
     >
+      <PlaygroundSuggestions
+        style={{
+          marginBottom: 16,
+        }}
+        onSelect={(prompt) => {
+          onChangeText?.(prompt);
+          textFieldRef.current?.focus();
+        }}
+      />
       <Host matchContents ignoreSafeAreaKeyboardInsets>
         <Namespace id={namespaceId}>
           <GlassEffectContainer>
