@@ -81,6 +81,12 @@ export function PlaygroundScreen() {
       setTimeout(() => {
         pickImageFromGallery();
       }, 300);
+    } else if (mode === "remove") {
+      hasHandledMode.current = true;
+      // Open gallery for remove mode
+      setTimeout(() => {
+        pickImageFromGallery();
+      }, 300);
     }
   }, [params.mode, isAuthenticated, isLoading, pickImageFromGallery]);
 

@@ -19,7 +19,7 @@ export interface TattooCategory {
 export const tattooCategories: TattooCategory[] = [
   {
     id: 100,
-    title: "Sports Tattoos",
+    title: "Sports",
     short_description:
       "Bold, dynamic designs inspired by sports culture featuring motivational quotes, cultural symbols, powerful animals, and athletic imagery that embody dedication, strength, and competitive spirit.",
     description:
@@ -145,7 +145,7 @@ export const tattooCategories: TattooCategory[] = [
   },
   {
     id: 101,
-    title: "Lifestyle Tattoos",
+    title: "Lifestyle",
     short_description:
       "Tattoos that blend naturally into everyday life, capturing coffee moments, travel, work, love, and personal rituals—ink that feels like part of your daily story, not just a special occasion.",
     description:
@@ -252,7 +252,7 @@ export const tattooCategories: TattooCategory[] = [
   },
   {
     id: 102,
-    title: "Mythology Tattoos",
+    title: "Mythology",
     short_description:
       "Epic designs inspired by legends, and ancient myths—lions, gods, armor, and symbols that represent strength, destiny, and the battles you’ve faced and overcome.",
     description:

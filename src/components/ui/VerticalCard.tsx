@@ -76,7 +76,7 @@ export function VerticalCard({
             {subtitle && (
               <Text
                 type="sm"
-                weight="normal"
+                weight="bold"
                 style={styles.description}
                 numberOfLines={1}
               >

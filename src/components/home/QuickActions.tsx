@@ -36,6 +36,16 @@ const actions = [
       router.push("/(playground)?mode=edit");
     },
   },
+  {
+    title: "Remove Tattoo",
+    description: "Remove an existing tattoo from the skin",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/4-remove.avif",
+    },
+    action: () => {
+      router.push("/(playground)?mode=remove");
+    },
+  },
 ];
 
 function Item({ item }: { item: (typeof actions)[0] }) {
@@ -73,7 +83,7 @@ export function QuickActions() {
 const styles = StyleSheet.create({
   item: {
     position: "relative",
-    width: 240,
+    width: 260,
     height: 140,
     borderRadius: 16,
     overflow: "hidden",
