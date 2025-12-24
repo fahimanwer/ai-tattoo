@@ -3,8 +3,12 @@ import { Text } from "@/src/components/ui/Text";
 import { LegendList } from "@legendapp/list";
 import { Image } from "expo-image";
 import { PressableScale } from "pressto";
-import React from "react";
-import { StyleSheet } from "react-native";
+import React, { useRef } from "react";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleSheet,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   withTiming,
@@ -46,7 +50,9 @@ function generateSuggestions(): Suggestion[] {
   return suggestions.sort(() => Math.random() - 0.5);
 }
 
-const CONTAINER_HEIGHT = 80;
+const ROW_HEIGHT = 32;
+const ROW_GAP = 10;
+const CONTAINER_HEIGHT = ROW_HEIGHT * 2 + ROW_GAP;
 
 export function PlaygroundSuggestions({
   onSelectText,
@@ -54,8 +60,19 @@ export function PlaygroundSuggestions({
   style,
   visible = true,
 }: PlaygroundSuggestionProps) {
-  // Generate suggestions once and memoize
-  const suggestions = React.useMemo(() => generateSuggestions(), []);
+  const list1Ref = useRef<any>(null);
+  const list2Ref = useRef<any>(null);
+  const isScrollingRef = useRef<1 | 2 | null>(null);
+
+  // Generate suggestions once and memoize, split into two rows
+  const { row1, row2 } = React.useMemo(() => {
+    const all = generateSuggestions();
+    const mid = Math.ceil(all.length / 2);
+    return {
+      row1: all.slice(0, mid),
+      row2: all.slice(mid),
+    };
+  }, []);
 
   // Animate height to 0 when hidden - this removes it from layout
   // and prevents touch interception
@@ -66,6 +83,24 @@ export function PlaygroundSuggestions({
       overflow: "hidden",
     };
   }, [visible]);
+
+  const handleScroll1 = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (isScrollingRef.current === 2) return;
+    isScrollingRef.current = 1;
+    const x = e.nativeEvent.contentOffset.x;
+    list2Ref.current?.scrollTo?.({ x, animated: false });
+  };
+
+  const handleScroll2 = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (isScrollingRef.current === 1) return;
+    isScrollingRef.current = 2;
+    const x = e.nativeEvent.contentOffset.x;
+    list1Ref.current?.scrollTo?.({ x, animated: false });
+  };
+
+  const handleScrollEnd = () => {
+    isScrollingRef.current = null;
+  };
 
   const renderItem = React.useCallback(
     ({ item }: { item: Suggestion }) => (
@@ -86,13 +121,33 @@ export function PlaygroundSuggestions({
   return (
     <Animated.View style={[styles.container, style, animatedStyle]}>
       <LegendList
+        ref={list1Ref}
         horizontal
-        numColumns={2}
-        data={suggestions}
+        data={row1}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        style={styles.row}
+        onScroll={handleScroll1}
+        onScrollEndDrag={handleScrollEnd}
+        onMomentumScrollEnd={handleScrollEnd}
+        scrollEventThrottle={16}
+        recycleItems
+      />
+      <LegendList
+        ref={list2Ref}
+        horizontal
+        data={row2}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        style={styles.row}
+        onScroll={handleScroll2}
+        onScrollEndDrag={handleScrollEnd}
+        onMomentumScrollEnd={handleScrollEnd}
+        scrollEventThrottle={16}
         recycleItems
       />
     </Animated.View>
@@ -143,6 +198,10 @@ function SuggestionChip({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    gap: ROW_GAP,
+  },
+  row: {
+    height: ROW_HEIGHT,
   },
   scrollContent: {
     paddingHorizontal: 16,

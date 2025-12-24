@@ -27,7 +27,7 @@ import {
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { router } from "expo-router";
 import React, { use, useId, useImperativeHandle, useRef } from "react";
-import { Alert } from "react-native";
+import { Alert, View } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PlaygroundSuggestions } from "../shared/suggestions/PlaygroundSuggestions";
@@ -104,14 +104,11 @@ export function InputControls({
         bottom: bottom,
         left: 0,
         right: 0,
-        paddingHorizontal: 16,
       }}
       offset={{ opened: bottom - 16, closed: 0 }}
     >
       <PlaygroundSuggestions
-        style={{
-          marginBottom: 16,
-        }}
+        style={{ marginBottom: 16 }}
         visible={shouldShowSuggestions}
         onSelectText={(suggestionPrompt) => {
           onChangeText?.(suggestionPrompt);
@@ -119,89 +116,54 @@ export function InputControls({
         }}
         onSelectTryOn={handleTryOnSelect}
       />
-      <Host matchContents ignoreSafeAreaKeyboardInsets>
-        <Namespace id={namespaceId}>
-          <GlassEffectContainer>
-            <HStack spacing={8} alignment="bottom">
-              <SwiftUIButton
-                onPress={() => {
-                  textFieldRef.current?.blur();
-                  router.push("/(playground)/sheet");
-                }}
-                modifiers={[
-                  tint("white"),
-                  buttonStyle(isLiquidGlassAvailable() ? "glass" : "bordered"),
-                  background(
-                    isLiquidGlassAvailable() ? "transparent" : "#000000"
-                  ),
-                  clipShape("circle"),
-                ]}
-              >
-                <Image
-                  systemName="plus"
-                  size={20}
-                  modifiers={[
-                    padding({ vertical: 6, horizontal: 0 }),
-                    clipShape("circle"),
-                  ]}
-                />
-              </SwiftUIButton>
-
-              <VStack
-                modifiers={[
-                  glassEffect({
-                    glass: {
-                      variant: "regular",
-                      interactive: true,
-                    },
-                    shape: "roundedRectangle",
-                    cornerRadius: 20,
-                  }),
-                  background(
-                    isLiquidGlassAvailable() ? "transparent" : "black",
-                    shapes.roundedRectangle({
-                      cornerRadius: 20,
-                      roundedCornerStyle: "continuous",
-                    })
-                  ),
-                  animation(
-                    Animation.spring({
-                      duration: 0.5,
-                      dampingFraction: 0.5,
-                      blendDuration: 0.5,
-                      bounce: 0.5,
-                    }),
-                    prompt.length > 0
-                  ),
-                ]}
-              >
-                <TextField
-                  ref={textFieldRef}
-                  defaultValue={prompt}
-                  placeholder="Enter text"
-                  multiline
-                  allowNewlines
-                  numberOfLines={5}
-                  autoFocus={autoFocus}
-                  modifiers={[padding({ vertical: 12, horizontal: 16 })]}
-                  onChangeText={onChangeText}
-                  onSubmit={handleSubmit}
-                />
-              </VStack>
-
-              {prompt.length > 0 && (
+      <View style={{ paddingHorizontal: 16 }}>
+        <Host matchContents ignoreSafeAreaKeyboardInsets>
+          <Namespace id={namespaceId}>
+            <GlassEffectContainer>
+              <HStack spacing={8} alignment="bottom">
                 <SwiftUIButton
-                  onPress={handleSubmit}
+                  onPress={() => {
+                    textFieldRef.current?.blur();
+                    router.push("/(playground)/sheet");
+                  }}
                   modifiers={[
-                    tint("yellow"),
+                    tint("white"),
                     buttonStyle(
-                      isLiquidGlassAvailable() ? "glassProminent" : "bordered"
+                      isLiquidGlassAvailable() ? "glass" : "bordered"
                     ),
                     background(
-                      isLiquidGlassAvailable() ? "transparent" : "yellow"
+                      isLiquidGlassAvailable() ? "transparent" : "#000000"
                     ),
                     clipShape("circle"),
-                    offset({ x: prompt.length > 0 ? 0 : 100 }),
+                  ]}
+                >
+                  <Image
+                    systemName="plus"
+                    size={20}
+                    modifiers={[
+                      padding({ vertical: 6, horizontal: 0 }),
+                      clipShape("circle"),
+                    ]}
+                  />
+                </SwiftUIButton>
+
+                <VStack
+                  modifiers={[
+                    glassEffect({
+                      glass: {
+                        variant: "regular",
+                        interactive: true,
+                      },
+                      shape: "roundedRectangle",
+                      cornerRadius: 20,
+                    }),
+                    background(
+                      isLiquidGlassAvailable() ? "transparent" : "black",
+                      shapes.roundedRectangle({
+                        cornerRadius: 20,
+                        roundedCornerStyle: "continuous",
+                      })
+                    ),
                     animation(
                       Animation.spring({
                         duration: 0.5,
@@ -211,21 +173,60 @@ export function InputControls({
                       }),
                       prompt.length > 0
                     ),
-                    disabled(isSubmitDisabled),
                   ]}
                 >
-                  <Image
-                    systemName="arrow.up"
-                    size={16}
-                    color={"black"}
-                    modifiers={[padding({ vertical: 6, horizontal: 2 })]}
+                  <TextField
+                    ref={textFieldRef}
+                    defaultValue={prompt}
+                    placeholder="Enter text"
+                    multiline
+                    allowNewlines
+                    numberOfLines={5}
+                    autoFocus={autoFocus}
+                    modifiers={[padding({ vertical: 12, horizontal: 16 })]}
+                    onChangeText={onChangeText}
+                    onSubmit={handleSubmit}
                   />
-                </SwiftUIButton>
-              )}
-            </HStack>
-          </GlassEffectContainer>
-        </Namespace>
-      </Host>
+                </VStack>
+
+                {prompt.length > 0 && (
+                  <SwiftUIButton
+                    onPress={handleSubmit}
+                    modifiers={[
+                      tint("yellow"),
+                      buttonStyle(
+                        isLiquidGlassAvailable() ? "glassProminent" : "bordered"
+                      ),
+                      background(
+                        isLiquidGlassAvailable() ? "transparent" : "yellow"
+                      ),
+                      clipShape("circle"),
+                      offset({ x: prompt.length > 0 ? 0 : 100 }),
+                      animation(
+                        Animation.spring({
+                          duration: 0.5,
+                          dampingFraction: 0.5,
+                          blendDuration: 0.5,
+                          bounce: 0.5,
+                        }),
+                        prompt.length > 0
+                      ),
+                      disabled(isSubmitDisabled),
+                    ]}
+                  >
+                    <Image
+                      systemName="arrow.up"
+                      size={16}
+                      color={"black"}
+                      modifiers={[padding({ vertical: 6, horizontal: 2 })]}
+                    />
+                  </SwiftUIButton>
+                )}
+              </HStack>
+            </GlassEffectContainer>
+          </Namespace>
+        </Host>
+      </View>
     </KeyboardStickyView>
   );
 }
