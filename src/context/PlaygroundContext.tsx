@@ -38,11 +38,12 @@ export type ImageGenerationMutation =
 export interface InputControlsHandle {
   focus: () => void;
   blur: () => void;
+  setText: (text: string) => void;
 }
 
 export interface PlaygroundContextValue {
   prompt: string;
-  setPrompt: React.Dispatch<React.SetStateAction<string>>;
+  setPrompt: (text: string) => void;
   sessionGenerations: string[][]; // Array of image groups (each group is an array of URIs)
   setSessionGenerations: React.Dispatch<React.SetStateAction<string[][]>>;
   activeGenerationIndex: number | undefined;
@@ -99,7 +100,7 @@ export function PlaygroundProvider({
   // Hooks
   const queryClient = useQueryClient();
   const { settings } = React.use(AppSettingsContext);
-  const [prompt, setPrompt] = React.useState("");
+  const [prompt, setPromptState] = React.useState("");
   const [sessionGenerations, setSessionGenerations] = React.useState<
     string[][]
   >([]);
@@ -117,6 +118,12 @@ export function PlaygroundProvider({
     () => inputControlsRef.current?.blur(),
     []
   );
+
+  // Combined setter that updates both state and the text field ref
+  const setPrompt = React.useCallback((text: string) => {
+    setPromptState(text);
+    inputControlsRef.current?.setText(text);
+  }, []);
 
   /**
    * Text to image mutation

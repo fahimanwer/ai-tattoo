@@ -402,6 +402,18 @@ export default function Sheet() {
             }}
           />
           <OptionRow
+            icon="lightbulb.max"
+            title="Tattoo Cover-Up Idea"
+            description="Generate an idea to cover up an existing tattoo using a photo as reference"
+            onPress={() => {
+              setPrompt(
+                "Design a tattoo cover-up that incorporates and conceals the existing tattoo in this photo. Build the new design over the current tattoo (not on blank skin) and match the style and complexity of the original as much as possible."
+              );
+              router.back();
+              setTimeout(() => focusInput(), 100);
+            }}
+          />
+          <OptionRow
             icon="clock.arrow.circlepath"
             title="Prompt History"
             description="View your previous prompts"

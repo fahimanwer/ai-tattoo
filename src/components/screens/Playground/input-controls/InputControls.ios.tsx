@@ -43,10 +43,11 @@ export function InputControls({
   const namespaceId = useId();
   const textFieldRef = useRef<TextFieldRef>(null);
 
-  // Register with context so focusInput/blurInput work from anywhere
+  // Register with context so focusInput/blurInput/setText work from anywhere
   useImperativeHandle(inputControlsRef, () => ({
     focus: () => textFieldRef.current?.focus(),
     blur: () => textFieldRef.current?.blur(),
+    setText: (text: string) => textFieldRef.current?.setText(text),
   }));
 
   function handleSubmit() {
@@ -123,6 +124,7 @@ export function InputControls({
               >
                 <TextField
                   ref={textFieldRef}
+                  defaultValue={prompt}
                   placeholder="Enter text"
                   multiline
                   allowNewlines
