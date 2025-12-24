@@ -8,6 +8,7 @@ import CoreHaptics from "@/modules/native-core-haptics";
 import { Button } from "@/src/components/ui/Button";
 import { Text } from "@/src/components/ui/Text";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { InputControls } from "./input-controls/InputControls";
@@ -81,6 +82,17 @@ export function PlaygroundScreen() {
   if (isLoading) {
     return <ActivityIndicator style={{ flex: 1, marginBottom: 100 }} />;
   }
+
+  const gesture = Gesture.Pan().onEnd((e) => {
+    // check if swiping down or up
+    if (e.translationY > 0) {
+      // swiping down
+      console.log("swiping down");
+    } else {
+      // swiping up
+      console.log("swiping up");
+    }
+  });
 
   return (
     <>
@@ -208,62 +220,64 @@ export function PlaygroundScreen() {
           ],
         }}
       />
-      <View style={[styles.container]}>
-        {/* Session generations list */}
-        <SessionHistoryList
-          sessionGenerations={sessionGenerations}
-          activeGenerationIndex={activeGenerationIndex}
-          setActiveGenerationIndex={setActiveGenerationIndex}
-          setSessionGenerations={setSessionGenerations}
-          handleSave={handleSave}
-          handleShare={handleShare}
-        />
-
-        {/* Text to image result */}
-        <TextToImageResult
-          mutation={activeMutation}
-          lastGenerationUris={activeGenerationUris}
-          onRemoveImage={removeImageFromActiveGroup}
-        />
-
-        <Activity mode={!isAuthenticated ? "visible" : "hidden"}>
-          <Animated.View
-            entering={FadeIn.duration(1000)}
-            exiting={FadeOut.duration(1000)}
-            style={{ padding: 16, gap: 16, paddingBottom: bottom }}
-          >
-            <Text type="lg" weight="bold">
-              A quick sign-in before we create your tattoo.
-            </Text>
-            <Text type="sm">
-              This lets us track your free generations and make sure your
-              account is good to go.
-            </Text>
-            <Button
-              title="Sign in"
-              color="yellow"
-              variant="solid"
-              size="lg"
-              radius="full"
-              hapticStyle="medium"
-              loading={isPending}
-              disabled={isPending}
-              onPress={() => router.push("/auth-sheet")}
-            />
-          </Animated.View>
-        </Activity>
-
-        <Activity mode={isAuthenticated ? "visible" : "hidden"}>
-          <InputControls
-            onChangeText={setPrompt}
-            prompt={prompt}
-            onSubmit={handleTattooGeneration}
-            isSubmitDisabled={prompt.length === 0 || isPending}
-            onPressSecondIcon={() => router.push("/(playground)/camera-view")}
-            autoFocus={true}
+      <GestureDetector gesture={gesture}>
+        <View style={[styles.container]}>
+          {/* Session generations list */}
+          <SessionHistoryList
+            sessionGenerations={sessionGenerations}
+            activeGenerationIndex={activeGenerationIndex}
+            setActiveGenerationIndex={setActiveGenerationIndex}
+            setSessionGenerations={setSessionGenerations}
+            handleSave={handleSave}
+            handleShare={handleShare}
           />
-        </Activity>
-      </View>
+
+          {/* Text to image result */}
+          <TextToImageResult
+            mutation={activeMutation}
+            lastGenerationUris={activeGenerationUris}
+            onRemoveImage={removeImageFromActiveGroup}
+          />
+
+          <Activity mode={!isAuthenticated ? "visible" : "hidden"}>
+            <Animated.View
+              entering={FadeIn.duration(1000)}
+              exiting={FadeOut.duration(1000)}
+              style={{ padding: 16, gap: 16, paddingBottom: bottom }}
+            >
+              <Text type="lg" weight="bold">
+                A quick sign-in before we create your tattoo.
+              </Text>
+              <Text type="sm">
+                This lets us track your free generations and make sure your
+                account is good to go.
+              </Text>
+              <Button
+                title="Sign in"
+                color="yellow"
+                variant="solid"
+                size="lg"
+                radius="full"
+                hapticStyle="medium"
+                loading={isPending}
+                disabled={isPending}
+                onPress={() => router.push("/auth-sheet")}
+              />
+            </Animated.View>
+          </Activity>
+
+          <Activity mode={isAuthenticated ? "visible" : "hidden"}>
+            <InputControls
+              onChangeText={setPrompt}
+              prompt={prompt}
+              onSubmit={handleTattooGeneration}
+              isSubmitDisabled={prompt.length === 0 || isPending}
+              onPressSecondIcon={() => router.push("/(playground)/camera-view")}
+              autoFocus={true}
+            />
+          </Activity>
+        </View>
+      </GestureDetector>
     </>
   );
 }
