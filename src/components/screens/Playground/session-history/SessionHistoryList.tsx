@@ -27,13 +27,7 @@ export function SessionHistoryList({
   }
 
   return (
-    <View
-      style={{
-        position: "absolute",
-        top: -10,
-        zIndex: 1,
-      }}
-    >
+    <View>
       <FlatList
         data={sessionGenerations}
         renderItem={({ item: imageGroup, index }) => (
@@ -68,8 +62,9 @@ export function SessionHistoryList({
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => `generation-${index}-${item[0] || ""}`}
         contentContainerStyle={{
-          paddingHorizontal: 4,
+          paddingHorizontal: 16,
           gap: 8,
+          marginTop: -3,
         }}
         // Performance optimizations
         getItemLayout={(_, index) => ({
@@ -86,7 +81,6 @@ export function SessionHistoryList({
         }}
         ListFooterComponent={() => (
           <SessionHistoryListFooter
-            isVisible={activeGenerationIndex !== undefined}
             onPress={() => setActiveGenerationIndex(undefined)}
           />
         )}

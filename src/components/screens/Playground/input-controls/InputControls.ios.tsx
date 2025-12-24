@@ -15,6 +15,7 @@ import {
   background,
   buttonStyle,
   clipShape,
+  disabled,
   glassEffect,
   offset,
   padding,
@@ -35,7 +36,6 @@ export function InputControls({
   onSubmit,
   autoFocus,
   isSubmitDisabled = false,
-  suggestions = [],
   onPressSecondIcon,
   prompt = "",
 }: InputControlsProps) {
@@ -146,7 +146,7 @@ export function InputControls({
                   multiline
                   allowNewlines
                   numberOfLines={5}
-                  autoFocus
+                  autoFocus={autoFocus}
                   modifiers={[padding({ vertical: 12, horizontal: 16 })]}
                   onChangeText={onChangeText}
                   onSubmit={onSubmit}
@@ -155,9 +155,7 @@ export function InputControls({
 
               {prompt.length > 0 && (
                 <SwiftUIButton
-                  onPress={() => {
-                    alert("test");
-                  }}
+                  onPress={onSubmit}
                   modifiers={[
                     tint("yellow"),
                     buttonStyle(
@@ -177,6 +175,7 @@ export function InputControls({
                       }),
                       prompt.length > 0
                     ),
+                    disabled(isSubmitDisabled),
                   ]}
                 >
                   <Image

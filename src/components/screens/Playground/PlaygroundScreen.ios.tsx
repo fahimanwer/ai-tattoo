@@ -1,18 +1,9 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Activity, use, useEffect, useRef } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  StyleSheet,
-  View,
-} from "react-native";
-import { SessionHistoryList } from "./session-history/SessionHistoryList";
+import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 
 import { authClient } from "@/lib/auth-client";
-import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
 import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
-import { FeaturedSuggestion } from "@/modules/animated-input/src/AnimatedInput.types";
 import CoreHaptics from "@/modules/native-core-haptics";
 import { Button } from "@/src/components/ui/Button";
 import { Text } from "@/src/components/ui/Text";
@@ -20,27 +11,8 @@ import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { InputControls } from "./input-controls/InputControls";
+import { SessionHistoryList } from "./session-history/SessionHistoryList";
 import { TextToImageResult } from "./shared/TextToImageResult";
-
-// Prepare suggestions for native view
-const suggestions = formattedSuggestions(featuredTattoos);
-
-function formattedSuggestions(tattoos: FeaturedTattoo[]) {
-  let suggestions: FeaturedSuggestion[] = [];
-
-  for (const tattoo of tattoos) {
-    suggestions.push({
-      title: tattoo.title,
-      imageUrl:
-        (typeof tattoo.image === "object" &&
-        tattoo.image !== null &&
-        "uri" in tattoo.image
-          ? tattoo.image.uri
-          : "") || "",
-    });
-  }
-  return suggestions;
-}
 
 export function PlaygroundScreen() {
   const { data: session, isPending, isRefetching } = authClient.useSession();
@@ -66,7 +38,9 @@ export function PlaygroundScreen() {
     removeImageFromActiveGroup,
   } = use(PlaygroundContext);
 
-  const { bottom } = useSafeAreaInsets();
+  const { bottom, top } = useSafeAreaInsets();
+
+  console.log("bottom", bottom);
 
   // Play playful entrance haptic on first load
   useEffect(() => {
@@ -234,7 +208,7 @@ export function PlaygroundScreen() {
           ],
         }}
       />
-      <View style={styles.container}>
+      <View style={[styles.container]}>
         {/* Session generations list */}
         <SessionHistoryList
           sessionGenerations={sessionGenerations}
@@ -246,18 +220,11 @@ export function PlaygroundScreen() {
         />
 
         {/* Text to image result */}
-        <Pressable
-          style={styles.textToImageResultContainer}
-          onPress={() => {
-            alert("test");
-          }}
-        >
-          <TextToImageResult
-            mutation={activeMutation}
-            lastGenerationUris={activeGenerationUris}
-            onRemoveImage={removeImageFromActiveGroup}
-          />
-        </Pressable>
+        <TextToImageResult
+          mutation={activeMutation}
+          lastGenerationUris={activeGenerationUris}
+          onRemoveImage={removeImageFromActiveGroup}
+        />
 
         <Activity mode={!isAuthenticated ? "visible" : "hidden"}>
           <Animated.View
@@ -289,9 +256,9 @@ export function PlaygroundScreen() {
         <Activity mode={isAuthenticated ? "visible" : "hidden"}>
           <InputControls
             onChangeText={setPrompt}
+            prompt={prompt}
             onSubmit={handleTattooGeneration}
-            isSubmitDisabled={prompt.length === 0}
-            suggestions={suggestions}
+            isSubmitDisabled={prompt.length === 0 || isPending}
             onPressSecondIcon={() => router.push("/(playground)/camera-view")}
             autoFocus={true}
           />
@@ -317,7 +284,6 @@ const styles = StyleSheet.create({
   },
   textToImageResultContainer: {
     flex: 1,
-    paddingVertical: 2,
-    backgroundColor: "red",
+    backgroundColor: "lightblue",
   },
 });

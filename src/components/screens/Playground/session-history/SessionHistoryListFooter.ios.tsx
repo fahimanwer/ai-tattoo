@@ -8,36 +8,32 @@ import {
   tint,
 } from "@expo/ui/swift-ui/modifiers";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
-import { Activity } from "react";
 import { SessionHistoryListFooterProps } from "./SessionHistoryListFooter.types";
 
 export function SessionHistoryListFooter({
-  isVisible,
   onPress,
 }: SessionHistoryListFooterProps) {
   return (
-    <Activity mode={isVisible ? "visible" : "hidden"}>
-      <Host matchContents>
-        <SwiftUIButton
-          onPress={onPress}
+    <Host matchContents>
+      <SwiftUIButton
+        onPress={onPress}
+        modifiers={[
+          tint("white"),
+          buttonStyle(isLiquidGlassAvailable() ? "glass" : "bordered"),
+          background(isLiquidGlassAvailable() ? "transparent" : "#000000"),
+          clipShape("circle"),
+          controlSize("small"),
+        ]}
+      >
+        <Image
+          systemName="square.and.pencil"
+          size={20}
           modifiers={[
-            tint("white"),
-            buttonStyle(isLiquidGlassAvailable() ? "glass" : "bordered"),
-            background(isLiquidGlassAvailable() ? "transparent" : "#000000"),
+            padding({ vertical: 6, horizontal: 0 }),
             clipShape("circle"),
-            controlSize("small"),
           ]}
-        >
-          <Image
-            systemName="arrow.circlepath"
-            size={20}
-            modifiers={[
-              padding({ vertical: 6, horizontal: 0 }),
-              clipShape("circle"),
-            ]}
-          />
-        </SwiftUIButton>
-      </Host>
-    </Activity>
+        />
+      </SwiftUIButton>
+    </Host>
   );
 }
