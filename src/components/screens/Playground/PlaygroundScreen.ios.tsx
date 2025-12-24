@@ -1,12 +1,6 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Activity, use, useEffect, useRef } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { authClient } from "@/lib/auth-client";
 import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
@@ -98,9 +92,11 @@ export function PlaygroundScreen() {
     }
   }
 
-  if (isLoading) {
-    return <ActivityIndicator style={{ flex: 1, marginBottom: 100 }} />;
-  }
+  // this looks ugly, maybe we don't need it?
+  // it usually shows when the token is refreshing
+  // if (isLoading) {
+  //   return <ActivityIndicator style={{ flex: 1, marginBottom: 100 }} />;
+  // }
 
   const handleHaptic = () =>
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
@@ -260,17 +256,6 @@ export function PlaygroundScreen() {
                 By signing in, we can keep track of your free tattoo generations
                 and ensure your account is set up properly.
               </Text>
-              {/*   <Button
-                title="Sign in"
-                color="yellow"
-                variant="solid"
-                size="lg"
-                radius="full"
-                hapticStyle="medium"
-                loading={isPending}
-                disabled={isPending}
-                onPress={() => router.push("/auth-sheet")}
-              /> */}
               <Host matchContents useViewportSizeMeasurement>
                 <SwiftUIButton
                   modifiers={[
@@ -302,7 +287,12 @@ export function PlaygroundScreen() {
               onChangeText={setPrompt}
               prompt={prompt}
               onSubmit={handleTattooGeneration}
-              isSubmitDisabled={prompt.length === 0 || isPending || isLoading}
+              isSubmitDisabled={
+                prompt.length === 0 ||
+                isPending ||
+                isLoading ||
+                activeMutation.isPending
+              }
               autoFocus={false} // this is causing side effects when true
             />
           </Activity>
