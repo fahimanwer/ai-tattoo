@@ -1,6 +1,7 @@
 import { featuredTattoos } from "@/lib/featured-tattoos";
 import { Text } from "@/src/components/ui/Text";
 import { LegendList } from "@legendapp/list";
+import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { PressableScale } from "pressto";
 import React, { useRef } from "react";
@@ -173,24 +174,28 @@ function SuggestionChip({
 
   if (suggestion.type === "tryOn") {
     return (
-      <PressableScale style={styles.tryOnChip} onPress={handlePress}>
-        <Image
-          source={{ uri: suggestion.thumbnailUri }}
-          style={styles.thumbnail}
-          contentFit="cover"
-        />
-        <Text type="sm" style={styles.tryOnText}>
-          {suggestion.label}
-        </Text>
+      <PressableScale onPress={handlePress}>
+        <GlassView style={styles.tryOnChip}>
+          <Image
+            source={{ uri: suggestion.thumbnailUri }}
+            style={styles.thumbnail}
+            contentFit="cover"
+          />
+          <Text type="sm" style={styles.tryOnText}>
+            {suggestion.label}
+          </Text>
+        </GlassView>
       </PressableScale>
     );
   }
 
   return (
-    <PressableScale style={styles.textChip} onPress={handlePress}>
-      <Text type="sm" style={styles.textChipLabel}>
-        {suggestion.label}
-      </Text>
+    <PressableScale onPress={handlePress}>
+      <GlassView style={styles.textChip}>
+        <Text type="sm" style={styles.textChipLabel}>
+          {suggestion.label}
+        </Text>
+      </GlassView>
     </PressableScale>
   );
 }
