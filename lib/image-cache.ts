@@ -50,17 +50,25 @@ export async function cacheBase64Image(
  * base64 intermediate representation
  *
  * @param url - The image URL (e.g., from S3)
- * @param ext - File extension (default: "jpg")
+ * @param ext - File extension (default: auto-detected from URL, falls back to "jpg")
  * @returns The file URI where the image was cached
  */
 export async function cacheImageFromUrl(
   url: string,
-  ext: "png" | "jpg" = "jpg"
+  ext?: "png" | "jpg" | "avif"
 ): Promise<string> {
+  // Auto-detect extension from URL if not provided
+  const detectedExt =
+    ext ??
+    (url.match(/\.(png|jpg|jpeg|avif)$/i)?.[1]?.toLowerCase() as
+      | "png"
+      | "jpg"
+      | "avif") ??
+    "jpg";
   const cacheDir = ensureCacheDirectory();
   const fileName = `${Date.now()}-${Math.random()
     .toString(36)
-    .substring(7)}.${ext}`;
+    .substring(7)}.${detectedExt}`;
   const file = new File(cacheDir, fileName);
 
   // Download image directly to file (React Native compatible)

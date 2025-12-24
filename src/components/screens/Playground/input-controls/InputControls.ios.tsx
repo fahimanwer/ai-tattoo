@@ -1,3 +1,4 @@
+import { cacheImageFromUrl } from "@/lib/image-cache";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import {
   GlassEffectContainer,
@@ -26,6 +27,7 @@ import {
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { router } from "expo-router";
 import React, { use, useId, useImperativeHandle, useRef } from "react";
+import { Alert } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PlaygroundSuggestions } from "../shared/suggestions/PlaygroundSuggestions";
@@ -39,10 +41,15 @@ export function InputControls({
   prompt = "",
 }: InputControlsProps) {
   const { bottom } = useSafeAreaInsets();
-  const { inputControlsRef } = use(PlaygroundContext);
+  const { inputControlsRef, addImagesToSession, activeGenerationUris } =
+    use(PlaygroundContext);
 
   const namespaceId = useId();
   const textFieldRef = useRef<TextFieldRef>(null);
+
+  // Suggestions should be hidden when there's input or selected images
+  const shouldShowSuggestions =
+    prompt.length === 0 && activeGenerationUris.length === 0;
 
   // Register with context so focusInput/blurInput/setText work from anywhere
   useImperativeHandle(inputControlsRef, () => ({
@@ -54,6 +61,40 @@ export function InputControls({
   function handleSubmit() {
     onSubmit?.();
     textFieldRef.current?.blur();
+  }
+
+  async function handleTryOnSelect(styleName: string, imageUri: string) {
+    try {
+      // Cache the image from the CDN URL
+      const cachedUri = await cacheImageFromUrl(imageUri);
+      // Add the cached image to the session
+      addImagesToSession([cachedUri]);
+      // Note: We don't set the prompt here because there's an automatic prompt
+      // applied when the user selects multiple images
+
+      // Show alert to explain what happened and prompt them to select their image
+      Alert.alert(
+        `Try on ${styleName}`,
+        "Take a photo of your body part to see how this tattoo looks on you!",
+        [
+          {
+            text: "Choose Photo",
+            style: "default",
+            onPress: () => {
+              textFieldRef.current?.blur();
+              router.push("/(playground)/sheet");
+            },
+            isPreferred: true,
+          },
+          {
+            text: "Later",
+            style: "cancel",
+          },
+        ]
+      );
+    } catch (error) {
+      console.error("Failed to load try-on image:", error);
+    }
   }
 
   return (
@@ -71,10 +112,12 @@ export function InputControls({
         style={{
           marginBottom: 16,
         }}
-        onSelect={(prompt) => {
-          onChangeText?.(prompt);
+        visible={shouldShowSuggestions}
+        onSelectText={(suggestionPrompt) => {
+          onChangeText?.(suggestionPrompt);
           textFieldRef.current?.focus();
         }}
+        onSelectTryOn={handleTryOnSelect}
       />
       <Host matchContents ignoreSafeAreaKeyboardInsets>
         <Namespace id={namespaceId}>
