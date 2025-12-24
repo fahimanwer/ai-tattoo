@@ -11,6 +11,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { customEvent } from "vexo-analytics";
 import { Button } from "../ui/Button";
 import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
 import { InteractiveImage } from "../ui/InteractiveImage";
@@ -57,6 +58,9 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
 
   useEffect(() => {
     loadAsset();
+    customEvent("saved_tattoo_viewed", {
+      source: "my_tattoos",
+    });
   }, [loadAsset]);
 
   const handleSharePress = async () => {
@@ -83,6 +87,10 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
         message: shareMessage,
         url: fileUri,
       });
+
+      customEvent("tattoo_shared", {
+        source: "detail_screen",
+      });
     } catch (error) {
       console.error("Error sharing:", error);
       Alert.alert("Error", "Unable to share the image. Please try again.");
@@ -106,6 +114,7 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
           onPress: async () => {
             try {
               await MediaLibrary.deleteAssetsAsync([asset.id]);
+              customEvent("saved_tattoo_deleted", {});
               router.back();
             } catch (error) {
               console.error("Error deleting asset:", error);

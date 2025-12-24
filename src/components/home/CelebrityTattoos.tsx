@@ -4,6 +4,7 @@ import { VerticalCard } from "@/src/components/ui/VerticalCard";
 import { LegendList } from "@legendapp/list";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
+import { customEvent } from "vexo-analytics";
 
 export function CelebrityTattoos() {
   const categoriesData = [...tattooCategories];
@@ -24,14 +25,19 @@ export function CelebrityTattoos() {
             imageStyle={{
               width: 160,
             }}
-            onPress={() =>
+            onPress={() => {
+              customEvent("category_selected", {
+                categoryId: category.id,
+                categoryName: category.title,
+                section: "more_styles",
+              });
               router.push({
                 pathname: "/(tabs)/(home)/about/style",
                 params: {
                   style: category.id,
                 },
-              })
-            }
+              });
+            }}
           />
         )}
         style={styles.scrollView}

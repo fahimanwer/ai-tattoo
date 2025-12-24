@@ -15,6 +15,7 @@ import Purchases, {
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
+import { customEvent } from "vexo-analytics";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 
@@ -35,6 +36,13 @@ export function Paywall() {
     pkg: PurchasesPackage,
     offeringIdentifier: string
   ) => {
+    const tier = entitlementToTier(offeringIdentifier);
+
+    customEvent("plan_selected", {
+      plan: tier,
+      price: pkg.product.priceString,
+    });
+
     try {
       // Make the purchase
       setIsPurchasing(true);
@@ -44,6 +52,11 @@ export function Paywall() {
 
       console.log("Purchase successful!");
       console.log("Updated customer info:", updatedCustomerInfo);
+
+      customEvent("purchase_completed", {
+        plan: tier,
+        success: true,
+      });
 
       // Show success message
       Alert.alert(
@@ -77,6 +90,12 @@ export function Paywall() {
         console.log("User cancelled the purchase");
         return;
       }
+
+      customEvent("purchase_completed", {
+        plan: tier,
+        success: false,
+        error: error.message || "Unknown error",
+      });
 
       // Show error alert
       Alert.alert(
@@ -117,6 +136,9 @@ export function Paywall() {
   };
 
   useEffect(() => {
+    customEvent("paywall_viewed", {
+      source: "manual",
+    });
     fetchProducts();
   }, []);
 
@@ -357,7 +379,15 @@ export function Paywall() {
               try {
                 const restore = await Purchases.restorePurchases();
 
-                if (Object.keys(restore.entitlements.active).length > 0) {
+                const hasActivePurchases =
+                  Object.keys(restore.entitlements.active).length > 0;
+
+                customEvent("restore_attempted", {
+                  success: true,
+                  hasActivePurchases,
+                });
+
+                if (hasActivePurchases) {
                   Alert.alert(
                     "Success!",
                     "Your purchases have been restored successfully.",
@@ -376,6 +406,10 @@ export function Paywall() {
                 }
               } catch (e) {
                 console.error("Error restoring purchases:", e);
+                customEvent("restore_attempted", {
+                  success: false,
+                  hasActivePurchases: false,
+                });
                 Alert.alert(
                   "Error Restoring Purchases",
                   "Unable to restore purchases. Please try again.",

@@ -18,6 +18,7 @@ import { PressableScale } from "pressto";
 import { useCallback, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { customEvent } from "vexo-analytics";
 
 export function ExploreScreen() {
   const {
@@ -54,6 +55,11 @@ export function ExploreScreen() {
   }, [selectedBodyPart, selectedStyle, selectedMood, filterMode]);
 
   const handleImagePress = useCallback((image: GalleryImage) => {
+    customEvent("explore_image_viewed", {
+      bodyPart: image.bodyPart,
+      styleId: image.styleId,
+      moodId: image.moodId,
+    });
     router.push({
       pathname: "/(tabs)/explore/image-preview",
       params: {
@@ -117,7 +123,9 @@ export function ExploreScreen() {
         numColumns={4}
         data={allImages}
         keyExtractor={(image, index) =>
-          `${image.moodId || image.styleId}-${image.bodyPart}-${image.gender}-${index}`
+          `${image.moodId || image.styleId}-${image.bodyPart}-${
+            image.gender
+          }-${index}`
         }
         ListHeaderComponent={ListHeader}
         contentContainerStyle={{ gap: 10 }}

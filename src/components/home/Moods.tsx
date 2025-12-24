@@ -4,6 +4,7 @@ import { VerticalCard } from "@/src/components/ui/VerticalCard";
 import { LegendList } from "@legendapp/list";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
+import { customEvent } from "vexo-analytics";
 
 export function Moods() {
   const moodsData = [...moods];
@@ -24,14 +25,19 @@ export function Moods() {
             imageStyle={{
               width: 160,
             }}
-            onPress={() =>
+            onPress={() => {
+              customEvent("mood_selected", {
+                moodId: mood.id,
+                moodName: mood.title,
+                section: "moods",
+              });
               router.push({
                 pathname: "/(tabs)/(home)/about/style",
                 params: {
                   style: mood.id,
                 },
-              })
-            }
+              });
+            }}
           />
         )}
         style={styles.scrollView}

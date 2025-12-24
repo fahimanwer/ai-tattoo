@@ -23,6 +23,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as React from "react";
 import { Alert, Keyboard } from "react-native";
 import { toast } from "sonner-native";
+import { customEvent } from "vexo-analytics";
 import { AppSettingsContext } from "./AppSettings";
 
 // Union type that accepts either mutation type
@@ -147,9 +148,18 @@ export function PlaygroundProvider({
         setSessionGenerations(newGenerations);
         setActiveGenerationIndex(newGenerations.length - 1);
         queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
+
+        customEvent("generation_completed", {
+          type: "text_to_image",
+          success: true,
+        });
       }
     },
     onError: (error) => {
+      customEvent("generation_failed", {
+        type: "text_to_image",
+        error: error.message,
+      });
       toast.error("Failed to generate tattoo!", {
         dismissible: true,
         duration: 5000,
@@ -181,9 +191,18 @@ export function PlaygroundProvider({
         setSessionGenerations(newGenerations);
         setActiveGenerationIndex(newGenerations.length - 1);
         queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
+
+        customEvent("generation_completed", {
+          type: "image_to_image",
+          success: true,
+        });
       }
     },
     onError: (error) => {
+      customEvent("generation_failed", {
+        type: "image_to_image",
+        error: error.message,
+      });
       toast.error("Failed to generate tattoo!", {
         dismissible: true,
         duration: 5000,
@@ -210,6 +229,12 @@ export function PlaygroundProvider({
     // Normal tattoo generation
     // Text to image generation
     if (isTextToImage) {
+      customEvent("generation_started", {
+        type: "text_to_image",
+        promptLength: prompt.length,
+        imageCount: 0,
+        improvePrompt: settings.improvePrompt ?? true,
+      });
       // Clear active selection when starting a fresh generation
       setActiveGenerationIndex(undefined);
       textToImageMutation.mutate({
@@ -217,6 +242,12 @@ export function PlaygroundProvider({
         improvePrompt: settings.improvePrompt,
       });
     } else {
+      customEvent("generation_started", {
+        type: "image_to_image",
+        promptLength: prompt.length,
+        imageCount: activeImageGroup.length,
+        improvePrompt: settings.improvePrompt ?? true,
+      });
       // Use our custome prompt to combine two images
       const promptToUse =
         activeImageGroup.length === 2 ? promptToCombineTwoImages : prompt;
@@ -253,6 +284,10 @@ export function PlaygroundProvider({
       if (shareResult.dismissedAction) {
         return;
       }
+
+      customEvent("tattoo_shared", {
+        source: "playground",
+      });
     } catch (error) {
       console.error("Error sharing:", error);
     }
@@ -264,6 +299,10 @@ export function PlaygroundProvider({
     // Convert file URI to base64 for saving
     const base64Image = await getCachedImageAsBase64(fileUri);
     await saveBase64ToAlbum(base64Image, "png");
+
+    customEvent("tattoo_saved", {
+      source: "playground",
+    });
 
     toast.success("Image saved to gallery!", {
       dismissible: true,

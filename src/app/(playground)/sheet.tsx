@@ -17,6 +17,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { customEvent } from "vexo-analytics";
 
 const RECENT_PHOTOS_LIMIT = 20;
 const IMAGE_SIZE = 80;
@@ -80,10 +81,18 @@ export default function Sheet() {
   }
 
   function handleCameraPress() {
+    customEvent("photo_added", {
+      source: "camera",
+      count: 1,
+    });
     router.replace("/(playground)/camera-view");
   }
 
   async function handleAllPhotosPress() {
+    customEvent("photo_added", {
+      source: "all_photos",
+      count: 1,
+    });
     const success = await pickImageFromGallery();
     if (success) {
       router.back();
@@ -153,6 +162,10 @@ export default function Sheet() {
       }
 
       if (imageUris.length > 0) {
+        customEvent("photo_added", {
+          source: "recent_photos",
+          count: imageUris.length,
+        });
         addImagesToSession(imageUris);
         router.back();
       }
@@ -335,6 +348,10 @@ export default function Sheet() {
                 : "Select a tattoo first, then add your photo"
             }
             onPress={() => {
+              customEvent("sheet_action_pressed", {
+                action: "try_on",
+                hasActiveImage,
+              });
               if (hasActiveImage) {
                 // User has a tattoo selected, offer to add body photo
                 Alert.alert(
@@ -393,6 +410,10 @@ export default function Sheet() {
             title="Create New Tattoo"
             description="Describe your tattoo idea and we'll generate it"
             onPress={() => {
+              customEvent("sheet_action_pressed", {
+                action: "create_new",
+                hasActiveImage,
+              });
               // Clear selection to start fresh, dismiss and focus the input
               setActiveGenerationIndex(undefined);
               setPrompt("");
@@ -406,6 +427,10 @@ export default function Sheet() {
             title="Tattoo Cover-Up Idea"
             description="Generate an idea to cover up an existing tattoo using a photo as reference"
             onPress={() => {
+              customEvent("sheet_action_pressed", {
+                action: "cover_up_idea",
+                hasActiveImage,
+              });
               setPrompt(
                 "Design a tattoo cover-up that incorporates and conceals the existing tattoo in this photo. Build the new design over the current tattoo (not on blank skin) and match the style and complexity of the original as much as possible."
               );
@@ -418,6 +443,10 @@ export default function Sheet() {
             title="Remove Tattoo"
             description="Remove an existing tattoo from the photo"
             onPress={() => {
+              customEvent("sheet_action_pressed", {
+                action: "remove_tattoo",
+                hasActiveImage,
+              });
               setPrompt(
                 "Remove the tattoo from this photo and restore the area as natural skin. Keep the rest of the image unchanged and do not add any new design."
               );
@@ -429,13 +458,17 @@ export default function Sheet() {
             icon="clock.arrow.circlepath"
             title="Prompt History"
             description="View your previous prompts"
-            onPress={() =>
+            onPress={() => {
+              customEvent("sheet_action_pressed", {
+                action: "prompt_history",
+                hasActiveImage,
+              });
               Alert.alert(
                 "Prompt history feature coming soon",
                 "This feature is coming soon. Please check back later.",
                 [{ text: "OK", style: "default", isPreferred: true }]
-              )
-            }
+              );
+            }}
           />
         </View>
       </ScrollView>

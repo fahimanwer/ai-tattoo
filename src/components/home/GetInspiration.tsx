@@ -4,6 +4,7 @@ import { VerticalCard } from "@/src/components/ui/VerticalCard";
 import { LegendList } from "@legendapp/list";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
+import { customEvent } from "vexo-analytics";
 
 export function GetInspiration() {
   const inspirationStyles = [...featuredTattoos].reverse();
@@ -25,14 +26,19 @@ export function GetInspiration() {
             imageStyle={{
               width: 160,
             }}
-            onPress={() =>
+            onPress={() => {
+              customEvent("style_selected", {
+                styleId: style.id,
+                styleName: style.title,
+                section: "discover_styles",
+              });
               router.push({
                 pathname: "/(tabs)/(home)/about/style",
                 params: {
                   style: style.id,
                 },
-              })
-            }
+              });
+            }}
           />
         )}
         style={styles.scrollView}

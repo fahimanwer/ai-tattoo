@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, ReactNode, useContext, useState } from "react";
+import { customEvent } from "vexo-analytics";
 
 type FilterMode = "body part" | "styles" | "moods";
 
@@ -14,9 +15,9 @@ interface ExploreFilterContextValue {
   handleBodyPartReset: () => void;
 }
 
-const ExploreFilterContext = createContext<ExploreFilterContextValue | undefined>(
-  undefined
-);
+const ExploreFilterContext = createContext<
+  ExploreFilterContextValue | undefined
+>(undefined);
 
 export function ExploreFilterProvider({ children }: { children: ReactNode }) {
   const [filterMode, setFilterMode] = useState<FilterMode>("body part");
@@ -29,11 +30,44 @@ export function ExploreFilterProvider({ children }: { children: ReactNode }) {
   };
 
   const handleFilterModeChange = (mode: FilterMode) => {
+    customEvent("explore_filter_changed", {
+      filterMode: mode.replace(" ", "_"),
+    });
     setFilterMode(mode);
     // Reset filters when switching modes
     setSelectedBodyPart(null);
     setSelectedStyle(null);
     setSelectedMood(null);
+  };
+
+  const handleBodyPartChange = (bodyPart: string | null) => {
+    if (bodyPart !== null) {
+      customEvent("explore_filter_applied", {
+        filterMode: "body_part",
+        filterValue: bodyPart,
+      });
+    }
+    setSelectedBodyPart(bodyPart);
+  };
+
+  const handleStyleChange = (style: number | null) => {
+    if (style !== null) {
+      customEvent("explore_filter_applied", {
+        filterMode: "styles",
+        filterId: style,
+      });
+    }
+    setSelectedStyle(style);
+  };
+
+  const handleMoodChange = (mood: number | null) => {
+    if (mood !== null) {
+      customEvent("explore_filter_applied", {
+        filterMode: "moods",
+        filterId: mood,
+      });
+    }
+    setSelectedMood(mood);
   };
 
   return (
@@ -42,11 +76,11 @@ export function ExploreFilterProvider({ children }: { children: ReactNode }) {
         filterMode,
         setFilterMode: handleFilterModeChange,
         selectedBodyPart,
-        setSelectedBodyPart,
+        setSelectedBodyPart: handleBodyPartChange,
         selectedStyle,
-        setSelectedStyle,
+        setSelectedStyle: handleStyleChange,
         selectedMood,
-        setSelectedMood,
+        setSelectedMood: handleMoodChange,
         handleBodyPartReset,
       }}
     >
@@ -64,4 +98,3 @@ export function useExploreFilter() {
   }
   return context;
 }
-

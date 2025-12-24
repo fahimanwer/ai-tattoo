@@ -5,12 +5,14 @@ import ParallaxScrollView from "@/src/components/about/ParallaxScrollView";
 import { Button } from "@/src/components/ui/Button";
 import { VerticalCard } from "@/src/components/ui/VerticalCard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 import {
   ImageSourcePropType,
   ScrollView,
   StyleSheet,
   View,
 } from "react-native";
+import { customEvent } from "vexo-analytics";
 
 export default function AboutStyle() {
   const { style: styleParam } = useLocalSearchParams<{ style: string }>();
@@ -32,6 +34,24 @@ export default function AboutStyle() {
   const currentStyle =
     selectedMood || selectedCategory || selectedStyle || featuredTattoos[0];
 
+  // Determine the source type for analytics
+  const sourceType = selectedMood
+    ? "mood"
+    : selectedCategory
+    ? "category"
+    : "style";
+
+  // Track style detail view
+  useEffect(() => {
+    if (currentStyle) {
+      customEvent("style_detail_viewed", {
+        styleId: currentStyle.id,
+        styleName: currentStyle.title,
+        source: sourceType,
+      });
+    }
+  }, [currentStyle?.id]);
+
   return (
     <>
       <Stack.Screen
@@ -46,6 +66,10 @@ export default function AboutStyle() {
                 type: "sfSymbol",
               },
               onPress: () => {
+                customEvent("style_try_pressed", {
+                  styleId: currentStyle.id,
+                  styleName: currentStyle.title,
+                });
                 router.push({
                   pathname: "/(tabs)/(home)/about/image-preview",
                   params: {
@@ -125,6 +149,11 @@ export default function AboutStyle() {
                       }}
                       showOverlay={false}
                       onPress={() => {
+                        customEvent("gallery_image_viewed", {
+                          styleId: currentStyle.id,
+                          imageIndex: index,
+                        });
+
                         const imageUrl =
                           typeof galleryItem.image === "object" &&
                           "uri" in galleryItem.image

@@ -22,6 +22,7 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { customEvent } from "vexo-analytics";
 import { Button } from "../ui/Button";
 
 const ONBOARDING_VIDEOS = [
@@ -59,6 +60,8 @@ export default function Container() {
   const pausedIndicatorTimer = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
+  const onboardingStartTime = useRef<number>(Date.now());
+  const stepsViewed = useRef<Set<number>>(new Set([0])); // Track which steps were viewed
 
   // Create three video players
   const player1 = useVideoPlayer(ONBOARDING_VIDEOS[0].video, (player) => {
@@ -108,11 +111,17 @@ export default function Container() {
     status: player3.status,
   });
 
-  // Play entrance haptic on first mount
+  // Play entrance haptic on first mount and track first step
   useEffect(() => {
     if (!hasPlayedEntranceHaptic.current) {
       hasPlayedEntranceHaptic.current = true;
       NativeCoreHaptics.default.playPattern(onboardingEntranceHaptic);
+
+      // Track first step view
+      customEvent("onboarding_step_viewed", {
+        step: 1,
+        stepTitle: ONBOARDING_VIDEOS[0].title,
+      });
     }
   }, []);
 
@@ -187,6 +196,15 @@ export default function Container() {
       setCurrentIndex(index);
       // Play swipe haptic when changing steps
       NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
+
+      // Track step view if not already viewed
+      if (!stepsViewed.current.has(index)) {
+        stepsViewed.current.add(index);
+        customEvent("onboarding_step_viewed", {
+          step: index + 1,
+          stepTitle: ONBOARDING_VIDEOS[index].title,
+        });
+      }
     }
   };
 
@@ -333,11 +351,30 @@ export default function Container() {
                 radius="full"
                 onPress={() => {
                   if (currentIndex === 2) {
+                    // Calculate duration in seconds
+                    const durationMs = Date.now() - onboardingStartTime.current;
+                    const durationSeconds = Math.round(durationMs / 1000);
+
+                    // Track onboarding completion
+                    customEvent("onboarding_completed", {
+                      stepsViewed: stepsViewed.current.size,
+                      duration: durationSeconds,
+                    });
+
                     // On last video, complete onboarding
                     setIsOnboarded(true);
                   } else {
-                    // Advance to next video
+                    // Track step view for next step
                     const nextIndex = currentIndex + 1;
+                    if (!stepsViewed.current.has(nextIndex)) {
+                      stepsViewed.current.add(nextIndex);
+                      customEvent("onboarding_step_viewed", {
+                        step: nextIndex + 1,
+                        stepTitle: ONBOARDING_VIDEOS[nextIndex].title,
+                      });
+                    }
+
+                    // Advance to next video
                     scrollViewRef.current?.scrollTo({
                       x: nextIndex * SCREEN_WIDTH,
                       animated: true,
