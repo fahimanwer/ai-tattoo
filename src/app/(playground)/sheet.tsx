@@ -1,8 +1,20 @@
 import { cacheBase64Image } from "@/lib/image-cache";
-import { Button } from "@/src/components/ui/Button";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import {
+  Host,
+  HStack,
+  Button as SwiftUIButton,
+  Text as SwiftUIText,
+} from "@expo/ui/swift-ui";
+import {
+  buttonStyle,
+  controlSize,
+  font,
+  frame,
+  tint,
+} from "@expo/ui/swift-ui/modifiers";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import { router, Stack } from "expo-router";
@@ -15,6 +27,7 @@ import {
   Linking,
   ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { customEvent } from "vexo-analytics";
@@ -37,6 +50,8 @@ export default function Sheet() {
     activeGenerationUris,
     focusInput,
   } = use(PlaygroundContext);
+
+  const { width } = useWindowDimensions();
 
   // Check if user has a tattoo/image already selected
   const hasActiveImage = activeGenerationUris.length > 0;
@@ -185,13 +200,35 @@ export default function Sheet() {
           <Text type="sm" style={styles.permissionText}>
             Access your photos to quickly add images
           </Text>
-          <Button
+          {/*   <Button
             onPress={requestPermission}
             title="Enable Permissions"
             variant="link"
             color="yellow"
             size="sm"
-          />
+          /> */}
+          <Host matchContents useViewportSizeMeasurement>
+            <SwiftUIButton
+              modifiers={[
+                controlSize("mini"),
+                buttonStyle("glassProminent"),
+                tint("yellow"),
+              ]}
+              onPress={requestPermission}
+            >
+              <HStack
+                spacing={8}
+                modifiers={[frame({ height: 44, width: width - 64 })]}
+              >
+                <SwiftUIText
+                  color={"black"}
+                  modifiers={[font({ weight: "semibold", size: 16 })]}
+                >
+                  Enable Permissions
+                </SwiftUIText>
+              </HStack>
+            </SwiftUIButton>
+          </Host>
         </View>
       );
     }
@@ -199,16 +236,38 @@ export default function Sheet() {
     if (permission?.status === MediaLibrary.PermissionStatus.DENIED) {
       return (
         <View style={styles.permissionContainer}>
-          <Text type="sm" style={styles.permissionText}>
-            Photo access is needed to select images
-          </Text>
-          <Button
+          {/*  <Button
             onPress={() => Linking.openURL("app-settings:")}
             title="Enable Permissions"
             variant="link"
             color="yellow"
             size="sm"
-          />
+          /> */}
+          <Host matchContents useViewportSizeMeasurement>
+            <SwiftUIButton
+              modifiers={[
+                controlSize("mini"),
+                buttonStyle("glassProminent"),
+                tint("yellow"),
+              ]}
+              onPress={() => Linking.openURL("app-settings:")}
+            >
+              <HStack
+                spacing={8}
+                modifiers={[frame({ height: 44, width: width - 64 })]}
+              >
+                <SwiftUIText
+                  color={"black"}
+                  modifiers={[font({ weight: "semibold", size: 16 })]}
+                >
+                  Enable Permissions
+                </SwiftUIText>
+              </HStack>
+            </SwiftUIButton>
+          </Host>
+          <Text type="xs" style={styles.permissionText}>
+            Photo access is needed to select images
+          </Text>
         </View>
       );
     }

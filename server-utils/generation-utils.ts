@@ -835,6 +835,79 @@ export async function validateNoAnimals(
   return { valid: true };
 }
 
+/**
+ * Validates that images contain human body parts using GPT-4o-mini Vision API
+ * Rejects images of nature, landscapes, objects, animals, etc.
+ */
+export async function validateHumanBodyParts(
+  images_base64: string[]
+): Promise<{ valid: true } | { valid: false; error: string }> {
+  const { OPENAI_API_KEY } = constants;
+  const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+
+  if (!OPENAI_API_KEY) {
+    slog("generation-utils", "OPENAI_API_KEY not set, skipping human body validation");
+    return { valid: true };
+  }
+
+  for (const imageBase64 of images_base64) {
+    const { mime_type, data } = extractMimeAndData(imageBase64);
+
+    try {
+      const response = await fetch(OPENAI_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "Does this image show a human body part (arm, leg, back, chest, shoulder, etc.) where a tattoo could be placed? Answer only 'yes' or 'no'. Do not count nature scenes, landscapes, waterfalls, animals, objects, or abstract images as body parts.",
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:${mime_type};base64,${data}`,
+                  },
+                },
+              ],
+            },
+          ],
+          max_tokens: 10,
+        }),
+      });
+
+      if (!response.ok) {
+        slog("generation-utils", "OpenAI API error during human body validation", {
+          status: response.status,
+        });
+        continue;
+      }
+
+      const result = await response.json();
+      const answer = result.choices?.[0]?.message?.content?.toLowerCase().trim() || "";
+
+      if (!answer.includes("yes")) {
+        return {
+          valid: false,
+          error: "Please use photos of human body parts only. Images of nature, landscapes, objects, or other non-body content are not allowed.",
+        };
+      }
+    } catch (error) {
+      slog("generation-utils", "Error validating human body parts", { error });
+      continue;
+    }
+  }
+
+  return { valid: true };
+}
+
 // ============================================================================
 // Prompt Enhancement
 // ============================================================================

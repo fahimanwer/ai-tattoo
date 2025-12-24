@@ -9,6 +9,7 @@ import {
   improvePrompt as handleImprovePrompt,
   incrementUsage,
   toGeminiImageParts,
+  validateHumanBodyParts,
   validateNoAnimals,
   type Session,
 } from "@/server-utils/generation-utils";
@@ -45,6 +46,15 @@ export const POST = withAuth(async (request: Request, session: Session) => {
     if (!animalCheck.valid) {
       return Response.json(
         { success: false, error: animalCheck.error },
+        { status: 400 }
+      );
+    }
+
+    // Validate that images contain human body parts (reject nature, landscapes, objects, etc.)
+    const bodyPartsCheck = await validateHumanBodyParts(images_base64);
+    if (!bodyPartsCheck.valid) {
+      return Response.json(
+        { success: false, error: bodyPartsCheck.error },
         { status: 400 }
       );
     }
