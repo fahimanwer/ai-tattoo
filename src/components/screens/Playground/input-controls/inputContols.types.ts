@@ -8,3 +8,8 @@ export interface InputControlsProps {
   onPressSecondIcon?: () => void;
   prompt?: string;
 }
+
+export interface InputControlsHandle {
+  focus: () => void;
+  blur: () => void;
+}

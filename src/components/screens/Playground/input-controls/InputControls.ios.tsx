@@ -23,13 +23,14 @@ import {
   tint,
 } from "@expo/ui/swift-ui/modifiers";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
-import { router, useNavigation } from "expo-router";
-import React, { useId, useRef } from "react";
+import { router } from "expo-router";
+import React, { Ref, useId, useImperativeHandle, useRef } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { InputControlsProps } from "./inputContols.types";
+import { InputControlsHandle, InputControlsProps } from "./inputContols.types";
 
 export function InputControls({
+  ref,
   onPressImageGallery,
   onChangeFocus,
   onChangeText,
@@ -38,12 +39,16 @@ export function InputControls({
   isSubmitDisabled = false,
   onPressSecondIcon,
   prompt = "",
-}: InputControlsProps) {
+}: InputControlsProps & { ref?: Ref<InputControlsHandle> }) {
   const { bottom } = useSafeAreaInsets();
 
   const namespaceId = useId();
   const textFieldRef = useRef<TextFieldRef>(null);
-  const navigation = useNavigation();
+
+  useImperativeHandle(ref, () => ({
+    focus: () => textFieldRef.current?.focus(),
+    blur: () => textFieldRef.current?.blur(),
+  }));
 
   //  useEffect(() => {
   //    const unsubscribe = navigation.addListener("focus", () => {

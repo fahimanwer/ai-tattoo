@@ -11,7 +11,9 @@ import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { scheduleOnRN } from "react-native-worklets";
 import { InputControls } from "./input-controls/InputControls";
+import { InputControlsHandle } from "./input-controls/inputContols.types";
 import { SessionHistoryList } from "./session-history/SessionHistoryList";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
@@ -21,6 +23,7 @@ export function PlaygroundScreen() {
   const isLoading = isPending || isRefetching;
   const params = useLocalSearchParams<{ mode?: string }>();
   const hasHandledMode = useRef(false);
+  const inputControlsRef = useRef<InputControlsHandle>(null);
 
   const {
     prompt,
@@ -40,8 +43,6 @@ export function PlaygroundScreen() {
   } = use(PlaygroundContext);
 
   const { bottom, top } = useSafeAreaInsets();
-
-  console.log("bottom", bottom);
 
   // Play playful entrance haptic on first load
   useEffect(() => {
@@ -83,16 +84,26 @@ export function PlaygroundScreen() {
     return <ActivityIndicator style={{ flex: 1, marginBottom: 100 }} />;
   }
 
-  const gesture = Gesture.Pan().onEnd((e) => {
+  // Define outside gesture to avoid ref serialization into worklet
+  const focusInput = () => inputControlsRef.current?.focus();
+  const blurInput = () => inputControlsRef.current?.blur();
+
+  const panGesture = Gesture.Pan().onEnd((e) => {
     // check if swiping down or up
     if (e.translationY > 0) {
-      // swiping down
-      console.log("swiping down");
+      // swiping down - dismiss keyboard
+      scheduleOnRN(blurInput);
     } else {
-      // swiping up
-      console.log("swiping up");
+      // swiping up - focus input
+      scheduleOnRN(focusInput);
     }
   });
+
+  const tapGesture = Gesture.Tap().onEnd(() => {
+    scheduleOnRN(blurInput);
+  });
+
+  const composedGesture = Gesture.Race(panGesture, tapGesture);
 
   return (
     <>
@@ -220,7 +231,7 @@ export function PlaygroundScreen() {
           ],
         }}
       />
-      <GestureDetector gesture={gesture}>
+      <GestureDetector gesture={composedGesture}>
         <View style={[styles.container]}>
           {/* Session generations list */}
           <SessionHistoryList
@@ -268,6 +279,7 @@ export function PlaygroundScreen() {
 
           <Activity mode={isAuthenticated ? "visible" : "hidden"}>
             <InputControls
+              ref={inputControlsRef}
               onChangeText={setPrompt}
               prompt={prompt}
               onSubmit={handleTattooGeneration}
