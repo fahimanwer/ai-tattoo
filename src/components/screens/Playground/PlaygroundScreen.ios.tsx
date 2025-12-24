@@ -30,7 +30,6 @@ export function PlaygroundScreen() {
     setSessionGenerations,
     activeGenerationIndex,
     setActiveGenerationIndex,
-    handleReset,
     pickImageFromGallery,
     handleShare,
     handleSave,
@@ -42,7 +41,7 @@ export function PlaygroundScreen() {
     blurInput,
   } = use(PlaygroundContext);
 
-  const { bottom, top } = useSafeAreaInsets();
+  const { bottom } = useSafeAreaInsets();
 
   // Play playful entrance haptic on first load
   useEffect(() => {
@@ -145,68 +144,20 @@ export function PlaygroundScreen() {
           ],
           unstable_headerRightItems: (props) => [
             {
-              type: "menu",
+              type: "button",
+              label: "Share",
               icon: {
-                name: "ellipsis",
+                name: "square.and.arrow.up",
                 type: "sfSymbol",
               },
-              label: "Actions",
-              menu: {
-                title: "Actions",
-                items: [
-                  {
-                    type: "action",
-                    label: "Share",
-                    icon: {
-                      name: "square.and.arrow.up",
-                      type: "sfSymbol",
-                    },
-                    onPress: async () => {
-                      // Share the first image in the active group
-                      if (activeGenerationUris.length > 0) {
-                        await handleShare(activeGenerationUris[0]);
-                      }
-                    },
-                    selected: false,
-                    disabled: activeGenerationUris.length === 0,
-                  },
-
-                  {
-                    type: "action",
-                    label: "Pick Image",
-                    icon: {
-                      name: "photo.on.rectangle",
-                      type: "sfSymbol",
-                    },
-                    onPress: pickImageFromGallery,
-                    selected: false,
-                  },
-                  {
-                    type: "action",
-                    label: "Take Photo",
-                    icon: {
-                      name: "camera",
-                      type: "sfSymbol",
-                    },
-                    onPress: () => router.push("/(playground)/camera-view"),
-                    selected: false,
-                  },
-                  {
-                    type: "action",
-                    label: "Reset Session",
-                    icon: {
-                      name: "arrow.counterclockwise",
-                      type: "sfSymbol",
-                    },
-                    destructive: true,
-                    onPress: handleReset,
-                    disabled: sessionGenerations.length === 0,
-                    selected: false,
-                  },
-                ],
+              onPress: async () => {
+                // Share the first image in the active group
+                if (activeGenerationUris.length > 0) {
+                  await handleShare(activeGenerationUris[0]);
+                }
               },
+              disabled: activeGenerationUris.length === 0,
             },
-
             {
               type: "button",
               label: "Save",
@@ -222,7 +173,6 @@ export function PlaygroundScreen() {
                 }
               },
               disabled: activeGenerationUris.length === 0,
-              selected: false,
             },
           ],
         }}

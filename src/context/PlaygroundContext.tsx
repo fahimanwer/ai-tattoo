@@ -50,7 +50,11 @@ export interface PlaygroundContextValue {
     React.SetStateAction<number | undefined>
   >;
   handleReset: () => void;
-  pickImageFromGallery: () => Promise<boolean>;
+  pickImageFromGallery: (options?: {
+    selectionLimit?: number;
+  }) => Promise<boolean>;
+  addImagesToSession: (imageUris: string[]) => void;
+  availableSlotsInActiveGroup: number; // How many more images can be added (0, 1, or 2)
   handleShare: (fileUri?: string) => Promise<void>;
   handleSave: (fileUri?: string) => Promise<void>;
   activeGenerationUris: string[]; // Array of file URIs in the active group
@@ -73,6 +77,8 @@ export const PlaygroundContext = React.createContext<PlaygroundContextValue>({
   setActiveGenerationIndex: () => {},
   handleReset: () => {},
   pickImageFromGallery: () => Promise.resolve(false),
+  addImagesToSession: () => {},
+  availableSlotsInActiveGroup: 2,
   handleShare: () => Promise.resolve(),
   handleSave: () => Promise.resolve(),
   activeGenerationUris: [],
@@ -284,62 +290,121 @@ export function PlaygroundProvider({
     );
   }
 
+  // Calculate how many more images can be added to the active group
+  const availableSlotsInActiveGroup = React.useMemo(() => {
+    if (activeGenerationIndex === undefined) return 2; // No active group, can select 2
+    const currentGroupSize =
+      sessionGenerations[activeGenerationIndex]?.length ?? 0;
+    return Math.max(0, 2 - currentGroupSize);
+  }, [activeGenerationIndex, sessionGenerations]);
+
   /**
-   * Pick image from gallery
-   * return false if the user cancels the picker
-   * return true if the user selects an image
-   * return false if there is an error
+   * Pick image(s) from gallery
+   * @param options.selectionLimit - Override max number of images to select
+   *   If not provided, automatically calculates based on active group:
+   *   - If active group has room, limits to available slots
+   *   - If no active group or group is full, allows 2 (creates new group)
+   * @returns false if the user cancels the picker, true if images were selected
    */
-  const pickImageFromGallery = React.useCallback(async (): Promise<boolean> => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
-        allowsEditing: false,
-        aspect: [3, 2],
-        quality: 0.3,
-        allowsMultipleSelection: false,
-        base64: true,
-      });
+  const pickImageFromGallery = React.useCallback(
+    async (options?: { selectionLimit?: number }): Promise<boolean> => {
+      // If there's room in active group, limit to that; otherwise allow 2 for new group
+      const effectiveLimit =
+        options?.selectionLimit ??
+        (availableSlotsInActiveGroup > 0 ? availableSlotsInActiveGroup : 2);
 
-      if (!result.canceled && result.assets[0]) {
-        const selectedImage = result.assets[0];
-        if (selectedImage.base64) {
-          // Cache the selected image and store the file URI
-          const fileUri = await cacheBase64Image(selectedImage.base64, "png");
+      try {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ["images"],
+          allowsEditing: false,
+          aspect: [3, 2],
+          quality: 0.3,
+          allowsMultipleSelection: effectiveLimit > 1,
+          selectionLimit: effectiveLimit,
+          base64: true,
+        });
 
-          // Check if we can add to the active group (max 2 images per group)
+        if (!result.canceled && result.assets.length > 0) {
+          // Cache all selected images and collect their URIs
+          const fileUris: string[] = [];
+          for (const asset of result.assets) {
+            if (asset.base64) {
+              const fileUri = await cacheBase64Image(asset.base64, "png");
+              fileUris.push(fileUri);
+            }
+          }
+
+          if (fileUris.length === 0) {
+            Alert.alert("Error", "Failed to get image data");
+            return false;
+          }
+
+          // Check if we can add to the active group
           const canAddToActiveGroup =
             activeGenerationIndex !== undefined &&
-            sessionGenerations[activeGenerationIndex].length < 2;
+            sessionGenerations[activeGenerationIndex].length +
+              fileUris.length <=
+              2;
 
           if (canAddToActiveGroup) {
-            // Add to existing group (max 2 images)
+            // Add to existing group
             setSessionGenerations((prev) => {
               const newGenerations = [...prev];
               newGenerations[activeGenerationIndex!] = [
                 ...newGenerations[activeGenerationIndex!],
-                fileUri,
+                ...fileUris,
               ];
               return newGenerations;
             });
           } else {
-            // Create a new group with this image
-            setSessionGenerations((prev) => [...prev, [fileUri]]);
+            // Create a new group with all selected images
+            setSessionGenerations((prev) => [...prev, fileUris]);
             setActiveGenerationIndex(sessionGenerations.length);
           }
           return true;
-        } else {
-          Alert.alert("Error", "Failed to get image data");
-          return false;
         }
+        return false;
+      } catch (error) {
+        console.error("Error picking image:", error);
+        Alert.alert("Error", "Failed to pick image from gallery");
+        return false;
       }
-      return false;
-    } catch (error) {
-      console.error("Error picking image:", error);
-      Alert.alert("Error", "Failed to pick image from gallery");
-      return false;
-    }
-  }, [activeGenerationIndex, sessionGenerations]);
+    },
+    [sessionGenerations, activeGenerationIndex, availableSlotsInActiveGroup]
+  );
+
+  /**
+   * Add images to session from external sources (like the sheet picker)
+   * If there's room in the active group, adds there; otherwise creates a new group
+   */
+  const addImagesToSession = React.useCallback(
+    (imageUris: string[]) => {
+      if (imageUris.length === 0) return;
+
+      // Check if we can add to the active group
+      const canAddToActiveGroup =
+        activeGenerationIndex !== undefined &&
+        sessionGenerations[activeGenerationIndex].length + imageUris.length <=
+          2;
+
+      if (canAddToActiveGroup) {
+        // Add to existing group
+        setSessionGenerations((prev) => {
+          const newGenerations = [...prev];
+          newGenerations[activeGenerationIndex!] = [
+            ...newGenerations[activeGenerationIndex!],
+            ...imageUris,
+          ];
+          return newGenerations;
+        });
+      } else {
+        // Create a new group with all provided images
+        setSessionGenerations((prev) => [...prev, imageUris]);
+        setActiveGenerationIndex(sessionGenerations.length);
+      }
+    },
+    [sessionGenerations, activeGenerationIndex]
+  );
 
   // Compute the active generation URIs from the index
   const activeGenerationUris =
@@ -405,6 +470,8 @@ export function PlaygroundProvider({
         setActiveGenerationIndex,
         handleReset,
         pickImageFromGallery,
+        addImagesToSession,
+        availableSlotsInActiveGroup,
         handleShare,
         handleSave,
         activeGenerationUris,

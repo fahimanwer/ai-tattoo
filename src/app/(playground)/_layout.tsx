@@ -21,6 +21,7 @@ export default function PlaygroundLayout() {
       <Stack.Screen
         name="sheet"
         options={{
+          headerTitle: "Inkigo",
           presentation: "formSheet",
           contentStyle: {
             backgroundColor: isGlassEffectAPIAvailable()
@@ -28,7 +29,7 @@ export default function PlaygroundLayout() {
               : "black",
           },
           sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.45, 1],
+          sheetAllowedDetents: [0.6, 1],
         }}
       />
     </Stack>
