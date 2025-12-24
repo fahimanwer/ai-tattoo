@@ -414,6 +414,18 @@ export default function Sheet() {
             }}
           />
           <OptionRow
+            icon="eraser.line.dashed"
+            title="Remove Tattoo"
+            description="Remove an existing tattoo from the photo"
+            onPress={() => {
+              setPrompt(
+                "Remove the tattoo from this photo and restore the area as natural skin. Keep the rest of the image unchanged and do not add any new design."
+              );
+              router.back();
+              setTimeout(() => focusInput(), 100);
+            }}
+          />
+          <OptionRow
             icon="clock.arrow.circlepath"
             title="Prompt History"
             description="View your previous prompts"
