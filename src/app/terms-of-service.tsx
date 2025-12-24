@@ -19,19 +19,19 @@ export default function TermsOfServiceScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>1. Acceptance of Terms</Text>
           <Text style={styles.paragraph}>
-            By accessing and using AI Tattoo Try On (&quot;the Service&quot;),
-            you accept and agree to be bound by the terms and provision of this
-            agreement. If you do not agree to abide by the above, please do not
-            use this service.
+            By accessing and using Inkigo (&quot;the Service&quot;), you accept
+            and agree to be bound by the terms and provision of this agreement.
+            If you do not agree to abide by the above, please do not use this
+            service.
           </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>2. Description of Service</Text>
           <Text style={styles.paragraph}>
-            AI Tattoo Try On is a virtual tattoo preview application that uses
-            artificial intelligence to simulate how tattoo designs would appear
-            on your body. The service includes:
+            Inkigo is a virtual tattoo preview application that uses artificial
+            intelligence to simulate how tattoo designs would appear on your
+            body. The service includes:
           </Text>
           <Text style={styles.bulletPoint}>
             • AI-powered tattoo simulation technology
@@ -71,7 +71,37 @@ export default function TermsOfServiceScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            4. Content and Intellectual Property
+            4. Subscription Plans and Fair Usage Policy
+          </Text>
+          <Text style={styles.paragraph}>
+            We offer various subscription plans, including plans marketed as
+            &quot;unlimited&quot; designs and style generations. However, to
+            ensure fair access and prevent abuse of our service:
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Unlimited plans are subject to fair usage policies
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • We reserve the right to implement reasonable usage limits to
+            prevent abuse
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Excessive or abusive usage may result in temporary throttling or
+            account review
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • Fair usage limits are designed to accommodate typical user needs
+            while maintaining service quality for all users
+          </Text>
+          <Text style={styles.bulletPoint}>
+            • We may modify subscription features and limits with reasonable
+            notice
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            5. Content and Intellectual Property
           </Text>
           <Text style={styles.paragraph}>
             Regarding content and intellectual property:
@@ -96,7 +126,7 @@ export default function TermsOfServiceScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            5. Privacy and Data Protection
+            6. Privacy and Data Protection
           </Text>
           <Text style={styles.paragraph}>
             Your privacy is important to us. Our collection and use of personal
@@ -107,7 +137,7 @@ export default function TermsOfServiceScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>6. Disclaimer of Warranties</Text>
+          <Text style={styles.sectionTitle}>7. Disclaimer of Warranties</Text>
           <Text style={styles.paragraph}>
             The service is provided &quot;as is&quot; without warranties of any
             kind:
@@ -127,7 +157,7 @@ export default function TermsOfServiceScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>7. Limitation of Liability</Text>
+          <Text style={styles.sectionTitle}>8. Limitation of Liability</Text>
           <Text style={styles.paragraph}>
             To the fullest extent permitted by law:
           </Text>
@@ -149,7 +179,7 @@ export default function TermsOfServiceScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            8. Medical and Safety Disclaimer
+            9. Medical and Safety Disclaimer
           </Text>
           <Text style={styles.paragraph}>
             Important medical and safety information:
@@ -173,7 +203,7 @@ export default function TermsOfServiceScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            9. AI Service and Third-Party Technologies
+            10. AI Service and Third-Party Technologies
           </Text>
           <Text style={styles.paragraph}>
             Our service utilizes Google Gemini AI technology and other
@@ -200,7 +230,7 @@ export default function TermsOfServiceScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            10. Prohibited Uses and Content Restrictions
+            11. Prohibited Uses and Content Restrictions
           </Text>
           <Text style={styles.paragraph}>
             In accordance with our AI service providers policies and applicable
@@ -277,7 +307,7 @@ export default function TermsOfServiceScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            11. AI-Generated Content Disclaimer
+            12. AI-Generated Content Disclaimer
           </Text>
           <Text style={styles.paragraph}>
             Important disclaimers regarding AI-generated content:
@@ -310,7 +340,7 @@ export default function TermsOfServiceScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            12. Content Monitoring and Enforcement
+            13. Content Monitoring and Enforcement
           </Text>
           <Text style={styles.paragraph}>
             To ensure compliance with these terms and our AI providers policies:
@@ -336,7 +366,7 @@ export default function TermsOfServiceScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>13. Account Termination</Text>
+          <Text style={styles.sectionTitle}>14. Account Termination</Text>
           <Text style={styles.paragraph}>
             We reserve the right to terminate or suspend accounts that violate
             these terms, including violations of AI service provider policies.
@@ -346,7 +376,7 @@ export default function TermsOfServiceScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>14. Age Restrictions</Text>
+          <Text style={styles.sectionTitle}>15. Age Restrictions</Text>
           <Text style={styles.paragraph}>
             Users must be at least 13 years old to use this service. Users under
             18 should have parental supervision and consent before making any
@@ -357,7 +387,7 @@ export default function TermsOfServiceScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>15. Changes to Terms</Text>
+          <Text style={styles.sectionTitle}>16. Changes to Terms</Text>
           <Text style={styles.paragraph}>
             We reserve the right to modify these terms at any time, including
             changes required by our AI service providers or applicable law.
@@ -367,7 +397,7 @@ export default function TermsOfServiceScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>16. Governing Law</Text>
+          <Text style={styles.sectionTitle}>17. Governing Law</Text>
           <Text style={styles.paragraph}>
             These terms shall be governed by and construed in accordance with
             the laws of [Your Jurisdiction], without regard to its conflict of
@@ -376,7 +406,7 @@ export default function TermsOfServiceScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>17. Contact Information</Text>
+          <Text style={styles.sectionTitle}>18. Contact Information</Text>
           <Text style={styles.paragraph}>
             If you have any questions about these Terms of Service, please
             contact us at:

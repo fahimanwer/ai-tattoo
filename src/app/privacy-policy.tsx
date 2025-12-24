@@ -19,8 +19,7 @@ export default function PrivacyPolicyScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>1. Information We Collect</Text>
           <Text style={styles.paragraph}>
-            When you use AI Tattoo Try On, we may collect the following
-            information:
+            When you use Inkigo, we may collect the following information:
           </Text>
           <Text style={styles.bulletPoint}>
             • Photos you upload for tattoo preview

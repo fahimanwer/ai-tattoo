@@ -123,8 +123,8 @@ export function Profile() {
 
   const handleContactSupport = async () => {
     try {
-      const subject = "AI Tattoo App Support Request";
-      const body = `Hi,\n\nI need help with the AI Tattoo app.\n\nUser ID: ${user?.id}\nEmail: ${user?.email}\n\nDescription:\n[Please describe your issue here]\n\nThanks!`;
+      const subject = "Inkigo App Support Request";
+      const body = `Hi,\n\nI need help with the Inkigo app.\n\nUser ID: ${user?.id}\nEmail: ${user?.email}\n\nDescription:\n[Please describe your issue here]\n\nThanks!`;
       const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
         subject
       )}&body=${encodeURIComponent(body)}`;
@@ -136,7 +136,7 @@ export function Profile() {
 
   const handleArtistContact = async () => {
     try {
-      const subject = "Are you an artist? - AI Tattoo";
+      const subject = "Are you an artist? - Inkigo";
       const body = `Hi!\n\nI'm interested in collaborating or have suggestions/complaints.\n\nMy account email: ${user?.email}\nMy user ID: ${user?.id}\n\n[Please share your suggestions, complaints, or tell us about yourself as an artist]\n\nThanks!`;
       const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
         subject
@@ -161,7 +161,7 @@ export function Profile() {
     try {
       await Share.share({
         message:
-          "Check out AI Tattoo - the amazing app for creating custom tattoo designs with AI! Download it now on the App Store.",
+          "Check out Inkigo - the amazing app for creating custom tattoo designs with AI! Download it now on the App Store.",
         url: "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193",
       });
     } catch (error) {
@@ -516,7 +516,7 @@ export function Profile() {
 
               <Text color={Color.zinc[400]}>
                 {
-                  "If you're enjoying AI Tattoo, a review on the App Store helps other tattoo lovers discover us. You can also reach out anytime with feedback or feature ideas."
+                  "If you're enjoying Inkigo, a review on the App Store helps other tattoo lovers discover us. You can also reach out anytime with feedback or feature ideas."
                 }
               </Text>
             </VStack>
@@ -531,8 +531,8 @@ export function Profile() {
               title="Send Feedback"
               systemImage="envelope.fill"
               onPress={() => {
-                const subject = "AI Tattoo Feedback";
-                const body = `Hi!\n\nI have some feedback about AI Tattoo:\n\n[Your feedback here]\n\nThanks!`;
+                const subject = "Inkigo Feedback";
+                const body = `Hi!\n\nI have some feedback about Inkigo:\n\n[Your feedback here]\n\nThanks!`;
                 const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
                   subject
                 )}&body=${encodeURIComponent(body)}`;
