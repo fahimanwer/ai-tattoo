@@ -11,6 +11,7 @@ import { PressableScale } from "pressto";
 import { use, useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Linking,
   ScrollView,
   StyleSheet,
@@ -32,7 +33,14 @@ export default function Sheet() {
     addImagesToSession,
     pickImageFromGallery,
     availableSlotsInActiveGroup,
+    setActiveGenerationIndex,
+    setPrompt,
+    activeGenerationUris,
+    focusInput,
   } = use(PlaygroundContext);
+
+  // Check if user has a tattoo/image already selected
+  const hasActiveImage = activeGenerationUris.length > 0;
 
   // If there's room in active group, limit to that; otherwise allow 2 for new group
   const maxSelection =
@@ -74,7 +82,7 @@ export default function Sheet() {
   }
 
   function handleCameraPress() {
-    router.push("/(playground)/camera-view");
+    router.replace("/(playground)/camera-view");
   }
 
   async function handleAllPhotosPress() {
@@ -298,7 +306,7 @@ export default function Sheet() {
         {/* Image Picker Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text type="sm" weight="medium" style={styles.sectionLabel}>
+            <Text type="sm" weight="medium" style={{ paddingHorizontal: 16 }}>
               Recent Photos
             </Text>
             {maxSelection === 1 && (
@@ -313,22 +321,91 @@ export default function Sheet() {
         {/* Options List */}
         <View style={styles.optionsSection}>
           <OptionRow
-            icon="clock.arrow.circlepath"
-            title="Prompt History"
-            description="View your previous prompts"
-            onPress={() => {}}
+            icon="person.crop.rectangle"
+            title="Try On"
+            description={
+              hasActiveImage
+                ? "Add a photo of your body to preview"
+                : "Select a tattoo first, then add your photo"
+            }
+            onPress={() => {
+              if (hasActiveImage) {
+                // User has a tattoo selected, offer to add body photo
+                Alert.alert(
+                  "Add Your Photo",
+                  "How would you like to add a photo of where you want the tattoo?",
+                  [
+                    {
+                      text: "Take Photo",
+                      onPress: () => {
+                        router.replace("/(playground)/camera-view");
+                      },
+                    },
+                    {
+                      text: "Choose from Library",
+                      onPress: async () => {
+                        const success = await pickImageFromGallery();
+                        if (success) {
+                          router.back();
+                        }
+                      },
+                    },
+                    {
+                      text: "Cancel",
+                      style: "cancel",
+                    },
+                  ]
+                );
+              } else {
+                // No tattoo selected, guide user to create one first
+                Alert.alert(
+                  "Create a Tattoo First",
+                  "To try on a tattoo, you'll need to:\n\n1. Generate or select a tattoo design\n2. Then add a photo of your body\n\nWe'll combine them to show how it looks!",
+                  [
+                    {
+                      text: "Create Tattoo",
+                      style: "default",
+                      isPreferred: true,
+                      onPress: () => {
+                        setActiveGenerationIndex(undefined);
+                        setPrompt("");
+                        router.back();
+                        setTimeout(() => focusInput(), 100);
+                      },
+                    },
+                    {
+                      text: "Cancel",
+                      style: "cancel",
+                    },
+                  ]
+                );
+              }
+            }}
           />
           <OptionRow
             icon="wand.and.stars"
-            title="Create Tattoo"
-            description="New tattoo from a prompt"
-            onPress={() => {}}
+            title="Create New Tattoo"
+            description="Describe your tattoo idea and we'll generate it"
+            onPress={() => {
+              // Clear selection to start fresh, dismiss and focus the input
+              setActiveGenerationIndex(undefined);
+              setPrompt("");
+              router.back();
+              // Small delay to ensure sheet is dismissed before focusing
+              setTimeout(() => focusInput(), 100);
+            }}
           />
           <OptionRow
-            icon="person.crop.rectangle"
-            title="Try On"
-            description="Try a tattoo on your body"
-            onPress={() => {}}
+            icon="clock.arrow.circlepath"
+            title="Prompt History"
+            description="View your previous prompts"
+            onPress={() =>
+              Alert.alert(
+                "Prompt history feature coming soon",
+                "This feature is coming soon. Please check back later.",
+                [{ text: "OK", style: "default", isPreferred: true }]
+              )
+            }
           />
         </View>
 
@@ -387,10 +464,8 @@ function OptionRow({ icon, title, description, onPress }: OptionRowProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 8,
   },
   section: {
-    paddingHorizontal: 16,
     marginBottom: 24,
   },
   sectionHeader: {
@@ -399,14 +474,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-  sectionLabel: {
-    color: Color.zinc[500],
-  },
   sectionSubtitle: {
     color: Color.zinc[600],
   },
   scrollContent: {
     gap: 10,
+    paddingLeft: 16,
   },
   cameraButton: {
     width: IMAGE_SIZE,

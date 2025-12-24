@@ -1,13 +1,18 @@
 import { BLURHASH } from "@/lib/image-cache";
+import { Icon } from "@/src/components/ui/Icon";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
-import { ImageGenerationMutation } from "@/src/context/PlaygroundContext";
+import {
+  ImageGenerationMutation,
+  PlaygroundContext,
+} from "@/src/context/PlaygroundContext";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { PressableScale } from "pressto";
-import { Activity, useEffect, useState } from "react";
+import { Activity, use, useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AnimatedText } from "./AnimatedText";
@@ -15,15 +20,14 @@ import { AnimatedText } from "./AnimatedText";
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
   lastGenerationUris: string[]; // Array of file URIs
-  onRemoveImage?: (uri: string) => void;
 }
 
 export function TextToImageResult({
   mutation,
   lastGenerationUris,
-  onRemoveImage,
 }: TextToImageResultProps) {
   const router = useRouter();
+  const { removeImageFromActiveGroup } = use(PlaygroundContext);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   function simulateTattoMachineVibrations() {
@@ -151,6 +155,27 @@ export function TextToImageResult({
                   contentPosition="center"
                   transition={350}
                 />
+                <Pressable
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    removeImageFromActiveGroup(uri);
+                  }}
+                  hitSlop={8}
+                  style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    width: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    backgroundColor: "black",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 10,
+                  }}
+                >
+                  <Icon symbol="xmark" size="xs" color="white" />
+                </Pressable>
               </View>
             ))}
           </View>

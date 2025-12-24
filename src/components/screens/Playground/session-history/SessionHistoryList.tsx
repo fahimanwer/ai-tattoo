@@ -1,7 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { FlatList, View } from "react-native";
 import { SessionHistoryItem } from "./SessionHistoryItem";
-import { SessionHistoryListFooter } from "./SessionHistoryListFooter";
 
 export interface SessionHistoryListProps {
   sessionGenerations: string[][];
@@ -79,11 +78,11 @@ export function SessionHistoryList({
         ListFooterComponentStyle={{
           justifyContent: "center",
         }}
-        ListFooterComponent={() => (
-          <SessionHistoryListFooter
-            onPress={() => setActiveGenerationIndex(undefined)}
-          />
-        )}
+        // ListFooterComponent={() => (
+        //   <SessionHistoryListFooter
+        //     onPress={() => setActiveGenerationIndex(undefined)}
+        //   />
+        // )}
         horizontal
       />
     </View>

@@ -193,7 +193,6 @@ export function PlaygroundScreen() {
           <TextToImageResult
             mutation={activeMutation}
             lastGenerationUris={activeGenerationUris}
-            onRemoveImage={removeImageFromActiveGroup}
           />
 
           <Activity mode={!isAuthenticated ? "visible" : "hidden"}>
