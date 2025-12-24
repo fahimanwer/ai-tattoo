@@ -50,6 +50,11 @@ export function InputControls({
     blur: () => textFieldRef.current?.blur(),
   }));
 
+  function handleSubmit() {
+    onSubmit?.();
+    textFieldRef.current?.blur();
+  }
+
   //  useEffect(() => {
   //    const unsubscribe = navigation.addListener("focus", () => {
   //      // Only focus if the TextField is actually rendered (when we have less than 2 images)
@@ -154,13 +159,13 @@ export function InputControls({
                   autoFocus={autoFocus}
                   modifiers={[padding({ vertical: 12, horizontal: 16 })]}
                   onChangeText={onChangeText}
-                  onSubmit={onSubmit}
+                  onSubmit={handleSubmit}
                 />
               </VStack>
 
               {prompt.length > 0 && (
                 <SwiftUIButton
-                  onPress={onSubmit}
+                  onPress={handleSubmit}
                   modifiers={[
                     tint("yellow"),
                     buttonStyle(
