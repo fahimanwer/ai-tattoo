@@ -14,6 +14,7 @@ import Purchases, {
 } from "react-native-purchases";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { toast } from "sonner-native";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 
@@ -55,7 +56,10 @@ export function Paywall() {
               await queryClient.invalidateQueries({
                 queryKey: ["user", "usage"],
               });
-              router.back();
+              router.dismissTo("/(playground)");
+
+              // toast success message
+              toast.success("Subscription updated successfully");
             },
           },
         ]
