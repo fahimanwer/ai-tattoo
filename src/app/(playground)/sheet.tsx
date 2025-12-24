@@ -198,15 +198,8 @@ export default function Sheet() {
       return (
         <View style={styles.permissionContainer}>
           <Text type="sm" style={styles.permissionText}>
-            Access your photos to quickly add images
+            We need access to your photos to add images
           </Text>
-          {/*   <Button
-            onPress={requestPermission}
-            title="Enable Permissions"
-            variant="link"
-            color="yellow"
-            size="sm"
-          /> */}
           <Host matchContents useViewportSizeMeasurement>
             <SwiftUIButton
               modifiers={[
@@ -224,7 +217,7 @@ export default function Sheet() {
                   color={"black"}
                   modifiers={[font({ weight: "semibold", size: 16 })]}
                 >
-                  Enable Permissions
+                  Continue
                 </SwiftUIText>
               </HStack>
             </SwiftUIButton>
@@ -236,13 +229,6 @@ export default function Sheet() {
     if (permission?.status === MediaLibrary.PermissionStatus.DENIED) {
       return (
         <View style={styles.permissionContainer}>
-          {/*  <Button
-            onPress={() => Linking.openURL("app-settings:")}
-            title="Enable Permissions"
-            variant="link"
-            color="yellow"
-            size="sm"
-          /> */}
           <Host matchContents useViewportSizeMeasurement>
             <SwiftUIButton
               modifiers={[
@@ -260,13 +246,13 @@ export default function Sheet() {
                   color={"black"}
                   modifiers={[font({ weight: "semibold", size: 16 })]}
                 >
-                  Enable Permissions
+                  Open Settings
                 </SwiftUIText>
               </HStack>
             </SwiftUIButton>
           </Host>
           <Text type="xs" style={styles.permissionText}>
-            Photo access is needed to select images
+            We need access to your photos to add images
           </Text>
         </View>
       );
@@ -376,7 +362,8 @@ export default function Sheet() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          height: 500,
+          height: 600,
+          paddingBottom: 100,
         }}
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
@@ -485,7 +472,7 @@ export default function Sheet() {
             icon="lightbulb.max"
             title="Tattoo Cover-Up Idea"
             description="Generate an idea to cover up an existing tattoo using a photo as reference"
-            onPress={() => {
+            onPress={async () => {
               customEvent("sheet_action_pressed", {
                 action: "cover_up_idea",
                 hasActiveImage,
@@ -493,6 +480,10 @@ export default function Sheet() {
               setPrompt(
                 "Design a tattoo cover-up that incorporates and conceals the existing tattoo in this photo. Build the new design over the current tattoo (not on blank skin) and match the style and complexity of the original as much as possible."
               );
+              // pick image if there is no active image
+              if (!hasActiveImage) {
+                await pickImageFromGallery({ selectionLimit: 1 });
+              }
               router.back();
               setTimeout(() => focusInput(), 100);
             }}
@@ -501,7 +492,7 @@ export default function Sheet() {
             icon="eraser.line.dashed"
             title="Remove Tattoo"
             description="Remove an existing tattoo from the photo"
-            onPress={() => {
+            onPress={async () => {
               customEvent("sheet_action_pressed", {
                 action: "remove_tattoo",
                 hasActiveImage,
@@ -509,6 +500,10 @@ export default function Sheet() {
               setPrompt(
                 "Remove the tattoo from this photo and restore the area as natural skin. Keep the rest of the image unchanged and do not add any new design."
               );
+              // pick image if there is no active image
+              if (!hasActiveImage) {
+                await pickImageFromGallery({ selectionLimit: 1 });
+              }
               router.back();
               setTimeout(() => focusInput(), 100);
             }}

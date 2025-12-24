@@ -299,7 +299,7 @@ export function PlaygroundScreen() {
                 isLoading ||
                 activeMutation.isPending
               }
-              autoFocus={false} // this is causing side effects when true
+              autoFocus={true} // this is causing side effects when true
             />
           </Activity>
         </View>

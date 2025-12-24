@@ -393,9 +393,12 @@ export function Paywall() {
                     "Your purchases have been restored successfully.",
                     [{ text: "OK", onPress: () => router.dismissAll() }]
                   );
+
                   await queryClient.invalidateQueries({
                     queryKey: ["user", "usage"],
                   });
+                  await refreshSubscriptionStatus();
+
                   fetchProducts();
                 } else {
                   Alert.alert(
