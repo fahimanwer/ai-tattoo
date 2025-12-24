@@ -4,7 +4,7 @@ import { useSubscription } from "@/src/hooks/useSubscription";
 import { useQueryClient } from "@tanstack/react-query";
 import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
-import { Link, router, Stack } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 import { PressableScale } from "pressto";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
@@ -22,6 +22,8 @@ export function Paywall() {
   const [offerings, setOfferings] = useState<PurchasesOfferings | null>(null);
   const { customerInfo, refreshSubscriptionStatus } = useSubscription();
   const queryClient = useQueryClient();
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const router = useRouter();
 
   const { top, bottom } = useSafeAreaInsets();
   const fetchProducts = async () => {
@@ -35,8 +37,10 @@ export function Paywall() {
   ) => {
     try {
       // Make the purchase
+      setIsPurchasing(true);
       const { customerInfo: updatedCustomerInfo } =
         await Purchases.purchasePackage(pkg);
+      setIsPurchasing(false);
 
       console.log("Purchase successful!");
       console.log("Updated customer info:", updatedCustomerInfo);
@@ -65,6 +69,7 @@ export function Paywall() {
         ]
       );
     } catch (error: any) {
+      setIsPurchasing(false);
       console.error("Purchase error:", error);
 
       // Handle user cancellation
@@ -81,6 +86,7 @@ export function Paywall() {
       );
     } finally {
       fetchProducts();
+      setIsPurchasing(false);
     }
   };
 
@@ -140,7 +146,10 @@ export function Paywall() {
                 name: "xmark",
                 type: "sfSymbol",
               },
-              onPress: () => router.back(),
+              onPress: () => {
+                if (isPurchasing) return;
+                router.back();
+              },
             },
           ],
         }}
@@ -274,7 +283,7 @@ export function Paywall() {
                       accessibilityRole="button"
                       accessibilityLabel={`Choose the ${planConfig.displayName} plan`}
                       onPress={() => {
-                        if (isCurrent) return;
+                        if (isCurrent || isPurchasing) return;
                         handlePurchase(pkg, offering.identifier);
                       }}
                     >
@@ -321,7 +330,7 @@ export function Paywall() {
                     accessibilityRole="button"
                     accessibilityLabel={`Choose the ${planConfig.displayName} plan`}
                     onPress={() => {
-                      if (isCurrent) return;
+                      if (isCurrent || isPurchasing) return;
                       handlePurchase(pkg, offering.identifier);
                     }}
                     style={styles.planCard}
@@ -343,6 +352,7 @@ export function Paywall() {
         <View style={[styles.footer, { marginBottom: bottom }]}>
           <Button
             title="Restore Subscription"
+            disabled={isPurchasing}
             onPress={async () => {
               try {
                 const restore = await Purchases.restorePurchases();
