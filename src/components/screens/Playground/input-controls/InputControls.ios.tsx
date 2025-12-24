@@ -1,3 +1,4 @@
+import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import {
   GlassEffectContainer,
   Host,
@@ -24,25 +25,26 @@ import {
 } from "@expo/ui/swift-ui/modifiers";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { router } from "expo-router";
-import React, { Ref, useId, useImperativeHandle, useRef } from "react";
+import React, { use, useId, useImperativeHandle, useRef } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { InputControlsHandle, InputControlsProps } from "./inputContols.types";
+import { InputControlsProps } from "./inputContols.types";
 
 export function InputControls({
-  ref,
   onChangeText,
   onSubmit,
   autoFocus,
   isSubmitDisabled = false,
   prompt = "",
-}: InputControlsProps & { ref?: Ref<InputControlsHandle> }) {
+}: InputControlsProps) {
   const { bottom } = useSafeAreaInsets();
+  const { inputControlsRef } = use(PlaygroundContext);
 
   const namespaceId = useId();
   const textFieldRef = useRef<TextFieldRef>(null);
 
-  useImperativeHandle(ref, () => ({
+  // Register with context so focusInput/blurInput work from anywhere
+  useImperativeHandle(inputControlsRef, () => ({
     focus: () => textFieldRef.current?.focus(),
     blur: () => textFieldRef.current?.blur(),
   }));

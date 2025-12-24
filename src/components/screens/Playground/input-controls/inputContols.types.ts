@@ -5,8 +5,3 @@ export interface InputControlsProps {
   isSubmitDisabled?: boolean;
   prompt?: string;
 }
-
-export interface InputControlsHandle {
-  focus: () => void;
-  blur: () => void;
-}

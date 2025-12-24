@@ -13,7 +13,6 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 import { InputControls } from "./input-controls/InputControls";
-import { InputControlsHandle } from "./input-controls/inputContols.types";
 import { SessionHistoryList } from "./session-history/SessionHistoryList";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
@@ -23,7 +22,6 @@ export function PlaygroundScreen() {
   const isLoading = isPending || isRefetching;
   const params = useLocalSearchParams<{ mode?: string }>();
   const hasHandledMode = useRef(false);
-  const inputControlsRef = useRef<InputControlsHandle>(null);
 
   const {
     prompt,
@@ -40,6 +38,8 @@ export function PlaygroundScreen() {
     activeMutation,
     handleTattooGeneration,
     removeImageFromActiveGroup,
+    focusInput,
+    blurInput,
   } = use(PlaygroundContext);
 
   const { bottom, top } = useSafeAreaInsets();
@@ -83,10 +83,6 @@ export function PlaygroundScreen() {
   if (isLoading) {
     return <ActivityIndicator style={{ flex: 1, marginBottom: 100 }} />;
   }
-
-  // Define outside gesture to avoid ref serialization into worklet
-  const focusInput = () => inputControlsRef.current?.focus();
-  const blurInput = () => inputControlsRef.current?.blur();
 
   const panGesture = Gesture.Pan().onEnd((e) => {
     // check if swiping down or up
@@ -279,7 +275,6 @@ export function PlaygroundScreen() {
 
           <Activity mode={isAuthenticated ? "visible" : "hidden"}>
             <InputControls
-              ref={inputControlsRef}
               onChangeText={setPrompt}
               prompt={prompt}
               onSubmit={handleTattooGeneration}

@@ -35,6 +35,11 @@ export type ImageGenerationMutation =
       unknown
     >;
 
+export interface InputControlsHandle {
+  focus: () => void;
+  blur: () => void;
+}
+
 export interface PlaygroundContextValue {
   prompt: string;
   setPrompt: React.Dispatch<React.SetStateAction<string>>;
@@ -53,6 +58,10 @@ export interface PlaygroundContextValue {
   handleTattooGeneration: () => void;
   removeImageFromActiveGroup: (uri: string) => void;
   resetMutations: () => void;
+  // Input controls
+  inputControlsRef: React.RefObject<InputControlsHandle | null>;
+  focusInput: () => void;
+  blurInput: () => void;
 }
 
 export const PlaygroundContext = React.createContext<PlaygroundContextValue>({
@@ -71,6 +80,9 @@ export const PlaygroundContext = React.createContext<PlaygroundContextValue>({
   handleTattooGeneration: () => {},
   removeImageFromActiveGroup: () => {},
   resetMutations: () => {},
+  inputControlsRef: { current: null },
+  focusInput: () => {},
+  blurInput: () => {},
 });
 
 export function PlaygroundProvider({
@@ -88,6 +100,17 @@ export function PlaygroundProvider({
   const [activeGenerationIndex, setActiveGenerationIndex] = React.useState<
     number | undefined
   >(undefined);
+
+  // Input controls ref for focus/blur from anywhere
+  const inputControlsRef = React.useRef<InputControlsHandle | null>(null);
+  const focusInput = React.useCallback(
+    () => inputControlsRef.current?.focus(),
+    []
+  );
+  const blurInput = React.useCallback(
+    () => inputControlsRef.current?.blur(),
+    []
+  );
 
   /**
    * Text to image mutation
@@ -389,6 +412,9 @@ export function PlaygroundProvider({
         handleTattooGeneration,
         removeImageFromActiveGroup,
         resetMutations,
+        inputControlsRef,
+        focusInput,
+        blurInput,
       }}
     >
       {children}
