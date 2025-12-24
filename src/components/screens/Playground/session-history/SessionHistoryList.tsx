@@ -63,9 +63,8 @@ export function SessionHistoryList({
         contentContainerStyle={{
           paddingHorizontal: 16,
           gap: 8,
-          marginTop: -3,
         }}
-        // Performance optimizations
+        // // Performance optimizations
         getItemLayout={(_, index) => ({
           length: 50,
           offset: 50 * index + 16 * index, // item width + gap
@@ -78,12 +77,9 @@ export function SessionHistoryList({
         ListFooterComponentStyle={{
           justifyContent: "center",
         }}
-        // ListFooterComponent={() => (
-        //   <SessionHistoryListFooter
-        //     onPress={() => setActiveGenerationIndex(undefined)}
-        //   />
-        // )}
         horizontal
+        alwaysBounceVertical={false}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
