@@ -17,7 +17,6 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const RECENT_PHOTOS_LIMIT = 20;
 const IMAGE_SIZE = 80;
@@ -28,7 +27,6 @@ interface SelectedImage {
 }
 
 export default function Sheet() {
-  const { bottom } = useSafeAreaInsets();
   const {
     addImagesToSession,
     pickImageFromGallery,
@@ -86,7 +84,6 @@ export default function Sheet() {
   }
 
   async function handleAllPhotosPress() {
-    // Let the context handle the selection limit based on active group state
     const success = await pickImageFromGallery();
     if (success) {
       router.back();
@@ -166,14 +163,6 @@ export default function Sheet() {
 
   const hasSelection = selectedImages.length > 0;
   const selectionCount = selectedImages.length;
-
-  // Show hint when the total will be 2 images (for try-on or merge)
-  // This happens when:
-  // - User selected 2 images in the sheet, OR
-  // - User selected 1 and there's already 1 in the active group
-  const willHaveTwoImages =
-    selectionCount === 2 ||
-    (selectionCount === 1 && availableSlotsInActiveGroup === 1);
 
   // Permission fallback content
   function renderPermissionFallback() {
@@ -285,17 +274,31 @@ export default function Sheet() {
               onPress: handleDismiss,
             },
           ],
-          unstable_headerRightItems: () => [
-            {
-              type: "button",
-              label: "All Photos",
-              icon: {
-                name: "photo.on.rectangle.angled",
-                type: "sfSymbol",
+          unstable_headerRightItems: () => {
+            const items: any[] = [
+              {
+                type: "button",
+                label: "All Photos",
+                icon: {
+                  name: "photo.on.rectangle.angled",
+                  type: "sfSymbol",
+                },
+                onPress: handleAllPhotosPress,
               },
-              onPress: handleAllPhotosPress,
-            },
-          ],
+            ];
+            if (hasSelection) {
+              items.push({
+                type: "button",
+                variant: "prominent",
+                tintColor: "yellow",
+                label: `Add ${selectionCount} photo${
+                  selectionCount > 1 ? "s" : ""
+                }`,
+                onPress: handleAddPhotos,
+              });
+            }
+            return items;
+          },
         }}
       />
       <ScrollView
@@ -411,28 +414,6 @@ export default function Sheet() {
             }
           />
         </View>
-
-        {/* Bottom Action Button */}
-        <Activity mode={hasSelection ? "visible" : "hidden"}>
-          <View style={[styles.bottomAction, { paddingBottom: bottom + 16 }]}>
-            <Activity mode={willHaveTwoImages ? "visible" : "hidden"}>
-              <Text type="xs" style={styles.hintText}>
-                Use selected images to try on a tattoo or merge them into a new
-                design
-              </Text>
-            </Activity>
-            <Button
-              title={`Add ${selectionCount} photo${
-                selectionCount > 1 ? "s" : ""
-              }`}
-              color="yellow"
-              variant="solid"
-              size="lg"
-              radius="full"
-              onPress={handleAddPhotos}
-            />
-          </View>
-        </Activity>
       </ScrollView>
     </>
   );

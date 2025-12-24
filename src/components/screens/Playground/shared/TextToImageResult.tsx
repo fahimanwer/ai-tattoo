@@ -123,8 +123,8 @@ export function TextToImageResult({
             paddingHorizontal: 16,
             gap: 12,
           }}
-          entering={FadeIn.duration(1000)}
-          exiting={FadeOut.duration(100)}
+          entering={FadeIn.duration(500)}
+          exiting={FadeOut.duration(500)}
         >
           <View
             style={{
@@ -181,7 +181,6 @@ export function TextToImageResult({
               </View>
             ))}
           </View>
-
           <Activity
             mode={lastGenerationUris.length === 2 ? "visible" : "hidden"}
           >
@@ -190,7 +189,11 @@ export function TextToImageResult({
               color="yellow"
               variant="solid"
               radius="full"
-              onPress={handleTattooGeneration}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                alert("apply tattoo");
+              }}
+              style={{ zIndex: 10 }}
             />
             <Text
               type="xs"
@@ -200,6 +203,7 @@ export function TextToImageResult({
               Select one tattoo image and one body part photo.
             </Text>
           </Activity>
+
           <Activity mode={lastGenerationUris.length > 0 ? "visible" : "hidden"}>
             <Text
               type="xs"
