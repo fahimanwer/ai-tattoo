@@ -1,28 +1,35 @@
 import { BLURHASH } from "@/lib/image-cache";
+import { Button } from "@/src/components/ui/Button";
+import { Icon } from "@/src/components/ui/Icon";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
-import { ImageGenerationMutation } from "@/src/context/PlaygroundContext";
+import {
+  ImageGenerationMutation,
+  PlaygroundContext,
+} from "@/src/context/PlaygroundContext";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { PressableScale } from "pressto";
-import { useEffect, useState } from "react";
+import { Activity, use, useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { AnimatedText } from "./AnimatedText";
 
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
   lastGenerationUris: string[]; // Array of file URIs
-  onRemoveImage?: (uri: string) => void;
 }
 
 export function TextToImageResult({
   mutation,
   lastGenerationUris,
-  onRemoveImage,
 }: TextToImageResultProps) {
   const router = useRouter();
+  const { removeImageFromActiveGroup, handleTattooGeneration, blurInput } =
+    use(PlaygroundContext);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   function simulateTattoMachineVibrations() {
@@ -59,111 +66,185 @@ export function TextToImageResult({
 
   if (mutation.isError) {
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          gap: 8,
-        }}
-      >
-        <Text type="sm" style={{ color: Color.red[600], textAlign: "center" }}>
-          {mutation.error?.message === "LIMIT_REACHED"
-            ? "You have reached your generation limit for the current period. Please upgrade your plan or wait for the next period."
-            : "Something went wrong: " + mutation.error?.message ||
-              "Unknown error"}
-        </Text>
+      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <Text
+            type="sm"
+            style={{ color: Color.red[600], textAlign: "center" }}
+          >
+            {mutation.error?.message === "LIMIT_REACHED"
+              ? "You have reached your generation limit for the current period. Please upgrade your plan or wait for the next period."
+              : "Something went wrong: " + mutation.error?.message ||
+                "Unknown error"}
+          </Text>
 
-        {mutation.error?.message === "LIMIT_REACHED" ? (
-          <PressableScale
-            onPress={() => {
-              mutation.reset();
-              router.push("/(paywall)");
-            }}
-          >
-            <Text type="default" style={{ color: Color.yellow[400] }}>
-              Upgrade Plan
-            </Text>
-          </PressableScale>
-        ) : (
-          <PressableScale
-            onPress={() => {
-              mutation.reset();
-            }}
-          >
-            <Text type="default" style={{ color: Color.yellow[400] }}>
-              Try Again
-            </Text>
-          </PressableScale>
-        )}
-      </View>
+          {mutation.error?.message === "LIMIT_REACHED" ? (
+            <PressableScale
+              onPress={() => {
+                mutation.reset();
+                router.push("/(paywall)");
+              }}
+            >
+              <Text type="default" style={{ color: Color.yellow[400] }}>
+                Upgrade Plan
+              </Text>
+            </PressableScale>
+          ) : (
+            <PressableScale
+              onPress={() => {
+                // mutation.reset();
+                alert("try again");
+              }}
+            >
+              <Text type="default" style={{ color: Color.yellow[400] }}>
+                Try Again
+              </Text>
+            </PressableScale>
+          )}
+        </View>
+      </SafeAreaView>
     );
   }
   if (mutation.isPending) {
     return <LoadingChangingText lastGenerationUris={lastGenerationUris} />;
   }
-  return lastGenerationUris.length > 0 ? (
-    <Animated.View
-      style={{
-        flex: 1,
-        paddingHorizontal: 16,
-        gap: 12,
-      }}
-      entering={FadeIn.duration(1000)}
-      exiting={FadeOut.duration(1000)}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          gap: 8,
-          justifyContent: "center",
-        }}
-      >
-        {lastGenerationUris.map((uri, index) => (
+  return (
+    <>
+      <Activity mode={lastGenerationUris.length > 0 ? "visible" : "hidden"}>
+        <Animated.View
+          style={{
+            flex: 1,
+            paddingHorizontal: 16,
+            gap: 12,
+          }}
+          entering={FadeIn.duration(500)}
+          exiting={FadeOut.duration(500)}
+        >
           <View
-            key={uri}
             style={{
-              position: "relative",
-              width: lastGenerationUris.length === 1 ? "100%" : "48%",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              gap: 8,
+              justifyContent: "center",
             }}
           >
-            <Image
-              source={{ uri }}
-              placeholder={{ blurhash: BLURHASH }}
-              cachePolicy="memory-disk"
-              style={{
-                width: "100%",
-                height: lastGenerationUris.length === 1 ? 400 : 200,
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: Color.gray[500] + "30",
-              }}
-              contentFit="cover"
-              contentPosition="center"
-              transition={350}
-            />
+            {lastGenerationUris.map((uri, index) => (
+              <View
+                key={uri}
+                style={{
+                  position: "relative",
+                  width: lastGenerationUris.length === 1 ? "100%" : "48%",
+                }}
+              >
+                <PressableScale
+                  onPress={() => {
+                    blurInput();
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    router.push({
+                      pathname: "/(playground)/playground-preview",
+                      params: { imageUri: uri },
+                    });
+                  }}
+                  animationType="timing"
+                >
+                  <Image
+                    source={{ uri }}
+                    placeholder={{ blurhash: BLURHASH }}
+                    cachePolicy="memory-disk"
+                    style={{
+                      width: "100%",
+                      height: lastGenerationUris.length === 1 ? 400 : 200,
+                      borderRadius: 16,
+                      borderWidth: 1,
+                      borderColor: Color.gray[500] + "30",
+                    }}
+                    contentFit="cover"
+                    contentPosition="center"
+                    transition={350}
+                  />
+                </PressableScale>
+                <Pressable
+                  onPress={() => {
+                    blurInput();
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+                    removeImageFromActiveGroup(uri);
+                  }}
+                  hitSlop={8}
+                  style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    width: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    backgroundColor: "black",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 10,
+                  }}
+                >
+                  <Icon symbol="xmark" size="xs" color="white" />
+                </Pressable>
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
-      {lastGenerationUris.length > 0 && (
-        <Text
-          type="xs"
-          weight="medium"
-          style={{ color: Color.zinc[400], textAlign: "center" }}
-        >
-          {lastGenerationUris.length === 1
-            ? "1 image selected - add one more to combine"
-            : `${lastGenerationUris.length} images selected (max)`}
-        </Text>
-      )}
-    </Animated.View>
-  ) : (
-    <AnimatedText
-      style={{ flex: 0.3 }}
-      text="Describe your tattoo or choose a suggestion below"
-      color={isKeyboardVisible ? Color.pink[400] : Color.zinc[400]}
-      colorDark={isKeyboardVisible ? Color.purple[700] : Color.zinc[700]}
-    />
+          <Activity
+            mode={lastGenerationUris.length === 2 ? "visible" : "hidden"}
+          >
+            <Button
+              title="Apply Tattoo"
+              color="yellow"
+              variant="solid"
+              radius="full"
+              onPress={handleTattooGeneration}
+              haptic
+              style={{ zIndex: 100 }}
+            />
+            <Text
+              type="xs"
+              weight="medium"
+              style={{ color: Color.zinc[400], textAlign: "center" }}
+            >
+              Select one tattoo image and one body part photo.
+            </Text>
+          </Activity>
+
+          <Activity mode={lastGenerationUris.length > 0 ? "visible" : "hidden"}>
+            <Text
+              type="xs"
+              weight="medium"
+              style={{ color: Color.zinc[400], textAlign: "center" }}
+            >
+              {lastGenerationUris.length === 1
+                ? "1 image selected - add one more to combine"
+                : `${lastGenerationUris.length} images selected (max)`}
+            </Text>
+            <Text
+              type="xs"
+              weight="medium"
+              style={{ color: Color.zinc[400], textAlign: "center" }}
+            >
+              Only currently selected images are sent to the model.
+            </Text>
+          </Activity>
+        </Animated.View>
+      </Activity>
+
+      <Activity mode={lastGenerationUris.length === 0 ? "visible" : "hidden"}>
+        <AnimatedText
+          style={{ flex: 0.3 }}
+          text="Describe your tattoo or choose a suggestion below"
+          color={isKeyboardVisible ? Color.pink[400] : Color.zinc[400]}
+          colorDark={isKeyboardVisible ? Color.purple[700] : Color.zinc[700]}
+        />
+      </Activity>
+    </>
   );
 }
 

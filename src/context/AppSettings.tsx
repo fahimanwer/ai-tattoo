@@ -1,4 +1,4 @@
-import AsyncStorage from "expo-sqlite/kv-store";
+import Storage from "expo-sqlite/kv-store";
 import React, { createContext, useCallback, useState } from "react";
 
 /**
@@ -42,7 +42,7 @@ export const AppSettingsContext = createContext<AppSettingsContextType>({
 // Load settings synchronously from storage
 function loadSettingsSync(): AppSettings {
   try {
-    const stored = AsyncStorage.getItemSync(STORAGE_KEY);
+    const stored = Storage.getItemSync(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
       return { ...DEFAULT_SETTINGS, ...parsed };
@@ -67,7 +67,7 @@ export function AppSettingsProvider({
       try {
         const newSettings = { ...settings, ...updates };
         setSettings(newSettings);
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
+        await Storage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
       } catch (error) {
         console.error("Failed to update settings:", error);
         throw error;
@@ -82,7 +82,7 @@ export function AppSettingsProvider({
       try {
         const newSettings = { ...settings, ...updates };
         setSettings(newSettings);
-        AsyncStorage.setItemSync(STORAGE_KEY, JSON.stringify(newSettings));
+        Storage.setItemSync(STORAGE_KEY, JSON.stringify(newSettings));
       } catch (error) {
         console.error("Failed to update settings:", error);
         throw error;
@@ -95,7 +95,7 @@ export function AppSettingsProvider({
   const resetSettings = useCallback(async () => {
     try {
       setSettings(DEFAULT_SETTINGS);
-      await AsyncStorage.removeItem(STORAGE_KEY);
+      await Storage.removeItem(STORAGE_KEY);
     } catch (error) {
       console.error("Failed to reset settings:", error);
       throw error;

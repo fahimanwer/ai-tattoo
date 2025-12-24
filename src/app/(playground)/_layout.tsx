@@ -1,16 +1,42 @@
+import { isGlassEffectAPIAvailable } from "expo-glass-effect";
 import { Stack } from "expo-router";
 
 export default function PlaygroundLayout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: "transparent" },
+        headerBlurEffect: isGlassEffectAPIAvailable() ? undefined : "dark",
+        headerTintColor: "white",
+      }}
+    >
       <Stack.Screen name="index" options={{ presentation: "card" }} />
       <Stack.Screen
         name="camera-view"
         options={{
           presentation: "card",
-          headerStyle: { backgroundColor: "transparent" },
-          headerBlurEffect: undefined,
           title: "",
+        }}
+      />
+      <Stack.Screen
+        name="sheet"
+        options={{
+          headerTitle: "Inkigo",
+          presentation: "formSheet",
+          headerTransparent: isGlassEffectAPIAvailable() ? true : false,
+          contentStyle: {
+            backgroundColor: isGlassEffectAPIAvailable()
+              ? "transparent"
+              : "black",
+          },
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.7],
+        }}
+      />
+      <Stack.Screen
+        name="playground-preview"
+        options={{
+          presentation: "modal",
         }}
       />
     </Stack>

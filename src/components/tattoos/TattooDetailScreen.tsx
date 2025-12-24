@@ -128,7 +128,6 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
             imageProps={{ systemName: "xmark" }}
             buttonProps={{
               onPress: () => router.back(),
-              variant: "glass",
             }}
           />
         </View>
