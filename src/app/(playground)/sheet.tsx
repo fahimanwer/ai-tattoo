@@ -8,7 +8,7 @@ import * as MediaLibrary from "expo-media-library";
 import { router, Stack } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
-import { use, useCallback, useEffect, useState } from "react";
+import { Activity, use, useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -236,11 +236,7 @@ export default function Sheet() {
       >
         {/* Camera button */}
         <PressableScale onPress={handleCameraPress} style={styles.cameraButton}>
-          <SymbolView
-            name="camera.fill"
-            size={28}
-            tintColor={Color.zinc[400]}
-          />
+          <SymbolView name="camera.fill" size={32} tintColor={"white"} />
         </PressableScale>
 
         {/* Recent photos */}
@@ -302,18 +298,25 @@ export default function Sheet() {
           ],
         }}
       />
-      <View style={styles.container}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          height: 500,
+        }}
+        contentInsetAdjustmentBehavior="automatic"
+        showsVerticalScrollIndicator={false}
+      >
         {/* Image Picker Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text type="sm" weight="medium" style={{ paddingHorizontal: 16 }}>
               Recent Photos
             </Text>
-            {maxSelection === 1 && (
+            <Activity mode={maxSelection === 1 ? "visible" : "hidden"}>
               <Text type="xs" style={styles.sectionSubtitle}>
                 Select 1 more to combine
               </Text>
-            )}
+            </Activity>
           </View>
           {renderImagePicker()}
         </View>
@@ -410,14 +413,14 @@ export default function Sheet() {
         </View>
 
         {/* Bottom Action Button */}
-        {hasSelection && (
+        <Activity mode={hasSelection ? "visible" : "hidden"}>
           <View style={[styles.bottomAction, { paddingBottom: bottom + 16 }]}>
-            {willHaveTwoImages && (
+            <Activity mode={willHaveTwoImages ? "visible" : "hidden"}>
               <Text type="xs" style={styles.hintText}>
                 Use selected images to try on a tattoo or merge them into a new
                 design
               </Text>
-            )}
+            </Activity>
             <Button
               title={`Add ${selectionCount} photo${
                 selectionCount > 1 ? "s" : ""
@@ -429,8 +432,8 @@ export default function Sheet() {
               onPress={handleAddPhotos}
             />
           </View>
-        )}
-      </View>
+        </Activity>
+      </ScrollView>
     </>
   );
 }
@@ -444,14 +447,12 @@ interface OptionRowProps {
 
 function OptionRow({ icon, title, description, onPress }: OptionRowProps) {
   return (
-    <PressableScale onPress={onPress} style={styles.optionRow}>
+    <PressableScale onPress={onPress} style={styles.optionRow} hitSlop={16}>
       <View style={styles.optionIconContainer}>
-        <SymbolView name={icon as any} size={20} tintColor={Color.zinc[400]} />
+        <SymbolView name={icon as any} size={24} tintColor={"white"} />
       </View>
       <View style={styles.optionContent}>
-        <Text type="sm" weight="medium" style={styles.optionTitle}>
-          {title}
-        </Text>
+        <Text weight="medium">{title}</Text>
         <Text type="xs" style={styles.optionDescription}>
           {description}
         </Text>
@@ -462,11 +463,8 @@ function OptionRow({ icon, title, description, onPress }: OptionRowProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   section: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -488,8 +486,6 @@ const styles = StyleSheet.create({
     backgroundColor: Color.zinc[800],
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: Color.zinc[700],
   },
   imageWrapper: {
     position: "relative",
@@ -558,24 +554,18 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
-  optionTitle: {
-    color: Color.zinc[100],
-  },
   optionDescription: {
     color: Color.zinc[500],
   },
   bottomAction: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
+    marginTop: "auto",
     paddingHorizontal: 16,
     paddingTop: 16,
     gap: 8,
-    backgroundColor: Color.zinc[950] + "F0",
   },
   hintText: {
     color: Color.zinc[400],
     textAlign: "center",
+    paddingHorizontal: 32,
   },
 });

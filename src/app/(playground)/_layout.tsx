@@ -23,13 +23,14 @@ export default function PlaygroundLayout() {
         options={{
           headerTitle: "Inkigo",
           presentation: "formSheet",
+          headerTransparent: isGlassEffectAPIAvailable() ? true : false,
           contentStyle: {
             backgroundColor: isGlassEffectAPIAvailable()
               ? "transparent"
               : "black",
           },
           sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.6],
+          sheetAllowedDetents: [0.7],
         }}
       />
     </Stack>
