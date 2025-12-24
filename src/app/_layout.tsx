@@ -237,7 +237,13 @@ export default function RootLayout() {
                         <PlaygroundProvider>
                           <AppContent />
                         </PlaygroundProvider>
-                        <Toaster />
+                        <Toaster
+                          style={{
+                            backgroundColor: "black",
+                            borderWidth: 1,
+                            borderColor: "#FFFFFF20",
+                          }}
+                        />
                       </PressablesConfig>
                     </KeyboardProvider>
                   </AccentColorProvider>
