@@ -51,28 +51,50 @@ export async function POST(request: Request) {
 
 ${
   hasExistingImage
-    ? `IMPORTANT CONTEXT: The user already has a generated tattoo image. Analyze the prompt carefully:
+    ? `IMPORTANT CONTEXT: The user already has a generated tattoo image. You must analyze the user's prompt and determine their intent. Follow these rules in order of priority:
 
-MODIFICATIONS (preserve design/subject, only change specific aspects):
-- "add color" means: add vibrant colors to the existing tattoo design while maintaining its current design, style, placement, and subject matter
-- "make it bigger" means: enlarge the existing tattoo design proportionally while keeping everything else identical
-- "change style" means: modify the artistic style of the existing tattoo (e.g., from realistic to watercolor, from blackwork to colored) while keeping the same subject and design
-- "add to [body part]" means: apply the existing tattoo design to the specified body part, maintaining the exact same design
+=== PRIORITY 1: TATTOO REMOVAL ===
+If the prompt contains keywords like: "remove", "no tattoo", "remove tattoo", "delete tattoo", "erase tattoo"
+ACTION: Generate a prompt that instructs removing the tattoo completely and restoring the natural, unmarked skin. The skin should look clean and untouched. The person's appearance, pose, lighting, and background must remain EXACTLY the same. Only the tattoo area should change to show natural skin.
+EXAMPLE OUTPUT: "Remove the tattoo from the skin, restoring the natural unmarked skin texture and appearance, keeping the person, pose, lighting, and background completely unchanged"
 
-SUBSTITUTIONS/REPLACEMENTS (change the main subject/element):
-- "change [X] for [Y]" or "replace [X] with [Y]" means: replace the subject/element X with Y, but maintain the same style, placement, size, and overall composition
-- "change for a [Y]" means: replace the current subject with Y, keeping style, placement, and composition the same
-- When the user explicitly wants to change/replace the subject, DO preserve the style, placement, and composition, but DO change the subject as requested
+=== PRIORITY 2: COVER UP ===
+If the prompt contains keywords like: "cover up", "cover", "coverup", "cover it", "conceal", "hide tattoo"
+ACTION: Generate a prompt that describes a NEW tattoo design that will completely cover and conceal the existing tattoo. The new design must be larger and strategically designed to hide the old tattoo underneath. The person, pose, and background stay unchanged. The new tattoo replaces the old one visually.
+EXAMPLE OUTPUT: "Create a new tattoo design that completely covers and conceals the existing tattoo, strategically placed and sized to fully hide the old tattoo, maintaining the person, pose, and background unchanged"
 
-If the prompt is clearly a new design request, treat it as such`
+=== PRIORITY 3: ENHANCEMENTS ===
+If the prompt contains keywords like: "improve", "enhance", "add ornaments", "add details", "add more elements", "add more", "expand", "decorate", "embellish"
+ACTION: Generate a prompt that adds complementary decorative elements, ornaments, patterns, or design extensions to the EXISTING tattoo. These additions must match the current tattoo's style, theme, color palette, and artistic direction. The original tattoo design remains intact and recognizable, but is enhanced with harmonious additions around it or integrated into it. The person, pose, and background stay unchanged.
+EXAMPLE OUTPUT: "Enhance the existing tattoo by adding complementary ornaments and decorative elements that match its style and theme, maintaining the original design's core subject and placement while expanding it with harmonious additions"
+
+=== PRIORITY 4: MODIFICATIONS ===
+If the prompt contains specific modification requests:
+- "add color": Add vibrant colors to the existing tattoo while keeping the design, style, placement, and subject identical
+- "make it bigger" or "enlarge" or "increase size": Enlarge the existing tattoo proportionally, keeping everything else the same
+- "change style": Modify only the artistic style (realistic to watercolor, blackwork to colored, etc.) while keeping the same subject and design structure
+- "add to [body part]": Apply the exact same tattoo design to the specified body part
+ACTION: Generate a prompt that modifies ONLY the specified aspect while preserving everything else about the tattoo.
+
+=== PRIORITY 5: SUBSTITUTIONS ===
+If the prompt contains: "change [X] for [Y]", "replace [X] with [Y]", "swap [X] with [Y]", "change for a [Y]"
+ACTION: Generate a prompt that replaces the subject/element X with Y, but preserves the style, placement, size, and overall composition of the original tattoo. The new subject should fit naturally in the same space and style.
+EXAMPLE OUTPUT: "Replace [X] with [Y] in the tattoo, maintaining the same style, placement, size, and composition"
+
+=== FALLBACK ===
+If the prompt doesn't match any of the above categories and seems like a new design request, treat it as a new tattoo generation (not a modification of the existing one).`
     : `CONTEXT: This is a new tattoo generation request. The user is creating a tattoo from scratch.`
 }
 
-Rules:
-- Always describe realistic tattoos (never full image changes)
-- Keep the improved prompt concise but detailed (1-3 sentences max)
-- Maintain the user's original intent
-- Ensure content is appropriate and safe`,
+GENERAL RULES:
+1. Always describe realistic tattoos that look like actual tattoos on skin
+2. Never make full image changes (changing the person, pose, or background) EXCEPT for:
+   - Tattoo removal: which restores natural skin
+   - Cover-ups: which replace the existing tattoo with a new design
+3. Keep the improved prompt concise but detailed (1-3 sentences maximum)
+4. Always maintain the user's original intent - if they want to remove, cover, enhance, or modify, respect that intent
+5. Ensure all content is appropriate and safe for tattoo generation
+6. Output ONLY the improved prompt text - no explanations, no quotes, no markdown, no prefixes like "Improved prompt:"`,
           },
           {
             role: "user",

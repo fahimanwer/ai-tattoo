@@ -1,4 +1,5 @@
 import { Text } from "@/src/components/ui/Text";
+import { Color } from "@/src/constants/TWPalette";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { PressableScale } from "pressto";
@@ -26,7 +27,7 @@ const actions = [
     },
   },
   {
-    title: "Edit / Blend Tattoo",
+    title: "Blend Tattoo",
     description: "Upload an existing tattoo and modify it",
     image: {
       uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/3-edit-tattoo.avif",
@@ -72,11 +73,13 @@ export function QuickActions() {
 const styles = StyleSheet.create({
   item: {
     position: "relative",
-    width: 300,
+    width: 240,
     height: 140,
     borderRadius: 16,
     overflow: "hidden",
     marginRight: 16,
+    borderWidth: 1,
+    borderColor: Color.zinc[900],
   },
   image: {
     position: "absolute",
