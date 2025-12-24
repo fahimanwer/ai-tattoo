@@ -54,18 +54,6 @@ export function InputControls({
     textFieldRef.current?.blur();
   }
 
-  //  useEffect(() => {
-  //    const unsubscribe = navigation.addListener("focus", () => {
-  //      // Only focus if the TextField is actually rendered (when we have less than 2 images)
-  //      if (activeGenerationUris.length < 2) {
-  //        // Small delay to ensure the native view hierarchy is ready
-  //        setTimeout(() => {
-  //          textFieldRef.current?.focus();
-  //        }, 100);
-  //      }
-  //    });
-  //    return unsubscribe;
-  //  }, [navigation, activeGenerationUris.length]);
   return (
     <KeyboardStickyView
       style={{
@@ -80,23 +68,7 @@ export function InputControls({
       <Host matchContents ignoreSafeAreaKeyboardInsets>
         <Namespace id={namespaceId}>
           <GlassEffectContainer>
-            <HStack
-              spacing={8}
-              alignment="bottom"
-              modifiers={
-                [
-                  // padding({ vertical: 12, horizontal: 16 }),
-                  // glassEffect({
-                  //   glass: {
-                  //     variant: "regular",
-                  //     interactive: true,
-                  //   },
-                  //   shape: "capsule",
-                  // }),
-                  // clipShape("rectangle", 50),
-                ]
-              }
-            >
+            <HStack spacing={8} alignment="bottom">
               <SwiftUIButton
                 onPress={() => {
                   textFieldRef.current?.blur();

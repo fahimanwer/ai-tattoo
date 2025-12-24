@@ -36,7 +36,6 @@ export function PlaygroundScreen() {
     activeGenerationUris,
     activeMutation,
     handleTattooGeneration,
-    removeImageFromActiveGroup,
     focusInput,
     blurInput,
   } = use(PlaygroundContext);

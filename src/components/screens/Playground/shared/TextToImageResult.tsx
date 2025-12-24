@@ -1,4 +1,5 @@
 import { BLURHASH } from "@/lib/image-cache";
+import { Button } from "@/src/components/ui/Button";
 import { Icon } from "@/src/components/ui/Icon";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
@@ -27,7 +28,8 @@ export function TextToImageResult({
   lastGenerationUris,
 }: TextToImageResultProps) {
   const router = useRouter();
-  const { removeImageFromActiveGroup } = use(PlaygroundContext);
+  const { removeImageFromActiveGroup, handleTattooGeneration } =
+    use(PlaygroundContext);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   function simulateTattoMachineVibrations() {
@@ -179,6 +181,25 @@ export function TextToImageResult({
               </View>
             ))}
           </View>
+
+          <Activity
+            mode={lastGenerationUris.length === 2 ? "visible" : "hidden"}
+          >
+            <Button
+              title="Apply Tattoo"
+              color="yellow"
+              variant="solid"
+              radius="full"
+              onPress={handleTattooGeneration}
+            />
+            <Text
+              type="xs"
+              weight="medium"
+              style={{ color: Color.zinc[400], textAlign: "center" }}
+            >
+              Select one tattoo image and one body part photo.
+            </Text>
+          </Activity>
           <Activity mode={lastGenerationUris.length > 0 ? "visible" : "hidden"}>
             <Text
               type="xs"
@@ -188,6 +209,13 @@ export function TextToImageResult({
               {lastGenerationUris.length === 1
                 ? "1 image selected - add one more to combine"
                 : `${lastGenerationUris.length} images selected (max)`}
+            </Text>
+            <Text
+              type="xs"
+              weight="medium"
+              style={{ color: Color.zinc[400], textAlign: "center" }}
+            >
+              Only currently selected images are sent to the model.
             </Text>
           </Activity>
         </Animated.View>

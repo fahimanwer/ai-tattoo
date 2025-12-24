@@ -473,7 +473,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionSubtitle: {
-    color: Color.zinc[600],
+    color: Color.zinc[400],
+    paddingHorizontal: 16,
   },
   scrollContent: {
     gap: 10,
@@ -528,7 +529,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   permissionText: {
-    color: Color.zinc[500],
+    color: Color.zinc[400],
     textAlign: "center",
   },
   optionsSection: {
@@ -555,7 +556,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   optionDescription: {
-    color: Color.zinc[500],
+    color: Color.zinc[400],
   },
   bottomAction: {
     marginTop: "auto",
