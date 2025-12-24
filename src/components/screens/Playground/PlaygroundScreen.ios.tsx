@@ -1,17 +1,36 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Activity, use, useEffect, useRef } from "react";
-import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
 import { authClient } from "@/lib/auth-client";
 import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
 import CoreHaptics from "@/modules/native-core-haptics";
-import { Button } from "@/src/components/ui/Button";
 import { Text } from "@/src/components/ui/Text";
+import { Color } from "@/src/constants/TWPalette";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import {
+  Host,
+  HStack,
+  Button as SwiftUIButton,
+  Text as SwiftUIText,
+} from "@expo/ui/swift-ui";
+import {
+  buttonStyle,
+  controlSize,
+  disabled,
+  font,
+  frame,
+  tint,
+} from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryList } from "./session-history/SessionHistoryList";
@@ -41,7 +60,7 @@ export function PlaygroundScreen() {
     blurInput,
   } = use(PlaygroundContext);
 
-  const { bottom } = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
 
   // Play playful entrance haptic on first load
   useEffect(() => {
@@ -204,16 +223,44 @@ export function PlaygroundScreen() {
             <Animated.View
               entering={FadeIn.duration(1000)}
               exiting={FadeOut.duration(1000)}
-              style={{ padding: 16, gap: 16, paddingBottom: bottom }}
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 32,
+                gap: 8,
+                position: "absolute",
+                bottom: -1,
+                left: 0,
+                borderTopLeftRadius: 16,
+                borderTopRightRadius: 16,
+                borderWidth: 1,
+                borderColor: Color.zinc[900],
+              }}
             >
-              <Text type="lg" weight="bold">
-                A quick sign-in before we create your tattoo.
+              <Text
+                type="xl"
+                weight="bold"
+                style={{
+                  textAlign: "center",
+                  lineHeight: 24,
+                  letterSpacing: 0,
+                }}
+              >
+                Please sign in to continue and get your tattoo created!
               </Text>
-              <Text type="sm">
-                This lets us track your free generations and make sure your
-                account is good to go.
+              <Text
+                type="sm"
+                style={{
+                  textAlign: "center",
+                  lineHeight: 18,
+                  letterSpacing: 0,
+                  marginBottom: 8,
+                  opacity: 0.8,
+                }}
+              >
+                By signing in, we can keep track of your free tattoo generations
+                and ensure your account is set up properly.
               </Text>
-              <Button
+              {/*   <Button
                 title="Sign in"
                 color="yellow"
                 variant="solid"
@@ -223,7 +270,30 @@ export function PlaygroundScreen() {
                 loading={isPending}
                 disabled={isPending}
                 onPress={() => router.push("/auth-sheet")}
-              />
+              /> */}
+              <Host matchContents useViewportSizeMeasurement>
+                <SwiftUIButton
+                  modifiers={[
+                    controlSize("mini"),
+                    buttonStyle("glassProminent"),
+                    tint("yellow"),
+                    disabled(isPending),
+                  ]}
+                  onPress={() => router.push("/auth-sheet")}
+                >
+                  <HStack
+                    spacing={8}
+                    modifiers={[frame({ height: 44, width: width - 64 })]}
+                  >
+                    <SwiftUIText
+                      color={"black"}
+                      modifiers={[font({ weight: "semibold", size: 16 })]}
+                    >
+                      Sign in
+                    </SwiftUIText>
+                  </HStack>
+                </SwiftUIButton>
+              </Host>
             </Animated.View>
           </Activity>
 
