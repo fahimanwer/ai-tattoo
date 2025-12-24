@@ -33,6 +33,12 @@ export default function PlaygroundLayout() {
           sheetAllowedDetents: [0.7],
         }}
       />
+      <Stack.Screen
+        name="playground-preview"
+        options={{
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 }

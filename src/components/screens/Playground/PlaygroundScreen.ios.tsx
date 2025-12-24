@@ -8,6 +8,7 @@ import CoreHaptics from "@/modules/native-core-haptics";
 import { Button } from "@/src/components/ui/Button";
 import { Text } from "@/src/components/ui/Text";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import * as Haptics from "expo-haptics";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -82,14 +83,19 @@ export function PlaygroundScreen() {
     return <ActivityIndicator style={{ flex: 1, marginBottom: 100 }} />;
   }
 
+  const handleHaptic = () =>
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+
   const panGesture = Gesture.Pan().onEnd((e) => {
     // check if swiping down or up
     if (e.translationY > 0) {
       // swiping down - dismiss keyboard
       scheduleOnRN(blurInput);
+      scheduleOnRN(handleHaptic);
     } else {
       // swiping up - focus input
       scheduleOnRN(focusInput);
+      scheduleOnRN(handleHaptic);
     }
   });
 
@@ -97,7 +103,7 @@ export function PlaygroundScreen() {
     scheduleOnRN(blurInput);
   });
 
-  const composedGesture = Gesture.Race(panGesture, tapGesture);
+  const composedGesture = Gesture.Race(panGesture);
 
   return (
     <>

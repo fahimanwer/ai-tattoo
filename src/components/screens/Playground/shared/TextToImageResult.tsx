@@ -28,7 +28,7 @@ export function TextToImageResult({
   lastGenerationUris,
 }: TextToImageResultProps) {
   const router = useRouter();
-  const { removeImageFromActiveGroup, handleTattooGeneration } =
+  const { removeImageFromActiveGroup, handleTattooGeneration, blurInput } =
     use(PlaygroundContext);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
@@ -142,24 +142,36 @@ export function TextToImageResult({
                   width: lastGenerationUris.length === 1 ? "100%" : "48%",
                 }}
               >
-                <Image
-                  source={{ uri }}
-                  placeholder={{ blurhash: BLURHASH }}
-                  cachePolicy="memory-disk"
-                  style={{
-                    width: "100%",
-                    height: lastGenerationUris.length === 1 ? 400 : 200,
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: Color.gray[500] + "30",
-                  }}
-                  contentFit="cover"
-                  contentPosition="center"
-                  transition={350}
-                />
                 <Pressable
                   onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    blurInput();
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    router.push({
+                      pathname: "/(playground)/playground-preview",
+                      params: { imageUri: uri },
+                    });
+                  }}
+                >
+                  <Image
+                    source={{ uri }}
+                    placeholder={{ blurhash: BLURHASH }}
+                    cachePolicy="memory-disk"
+                    style={{
+                      width: "100%",
+                      height: lastGenerationUris.length === 1 ? 400 : 200,
+                      borderRadius: 16,
+                      borderWidth: 1,
+                      borderColor: Color.gray[500] + "30",
+                    }}
+                    contentFit="cover"
+                    contentPosition="center"
+                    transition={350}
+                  />
+                </Pressable>
+                <Pressable
+                  onPress={() => {
+                    blurInput();
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
                     removeImageFromActiveGroup(uri);
                   }}
                   hitSlop={8}
@@ -189,11 +201,9 @@ export function TextToImageResult({
               color="yellow"
               variant="solid"
               radius="full"
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                alert("apply tattoo");
-              }}
-              style={{ zIndex: 10 }}
+              onPress={handleTattooGeneration}
+              haptic
+              style={{ zIndex: 100 }}
             />
             <Text
               type="xs"
