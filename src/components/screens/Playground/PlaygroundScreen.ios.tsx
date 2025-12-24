@@ -29,6 +29,7 @@ import { scheduleOnRN } from "react-native-worklets";
 import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryList } from "./session-history/SessionHistoryList";
 import { TextToImageResult } from "./shared/TextToImageResult";
+import { PlaygroundSuggestions } from "./shared/suggestions/PlaygroundSuggestions";
 
 export function PlaygroundScreen() {
   const { data: session, isPending, isRefetching } = authClient.useSession();
@@ -219,6 +220,12 @@ export function PlaygroundScreen() {
           <TextToImageResult
             mutation={activeMutation}
             lastGenerationUris={activeGenerationUris}
+          />
+          <PlaygroundSuggestions
+            onSelect={(prompt) => {
+              setPrompt(prompt);
+              focusInput();
+            }}
           />
 
           <Activity mode={!isAuthenticated ? "visible" : "hidden"}>

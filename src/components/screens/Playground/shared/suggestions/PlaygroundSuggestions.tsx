@@ -1,6 +1,5 @@
 import { Text } from "@/src/components/ui/Text";
-import { Button, Host } from "@expo/ui/swift-ui";
-import { buttonStyle, frame } from "@expo/ui/swift-ui/modifiers";
+import { PressableScale } from "pressto";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import Animated from "react-native-reanimated";
@@ -99,16 +98,22 @@ const SuggestionItem = React.memo(
     onSelect: (prompt: string) => void;
   }) => {
     return (
-      <Host style={{ marginRight: 44 }} matchContents>
-        <Button
-          onPress={() => onSelect(item.prompt)}
-          modifiers={[frame({ width: 190, height: 44 }), buttonStyle("glass")]}
-        >
-          <Text type="sm" style={{ textAlign: "center" }}>
-            {item.label}
-          </Text>
-        </Button>
-      </Host>
+      <PressableScale
+        style={{
+          justifyContent: "center",
+          marginRight: 30,
+          width: 190,
+          height: 32,
+          borderWidth: 1,
+          borderColor: "#FFFFFF20",
+          borderRadius: 100,
+        }}
+        onPress={() => onSelect(item.prompt)}
+      >
+        <Text type="sm" style={{ textAlign: "center", color: "#FFFFFF90" }}>
+          {item.label}
+        </Text>
+      </PressableScale>
     );
   }
 );
