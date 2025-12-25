@@ -1,24 +1,12 @@
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { useSubscription } from "@/src/hooks/useSubscription";
-import { Host, Label, Button as SwiftUIButton } from "@expo/ui/swift-ui";
-import {
-  buttonStyle,
-  controlSize,
-  disabled,
-  font,
-  foregroundStyle,
-  frame,
-  tint,
-} from "@expo/ui/swift-ui/modifiers";
 import { useQueryClient } from "@tanstack/react-query";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
-import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { Link, Stack, useRouter } from "expo-router";
 import { PressableScale } from "pressto";
 import { use, useEffect, useState } from "react";
-import { Alert, Dimensions, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import Purchases, {
   PACKAGE_TYPE,
   PurchasesOffering,
@@ -27,6 +15,7 @@ import Purchases, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { customEvent } from "vexo-analytics";
+import { CTAButton } from "../paywall/CTAButton";
 import { OfferingCard } from "../paywall/OfferingCard";
 import { Icon } from "../ui/Icon";
 import { Text } from "../ui/Text";
@@ -44,7 +33,6 @@ export function Paywall() {
   const queryClient = useQueryClient();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const router = useRouter();
-  const { width } = Dimensions.get("window");
   const { top } = useSafeAreaInsets();
 
   // Close button visibility logic
@@ -308,40 +296,15 @@ export function Paywall() {
               </View>
 
               {/* CTA Button */}
-              <Host
-                style={{
-                  width: "100%",
-                  height: 60,
+              <CTAButton
+                title="Continue"
+                onPress={() => {
+                  if (selectedPackage) {
+                    handlePurchase(selectedPackage);
+                  }
                 }}
-              >
-                <SwiftUIButton
-                  modifiers={[
-                    buttonStyle(
-                      isLiquidGlassAvailable()
-                        ? "glassProminent"
-                        : "borderedProminent"
-                    ),
-                    tint("yellow"),
-                    controlSize("large"),
-                    disabled(isPurchasing),
-                  ]}
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    if (selectedPackage) {
-                      handlePurchase(selectedPackage);
-                    }
-                  }}
-                >
-                  <Label
-                    title={isPurchasing ? "Processing..." : "Continue"}
-                    modifiers={[
-                      frame({ width: width - 64 }),
-                      foregroundStyle("black"),
-                      font({ weight: "bold" }),
-                    ]}
-                  />
-                </SwiftUIButton>
-              </Host>
+                loading={isPurchasing}
+              />
             </>
           ) : (
             <View style={styles.loadingContainer}>
