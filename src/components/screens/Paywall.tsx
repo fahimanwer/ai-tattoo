@@ -119,11 +119,6 @@ export function Paywall() {
     }
   };
 
-  const hasActiveSubscription = (): boolean => {
-    if (!customerInfo) return false;
-    return Object.keys(customerInfo.entitlements.active).length > 0;
-  };
-
   useEffect(() => {
     customEvent("paywall_viewed", { source: "manual" });
     fetchProducts();
@@ -137,8 +132,6 @@ export function Paywall() {
       return () => clearTimeout(timer);
     }
   }, [isFirstPaywallView, updateSettingsSync]);
-
-  const isSubscribed = hasActiveSubscription();
 
   const handleRestoreSubscription = async () => {
     if (isPurchasing) return;
