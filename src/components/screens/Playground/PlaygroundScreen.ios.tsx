@@ -8,6 +8,7 @@ import CoreHaptics from "@/modules/native-core-haptics";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import {
   Host,
   HStack,
@@ -36,6 +37,7 @@ export function PlaygroundScreen() {
   const isLoading = isPending || isRefetching;
   const params = useLocalSearchParams<{ mode?: string }>();
   const hasHandledMode = useRef(false);
+  const { subscriptionTier } = useUsageLimit();
 
   const {
     prompt,
@@ -120,10 +122,6 @@ export function PlaygroundScreen() {
     }
   });
 
-  const tapGesture = Gesture.Tap().onEnd(() => {
-    scheduleOnRN(blurInput);
-  });
-
   const composedGesture = Gesture.Race(panGesture);
 
   return (
@@ -187,8 +185,8 @@ export function PlaygroundScreen() {
             {
               type: "button",
               label: "Save",
-              variant: "prominent",
-              tintColor: "yellow",
+              variant: subscriptionTier === "free" ? "plain" : "prominent",
+              tintColor: subscriptionTier === "free" ? "white" : "yellow",
               labelStyle: {
                 fontWeight: "bold",
               },
@@ -200,6 +198,23 @@ export function PlaygroundScreen() {
               },
               disabled: activeGenerationUris.length === 0,
             },
+            ...(subscriptionTier === "free"
+              ? [
+                  {
+                    type: "button" as const,
+                    label: "Upgrade",
+                    variant: "prominent" as const,
+                    tintColor: "yellow",
+                    labelStyle: {
+                      fontWeight: "bold" as const,
+                    },
+                    onPress: () => {
+                      blurInput();
+                      router.push("/(paywall)");
+                    },
+                  },
+                ]
+              : []),
           ],
         }}
       />

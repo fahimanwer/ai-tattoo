@@ -7,6 +7,7 @@ import {
   ImageGenerationMutation,
   PlaygroundContext,
 } from "@/src/context/PlaygroundContext";
+import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -15,8 +16,8 @@ import { Activity, use, useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { AnimatedText } from "./AnimatedText";
+import { getPlaygroundErrorType, PlaygroundError } from "./PlaygroundError";
 
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
@@ -30,7 +31,9 @@ export function TextToImageResult({
   const router = useRouter();
   const { removeImageFromActiveGroup, handleTattooGeneration, blurInput } =
     use(PlaygroundContext);
+  const { subscriptionTier } = useUsageLimit();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const isFreeTier = subscriptionTier === "free";
 
   function simulateTattoMachineVibrations() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
@@ -65,50 +68,17 @@ export function TextToImageResult({
   }, [mutation.isPending]);
 
   if (mutation.isError) {
-    return (
-      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <Text
-            type="sm"
-            style={{ color: Color.red[600], textAlign: "center" }}
-          >
-            {mutation.error?.message === "LIMIT_REACHED"
-              ? "You have reached your generation limit for the current period. Please upgrade your plan or wait for the next period."
-              : "Something went wrong: " + mutation.error?.message ||
-                "Unknown error"}
-          </Text>
+    const errorType = getPlaygroundErrorType(
+      mutation.error?.message,
+      isFreeTier
+    );
 
-          {mutation.error?.message === "LIMIT_REACHED" ? (
-            <PressableScale
-              onPress={() => {
-                mutation.reset();
-                router.push("/(paywall)");
-              }}
-            >
-              <Text type="default" style={{ color: Color.yellow[400] }}>
-                Upgrade Plan
-              </Text>
-            </PressableScale>
-          ) : (
-            <PressableScale
-              onPress={() => {
-                // mutation.reset();
-                alert("try again");
-              }}
-            >
-              <Text type="default" style={{ color: Color.yellow[400] }}>
-                Try Again
-              </Text>
-            </PressableScale>
-          )}
-        </View>
-      </SafeAreaView>
+    return (
+      <PlaygroundError
+        errorType={errorType}
+        errorMessage={mutation.error?.message}
+        onDismiss={() => mutation.reset()}
+      />
     );
   }
   if (mutation.isPending) {

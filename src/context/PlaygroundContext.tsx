@@ -459,13 +459,18 @@ export function PlaygroundProvider({
       : [];
 
   // Determine which mutation is currently active based on their actual states
-  // Priority: pending > success > error (but only show error if no success)
+  // Priority: pending > error > success
   // If either mutation is pending, use that one.
-  // If either has success, prefer that over error.
+  // If either has error, show the error (important for LIMIT_REACHED handling).
+  // If either has success, use that.
   // Otherwise, fall back to the default logic based on whether we have a generation
   const activeMutation = textToImageMutation.isPending
     ? textToImageMutation
     : textAndImageToImageMutation.isPending
+    ? textAndImageToImageMutation
+    : textToImageMutation.isError
+    ? textToImageMutation
+    : textAndImageToImageMutation.isError
     ? textAndImageToImageMutation
     : textToImageMutation.isSuccess
     ? textToImageMutation

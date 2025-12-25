@@ -11,7 +11,7 @@
  */
 export const FREE_TIER_LIMIT = 2;
 
-export type PlanTier = "free" | "starter" | "plus" | "pro";
+export type PlanTier = "free" | "starter" | "plus" | "pro" | "premium";
 
 export interface PlanConfig {
   tier: PlanTier;
@@ -68,7 +68,42 @@ export const PLAN_LIMITS: Record<PlanTier, PlanConfig> = {
       "Early access to new features",
     ],
   },
+  // New premium tier (v2 pricing model)
+  premium: {
+    tier: "premium",
+    displayName: "Premium",
+    monthlyLimit: 80, // Default for monthly; weekly uses PRODUCT_LIMITS
+    color: "yellow", // purple
+    features: [
+      "Unlimited tattoo designs",
+      "All tattoo styles",
+      "Premium quality output",
+    ],
+  },
 };
+
+/**
+ * Product ID to generation limit mapping
+ * Used by webhooks to set the correct limit based on the specific product purchased
+ * This is separate from tier limits because weekly vs monthly have different caps
+ */
+export const PRODUCT_LIMITS: Record<string, number> = {
+  // Legacy products (keep for existing subscribers - can be removed after migration)
+  main_ai_tattoo_starter: 75,
+  main_ai_tattoo_plus: 200,
+  main_ai_tattoo_pro: 600,
+  // New premium products (v2 pricing)
+  inkigo_weekly: 35,
+  inkigo_monthly: 80,
+};
+
+/**
+ * Get the generation limit for a specific product ID
+ * Returns null if product ID is not recognized
+ */
+export function getLimitForProduct(productId: string): number | null {
+  return PRODUCT_LIMITS[productId] ?? null;
+}
 
 /**
  * Get plan configuration by tier
@@ -97,26 +132,11 @@ export function isValidTier(tier: string): tier is PlanTier {
  */
 export function entitlementToTier(entitlement: string): PlanTier {
   const normalized = entitlement.toLowerCase();
+  // New premium tier (v2 pricing)
+  if (normalized === "premium") return "premium";
+  // Legacy tiers (keep for existing subscribers)
   if (normalized === "starter") return "starter";
   if (normalized === "plus") return "plus";
   if (normalized === "pro") return "pro";
   return "free";
-}
-
-/**
- * Get tier hierarchy (higher number = higher tier)
- */
-export const TIER_HIERARCHY: Record<PlanTier, number> = {
-  free: 0,
-  starter: 1,
-  plus: 2,
-  pro: 3,
-};
-
-/**
- * Compare two tiers
- * Returns positive if tier1 > tier2, negative if tier1 < tier2, 0 if equal
- */
-export function compareTiers(tier1: PlanTier, tier2: PlanTier): number {
-  return TIER_HIERARCHY[tier1] - TIER_HIERARCHY[tier2];
 }

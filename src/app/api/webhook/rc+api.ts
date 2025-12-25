@@ -1,6 +1,7 @@
 import { PrismaClient } from "@/prisma/generated/client/edge";
 import {
   entitlementToTier,
+  getLimitForProduct,
   getMonthlyLimit,
 } from "@/src/constants/plan-limits";
 import { withAccelerate } from "@prisma/extension-accelerate";
@@ -15,11 +16,33 @@ const prisma = new PrismaClient({
  */
 function getEntitlementFromProductId(productId: string): string | null {
   const productMap: Record<string, string> = {
+    // Legacy products (keep for existing subscribers)
     main_ai_tattoo_starter: "Starter",
     main_ai_tattoo_plus: "Plus",
     main_ai_tattoo_pro: "Pro",
+    // New premium products (v2 pricing)
+    inkigo_weekly: "Premium",
+    inkigo_monthly: "Premium",
   };
   return productMap[productId] || null;
+}
+
+/**
+ * Get the generation limit for an event
+ * Uses product_id for precise limits (e.g., weekly vs monthly premium)
+ * Falls back to entitlement-based limit for legacy products
+ */
+function getLimitForEvent(
+  productId: string,
+  entitlementId: string
+): number {
+  // First try to get limit from product ID (more precise for premium weekly/monthly)
+  const productLimit = getLimitForProduct(productId);
+  if (productLimit !== null) {
+    return productLimit;
+  }
+  // Fall back to entitlement-based limit (for legacy or unknown products)
+  return getMonthlyLimit(entitlementToTier(entitlementId));
 }
 
 // RevenueCat webhook event types
@@ -281,10 +304,12 @@ async function handleInitialPurchase(event: RevenueCatWebhookEvent["event"]) {
       ? new Date(event.expiration_at_ms)
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
 
-    const limit = getMonthlyLimit(entitlementToTier(entitlementId));
+    // Use product-based limit for precise weekly/monthly limits
+    const limit = getLimitForEvent(event.product_id, entitlementId);
 
     console.log(`[RC WEBHOOK] 📝 Creating new usage record:`, {
       entitlement: entitlementId,
+      productId: event.product_id,
       limit: limit,
       periodStart: periodStart.toISOString(),
       periodEnd: periodEnd.toISOString(),
@@ -405,10 +430,12 @@ async function handleRenewal(event: RevenueCatWebhookEvent["event"]) {
 
   // Create new usage records for each entitlement with fresh billing period
   for (const entitlementId of entitlementIds) {
-    const limit = getMonthlyLimit(entitlementToTier(entitlementId));
+    // Use product-based limit for precise weekly/monthly limits
+    const limit = getLimitForEvent(event.product_id, entitlementId);
 
     console.log(`[RC WEBHOOK] 📝 Creating renewed usage record:`, {
       entitlement: entitlementId,
+      productId: event.product_id,
       newLimit: limit,
       periodStart: periodStart.toISOString(),
       periodEnd: periodEnd.toISOString(),
@@ -546,14 +573,25 @@ async function resetCurrentPeriodAndCreateNew(
   }
 
   // 2. Create new usage records for each new entitlement
+  // Use new_product_id for PRODUCT_CHANGE events, otherwise use product_id
+  const productId = event.new_product_id || event.product_id;
+
   for (const entitlementId of entitlementIds) {
     const periodStart = new Date(event.purchased_at_ms);
     const periodEnd = event.expiration_at_ms
       ? new Date(event.expiration_at_ms)
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
 
-    // Get appropriate limit based on entitlement
-    const limit = getMonthlyLimit(entitlementToTier(entitlementId));
+    // Use product-based limit for precise weekly/monthly limits
+    const limit = getLimitForEvent(productId, entitlementId);
+
+    console.log(`[RC WEBHOOK] 📝 Creating usage record after reset:`, {
+      entitlement: entitlementId,
+      productId: productId,
+      limit: limit,
+      periodStart: periodStart.toISOString(),
+      periodEnd: periodEnd.toISOString(),
+    });
 
     await prisma.usage.upsert({
       where: {

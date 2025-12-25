@@ -14,17 +14,21 @@ import {
   HStack,
   Label,
   LabeledContent,
-  Progress,
   Section,
   Switch,
   Text,
   VStack,
 } from "@expo/ui/swift-ui";
-import { font, foregroundStyle, tint } from "@expo/ui/swift-ui/modifiers";
+import {
+  font,
+  foregroundStyle,
+  refreshable,
+  tint,
+} from "@expo/ui/swift-ui/modifiers";
 import * as Application from "expo-application";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { use, useMemo, useState } from "react";
+import { Activity, use, useMemo, useState } from "react";
 import { Alert, Linking, Share } from "react-native";
 import type { SFSymbol } from "sf-symbols-typescript";
 
@@ -59,10 +63,7 @@ export function Profile() {
 
   const { refreshSubscriptionStatus, customerInfo } = useSubscription();
   const {
-    used,
-    limit,
     remaining,
-    isLimitReached,
     planColor,
     periodStart,
     periodEnd,
@@ -208,6 +209,14 @@ export function Profile() {
   const planBadge = useMemo(() => {
     if (hasActiveSubscription && lastSubscription) {
       const name = lastSubscription.productName || "Pro";
+
+      if (name.toLowerCase().includes("inkigo_")) {
+        return {
+          name: "Premium",
+          color: "yellow",
+          icon: "star.fill" as const,
+        };
+      }
       if (name.toLowerCase().includes("plus")) {
         return {
           name: "Plus",
@@ -260,24 +269,13 @@ export function Profile() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Form>
+      <Form modifiers={[refreshable(handleRefresh)]}>
         <Section title="Account">
           <LabeledContent label="Name">
             <Text>{displayName}</Text>
           </LabeledContent>
           <LabeledContent label="Email">
             <Text>{user.email}</Text>
-          </LabeledContent>
-          <LabeledContent label="Plan">
-            <HStack spacing={6}>
-              <Label systemImage={planBadge.icon} />
-              <Text
-                color={planBadge.color}
-                modifiers={[font({ weight: "bold" })]}
-              >
-                {planBadge.name}
-              </Text>
-            </HStack>
           </LabeledContent>
           <LabeledContent label="Model">
             <Text>{modelDisplayName}</Text>
@@ -295,44 +293,36 @@ export function Profile() {
               hasActiveSubscription
                 ? lastSubscription?.unsubscribeDetectedAt
                   ? "Active Until Expiration"
-                  : "Plan & Usage"
+                  : "Plan"
                 : "Active Usage Period"
             }
             footer={
-              <Text color={remaining <= 5 ? "yellow" : Color.zinc[400]}>
-                {`${remaining} generations remaining`}
-              </Text>
+              <Activity mode={remaining === 0 ? "visible" : "hidden"}>
+                <Text color="orange">
+                  You&apos;ve reached your AI tattoo generation limit for this
+                  plan. Upgrade to continue creating tattoos or contact us.
+                </Text>
+              </Activity>
             }
           >
-            <HStack spacing={16}>
-              <Progress
-                progress={remaining / limit}
-                variant="linear"
-                color={
-                  remaining < 4
-                    ? "yellow"
-                    : remaining < 8
-                    ? "orange"
-                    : Color.green[500]
-                }
-              />
-              <Text
-                modifiers={[font({ weight: "bold" })]}
-                color={isLimitReached ? "#ef4444" : planColor}
-              >
-                {`${used} / ${limit} gens`}
-              </Text>
-            </HStack>
+            <LabeledContent label="Plan">
+              <HStack spacing={6}>
+                <Label systemImage={planBadge.icon} />
+                <Text
+                  color={planBadge.color}
+                  modifiers={[font({ weight: "bold" })]}
+                >
+                  {planBadge.name}
+                </Text>
+              </HStack>
+            </LabeledContent>
             <FormButton
-              title={hasActiveSubscription ? "Change Plan" : "Upgrade Plan"}
-              systemImage="arrow.up.circle.fill"
+              title={hasActiveSubscription ? "Manage Plan" : "Upgrade Plan"}
+              systemImage={
+                hasActiveSubscription ? "creditcard.fill" : "star.fill"
+              }
               onPress={() => router.push("/(paywall)")}
               color={hasActiveSubscription ? "white" : "yellow"}
-            />
-            <FormButton
-              title={isRefreshing ? "Refreshing..." : "Refresh data"}
-              systemImage="arrow.clockwise.circle.fill"
-              onPress={handleRefresh}
             />
             <DisclosureGroup
               isExpanded={isPlanDetailsExpanded}

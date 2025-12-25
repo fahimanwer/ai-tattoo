@@ -1,10 +1,11 @@
 import { featuredTattoos } from "@/lib/featured-tattoos";
 import { Text } from "@/src/components/ui/Text";
+import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import { LegendList } from "@legendapp/list";
 import { GlassView } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { PressableScale } from "pressto";
-import React, { useRef } from "react";
+import React, { use, useRef } from "react";
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -64,6 +65,12 @@ export function PlaygroundSuggestions({
   const list1Ref = useRef<any>(null);
   const list2Ref = useRef<any>(null);
   const isScrollingRef = useRef<1 | 2 | null>(null);
+  const { activeMutation } = use(PlaygroundContext);
+
+  // Hide suggestions if the active mutation is pending or visible is false
+  const shouldShowSuggestions = React.useMemo(() => {
+    return !activeMutation.isPending && visible;
+  }, [activeMutation.isPending, visible]);
 
   // Generate suggestions once and memoize, split into two rows
   const { row1, row2 } = React.useMemo(() => {
@@ -79,11 +86,13 @@ export function PlaygroundSuggestions({
   // and prevents touch interception
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: withTiming(visible ? 1 : 0, { duration: 200 }),
-      height: withTiming(visible ? CONTAINER_HEIGHT : 0, { duration: 200 }),
+      opacity: withTiming(shouldShowSuggestions ? 1 : 0, { duration: 200 }),
+      height: withTiming(shouldShowSuggestions ? CONTAINER_HEIGHT : 0, {
+        duration: 200,
+      }),
       overflow: "hidden",
     };
-  }, [visible]);
+  }, [shouldShowSuggestions]);
 
   const handleScroll1 = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (isScrollingRef.current === 2) return;

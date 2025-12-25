@@ -1,5 +1,6 @@
 import { cacheImageFromUrl } from "@/lib/image-cache";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import {
   GlassEffectContainer,
   Host,
@@ -43,6 +44,8 @@ export function InputControls({
   const { bottom } = useSafeAreaInsets();
   const { inputControlsRef, addImagesToSession, activeGenerationUris } =
     use(PlaygroundContext);
+  const { isLimitReached, subscriptionTier } = useUsageLimit();
+  const isFreeTier = subscriptionTier === "free";
 
   const namespaceId = useId();
   const textFieldRef = useRef<TextFieldRef>(null);
@@ -59,11 +62,25 @@ export function InputControls({
   }));
 
   function handleSubmit() {
+    // If free user has reached their limit, redirect to paywall
+    if (isLimitReached && isFreeTier) {
+      textFieldRef.current?.blur();
+      router.push("/(paywall)");
+      return;
+    }
+
     onSubmit?.();
     textFieldRef.current?.blur();
   }
 
   async function handleTryOnSelect(styleName: string, imageUri: string) {
+    // If free user has reached their limit, redirect to paywall
+    if (isLimitReached && isFreeTier) {
+      textFieldRef.current?.blur();
+      router.push("/(paywall)");
+      return;
+    }
+
     try {
       // Cache the image from the CDN URL
       const cachedUri = await cacheImageFromUrl(imageUri);

@@ -2,6 +2,7 @@ import { authClient } from "@/lib/auth-client";
 import { Home } from "@/src/components/screens/Home";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { Stack, useRouter } from "expo-router";
+import { useEffect, useRef } from "react";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -9,6 +10,20 @@ export default function HomeScreen() {
   const { data: session } = authClient.useSession();
   const isAuthenticated = session?.user !== undefined;
   const hasSubscription = subscriptionTier !== "free";
+  const hasShownPaywall = useRef(false);
+
+  // Auto-show paywall for free users on app open
+  useEffect(() => {
+    if (
+      !isLoading &&
+      isAuthenticated &&
+      subscriptionTier === "free" &&
+      !hasShownPaywall.current
+    ) {
+      hasShownPaywall.current = true;
+      router.push("/(paywall)");
+    }
+  }, [isLoading, isAuthenticated, subscriptionTier, router]);
 
   // Determine button label and action based on user state
   const getButtonConfig = () => {

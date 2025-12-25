@@ -37,9 +37,6 @@ export function Home() {
         entering={FadeIn.duration(800).delay(100).springify()}
       >
         <QuickActions />
-        {/*  <View style={{ paddingHorizontal: 16 }}>
-          <Banner />
-        </View> */}
         <GetInspiration />
         <CelebrityTattoos />
         <Moods />

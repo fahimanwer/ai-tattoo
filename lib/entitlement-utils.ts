@@ -28,6 +28,10 @@ export async function getCurrentUserEntitlement(
 
     if (paidUsage) {
       switch (paidUsage.entitlement.toLowerCase()) {
+        // New premium tier (v2 pricing)
+        case "premium":
+          return "Premium";
+        // Legacy tiers (keep for existing subscribers)
         case "pro":
           return "Pro";
         case "plus":
