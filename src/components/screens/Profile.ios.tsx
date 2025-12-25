@@ -58,15 +58,12 @@ function FormButton({
 }
 
 export function Profile() {
-  const { user, refresh: refreshUserData } = useUserData();
+  const { user } = useUserData();
   const { settings, updateSettings } = use(AppSettingsContext);
 
   const { refreshSubscriptionStatus, customerInfo } = useSubscription();
   const {
-    used,
-    limit,
     remaining,
-    isLimitReached,
     planColor,
     periodStart,
     periodEnd,
