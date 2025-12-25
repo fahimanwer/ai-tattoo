@@ -1,34 +1,36 @@
 import { Color } from "@/src/constants/TWPalette";
-import { entitlementToTier, getPlanConfig } from "@/src/constants/plan-limits";
-import { useState } from "react";
+import { PressableScale } from "pressto";
+import { Activity, useState } from "react";
 import { View } from "react-native";
 import { PurchasesPackage } from "react-native-purchases";
-import { Button } from "../ui/Button";
+import { Icon } from "../ui/Icon";
 import { Text } from "../ui/Text";
 
 type OfferingCardProps = {
   title: string;
   package: PurchasesPackage;
-  onPurchase?: (pkg: PurchasesPackage) => Promise<void>;
+  onPress?: () => void;
   isCurrentPlan?: boolean;
+  isSelected?: boolean;
   disabled?: boolean;
 };
 
 export function OfferingCard({
   title,
   package: pkg,
-  onPurchase,
+  onPress,
   isCurrentPlan = false,
   disabled = false,
+  isSelected = false,
 }: OfferingCardProps) {
   const [isPurchasing, setIsPurchasing] = useState(false);
 
-  const handlePurchase = async () => {
-    if (disabled || isCurrentPlan || !onPurchase) return;
+  const handlePress = async () => {
+    if (disabled || isCurrentPlan || !onPress || isPurchasing) return;
 
     try {
       setIsPurchasing(true);
-      await onPurchase(pkg);
+      onPress();
     } catch (error) {
       console.error("Purchase error:", error);
     } finally {
@@ -37,80 +39,71 @@ export function OfferingCard({
   };
 
   const product = pkg.product;
-  const buttonDisabled = disabled || isCurrentPlan || isPurchasing;
-
-  // Get plan configuration based on the offering title
-  const tier = entitlementToTier(title);
-  const planConfig = getPlanConfig(tier);
 
   return (
-    <View
+    <PressableScale
+      onPress={handlePress}
       style={{
-        padding: 16,
-        marginBottom: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
         borderWidth: 2,
-        borderColor: isCurrentPlan ? Color.green[500] : Color.zinc[800],
-        borderRadius: 8,
+        borderColor: isSelected ? "white" : Color.grayscale[100],
+        borderRadius: 18,
+        backgroundColor: isSelected ? Color.grayscale[100] : "black",
       }}
     >
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 8,
-        }}
-      >
-        <View style={{ flexDirection: "column", gap: 4 }}>
-          <Text type="2xl">{planConfig.displayName}</Text>
-          {isCurrentPlan && (
-            <View
-              style={{
-                backgroundColor: Color.green[500],
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 4,
-              }}
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+        <Icon
+          symbol={isSelected ? "checkmark.circle.fill" : "circle.fill"}
+          size="lg"
+          color={isSelected ? "white" : Color.grayscale[700]}
+        />
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 8,
+          }}
+        >
+          <View style={{ flexDirection: "column", gap: 4 }}>
+            <Text weight="bold">{title}</Text>
+            <Text
+              weight="medium"
+              type="base"
+              style={{ color: Color.grayscale[400] }}
             >
-              <Text
-                style={{ color: "white", fontSize: 12, fontWeight: "bold" }}
-              >
-                CURRENT
-              </Text>
-            </View>
-          )}
-        </View>
-        <Text type="2xl">{product.priceString} / Month</Text>
-      </View>
-      <Text style={{ marginBottom: 16, fontSize: 16, color: Color.zinc[400] }}>
-        {planConfig.monthlyLimit.toLocaleString()} Tattoo Generations per month
-      </Text>
-
-      {/* Features list */}
-      <View style={{ marginBottom: 16 }}>
-        {planConfig.features.map((feature, index) => (
-          <View
-            key={index}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 4,
-            }}
-          >
-            <Text style={{ fontSize: 14, color: Color.zinc[400] }}>
-              • {feature}
+              {product.priceString.replace(/\s/g, "")}/Month
             </Text>
           </View>
-        ))}
+        </View>
       </View>
 
-      <Button
-        title={isCurrentPlan ? "Current Plan" : "Select Plan"}
-        onPress={handlePurchase}
-        disabled={buttonDisabled}
-        color={tier === "pro" ? "orange" : "white"}
-        variant="solid"
-      />
-    </View>
+      {/* Weekly price */}
+      <Text type="sm">
+        {product.pricePerWeekString?.replace(/\s/g, "")}/Week
+      </Text>
+
+      <Activity mode={isCurrentPlan ? "visible" : "hidden"}>
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            backgroundColor: "yellow",
+            paddingHorizontal: 8,
+            borderRadius: 8,
+          }}
+        >
+          <Text weight="bold" style={{ color: "black", fontSize: 12 }}>
+            CURRENT
+          </Text>
+        </View>
+      </Activity>
+    </PressableScale>
   );
 }

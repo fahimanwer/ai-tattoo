@@ -173,7 +173,10 @@ function AppContent() {
       </Stack.Protected>
       <Stack.Protected guard={isOnboarded}>
         <Stack.Screen name="(tabs)" options={{}} />
-        <Stack.Screen name="(paywall)" options={{ presentation: "modal" }} />
+        <Stack.Screen
+          name="(paywall)"
+          options={{ presentation: "fullScreenModal" }}
+        />
         <Stack.Screen
           name="(playground)"
           options={{

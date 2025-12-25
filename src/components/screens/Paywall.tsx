@@ -1,50 +1,72 @@
+import { clog } from "@/lib/log";
 import { Color } from "@/src/constants/TWPalette";
-import { entitlementToTier, getPlanConfig } from "@/src/constants/plan-limits";
 import { useSubscription } from "@/src/hooks/useSubscription";
+import { Host, Label, Button as SwiftUIButton } from "@expo/ui/swift-ui";
+import {
+  buttonStyle,
+  controlSize,
+  disabled,
+  font,
+  foregroundStyle,
+  frame,
+  tint,
+} from "@expo/ui/swift-ui/modifiers";
 import { useQueryClient } from "@tanstack/react-query";
-import { GlassView } from "expo-glass-effect";
+import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { Link, Stack, useRouter } from "expo-router";
 import { PressableScale } from "pressto";
-import { useEffect, useMemo, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, Dimensions, StyleSheet, View } from "react-native";
 import Purchases, {
-  PurchasesOfferings,
+  PACKAGE_TYPE,
+  PurchasesOffering,
   PurchasesPackage,
 } from "react-native-purchases";
-import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { customEvent } from "vexo-analytics";
-import { Button } from "../ui/Button";
+import { OfferingCard } from "../paywall/OfferingCard";
 import { Text } from "../ui/Text";
 
+type BillingPeriod = "weekly" | "monthly";
+
 export function Paywall() {
-  const [offerings, setOfferings] = useState<PurchasesOfferings | null>(null);
+  const [defaultOffering, setDefaultOffering] =
+    useState<PurchasesOffering | null>(null);
+  const [selectedPeriod, setSelectedPeriod] =
+    useState<BillingPeriod>("monthly");
   const { customerInfo, refreshSubscriptionStatus } = useSubscription();
   const queryClient = useQueryClient();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const router = useRouter();
-
+  const { width } = Dimensions.get("window");
   const { top, bottom } = useSafeAreaInsets();
+
+  const weeklyPackage = defaultOffering?.weekly;
+  const monthlyPackage = defaultOffering?.monthly;
+  const selectedPackage =
+    selectedPeriod === "weekly" ? weeklyPackage : monthlyPackage;
+
   const fetchProducts = async () => {
     const offerings = await Purchases.getOfferings();
-    setOfferings(offerings);
+
+    // We introduced a new offering called v2_default. This is the default offering that will be used if no offering is specified.
+    const offering = offerings?.all?.v2_default;
+    setDefaultOffering(offering ?? null);
+    clog("Paywall", "fetched offerings", { offering });
   };
 
-  const handlePurchase = async (
-    pkg: PurchasesPackage,
-    offeringIdentifier: string
-  ) => {
-    const tier = entitlementToTier(offeringIdentifier);
+  const handlePurchase = async (pkg: PurchasesPackage) => {
+    const periodLabel =
+      pkg.packageType === PACKAGE_TYPE.WEEKLY ? "weekly" : "monthly";
 
     customEvent("plan_selected", {
-      plan: tier,
+      plan: periodLabel,
       price: pkg.product.priceString,
     });
 
     try {
-      // Make the purchase
       setIsPurchasing(true);
       const { customerInfo: updatedCustomerInfo } =
         await Purchases.purchasePackage(pkg);
@@ -54,29 +76,23 @@ export function Paywall() {
       console.log("Updated customer info:", updatedCustomerInfo);
 
       customEvent("purchase_completed", {
-        plan: tier,
+        plan: periodLabel,
         success: true,
       });
 
-      // Show success message
       Alert.alert(
         "Success!",
-        "Your subscription has been updated. Changes may take effect at the end of your current billing period.",
+        "Your subscription is now active. Enjoy unlimited tattoo generations!",
         [
           {
             text: "OK",
             onPress: async () => {
-              // Refresh subscription status
               await refreshSubscriptionStatus();
-
-              // Invalidate usage query to refresh usage data on profile screen
               await queryClient.invalidateQueries({
                 queryKey: ["user", "usage"],
               });
               router.dismissTo("/(playground)");
-
-              // toast success message
-              toast.success("Subscription updated successfully");
+              toast.success("Subscription activated!");
             },
           },
         ]
@@ -85,19 +101,17 @@ export function Paywall() {
       setIsPurchasing(false);
       console.error("Purchase error:", error);
 
-      // Handle user cancellation
       if (error.userCancelled) {
         console.log("User cancelled the purchase");
         return;
       }
 
       customEvent("purchase_completed", {
-        plan: tier,
+        plan: periodLabel,
         success: false,
         error: error.message || "Unknown error",
       });
 
-      // Show error alert
       Alert.alert(
         "Purchase Failed",
         error.message || "Unable to complete purchase. Please try again.",
@@ -109,259 +123,193 @@ export function Paywall() {
     }
   };
 
-  // Helper to check if a package is the current plan
-  const isCurrentPlan = (offeringIdentifier: string): boolean => {
+  const hasActiveSubscription = (): boolean => {
     if (!customerInfo) return false;
-
-    // Check if user has this entitlement
-    const normalizedIdentifier =
-      offeringIdentifier.charAt(0).toUpperCase() + offeringIdentifier.slice(1);
-
-    const isCurrentPlan =
-      typeof customerInfo.entitlements.active[normalizedIdentifier] !==
-      "undefined";
-
-    console.log("normalizedIdentifier", normalizedIdentifier);
-    console.log("isCurrentPlan", isCurrentPlan);
-    console.log(
-      "customerInfo.entitlements.active",
-      customerInfo.entitlements.active
-    );
-
-    if (isCurrentPlan) {
-      return true;
-    }
-
-    return false;
+    return Object.keys(customerInfo.entitlements.active).length > 0;
   };
 
   useEffect(() => {
-    customEvent("paywall_viewed", {
-      source: "manual",
-    });
+    customEvent("paywall_viewed", { source: "manual" });
     fetchProducts();
   }, []);
 
-  const availableOfferings = useMemo(() => {
-    if (!offerings?.all) return [];
+  const isSubscribed = hasActiveSubscription();
 
-    return Object.entries(offerings.all)
-      .filter(([, offering]) => offering?.monthly)
-      .sort(([, a], [, b]) => {
-        const aTier = entitlementToTier(a.identifier);
-        const bTier = entitlementToTier(b.identifier);
-        const tierRank = { free: 0, starter: 1, plus: 2, pro: 3 } as const;
-        return tierRank[aTier] - tierRank[bTier];
+  const handleRestoreSubscription = async () => {
+    if (isPurchasing) return;
+    try {
+      const restore = await Purchases.restorePurchases();
+      const hasActivePurchases =
+        Object.keys(restore.entitlements.active).length > 0;
+
+      customEvent("restore_attempted", {
+        success: true,
+        hasActivePurchases,
       });
-  }, [offerings]);
+
+      if (hasActivePurchases) {
+        Alert.alert("Success!", "Your purchases have been restored.", [
+          { text: "OK", onPress: () => router.dismissAll() },
+        ]);
+        await queryClient.invalidateQueries({
+          queryKey: ["user", "usage"],
+        });
+        await refreshSubscriptionStatus();
+        fetchProducts();
+      } else {
+        Alert.alert(
+          "No Purchases Found",
+          "No previous purchases were found to restore.",
+          [{ text: "OK" }]
+        );
+      }
+    } catch (e) {
+      console.error("Error restoring purchases:", e);
+      customEvent("restore_attempted", {
+        success: false,
+        hasActivePurchases: false,
+      });
+      Alert.alert(
+        "Error Restoring Purchases",
+        "Unable to restore purchases. Please try again.",
+        [{ text: "OK" }]
+      );
+    }
+  };
 
   return (
     <>
       <Stack.Screen
         options={{
           title: "",
-          unstable_headerLeftItems: (props) => [
-            {
-              type: "button",
-              label: "Back",
-              icon: {
-                name: "xmark",
-                type: "sfSymbol",
-              },
-              onPress: () => {
-                if (isPurchasing) return;
-                router.back();
-              },
-            },
-          ],
+          // unstable_headerLeftItems: () => [
+          //   {
+          //     type: "button",
+          //     label: "Back",
+          //     variant: "plain",
+          //     icon: { name: "xmark", type: "sfSymbol" },
+          //     onPress: () => {
+          //       if (isPurchasing) return;
+          //       router.back();
+          //     },
+          //   },
+          // ],
         }}
       />
-      <View
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }}
-      >
+
+      {/* Background */}
+      <View style={StyleSheet.absoluteFill}>
         <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 1,
-            experimental_backgroundImage: `linear-gradient(to bottom, transparent 0%, ${Color.grayscale[50]} 50%)`,
-          }}
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              zIndex: 1,
+              experimental_backgroundImage: `linear-gradient(to bottom, transparent 0%, ${Color.grayscale[50]} 50%)`,
+            },
+          ]}
         />
         <Image
           source={{
-            uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/paywall-2-bw-2.png",
+            uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/paywall-bg.avif",
           }}
           contentFit="cover"
           contentPosition="bottom right"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
+          style={StyleSheet.absoluteFill}
         />
-        {/* <PaywallBackground /> */}
       </View>
+
+      {/* Content */}
       <View
         style={{
-          flex: 1,
-          padding: 16,
           paddingTop: top * 2,
-          position: "relative",
-          zIndex: 2,
-          display: "flex",
-          flexDirection: "column",
-          gap: 56,
+          flex: 1,
+          zIndex: 1,
+          padding: 16,
+          gap: 16,
         }}
       >
-        <View style={[styles.heroContainer]}>
-          <Text type="4xl" weight="bold" style={styles.heroTitle}>
-            Create. Ink. Repeat.
-          </Text>
-          <Text type="lg" weight="medium" style={styles.heroSubtitle}>
-            Explore styles, refine details, and bring your tattoo vision to
-            life.
-          </Text>
-        </View>
-
+        {/* Plan Selection */}
         <View
           style={{
-            justifyContent: "center",
-            position: "relative",
-            zIndex: 2,
+            flex: 1,
+            justifyContent: "flex-end",
+            gap: 16,
           }}
         >
-          {availableOfferings.length > 0 ? (
-            <View style={styles.planList}>
-              {availableOfferings.map(([key, offering]) => {
-                const pkg = offering.monthly!;
-                const tier = entitlementToTier(offering.identifier);
-                const planConfig = getPlanConfig(tier);
-                const isCurrent = isCurrentPlan(offering.identifier);
-                const isBestValue = tier === "plus";
+          <Text type="4xl" weight="bold" style={styles.heroTitle}>
+            Design the tattoo you&apos;ve always wanted
+          </Text>
+          <Text
+            type="base"
+            weight="medium"
+            style={{ textAlign: "center", color: Color.grayscale[700] }}
+          >
+            Explore tattoo ideas, refine designs through endless variations, try
+            them on any body part, and export high-quality results with
+            confidence.
+          </Text>
 
-                const cardContent = (
-                  <GlassView
-                    glassEffectStyle="clear"
-                    style={[
-                      styles.planCardBlur,
-                      isBestValue && styles.isPlanCardFeatured,
+          {defaultOffering && weeklyPackage && monthlyPackage ? (
+            <>
+              <View style={{ flexDirection: "column", gap: 12 }}>
+                <OfferingCard
+                  title="Weekly"
+                  package={weeklyPackage}
+                  onPress={() => setSelectedPeriod("weekly")}
+                  isSelected={selectedPeriod === "weekly"}
+                />
+
+                <OfferingCard
+                  title="Monthly"
+                  package={monthlyPackage}
+                  onPress={() => setSelectedPeriod("monthly")}
+                  isSelected={selectedPeriod === "monthly"}
+                />
+              </View>
+
+              {/* CTA Button */}
+              <Host
+                style={{
+                  width: "100%",
+                  height: 60,
+                }}
+              >
+                <SwiftUIButton
+                  modifiers={[
+                    buttonStyle("glassProminent"),
+                    tint("yellow"),
+                    controlSize("large"),
+                    disabled(isSubscribed || isPurchasing),
+                  ]}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    if (isSubscribed) {
+                      router.back();
+                      return;
+                    }
+
+                    if (selectedPackage && !isSubscribed) {
+                      handlePurchase(selectedPackage);
+                    }
+                  }}
+                >
+                  <Label
+                    title={
+                      isSubscribed
+                        ? "Already Subscribed"
+                        : isPurchasing
+                        ? "Processing..."
+                        : "Continue"
+                    }
+                    modifiers={[
+                      frame({ width: width - 64 }),
+                      foregroundStyle("black"),
+                      font({ weight: "bold" }),
                     ]}
-                  >
-                    <View style={styles.planHeader}>
-                      <View style={styles.planTitleRow}>
-                        <Text
-                          weight="semibold"
-                          type="sm"
-                          style={styles.planTitle}
-                        >
-                          {planConfig.displayName}
-                        </Text>
-                        {isCurrent && (
-                          <View style={styles.planBadge}>
-                            <Text
-                              type="sm"
-                              weight="bold"
-                              style={styles.currentBadgeText}
-                            >
-                              Current Plan
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-
-                      <View style={styles.priceContainer}>
-                        <Text type="xl" weight="bold" style={styles.priceText}>
-                          {pkg.product.priceString} / Monthly
-                        </Text>
-                      </View>
-                    </View>
-
-                    <Text
-                      weight="medium"
-                      type="sm"
-                      style={styles.planLimitText}
-                    >
-                      Unlock up to {planConfig.monthlyLimit.toLocaleString()}{" "}
-                      stunning tattoo generations each month
-                    </Text>
-                  </GlassView>
-                );
-
-                if (isBestValue) {
-                  return (
-                    <PressableScale
-                      key={key}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Choose the ${planConfig.displayName} plan`}
-                      onPress={() => {
-                        if (isCurrent || isPurchasing) return;
-                        handlePurchase(pkg, offering.identifier);
-                      }}
-                    >
-                      <Animated.View
-                        style={[
-                          styles.planCard,
-                          styles.isPlanCardFeatured,
-                          /*  {
-                            animationName: {
-                              "0%": {
-                                boxShadow: `0 0 12px 0 ${Color.orange[600]}`,
-                              },
-                              "50%": {
-                                boxShadow: `0 0 20px 12px ${Color.orange[500]}`,
-                              },
-                              "100%": {
-                                boxShadow: `0 0 8px 0 ${Color.orange[600]}`,
-                              },
-                            },
-                            animationDuration: "2s",
-                            animationIterationCount: "infinite",
-                            animationTimingFunction: "ease-in-out",
-                          } as any, */
-                        ]}
-                      >
-                        <View style={styles.badgeMostPopular}>
-                          <Text
-                            type="sm"
-                            weight="bold"
-                            style={styles.badgeMostPopularText}
-                          >
-                            Most Popular
-                          </Text>
-                        </View>
-                        {cardContent}
-                      </Animated.View>
-                    </PressableScale>
-                  );
-                }
-
-                return (
-                  <PressableScale
-                    key={key}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Choose the ${planConfig.displayName} plan`}
-                    onPress={() => {
-                      if (isCurrent || isPurchasing) return;
-                      handlePurchase(pkg, offering.identifier);
-                    }}
-                    style={styles.planCard}
-                  >
-                    {cardContent}
-                  </PressableScale>
-                );
-              })}
-            </View>
+                  />
+                </SwiftUIButton>
+              </Host>
+            </>
           ) : (
             <View style={styles.loadingContainer}>
               <Text type="base" style={styles.loadingText}>
@@ -371,87 +319,76 @@ export function Paywall() {
           )}
         </View>
 
-        <View style={[styles.footer, { marginBottom: bottom }]}>
-          <Button
-            title="Restore Subscription"
-            disabled={isPurchasing}
-            onPress={async () => {
-              try {
-                const restore = await Purchases.restorePurchases();
+        {/* Footer */}
+        <View
+          style={{
+            flex: 0.2,
+            flexDirection: "column",
+            justifyContent: "flex-end",
+          }}
+        >
+          <PressableScale onPress={handleRestoreSubscription}>
+            <Text
+              style={{
+                color: Color.grayscale[400],
+                paddingBottom: 16,
+                textAlign: "center",
+              }}
+              weight="medium"
+            >
+              Restore Subscription
+            </Text>
+          </PressableScale>
 
-                const hasActivePurchases =
-                  Object.keys(restore.entitlements.active).length > 0;
-
-                customEvent("restore_attempted", {
-                  success: true,
-                  hasActivePurchases,
-                });
-
-                if (hasActivePurchases) {
-                  Alert.alert(
-                    "Success!",
-                    "Your purchases have been restored successfully.",
-                    [{ text: "OK", onPress: () => router.dismissAll() }]
-                  );
-
-                  await queryClient.invalidateQueries({
-                    queryKey: ["user", "usage"],
-                  });
-                  await refreshSubscriptionStatus();
-
-                  fetchProducts();
-                } else {
-                  Alert.alert(
-                    "No Purchases Found",
-                    "No previous purchases were found to restore.",
-                    [{ text: "OK" }]
-                  );
-                }
-              } catch (e) {
-                console.error("Error restoring purchases:", e);
-                customEvent("restore_attempted", {
-                  success: false,
-                  hasActivePurchases: false,
-                });
-                Alert.alert(
-                  "Error Restoring Purchases",
-                  "Unable to restore purchases. Please try again.",
-                  [{ text: "OK" }]
-                );
-              }
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 6,
+              marginBottom: 3,
             }}
-            variant="link"
-            color={"yellow"}
-          />
-
-          <View style={styles.legalLinks}>
+          >
             <Link href="/terms-of-service" asChild>
-              <Text type="xs" style={styles.legalLinkText}>
+              <Text
+                type="xs"
+                style={{
+                  color: Color.grayscale[400],
+                }}
+              >
                 Terms of Service
               </Text>
             </Link>
-            <Text type="xs" style={styles.legalSeparator}>
-              {` `}•{` `}
+            <Text type="xs" style={{ color: Color.grayscale[400] }}>
+              •
             </Text>
             <Link href="/privacy-policy" asChild>
-              <Text type="xs" style={styles.legalLinkText}>
+              <Text
+                type="xs"
+                style={{
+                  color: Color.grayscale[400],
+                }}
+              >
                 Privacy Policy
               </Text>
             </Link>
           </View>
+          <Text
+            type="xs"
+            style={{ textAlign: "center", color: Color.grayscale[300] }}
+          >
+            AI design generation includes fair-use limits.
+          </Text>
         </View>
       </View>
     </>
   );
 }
-
 const styles = StyleSheet.create({
-  heroContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 2,
+  container: {
+    flex: 1,
+    padding: 16,
+    zIndex: 2,
   },
   heroTitle: {
     color: Color.zinc[50],
@@ -459,78 +396,36 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   heroSubtitle: {
-    color: Color.zinc[50] + "80",
+    color: Color.zinc[50] + "90",
     textAlign: "center",
-    lineHeight: 20,
+    lineHeight: 26,
   },
-  planList: {
-    gap: 16,
-  },
-  planCard: {
-    borderRadius: 18,
-    overflow: "hidden",
-  },
-  planCardBlur: {
-    padding: 16,
-    experimental_backgroundImage: `linear-gradient(to bottom, transparent, ${Color.grayscale[50]})`,
-  },
-  isPlanCardFeatured: {
-    experimental_backgroundImage: `linear-gradient(to top, transparent, ${
-      Color.yellow[400] + "30"
-    })`,
-    boxShadow: `0 0 0 3px yellow`,
-  },
-  badgeMostPopular: {
+  saveBadge: {
     position: "absolute",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 99,
-    top: 8,
-    right: 8,
-    zIndex: 3,
-    experimental_backgroundImage: `linear-gradient(-10deg, ${Color.yellow[400]}, ${Color.yellow[100]}, ${Color.yellow[400]})`,
+    top: -1,
+    right: -1,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderBottomLeftRadius: 8,
+    backgroundColor: Color.yellow[400],
   },
-  badgeMostPopularText: {
-    color: Color.grayscale[50],
-    letterSpacing: -1,
+  saveBadgeText: {
+    color: Color.grayscale[950],
+    letterSpacing: 0.5,
   },
-  planCardFeatured: {
-    borderRadius: 16,
-  },
-  planHeader: {
-    gap: 16,
-  },
-  planTitleRow: {
+  featureRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     gap: 12,
   },
-  planTitle: {
-    flex: 1,
-    letterSpacing: 0.5,
+  featureIcon: {
+    color: Color.yellow[400],
+    fontSize: 14,
   },
-  planBadge: {
-    borderRadius: 999,
-  },
-  currentBadgeText: {
-    color: Color.zinc[50],
-    letterSpacing: 0.5,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-  },
-  priceContainer: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    gap: 8,
-  },
-  priceText: {
-    color: Color.grayscale[950],
-    letterSpacing: -1,
-  },
-  planLimitText: {
-    color: Color.grayscale[950] + "80",
-    letterSpacing: -1,
+  featureText: {
+    color: Color.zinc[200],
+    fontSize: 15,
+    letterSpacing: -0.3,
   },
   loadingContainer: {
     paddingVertical: 40,
@@ -540,16 +435,16 @@ const styles = StyleSheet.create({
     color: Color.grayscale[500],
   },
   footer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
+    gap: 8,
   },
   legalLinks: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    flexWrap: "wrap",
+    gap: 6,
+  },
+  fairUseText: {
+    color: Color.grayscale[600],
   },
   legalLinkText: {
     color: Color.grayscale[500],
