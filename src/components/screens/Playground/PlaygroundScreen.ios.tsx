@@ -122,10 +122,6 @@ export function PlaygroundScreen() {
     }
   });
 
-  const tapGesture = Gesture.Tap().onEnd(() => {
-    scheduleOnRN(blurInput);
-  });
-
   const composedGesture = Gesture.Race(panGesture);
 
   return (
