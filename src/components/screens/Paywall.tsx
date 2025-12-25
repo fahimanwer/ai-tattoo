@@ -12,6 +12,7 @@ import {
   tint,
 } from "@expo/ui/swift-ui/modifiers";
 import { useQueryClient } from "@tanstack/react-query";
+import { isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { Link, Stack, useRouter } from "expo-router";
@@ -246,8 +247,8 @@ export function Paywall() {
             uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/paywall-bg.avif",
           }}
           contentFit="cover"
-          contentPosition="bottom right"
-          style={StyleSheet.absoluteFill}
+          contentPosition="top center"
+          style={[StyleSheet.absoluteFill, { height: 400 }]}
         />
       </View>
 
@@ -315,7 +316,11 @@ export function Paywall() {
               >
                 <SwiftUIButton
                   modifiers={[
-                    buttonStyle("glassProminent"),
+                    buttonStyle(
+                      isLiquidGlassAvailable()
+                        ? "glassProminent"
+                        : "borderedProminent"
+                    ),
                     tint("yellow"),
                     controlSize("large"),
                     disabled(isPurchasing),
