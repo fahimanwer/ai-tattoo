@@ -290,6 +290,9 @@ export function Paywall() {
                   package={weeklyPackage}
                   onPress={() => setSelectedPeriod("weekly")}
                   isSelected={selectedPeriod === "weekly"}
+                  isCurrentPlan={customerInfo?.activeSubscriptions?.includes(
+                    weeklyPackage.product.identifier
+                  )}
                 />
 
                 <OfferingCard
@@ -297,6 +300,9 @@ export function Paywall() {
                   package={monthlyPackage}
                   onPress={() => setSelectedPeriod("monthly")}
                   isSelected={selectedPeriod === "monthly"}
+                  isCurrentPlan={customerInfo?.activeSubscriptions?.includes(
+                    monthlyPackage.product.identifier
+                  )}
                 />
               </View>
 
@@ -312,28 +318,17 @@ export function Paywall() {
                     buttonStyle("glassProminent"),
                     tint("yellow"),
                     controlSize("large"),
-                    disabled(isSubscribed || isPurchasing),
+                    disabled(isPurchasing),
                   ]}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    if (isSubscribed) {
-                      router.back();
-                      return;
-                    }
-
-                    if (selectedPackage && !isSubscribed) {
+                    if (selectedPackage) {
                       handlePurchase(selectedPackage);
                     }
                   }}
                 >
                   <Label
-                    title={
-                      isSubscribed
-                        ? "Already Subscribed"
-                        : isPurchasing
-                        ? "Processing..."
-                        : "Continue"
-                    }
+                    title={isPurchasing ? "Processing..." : "Continue"}
                     modifiers={[
                       frame({ width: width - 64 }),
                       foregroundStyle("black"),
@@ -355,16 +350,16 @@ export function Paywall() {
         {/* Footer */}
         <View
           style={{
-            flex: 0.2,
+            flex: 0.13,
             flexDirection: "column",
             justifyContent: "flex-end",
+            gap: 4,
           }}
         >
           <PressableScale onPress={handleRestoreSubscription}>
             <Text
               style={{
                 color: Color.grayscale[400],
-                paddingBottom: 16,
                 textAlign: "center",
               }}
               weight="medium"
