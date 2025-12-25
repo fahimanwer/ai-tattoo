@@ -1,5 +1,5 @@
-import { clog } from "@/lib/log";
 import { Color } from "@/src/constants/TWPalette";
+import { AppSettingsContext } from "@/src/context/AppSettings";
 import { useSubscription } from "@/src/hooks/useSubscription";
 import { Host, Label, Button as SwiftUIButton } from "@expo/ui/swift-ui";
 import {
@@ -16,7 +16,7 @@ import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { Link, Stack, useRouter } from "expo-router";
 import { PressableScale } from "pressto";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Alert, Dimensions, StyleSheet, View } from "react-native";
 import Purchases, {
   PACKAGE_TYPE,
@@ -27,9 +27,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { customEvent } from "vexo-analytics";
 import { OfferingCard } from "../paywall/OfferingCard";
+import { Icon } from "../ui/Icon";
 import { Text } from "../ui/Text";
 
 type BillingPeriod = "weekly" | "monthly";
+
+const CLOSE_BUTTON_DELAY_MS = 2500;
 
 export function Paywall() {
   const [defaultOffering, setDefaultOffering] =
@@ -41,7 +44,12 @@ export function Paywall() {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const router = useRouter();
   const { width } = Dimensions.get("window");
-  const { top, bottom } = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
+
+  // Close button visibility logic
+  const { settings, updateSettingsSync } = use(AppSettingsContext);
+  const isFirstPaywallView = !settings.hasSeenPaywall;
+  const [showCloseButton, setShowCloseButton] = useState(!isFirstPaywallView);
 
   const weeklyPackage = defaultOffering?.weekly;
   const monthlyPackage = defaultOffering?.monthly;
@@ -54,7 +62,6 @@ export function Paywall() {
     // We introduced a new offering called v2_default. This is the default offering that will be used if no offering is specified.
     const offering = offerings?.all?.v2_default;
     setDefaultOffering(offering ?? null);
-    clog("Paywall", "fetched offerings", { offering });
   };
 
   const handlePurchase = async (pkg: PurchasesPackage) => {
@@ -131,7 +138,16 @@ export function Paywall() {
   useEffect(() => {
     customEvent("paywall_viewed", { source: "manual" });
     fetchProducts();
-  }, []);
+
+    // Delayed close button for first-time viewers
+    if (isFirstPaywallView) {
+      const timer = setTimeout(() => {
+        setShowCloseButton(true);
+        updateSettingsSync({ hasSeenPaywall: true });
+      }, CLOSE_BUTTON_DELAY_MS);
+      return () => clearTimeout(timer);
+    }
+  }, [isFirstPaywallView, updateSettingsSync]);
 
   const isSubscribed = hasActiveSubscription();
 
@@ -182,18 +198,35 @@ export function Paywall() {
       <Stack.Screen
         options={{
           title: "",
-          // unstable_headerLeftItems: () => [
-          //   {
-          //     type: "button",
-          //     label: "Back",
-          //     variant: "plain",
-          //     icon: { name: "xmark", type: "sfSymbol" },
-          //     onPress: () => {
-          //       if (isPurchasing) return;
-          //       router.back();
-          //     },
-          //   },
-          // ],
+          unstable_headerLeftItems: () => [
+            {
+              type: "custom",
+              hidesSharedBackground: true,
+              element: (
+                <>
+                  {showCloseButton && (
+                    <PressableScale
+                      onPress={() => {
+                        if (isPurchasing) return;
+
+                        if (router.canGoBack()) {
+                          router.back();
+                          return;
+                        }
+                        router.replace("/(tabs)/(home)");
+                      }}
+                    >
+                      <Icon
+                        symbol="xmark"
+                        size="md"
+                        color={Color.grayscale[50]}
+                      />
+                    </PressableScale>
+                  )}
+                </>
+              ),
+            },
+          ],
         }}
       />
 

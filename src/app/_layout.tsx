@@ -175,7 +175,7 @@ function AppContent() {
         <Stack.Screen name="(tabs)" options={{}} />
         <Stack.Screen
           name="(paywall)"
-          options={{ presentation: "fullScreenModal" }}
+          options={{ presentation: "modal", gestureEnabled: false }}
         />
         <Stack.Screen
           name="(playground)"
