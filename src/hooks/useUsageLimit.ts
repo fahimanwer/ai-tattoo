@@ -2,6 +2,7 @@ import { authClient } from "@/lib/auth-client";
 import { fetchUserUsage, type UsageResponse } from "@/lib/nano";
 import { FREE_TIER_LIMIT, type PlanTier } from "@/src/constants/plan-limits";
 import { useQuery } from "@tanstack/react-query";
+import Purchases from "react-native-purchases";
 
 /**
  * Enhanced Usage Limit Hook
@@ -67,7 +68,18 @@ export const useUsageLimit = (): UsageLimitResult => {
   const { data, isLoading, error, refetch } = useQuery<UsageResponse>({
     queryKey: ["user", "usage"],
     enabled: isAuthenticated,
-    queryFn: fetchUserUsage,
+    queryFn: async () => {
+      // Get RevenueCat user ID for accurate usage lookup
+      // This handles the case where purchases were made before authentication
+      try {
+        const customerInfo = await Purchases.getCustomerInfo();
+        const revenuecatUserId = customerInfo.originalAppUserId;
+        return fetchUserUsage(revenuecatUserId);
+      } catch {
+        // Fallback to fetching without RC ID (backwards compatibility)
+        return fetchUserUsage();
+      }
+    },
     ...USAGE_QUERY_CONFIG,
   });
 

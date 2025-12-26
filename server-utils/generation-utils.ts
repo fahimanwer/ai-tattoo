@@ -112,14 +112,36 @@ export function createPrismaClient() {
 /**
  * Checks user's usage/entitlement and returns the usage record if valid,
  * or an error Response if the user has no usage record or has reached their limit.
+ *
+ * @param session - User session from auth middleware
+ * @param revenuecatUserId - Optional RevenueCat user ID (new clients pass this for accurate lookup)
+ *                          If not provided, falls back to session.user.id (backwards compatibility)
  */
 export async function checkUserUsage(
-  session: Session
+  session: Session,
+  revenuecatUserId?: string
 ): Promise<UsageCheckResult> {
   const prisma = createPrismaClient();
   const now = new Date();
+  // Allow for slight timing differences (webhook might create record with future periodStart)
+  const searchWindow = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes ahead
 
-  const entitlement = await getCurrentUserEntitlement(session.user.id);
+  // New clients: query by revenuecatUserId
+  // Old clients: fallback to userId from session
+  const useRevenuecatId = !!revenuecatUserId;
+
+  // Build the OR condition to search by BOTH revenuecatUserId AND userId
+  // This handles the case where the webhook created a record with a different ID
+  const idConditions = useRevenuecatId
+    ? {
+        OR: [{ revenuecatUserId }, { userId: session.user.id }],
+      }
+    : { userId: session.user.id };
+
+  const entitlement = await getCurrentUserEntitlement(
+    session.user.id,
+    revenuecatUserId
+  );
   slog("generation-utils", `current user entitlement: ${entitlement}`);
 
   const isFreeTier = entitlement === "free";
@@ -130,17 +152,17 @@ export async function checkUserUsage(
     // For free tier, ignore period dates (one-time credits)
     usage = await prisma.usage.findFirst({
       where: {
-        userId: session.user.id,
+        ...idConditions,
         entitlement: "free",
       },
       orderBy: { periodStart: "desc" },
     });
   } else {
-    // For paid tiers, check active period
+    // For paid tiers, check active period (allow future periodStart for webhook timing)
     usage = await prisma.usage.findFirst({
       where: {
-        userId: session.user.id,
-        periodStart: { lte: now },
+        ...idConditions,
+        periodStart: { lte: searchWindow },
         periodEnd: { gte: now },
       },
       orderBy: { periodStart: "desc" },
@@ -773,7 +795,10 @@ export async function validateNoAnimals(
   const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
   if (!OPENAI_API_KEY) {
-    slog("generation-utils", "OPENAI_API_KEY not set, skipping animal validation");
+    slog(
+      "generation-utils",
+      "OPENAI_API_KEY not set, skipping animal validation"
+    );
     return { valid: true };
   }
 
@@ -818,12 +843,14 @@ export async function validateNoAnimals(
       }
 
       const result = await response.json();
-      const answer = result.choices?.[0]?.message?.content?.toLowerCase().trim() || "";
+      const answer =
+        result.choices?.[0]?.message?.content?.toLowerCase().trim() || "";
 
       if (answer.includes("yes")) {
         return {
           valid: false,
-          error: "Images containing animals are not allowed. Please use photos of human body parts only.",
+          error:
+            "Images containing animals are not allowed. Please use photos of human body parts only.",
         };
       }
     } catch (error) {
@@ -846,7 +873,10 @@ export async function validateHumanBodyParts(
   const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
   if (!OPENAI_API_KEY) {
-    slog("generation-utils", "OPENAI_API_KEY not set, skipping human body validation");
+    slog(
+      "generation-utils",
+      "OPENAI_API_KEY not set, skipping human body validation"
+    );
     return { valid: true };
   }
 
@@ -884,19 +914,25 @@ export async function validateHumanBodyParts(
       });
 
       if (!response.ok) {
-        slog("generation-utils", "OpenAI API error during human body validation", {
-          status: response.status,
-        });
+        slog(
+          "generation-utils",
+          "OpenAI API error during human body validation",
+          {
+            status: response.status,
+          }
+        );
         continue;
       }
 
       const result = await response.json();
-      const answer = result.choices?.[0]?.message?.content?.toLowerCase().trim() || "";
+      const answer =
+        result.choices?.[0]?.message?.content?.toLowerCase().trim() || "";
 
       if (!answer.includes("yes")) {
         return {
           valid: false,
-          error: "Please use photos of human body parts only. Images of nature, landscapes, objects, or other non-body content are not allowed.",
+          error:
+            "Please use photos of human body parts only. Images of nature, landscapes, objects, or other non-body content are not allowed.",
         };
       }
     } catch (error) {

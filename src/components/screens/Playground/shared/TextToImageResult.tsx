@@ -7,7 +7,7 @@ import {
   ImageGenerationMutation,
   PlaygroundContext,
 } from "@/src/context/PlaygroundContext";
-import { useUsageLimit } from "@/src/hooks/useUsageLimit";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -31,9 +31,10 @@ export function TextToImageResult({
   const router = useRouter();
   const { removeImageFromActiveGroup, handleTattooGeneration, blurInput } =
     use(PlaygroundContext);
-  const { subscriptionTier } = useUsageLimit();
+  // Use RevenueCat as source of truth for subscription status
+  const { hasActiveSubscription } = useSubscription();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const isFreeTier = subscriptionTier === "free";
+  const isFreeTier = !hasActiveSubscription;
 
   function simulateTattoMachineVibrations() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);

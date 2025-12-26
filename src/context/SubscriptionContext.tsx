@@ -1,12 +1,19 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import Purchases, { CustomerInfo } from "react-native-purchases";
 
 // Entitlement identifiers
 export const STARTER_ENTITLEMENT_IDENTIFIER = "Starter";
 export const PRO_ENTITLEMENT_IDENTIFIER = "Pro";
 export const PLUS_ENTITLEMENT_IDENTIFIER = "Plus";
+export const PREMIUM_ENTITLEMENT_IDENTIFIER = "premium"; // New v2 pricing tier
 
-export type SubscriptionTier = "free" | "starter" | "pro" | "plus";
+export type SubscriptionTier = "free" | "starter" | "pro" | "plus" | "premium";
 
 export interface SubscriptionStatus {
   isPlusUser: boolean;
@@ -17,7 +24,20 @@ export interface SubscriptionStatus {
   customerInfo: CustomerInfo | null;
   isLoading: boolean;
   error: string | null;
+  /** Whether the user has an active subscription (based on RevenueCat data) */
+  hasActiveSubscription: boolean;
   refreshSubscriptionStatus: () => Promise<void>;
+  /**
+   * Login to RevenueCat with a custom App User ID.
+   * Call this after authentication to link purchases to the user.
+   * This ensures stable ID across reinstalls.
+   */
+  loginToRevenueCat: (userId: string) => Promise<CustomerInfo | null>;
+  /**
+   * Logout from RevenueCat (resets to anonymous).
+   * Call this when user signs out.
+   */
+  logoutFromRevenueCat: () => Promise<void>;
 }
 
 const SubscriptionContext = createContext<SubscriptionStatus | undefined>(
@@ -39,72 +59,95 @@ export function SubscriptionProvider({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Compute hasActiveSubscription from customerInfo using getLastSubscription
+  const hasActiveSubscription = useMemo(() => {
+    const lastSub = getLastSubscription(customerInfo);
+    return lastSub?.isActive === true;
+  }, [customerInfo]);
+
+  // Helper function to update all state from customerInfo
+  const updateStateFromCustomerInfo = (info: CustomerInfo) => {
+    setCustomerInfo(info);
+
+    // Get all active entitlements
+    const activeEntitlementKeys = Object.keys(info.entitlements.active);
+    setActiveEntitlements(activeEntitlementKeys);
+
+    // Check for specific entitlements
+    const hasStarterAccess =
+      typeof info.entitlements.active[STARTER_ENTITLEMENT_IDENTIFIER] !==
+      "undefined";
+    const hasProAccess =
+      typeof info.entitlements.active[PRO_ENTITLEMENT_IDENTIFIER] !==
+      "undefined";
+    const hasPlusAccess =
+      typeof info.entitlements.active[PLUS_ENTITLEMENT_IDENTIFIER] !==
+      "undefined";
+    const hasPremiumAccess =
+      typeof info.entitlements.active[PREMIUM_ENTITLEMENT_IDENTIFIER] !==
+      "undefined";
+
+    // Set individual flags
+    setIsStarterUser(hasStarterAccess);
+    setIsProUser(hasProAccess);
+    setIsPlusUser(hasPlusAccess);
+
+    // Determine subscription tier (highest tier takes precedence)
+    // Order: Pro > Premium > Plus > Starter > Free
+    let tier: SubscriptionTier = "free";
+    if (hasProAccess) {
+      tier = "pro";
+    } else if (hasPremiumAccess) {
+      tier = "premium";
+    } else if (hasPlusAccess) {
+      tier = "plus";
+    } else if (hasStarterAccess) {
+      tier = "starter";
+    }
+    setSubscriptionTier(tier);
+
+    // Log subscription status
+    if (activeEntitlementKeys.length > 0) {
+      console.log(
+        `✅ User has ${tier.toUpperCase()} access with entitlements:`,
+        activeEntitlementKeys
+      );
+    } else {
+      console.log("🔒 User has FREE access");
+    }
+  };
+
+  // Reset all state on error
+  const resetState = () => {
+    setIsPlusUser(false);
+    setIsProUser(false);
+    setIsStarterUser(false);
+    setSubscriptionTier("free");
+    setActiveEntitlements([]);
+    setCustomerInfo(null);
+  };
+
   const getCustomerInfo = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
       // Check if Purchases is configured
-      let customerInfo;
+      let info: CustomerInfo;
       try {
-        customerInfo = await Purchases.getCustomerInfo();
+        info = await Purchases.getCustomerInfo();
       } catch (initError: any) {
         // If RevenueCat isn't initialized, wait a bit and retry once
         if (initError?.message?.includes("singleton instance")) {
           console.log("⏳ RevenueCat not ready, retrying in 500ms...");
           await new Promise((resolve) => setTimeout(resolve, 500));
-          customerInfo = await Purchases.getCustomerInfo();
+          info = await Purchases.getCustomerInfo();
         } else {
           throw initError;
         }
       }
 
-      setCustomerInfo(customerInfo);
-
-      // Get all active entitlements
-      const activeEntitlementKeys = Object.keys(
-        customerInfo.entitlements.active
-      );
-      setActiveEntitlements(activeEntitlementKeys);
-
-      // Check for specific entitlements
-      const hasStarterAccess =
-        typeof customerInfo.entitlements.active[
-          STARTER_ENTITLEMENT_IDENTIFIER
-        ] !== "undefined";
-      const hasProAccess =
-        typeof customerInfo.entitlements.active[PRO_ENTITLEMENT_IDENTIFIER] !==
-        "undefined";
-      const hasPlusAccess =
-        typeof customerInfo.entitlements.active[PLUS_ENTITLEMENT_IDENTIFIER] !==
-        "undefined";
-
-      // Set individual flags
-      setIsStarterUser(hasStarterAccess);
-      setIsProUser(hasProAccess);
-      setIsPlusUser(hasPlusAccess);
-
-      // Determine subscription tier (highest tier takes precedence)
-      // Order: Pro > Plus > Starter > Free
-      let tier: SubscriptionTier = "free";
-      if (hasProAccess) {
-        tier = "pro";
-      } else if (hasPlusAccess) {
-        tier = "plus";
-      } else if (hasStarterAccess) {
-        tier = "starter";
-      }
-      setSubscriptionTier(tier);
-
-      // Log subscription status (only once from the provider)
-      if (activeEntitlementKeys.length > 0) {
-        console.log(
-          `✅ User has ${tier.toUpperCase()} access with entitlements:`,
-          activeEntitlementKeys
-        );
-      } else {
-        console.log("🔒 User has FREE access");
-      }
+      updateStateFromCustomerInfo(info);
     } catch (err) {
       console.error("Error fetching customer info:", err);
       setError(
@@ -112,13 +155,7 @@ export function SubscriptionProvider({
           ? err.message
           : "Failed to fetch subscription status"
       );
-      // Reset all subscription states on error
-      setIsPlusUser(false);
-      setIsProUser(false);
-      setIsStarterUser(false);
-      setSubscriptionTier("free");
-      setActiveEntitlements([]);
-      setCustomerInfo(null);
+      resetState();
     } finally {
       setIsLoading(false);
     }
@@ -132,6 +169,88 @@ export function SubscriptionProvider({
     await getCustomerInfo();
   };
 
+  /**
+   * Login to RevenueCat with a custom App User ID.
+   * This links any anonymous purchases to the authenticated user ID.
+   * The userId should be the Better Auth user ID for consistency.
+   *
+   * IMPORTANT: After login, we ALWAYS restore purchases to ensure
+   * any App Store purchases are synced to this user. This handles:
+   * - Fresh installs where user signs in
+   * - Reinstalls where anonymous ID changed but Apple ID has purchases
+   */
+  const loginToRevenueCat = async (
+    userId: string
+  ): Promise<CustomerInfo | null> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      console.log(`[RC] 🔗 Logging in to RevenueCat with user: ${userId}`);
+
+      // Login to RevenueCat - this creates/retrieves the user and aliases anonymous purchases
+      const { customerInfo: loginInfo, created } = await Purchases.logIn(
+        userId
+      );
+
+      console.log("[RC] ✅ Login complete:", {
+        userId,
+        originalAppUserId: loginInfo.originalAppUserId,
+        created,
+        entitlements: Object.keys(loginInfo.entitlements.active),
+      });
+
+      // ALWAYS restore purchases after login to sync App Store purchases
+      // This handles the reinstall case where the user has purchases on their Apple ID
+      // but the new anonymous RC ID doesn't have them yet
+      console.log("[RC] 🔄 Restoring purchases to sync with App Store...");
+      const restoredInfo = await Purchases.restorePurchases();
+
+      console.log("[RC] ✅ Restore complete:", {
+        entitlements: Object.keys(restoredInfo.entitlements.active),
+        hasSubscription: getLastSubscription(restoredInfo)?.isActive === true,
+      });
+
+      // Use the restored info as it has the most up-to-date data
+      updateStateFromCustomerInfo(restoredInfo);
+      return restoredInfo;
+    } catch (err) {
+      console.error("[RC] ❌ Error logging in:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to login to RevenueCat"
+      );
+      // Don't reset state on error - keep whatever we had before
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Logout from RevenueCat (resets to anonymous).
+   * Call this when the user signs out of Better Auth.
+   */
+  const logoutFromRevenueCat = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      console.log("[RC] 👋 Logging out from RevenueCat...");
+      const info = await Purchases.logOut();
+
+      console.log("[RC] ✅ Logout complete, now anonymous:", {
+        originalAppUserId: info.originalAppUserId,
+      });
+
+      updateStateFromCustomerInfo(info);
+    } catch (err) {
+      console.error("[RC] ❌ Error logging out:", err);
+      // Logout errors are usually not critical, just log them
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const value: SubscriptionStatus = {
     isPlusUser,
     isProUser,
@@ -141,7 +260,10 @@ export function SubscriptionProvider({
     customerInfo,
     isLoading,
     error,
+    hasActiveSubscription,
     refreshSubscriptionStatus,
+    loginToRevenueCat,
+    logoutFromRevenueCat,
   };
 
   return (

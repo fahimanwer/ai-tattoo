@@ -1,4 +1,6 @@
 import { authClient } from "@/lib/auth-client";
+import { syncSubscription } from "@/lib/nano";
+import { getLastSubscription } from "@/src/context/SubscriptionContext";
 import { useEffect, useState } from "react";
 import { SubscriptionTier, useSubscription } from "./useSubscription";
 import { useUsageLimit } from "./useUsageLimit";
@@ -47,8 +49,15 @@ export interface UserData {
   // Combined error state
   error: string | null;
 
-  // Refresh function
+  /** Refresh all user data (subscription and usage). */
   refresh: () => Promise<void>;
+
+  /**
+   * Call after successful authentication to link RevenueCat with the user.
+   * This ensures stable ID across reinstalls and syncs App Store purchases.
+   * @param userId - The Better Auth user ID
+   */
+  syncAfterAuth: (userId: string) => Promise<void>;
 }
 
 export function useUserData(): UserData {
@@ -79,6 +88,7 @@ export function useUserData(): UserData {
     isLoading: isSubscriptionLoading,
     error: subscriptionError,
     refreshSubscriptionStatus,
+    loginToRevenueCat,
   } = useSubscription();
 
   // Get current period usage from the hook data
@@ -118,11 +128,75 @@ export function useUserData(): UserData {
     }
   }, [session, isSessionPending]);
 
-  // Refresh all data
+  /** Refresh all user data (subscription from RevenueCat, usage from server). */
   const refresh = async () => {
     console.log("🔄 Refreshing user data...");
-    await Promise.all([refetchUsage(), refreshSubscriptionStatus()]);
+
+    // Refresh subscription status from RevenueCat
+    await refreshSubscriptionStatus();
+
+    // Refresh server-side usage data
+    await refetchUsage();
+
     console.log("✅ User data refreshed");
+  };
+
+  /**
+   * Call after successful authentication to link RevenueCat with the user.
+   * This:
+   * 1. Logs into RevenueCat with the Better Auth user ID
+   * 2. Restores purchases from App Store (handles reinstall case)
+   * 3. Syncs subscription with server (creates usage record if needed)
+   * 4. Refreshes server-side usage data
+   */
+  const syncAfterAuth = async (userId: string) => {
+    console.log("🔗 Syncing after auth for user:", userId);
+
+    // Login to RevenueCat with Better Auth user ID
+    // This also restores purchases internally
+    const restoredInfo = await loginToRevenueCat(userId);
+
+    // If we have active entitlements, sync with server to ensure usage record exists
+    if (restoredInfo) {
+      const activeEntitlements = Object.keys(restoredInfo.entitlements.active);
+      const lastSub = getLastSubscription(restoredInfo);
+      const hasActiveSubscription = lastSub?.isActive === true;
+
+      if (hasActiveSubscription && activeEntitlements.length > 0) {
+        console.log("🔄 Syncing subscription with server...");
+        try {
+          // Get the most recent active subscription for period info
+          const allSubs = restoredInfo.subscriptionsByProductIdentifier || {};
+          const activeSub = Object.values(allSubs).find(
+            (sub: any) => sub.isActive
+          ) as any;
+
+          const syncResult = await syncSubscription({
+            revenuecatUserId: restoredInfo.originalAppUserId,
+            activeEntitlements,
+            hasActiveSubscription,
+            subscriptionInfo: activeSub
+              ? {
+                  productIdentifier: activeSub.productIdentifier || null,
+                  expiresDate: activeSub.expiresDate || null,
+                  purchaseDate: activeSub.purchaseDate || null,
+                }
+              : undefined,
+          });
+
+          console.log("✅ Server sync result:", syncResult);
+        } catch (syncError) {
+          console.error("⚠️ Failed to sync with server:", syncError);
+          // Don't fail the whole flow if sync fails - the user can still use the app
+          // The sync is just to ensure usage tracking works correctly
+        }
+      }
+    }
+
+    // Refresh server-side usage data
+    await refetchUsage();
+
+    console.log("✅ Post-auth sync complete");
   };
 
   // Combined loading state
@@ -166,5 +240,6 @@ export function useUserData(): UserData {
     isLoading,
     error,
     refresh,
+    syncAfterAuth,
   };
 }

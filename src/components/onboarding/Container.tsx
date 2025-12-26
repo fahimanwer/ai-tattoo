@@ -1,18 +1,17 @@
 import { Text } from "@/src/components/ui/Text";
 
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 import {
   onboardingEntranceHaptic,
   onboardingSwipeHaptic,
 } from "@/lib/haptics-patterns.ios";
 import * as NativeCoreHaptics from "@/modules/native-core-haptics";
-import { AppSettingsContext } from "@/src/context/AppSettings";
 import { useEvent } from "expo";
 import { StatusBar } from "expo-status-bar";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { PressableScale } from "pressto";
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   NativeScrollEvent,
@@ -52,7 +51,7 @@ const ONBOARDING_VIDEOS = [
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function Container() {
-  const { setIsOnboarded } = use(AppSettingsContext);
+  const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPausedIndicator, setShowPausedIndicator] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -355,14 +354,14 @@ export default function Container() {
                     const durationMs = Date.now() - onboardingStartTime.current;
                     const durationSeconds = Math.round(durationMs / 1000);
 
-                    // Track onboarding completion
-                    customEvent("onboarding_completed", {
+                    // Track onboarding videos completion (paywall comes next)
+                    customEvent("onboarding_videos_completed", {
                       stepsViewed: stepsViewed.current.size,
                       duration: durationSeconds,
                     });
 
-                    // On last video, complete onboarding
-                    setIsOnboarded(true);
+                    // Navigate to paywall (user can purchase before auth)
+                    router.push("/(paywall)");
                   } else {
                     // Track step view for next step
                     const nextIndex = currentIndex + 1;

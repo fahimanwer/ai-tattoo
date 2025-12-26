@@ -1,70 +1,28 @@
 import { authClient } from "@/lib/auth-client";
-import { AppleSignInButton } from "@/src/components/ui/AppleSignInButton";
-import SignInWithGoogleButton from "@/src/components/ui/SignInWithGoogleButton";
-import { Text } from "@/src/components/ui/Text";
-import { Link, useRouter } from "expo-router";
-import { View } from "react-native";
-import Animated from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AuthContent } from "@/src/components/auth/AuthContent";
+import { useRouter } from "expo-router";
+import { useUserData } from "../hooks/useUserData";
 
+/**
+ * Auth sheet for signing in from anywhere in the app (profile, etc).
+ * For onboarding post-purchase auth, use /(onboarding)/auth instead.
+ */
 export default function AuthSheet() {
-  const insets = useSafeAreaInsets();
   const router = useRouter();
-  return (
-    <View
-      style={{
-        gap: 16,
-        paddingHorizontal: 16,
-        paddingBottom: insets.bottom,
-        paddingTop: insets.top,
-      }}
-    >
-      <View style={{ gap: 8, marginBottom: 16 }}>
-        <Text type="3xl" weight="bold">
-          Welcome back!
-        </Text>
-        <Text type="default">Please choose your preferred sign in method</Text>
-      </View>
+  const { syncAfterAuth } = useUserData();
 
-      <SignInWithGoogleButton
-        onPress={async () => {
-          try {
-            await authClient.signIn.social({
-              provider: "google",
-              callbackURL: "/(tabs)/home",
-            });
-            router.dismiss();
-          } catch (error) {
-            console.error("Google sign-in error:", error);
-          }
-        }}
-      />
-      <AppleSignInButton onSuccess={() => router.dismiss()} />
+  const handleSuccess = async () => {
+    // Get the authenticated user's ID
+    const session = await authClient.getSession();
+    const userId = session?.data?.user?.id;
 
-      <Animated.View
-        style={{
-          marginTop: 24,
-          alignItems: "center",
-          width: "100%",
-        }}
-        pointerEvents="auto"
-      >
-        <Text
-          type="sm"
-          style={{
-            textAlign: "center",
-            opacity: 0.5,
-            lineHeight: 20,
-          }}
-        >
-          By continuing you agree to our{" "}
-          <Link href="/terms-of-service" asChild>
-            <Text type="sm" style={{ textDecorationLine: "underline" }}>
-              Terms of Service
-            </Text>
-          </Link>
-        </Text>
-      </Animated.View>
-    </View>
-  );
+    if (userId) {
+      // Link RevenueCat with Better Auth user ID + restore purchases + refresh usage
+      await syncAfterAuth(userId);
+    }
+
+    router.dismiss();
+  };
+
+  return <AuthContent onSuccess={handleSuccess} />;
 }

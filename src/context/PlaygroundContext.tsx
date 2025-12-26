@@ -22,6 +22,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import * as React from "react";
 import { Alert, Keyboard } from "react-native";
+import Purchases from "react-native-purchases";
 import { toast } from "sonner-native";
 import { customEvent } from "vexo-analytics";
 import { AppSettingsContext } from "./AppSettings";
@@ -134,9 +135,19 @@ export function PlaygroundProvider({
       prompt,
       improvePrompt = settings.improvePrompt ?? true,
     }: TextToImageInput) => {
+      // Get RevenueCat user ID for accurate usage tracking
+      let revenuecatUserId: string | undefined;
+      try {
+        const customerInfo = await Purchases.getCustomerInfo();
+        revenuecatUserId = customerInfo.originalAppUserId;
+      } catch {
+        // Continue without RC ID (backwards compatibility)
+      }
+
       return textToImage({
         prompt,
         improvePrompt,
+        revenuecatUserId,
       });
     },
     onSuccess: async (data) => {
@@ -176,10 +187,20 @@ export function PlaygroundProvider({
       images_base64,
       improvePrompt,
     }: TextAndImageToImageInput) => {
+      // Get RevenueCat user ID for accurate usage tracking
+      let revenuecatUserId: string | undefined;
+      try {
+        const customerInfo = await Purchases.getCustomerInfo();
+        revenuecatUserId = customerInfo.originalAppUserId;
+      } catch {
+        // Continue without RC ID (backwards compatibility)
+      }
+
       return textAndImageToImage({
         prompt,
         images_base64,
         improvePrompt,
+        revenuecatUserId,
       });
     },
     onSuccess: async (data) => {

@@ -21,22 +21,23 @@ const textAndImageToImageSchema = z.object({
     .array(z.string())
     .min(1, "Images base64 are required and cannot be empty"),
   improvePrompt: z.boolean().optional().default(true),
+  revenuecatUserId: z.string().optional(),
 });
 
 export const POST = withAuth(async (request: Request, session: Session) => {
   console.log("🌐 server", "authenticated user:", session.user.email);
 
-  // Check usage and limits
-  const usageCheck = await checkUserUsage(session);
-  if (!usageCheck.success) {
-    return usageCheck.error;
-  }
-  const { usage, isFreeTier } = usageCheck;
-
   try {
     const body = await request.json();
-    const { prompt, images_base64, improvePrompt } =
+    const { prompt, images_base64, improvePrompt, revenuecatUserId } =
       textAndImageToImageSchema.parse(body);
+
+    // Check usage and limits (pass revenuecatUserId for accurate lookup)
+    const usageCheck = await checkUserUsage(session, revenuecatUserId);
+    if (!usageCheck.success) {
+      return usageCheck.error;
+    }
+    const { usage, isFreeTier } = usageCheck;
     console.log("server", "received prompt", prompt);
 
     // Disable prompt improvement when combining images

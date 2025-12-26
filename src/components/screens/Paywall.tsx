@@ -1,7 +1,8 @@
+import { authClient } from "@/lib/auth-client";
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { useSubscription } from "@/src/hooks/useSubscription";
-import { useQueryClient } from "@tanstack/react-query";
+import { useUserData } from "@/src/hooks/useUserData";
 import { Image } from "expo-image";
 import { Link, Stack, useRouter } from "expo-router";
 import { PressableScale } from "pressto";
@@ -29,16 +30,24 @@ export function Paywall() {
     useState<PurchasesOffering | null>(null);
   const [selectedPeriod, setSelectedPeriod] =
     useState<BillingPeriod>("monthly");
-  const { customerInfo, refreshSubscriptionStatus } = useSubscription();
-  const queryClient = useQueryClient();
+  const { customerInfo } = useSubscription();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const router = useRouter();
   const { top } = useSafeAreaInsets();
+  const { refresh, syncAfterAuth } = useUserData();
 
   // Close button visibility logic
-  const { settings, updateSettingsSync } = use(AppSettingsContext);
+  const { settings, updateSettingsSync, setIsOnboarded } =
+    use(AppSettingsContext);
   const isFirstPaywallView = !settings.hasSeenPaywall;
   const [showCloseButton, setShowCloseButton] = useState(!isFirstPaywallView);
+
+  // Detect if we're in the onboarding flow (user hasn't completed onboarding yet)
+  const isOnboardingFlow = !settings.isOnboarded;
+
+  // Check if user is authenticated
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = !!session?.user;
 
   const weeklyPackage = defaultOffering?.weekly;
   const monthlyPackage = defaultOffering?.monthly;
@@ -74,25 +83,71 @@ export function Paywall() {
       customEvent("purchase_completed", {
         plan: periodLabel,
         success: true,
+        isOnboardingFlow,
       });
 
-      Alert.alert(
-        "Success!",
-        "Your subscription is now active. Enjoy unlimited tattoo generations!",
-        [
-          {
-            text: "OK",
-            onPress: async () => {
-              await refreshSubscriptionStatus();
-              await queryClient.invalidateQueries({
-                queryKey: ["user", "usage"],
-              });
-              router.dismissTo("/(playground)");
-              toast.success("Subscription activated!");
+      // Different flow for onboarding vs authenticated users
+      if (isOnboardingFlow) {
+        if (isAuthenticated && session?.user?.id) {
+          // Link RevenueCat with Better Auth user ID + restore + refresh usage
+          await syncAfterAuth(session.user.id);
+          // Already authenticated: complete onboarding directly
+          Alert.alert(
+            "Success!",
+            "Your subscription is now active. Enjoy unlimited tattoo designs!",
+            [
+              {
+                text: "Continue",
+                onPress: () => {
+                  router.dismiss();
+                  setIsOnboarded(true);
+                },
+                isPreferred: true,
+              },
+            ]
+          );
+        } else {
+          // Not authenticated: require sign-in to link purchase
+          // The auth screen will call syncAfterAuth after sign-in
+          Alert.alert(
+            "Almost there!",
+            "Create an account to activate your subscription and start designing.",
+            [
+              {
+                text: "Continue",
+                onPress: () => {
+                  // Dismiss paywall, then replace onboarding with auth screen
+                  // Using replace unmounts the onboarding Container (stops videos/haptics)
+                  router.dismiss();
+                  router.replace("/(onboarding)/auth");
+                },
+                isPreferred: true,
+              },
+            ]
+          );
+        }
+      } else {
+        // Authenticated user: link RevenueCat + refresh usage
+        if (session?.user?.id) {
+          await syncAfterAuth(session.user.id);
+        } else {
+          await refresh();
+        }
+        // Normal flow
+        Alert.alert(
+          "Success!",
+          "Your subscription is now active. Enjoy unlimited tattoo designs!",
+          [
+            {
+              text: "OK",
+              onPress: async () => {
+                router.dismissTo("/(playground)");
+                toast.success("Subscription activated!");
+              },
             },
-          },
-        ]
-      );
+          ]
+        );
+      }
     } catch (error: any) {
       setIsPurchasing(false);
       console.error("Purchase error:", error);
@@ -146,14 +201,60 @@ export function Paywall() {
       });
 
       if (hasActivePurchases) {
-        Alert.alert("Success!", "Your purchases have been restored.", [
-          { text: "OK", onPress: () => router.dismissAll() },
-        ]);
-        await queryClient.invalidateQueries({
-          queryKey: ["user", "usage"],
-        });
-        await refreshSubscriptionStatus();
-        fetchProducts();
+        if (isOnboardingFlow) {
+          if (isAuthenticated && session?.user?.id) {
+            // Link RevenueCat with Better Auth user ID + refresh usage
+            await syncAfterAuth(session.user.id);
+            // Already authenticated: complete onboarding directly
+            Alert.alert(
+              "Purchase Restored!",
+              "Your subscription is now active.",
+              [
+                {
+                  text: "Continue",
+                  onPress: () => {
+                    router.dismiss();
+                    setTimeout(() => {
+                      setIsOnboarded(true);
+                    }, 400);
+                  },
+                  isPreferred: true,
+                },
+              ]
+            );
+          } else {
+            // Not authenticated: require sign-in to link restored purchase
+            // The auth screen will call syncAfterAuth after sign-in
+            Alert.alert(
+              "Purchase Found!",
+              "Create an account to activate your subscription and start designing.",
+              [
+                {
+                  text: "Continue",
+                  onPress: () => {
+                    // Dismiss paywall, then replace onboarding with auth screen
+                    // Using replace unmounts the onboarding Container (stops videos/haptics)
+                    router.dismiss();
+                    router.replace("/(onboarding)/auth");
+                  },
+                  isPreferred: true,
+                },
+              ]
+            );
+          }
+        } else {
+          // Authenticated user: link RevenueCat + refresh usage
+          if (session?.user?.id) {
+            await syncAfterAuth(session.user.id);
+          } else {
+            await refresh();
+          }
+          fetchProducts();
+          // Normal flow
+          Alert.alert("Success!", "Your purchases have been restored.", [
+            { text: "OK", onPress: () => router.dismissAll() },
+          ]);
+        }
       } else {
         Alert.alert(
           "No Purchases Found",
@@ -190,6 +291,13 @@ export function Paywall() {
                     <PressableScale
                       onPress={() => {
                         if (isPurchasing) return;
+
+                        if (isOnboardingFlow) {
+                          // Complete onboarding when skipping paywall
+                          setIsOnboarded(true);
+                          router.replace("/(tabs)/(home)");
+                          return;
+                        }
 
                         if (router.canGoBack()) {
                           router.back();

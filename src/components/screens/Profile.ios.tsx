@@ -58,9 +58,8 @@ function FormButton({
 }
 
 export function Profile() {
-  const { user } = useUserData();
+  const { user, refresh } = useUserData();
   const { settings, updateSettings } = use(AppSettingsContext);
-
   const { refreshSubscriptionStatus, customerInfo } = useSubscription();
   const {
     remaining,
@@ -189,6 +188,7 @@ export function Profile() {
   const handleSignOut = async () => {
     try {
       router.back();
+      await refresh();
       await authClient.signOut();
     } catch (error) {
       console.error("Error signing out:", error);
@@ -577,14 +577,14 @@ export function Profile() {
 
         <Section title="Follow Us">
           <FormButton
-            title="@trytattooapp on X"
+            title="@inkigoapp on X"
             systemImage="bubble.left.fill"
-            onPress={() => Linking.openURL("https://x.com/trytattooapp")}
+            onPress={() => Linking.openURL("https://x.com/inkigoapp")}
           />
           <FormButton
-            title="trytattooapp.ai"
+            title="inkigo.ai"
             systemImage="globe"
-            onPress={() => Linking.openURL("https://trytattooapp.ai")}
+            onPress={() => Linking.openURL("https://inkigo.ai")}
           />
         </Section>
 
