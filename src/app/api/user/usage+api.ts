@@ -30,13 +30,24 @@ interface UsageResponse {
 
 export const POST = withAuth(async (request: Request, session: any) => {
   try {
-    const userId = session.user.id;
+    // Parse request body for optional revenuecatUserId (new clients)
+    // Fallback to session.user.id for backwards compatibility (old clients)
+    const body = await request.json().catch(() => ({}));
+    const { revenuecatUserId } = body as { revenuecatUserId?: string };
+
+    // New clients: query by revenuecatUserId
+    // Old clients: fallback to userId from session
+    const useRevenuecatId = !!revenuecatUserId;
+    const queryValue = revenuecatUserId || session.user.id;
+
     const now = new Date();
 
     // First, check for free tier record (one-time credits, ignore period dates)
     const freeRecord = await prisma.usage.findFirst({
       where: {
-        userId: userId,
+        ...(useRevenuecatId
+          ? { revenuecatUserId: queryValue }
+          : { userId: queryValue }),
         entitlement: "free",
       },
       select: {
@@ -51,7 +62,9 @@ export const POST = withAuth(async (request: Request, session: any) => {
     // Then check for active paid tier records
     const paidRecord = await prisma.usage.findFirst({
       where: {
-        userId: userId,
+        ...(useRevenuecatId
+          ? { revenuecatUserId: queryValue }
+          : { userId: queryValue }),
         periodStart: { lte: now },
         periodEnd: { gte: now },
         entitlement: { not: "free" },

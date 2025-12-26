@@ -198,7 +198,7 @@ export function PlaygroundScreen() {
               },
               disabled: activeGenerationUris.length === 0,
             },
-            ...(subscriptionTier === "free"
+            ...(subscriptionTier === "free" && session?.user !== undefined
               ? [
                   {
                     type: "button" as const,

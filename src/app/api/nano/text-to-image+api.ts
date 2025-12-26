@@ -21,21 +21,23 @@ const {
 const textToImageSchema = z.object({
   prompt: z.string().min(1, "Prompt is required and cannot be empty"),
   improvePrompt: z.boolean().optional().default(true),
+  revenuecatUserId: z.string().optional(),
 });
 
 export const POST = withAuth(async (request: Request, session: Session) => {
   slog("text-to-image+api", `authenticated request by ${session.user.email}`);
 
-  // Check usage and limits
-  const usageCheck = await checkUserUsage(session);
-  if (!usageCheck.success) {
-    return usageCheck.error;
-  }
-  const { usage, isFreeTier } = usageCheck;
-
   try {
     const body = await request.json();
-    const { prompt, improvePrompt } = textToImageSchema.parse(body);
+    const { prompt, improvePrompt, revenuecatUserId } =
+      textToImageSchema.parse(body);
+
+    // Check usage and limits (pass revenuecatUserId for accurate lookup)
+    const usageCheck = await checkUserUsage(session, revenuecatUserId);
+    if (!usageCheck.success) {
+      return usageCheck.error;
+    }
+    const { usage, isFreeTier } = usageCheck;
     slog("text-to-image+api", `received prompt: ${prompt}`);
 
     // Improve and enhance prompt

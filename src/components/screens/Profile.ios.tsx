@@ -58,9 +58,8 @@ function FormButton({
 }
 
 export function Profile() {
-  const { user } = useUserData();
+  const { user, refresh } = useUserData();
   const { settings, updateSettings } = use(AppSettingsContext);
-
   const { refreshSubscriptionStatus, customerInfo } = useSubscription();
   const {
     remaining,
@@ -189,6 +188,7 @@ export function Profile() {
   const handleSignOut = async () => {
     try {
       router.back();
+      await refresh();
       await authClient.signOut();
     } catch (error) {
       console.error("Error signing out:", error);

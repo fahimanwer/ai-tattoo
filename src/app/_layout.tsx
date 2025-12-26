@@ -174,10 +174,6 @@ function AppContent() {
       <Stack.Protected guard={isOnboarded}>
         <Stack.Screen name="(tabs)" options={{}} />
         <Stack.Screen
-          name="(paywall)"
-          options={{ presentation: "modal", gestureEnabled: false }}
-        />
-        <Stack.Screen
           name="(playground)"
           options={{
             presentation: "card",
@@ -187,6 +183,11 @@ function AppContent() {
         />
       </Stack.Protected>
 
+      {/* Paywall accessible during onboarding and after (for anonymous purchases) */}
+      <Stack.Screen
+        name="(paywall)"
+        options={{ presentation: "modal", gestureEnabled: false }}
+      />
       <Stack.Screen
         name="auth-sheet"
         options={{

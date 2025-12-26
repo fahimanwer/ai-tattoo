@@ -13,6 +13,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import Purchases from "react-native-purchases";
 import { AnimatedText } from "./Playground/shared/AnimatedText";
 
 // Constants
@@ -92,9 +93,19 @@ export function TattooGenerationResult() {
       const prompt =
         MIX_TWO_PHOTOS_PROMPT + colorPrompt + customInstructionsPrompt;
 
+      // Get RevenueCat user ID for accurate usage tracking
+      let revenuecatUserId: string | undefined;
+      try {
+        const customerInfo = await Purchases.getCustomerInfo();
+        revenuecatUserId = customerInfo.originalAppUserId;
+      } catch {
+        // Continue without RC ID (backwards compatibility)
+      }
+
       return textAndImageToImage({
         prompt,
         images_base64: [bodyImage, tattooImage],
+        revenuecatUserId,
       });
     },
     onSuccess: async (data) => {

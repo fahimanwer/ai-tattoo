@@ -4,13 +4,22 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 /**
  * Get the current active entitlement for a user
  * Returns the highest tier entitlement that is currently active
+ *
+ * @param userId - Better Auth user ID (used for backwards compatibility with old clients)
+ * @param revenuecatUserId - Optional RevenueCat user ID (new clients pass this for accurate lookup)
  */
 export async function getCurrentUserEntitlement(
-  userId: string
+  userId: string,
+  revenuecatUserId?: string
 ): Promise<string> {
   const prisma = new PrismaClient({
     datasourceUrl: process.env.DATABASE_URL,
   }).$extends(withAccelerate());
+
+  // New clients: query by revenuecatUserId
+  // Old clients: fallback to userId from session
+  const useRevenuecatId = !!revenuecatUserId;
+  const queryValue = revenuecatUserId || userId;
 
   try {
     const now = new Date();
@@ -18,7 +27,9 @@ export async function getCurrentUserEntitlement(
     // First, try to find paid tier records (exclude free)
     const paidUsage = await prisma.usage.findFirst({
       where: {
-        userId,
+        ...(useRevenuecatId
+          ? { revenuecatUserId: queryValue }
+          : { userId: queryValue }),
         periodStart: { lte: now },
         periodEnd: { gte: now },
         entitlement: { not: "free" },
@@ -46,7 +57,9 @@ export async function getCurrentUserEntitlement(
     // No paid tier, check for free tier
     const freeUsage = await prisma.usage.findFirst({
       where: {
-        userId,
+        ...(useRevenuecatId
+          ? { revenuecatUserId: queryValue }
+          : { userId: queryValue }),
         entitlement: "free",
       },
     });

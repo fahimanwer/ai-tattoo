@@ -36,9 +36,13 @@ export function Paywall() {
   const { top } = useSafeAreaInsets();
 
   // Close button visibility logic
-  const { settings, updateSettingsSync } = use(AppSettingsContext);
+  const { settings, updateSettingsSync, setIsOnboarded } =
+    use(AppSettingsContext);
   const isFirstPaywallView = !settings.hasSeenPaywall;
   const [showCloseButton, setShowCloseButton] = useState(!isFirstPaywallView);
+
+  // Detect if we're in the onboarding flow (user hasn't completed onboarding yet)
+  const isOnboardingFlow = !settings.isOnboarded;
 
   const weeklyPackage = defaultOffering?.weekly;
   const monthlyPackage = defaultOffering?.monthly;
@@ -74,25 +78,46 @@ export function Paywall() {
       customEvent("purchase_completed", {
         plan: periodLabel,
         success: true,
+        isOnboardingFlow,
       });
 
-      Alert.alert(
-        "Success!",
-        "Your subscription is now active. Enjoy unlimited tattoo generations!",
-        [
-          {
-            text: "OK",
-            onPress: async () => {
-              await refreshSubscriptionStatus();
-              await queryClient.invalidateQueries({
-                queryKey: ["user", "usage"],
-              });
-              router.dismissTo("/(playground)");
-              toast.success("Subscription activated!");
+      // Different flow for onboarding vs authenticated users
+      if (isOnboardingFlow) {
+        // During onboarding: require authentication to link purchase
+        Alert.alert(
+          "Almost there!",
+          "Create an account to activate your subscription and start designing.",
+          [
+            {
+              text: "Continue",
+              onPress: () => {
+                // Navigate to auth sheet with required flag
+                router.push("/auth-sheet?required=true");
+              },
+              isPreferred: true,
             },
-          },
-        ]
-      );
+          ]
+        );
+      } else {
+        // Authenticated user: normal flow
+        Alert.alert(
+          "Success!",
+          "Your subscription is now active. Enjoy unlimited tattoo generations!",
+          [
+            {
+              text: "OK",
+              onPress: async () => {
+                await refreshSubscriptionStatus();
+                await queryClient.invalidateQueries({
+                  queryKey: ["user", "usage"],
+                });
+                router.dismissTo("/(playground)");
+                toast.success("Subscription activated!");
+              },
+            },
+          ]
+        );
+      }
     } catch (error: any) {
       setIsPurchasing(false);
       console.error("Purchase error:", error);
@@ -146,14 +171,32 @@ export function Paywall() {
       });
 
       if (hasActivePurchases) {
-        Alert.alert("Success!", "Your purchases have been restored.", [
-          { text: "OK", onPress: () => router.dismissAll() },
-        ]);
-        await queryClient.invalidateQueries({
-          queryKey: ["user", "usage"],
-        });
-        await refreshSubscriptionStatus();
-        fetchProducts();
+        if (isOnboardingFlow) {
+          // During onboarding: require authentication to link restored purchase
+          Alert.alert(
+            "Purchase Found!",
+            "Create an account to activate your subscription and start designing.",
+            [
+              {
+                text: "Continue",
+                onPress: () => {
+                  router.dismissTo("/auth-sheet?required=true");
+                },
+                isPreferred: true,
+              },
+            ]
+          );
+        } else {
+          // Authenticated user: normal flow
+          Alert.alert("Success!", "Your purchases have been restored.", [
+            { text: "OK", onPress: () => router.dismissAll() },
+          ]);
+          await queryClient.invalidateQueries({
+            queryKey: ["user", "usage"],
+          });
+          await refreshSubscriptionStatus();
+          fetchProducts();
+        }
       } else {
         Alert.alert(
           "No Purchases Found",
@@ -190,6 +233,13 @@ export function Paywall() {
                     <PressableScale
                       onPress={() => {
                         if (isPurchasing) return;
+
+                        if (isOnboardingFlow) {
+                          // Complete onboarding when skipping paywall
+                          setIsOnboarded(true);
+                          router.replace("/(tabs)/(home)");
+                          return;
+                        }
 
                         if (router.canGoBack()) {
                           router.back();
