@@ -1,3 +1,4 @@
+import { authClient } from "@/lib/auth-client";
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { useSubscription } from "@/src/hooks/useSubscription";
@@ -44,6 +45,10 @@ export function Paywall() {
   // Detect if we're in the onboarding flow (user hasn't completed onboarding yet)
   const isOnboardingFlow = !settings.isOnboarded;
 
+  // Check if user is authenticated
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = !!session?.user;
+
   const weeklyPackage = defaultOffering?.weekly;
   const monthlyPackage = defaultOffering?.monthly;
   const selectedPackage =
@@ -83,21 +88,41 @@ export function Paywall() {
 
       // Different flow for onboarding vs authenticated users
       if (isOnboardingFlow) {
-        // During onboarding: require authentication to link purchase
-        Alert.alert(
-          "Almost there!",
-          "Create an account to activate your subscription and start designing.",
-          [
-            {
-              text: "Continue",
-              onPress: () => {
-                // Navigate to auth sheet with required flag
-                router.push("/auth-sheet?required=true");
+        if (isAuthenticated) {
+          // Already authenticated: complete onboarding directly
+          Alert.alert(
+            "Success!",
+            "Your subscription is now active. Enjoy unlimited tattoo generations!",
+            [
+              {
+                text: "Continue",
+                onPress: () => {
+                  router.dismiss();
+                  setIsOnboarded(true);
+                },
+                isPreferred: true,
               },
-              isPreferred: true,
-            },
-          ]
-        );
+            ]
+          );
+        } else {
+          // Not authenticated: require sign-in to link purchase
+          Alert.alert(
+            "Almost there!",
+            "Create an account to activate your subscription and start designing.",
+            [
+              {
+                text: "Continue",
+                onPress: () => {
+                  // Dismiss paywall, then replace onboarding with auth screen
+                  // Using replace unmounts the onboarding Container (stops videos/haptics)
+                  router.dismiss();
+                  router.replace("/(onboarding)/auth");
+                },
+                isPreferred: true,
+              },
+            ]
+          );
+        }
       } else {
         // Authenticated user: normal flow
         Alert.alert(
@@ -172,20 +197,43 @@ export function Paywall() {
 
       if (hasActivePurchases) {
         if (isOnboardingFlow) {
-          // During onboarding: require authentication to link restored purchase
-          Alert.alert(
-            "Purchase Found!",
-            "Create an account to activate your subscription and start designing.",
-            [
-              {
-                text: "Continue",
-                onPress: () => {
-                  router.dismissTo("/auth-sheet?required=true");
+          if (isAuthenticated) {
+            // Already authenticated: complete onboarding directly
+            Alert.alert(
+              "Purchase Restored!",
+              "Your subscription is now active.",
+              [
+                {
+                  text: "Continue",
+                  onPress: () => {
+                    router.dismiss();
+                    setTimeout(() => {
+                      setIsOnboarded(true);
+                    }, 400);
+                  },
+                  isPreferred: true,
                 },
-                isPreferred: true,
-              },
-            ]
-          );
+              ]
+            );
+          } else {
+            // Not authenticated: require sign-in to link restored purchase
+            Alert.alert(
+              "Purchase Found!",
+              "Create an account to activate your subscription and start designing.",
+              [
+                {
+                  text: "Continue",
+                  onPress: () => {
+                    // Dismiss paywall, then replace onboarding with auth screen
+                    // Using replace unmounts the onboarding Container (stops videos/haptics)
+                    router.dismiss();
+                    router.replace("/(onboarding)/auth");
+                  },
+                  isPreferred: true,
+                },
+              ]
+            );
+          }
         } else {
           // Authenticated user: normal flow
           Alert.alert("Success!", "Your purchases have been restored.", [
