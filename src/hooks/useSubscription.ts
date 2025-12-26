@@ -5,6 +5,7 @@
  */
 export {
   getActiveEntitlements,
+  getLastSubscription,
   getSubscriptionTier,
   hasActiveEntitlement,
   hasPaidSubscription,
@@ -12,9 +13,11 @@ export {
   hasProAccess,
   hasStarterAccess,
   PLUS_ENTITLEMENT_IDENTIFIER,
+  PREMIUM_ENTITLEMENT_IDENTIFIER,
   PRO_ENTITLEMENT_IDENTIFIER,
   STARTER_ENTITLEMENT_IDENTIFIER,
   useSubscription,
+  type LastSubscriptionInfo,
   type SubscriptionStatus,
   type SubscriptionTier,
 } from "@/src/context/SubscriptionContext";

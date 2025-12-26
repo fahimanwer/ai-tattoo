@@ -123,11 +123,20 @@ export async function checkUserUsage(
 ): Promise<UsageCheckResult> {
   const prisma = createPrismaClient();
   const now = new Date();
+  // Allow for slight timing differences (webhook might create record with future periodStart)
+  const searchWindow = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes ahead
 
   // New clients: query by revenuecatUserId
   // Old clients: fallback to userId from session
   const useRevenuecatId = !!revenuecatUserId;
-  const queryValue = revenuecatUserId || session.user.id;
+
+  // Build the OR condition to search by BOTH revenuecatUserId AND userId
+  // This handles the case where the webhook created a record with a different ID
+  const idConditions = useRevenuecatId
+    ? {
+        OR: [{ revenuecatUserId }, { userId: session.user.id }],
+      }
+    : { userId: session.user.id };
 
   const entitlement = await getCurrentUserEntitlement(
     session.user.id,
@@ -143,21 +152,17 @@ export async function checkUserUsage(
     // For free tier, ignore period dates (one-time credits)
     usage = await prisma.usage.findFirst({
       where: {
-        ...(useRevenuecatId
-          ? { revenuecatUserId: queryValue }
-          : { userId: queryValue }),
+        ...idConditions,
         entitlement: "free",
       },
       orderBy: { periodStart: "desc" },
     });
   } else {
-    // For paid tiers, check active period
+    // For paid tiers, check active period (allow future periodStart for webhook timing)
     usage = await prisma.usage.findFirst({
       where: {
-        ...(useRevenuecatId
-          ? { revenuecatUserId: queryValue }
-          : { userId: queryValue }),
-        periodStart: { lte: now },
+        ...idConditions,
+        periodStart: { lte: searchWindow },
         periodEnd: { gte: now },
       },
       orderBy: { periodStart: "desc" },

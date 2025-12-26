@@ -19,18 +19,25 @@ export async function getCurrentUserEntitlement(
   // New clients: query by revenuecatUserId
   // Old clients: fallback to userId from session
   const useRevenuecatId = !!revenuecatUserId;
-  const queryValue = revenuecatUserId || userId;
+
+  // Build the OR condition to search by BOTH revenuecatUserId AND userId
+  // This handles the case where the webhook created a record with a different ID
+  const idConditions = useRevenuecatId
+    ? {
+        OR: [{ revenuecatUserId }, { userId }],
+      }
+    : { userId };
 
   try {
     const now = new Date();
+    // Allow for slight timing differences (webhook might create record with future periodStart)
+    const searchWindow = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes ahead
 
     // First, try to find paid tier records (exclude free)
     const paidUsage = await prisma.usage.findFirst({
       where: {
-        ...(useRevenuecatId
-          ? { revenuecatUserId: queryValue }
-          : { userId: queryValue }),
-        periodStart: { lte: now },
+        ...idConditions,
+        periodStart: { lte: searchWindow },
         periodEnd: { gte: now },
         entitlement: { not: "free" },
       },
@@ -57,9 +64,7 @@ export async function getCurrentUserEntitlement(
     // No paid tier, check for free tier
     const freeUsage = await prisma.usage.findFirst({
       where: {
-        ...(useRevenuecatId
-          ? { revenuecatUserId: queryValue }
-          : { userId: queryValue }),
+        ...idConditions,
         entitlement: "free",
       },
     });

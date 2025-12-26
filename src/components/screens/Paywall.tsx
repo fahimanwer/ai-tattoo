@@ -2,7 +2,7 @@ import { authClient } from "@/lib/auth-client";
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { useSubscription } from "@/src/hooks/useSubscription";
-import { useQueryClient } from "@tanstack/react-query";
+import { useUserData } from "@/src/hooks/useUserData";
 import { Image } from "expo-image";
 import { Link, Stack, useRouter } from "expo-router";
 import { PressableScale } from "pressto";
@@ -30,11 +30,11 @@ export function Paywall() {
     useState<PurchasesOffering | null>(null);
   const [selectedPeriod, setSelectedPeriod] =
     useState<BillingPeriod>("monthly");
-  const { customerInfo, refreshSubscriptionStatus } = useSubscription();
-  const queryClient = useQueryClient();
+  const { customerInfo } = useSubscription();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const router = useRouter();
   const { top } = useSafeAreaInsets();
+  const { refresh, syncAfterAuth } = useUserData();
 
   // Close button visibility logic
   const { settings, updateSettingsSync, setIsOnboarded } =
@@ -88,11 +88,13 @@ export function Paywall() {
 
       // Different flow for onboarding vs authenticated users
       if (isOnboardingFlow) {
-        if (isAuthenticated) {
+        if (isAuthenticated && session?.user?.id) {
+          // Link RevenueCat with Better Auth user ID + restore + refresh usage
+          await syncAfterAuth(session.user.id);
           // Already authenticated: complete onboarding directly
           Alert.alert(
             "Success!",
-            "Your subscription is now active. Enjoy unlimited tattoo generations!",
+            "Your subscription is now active. Enjoy unlimited tattoo designs!",
             [
               {
                 text: "Continue",
@@ -106,6 +108,7 @@ export function Paywall() {
           );
         } else {
           // Not authenticated: require sign-in to link purchase
+          // The auth screen will call syncAfterAuth after sign-in
           Alert.alert(
             "Almost there!",
             "Create an account to activate your subscription and start designing.",
@@ -124,18 +127,20 @@ export function Paywall() {
           );
         }
       } else {
-        // Authenticated user: normal flow
+        // Authenticated user: link RevenueCat + refresh usage
+        if (session?.user?.id) {
+          await syncAfterAuth(session.user.id);
+        } else {
+          await refresh();
+        }
+        // Normal flow
         Alert.alert(
           "Success!",
-          "Your subscription is now active. Enjoy unlimited tattoo generations!",
+          "Your subscription is now active. Enjoy unlimited tattoo designs!",
           [
             {
               text: "OK",
               onPress: async () => {
-                await refreshSubscriptionStatus();
-                await queryClient.invalidateQueries({
-                  queryKey: ["user", "usage"],
-                });
                 router.dismissTo("/(playground)");
                 toast.success("Subscription activated!");
               },
@@ -197,7 +202,9 @@ export function Paywall() {
 
       if (hasActivePurchases) {
         if (isOnboardingFlow) {
-          if (isAuthenticated) {
+          if (isAuthenticated && session?.user?.id) {
+            // Link RevenueCat with Better Auth user ID + refresh usage
+            await syncAfterAuth(session.user.id);
             // Already authenticated: complete onboarding directly
             Alert.alert(
               "Purchase Restored!",
@@ -217,6 +224,7 @@ export function Paywall() {
             );
           } else {
             // Not authenticated: require sign-in to link restored purchase
+            // The auth screen will call syncAfterAuth after sign-in
             Alert.alert(
               "Purchase Found!",
               "Create an account to activate your subscription and start designing.",
@@ -235,15 +243,17 @@ export function Paywall() {
             );
           }
         } else {
-          // Authenticated user: normal flow
+          // Authenticated user: link RevenueCat + refresh usage
+          if (session?.user?.id) {
+            await syncAfterAuth(session.user.id);
+          } else {
+            await refresh();
+          }
+          fetchProducts();
+          // Normal flow
           Alert.alert("Success!", "Your purchases have been restored.", [
             { text: "OK", onPress: () => router.dismissAll() },
           ]);
-          await queryClient.invalidateQueries({
-            queryKey: ["user", "usage"],
-          });
-          await refreshSubscriptionStatus();
-          fetchProducts();
         }
       } else {
         Alert.alert(

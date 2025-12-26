@@ -1,10 +1,12 @@
+import { authClient } from "@/lib/auth-client";
 import { AuthContent } from "@/src/components/auth/AuthContent";
+import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
-import { use } from "react";
-import { StyleSheet, View } from "react-native";
+import { use, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useUserData } from "../../hooks/useUserData";
 
@@ -15,11 +17,25 @@ import { useUserData } from "../../hooks/useUserData";
  */
 export default function OnboardingAuth() {
   const { setIsOnboarded } = use(AppSettingsContext);
-  const { refresh } = useUserData();
+  const { syncAfterAuth } = useUserData();
   const { bottom } = useSafeAreaInsets();
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const handleSuccess = async () => {
-    await refresh();
+    // Get the authenticated user's ID
+    const session = await authClient.getSession();
+    const userId = session?.data?.user?.id;
+
+    if (userId) {
+      // Show loading state during sync
+      setIsSyncing(true);
+
+      // Link RevenueCat with Better Auth user ID + restore purchases + refresh usage
+      await syncAfterAuth(userId);
+
+      setIsSyncing(false);
+    }
+
     // Just set isOnboarded - the guard will unmount this screen and show tabs
     setIsOnboarded(true);
   };
@@ -54,12 +70,28 @@ export default function OnboardingAuth() {
       </View>
 
       <View style={{ flex: 1, justifyContent: "flex-end", zIndex: 2 }}>
-        <AuthContent
-          title="One more step!"
-          description="Create an account to activate your subscription. This helps us track your subscription and provide you with the best experience."
-          onSuccess={handleSuccess}
-          style={{ marginBottom: bottom }}
-        />
+        {isSyncing ? (
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 16,
+              paddingBottom: bottom + 40,
+            }}
+          >
+            <ActivityIndicator size="large" color="#fff" />
+            <Text type="lg" weight="medium" style={{ color: "#fff" }}>
+              Activating your subscription...
+            </Text>
+          </View>
+        ) : (
+          <AuthContent
+            title="One more step!"
+            description="Please sign in to activate your subscription. This helps us track your subscription and provide you with the best experience."
+            onSuccess={handleSuccess}
+            style={{ marginBottom: bottom }}
+          />
+        )}
       </View>
     </>
   );

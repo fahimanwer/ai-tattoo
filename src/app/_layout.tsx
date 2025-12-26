@@ -12,7 +12,6 @@ import { AccentColorProvider } from "@/src/hooks/useAccentColor";
 import { DarkTheme, ThemeProvider } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { authClient } from "@/lib/auth-client";
 import {
   AppSettingsContext,
   AppSettingsProvider,
@@ -103,60 +102,6 @@ function RevenueCatProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-// Component to sync authenticated user ID with RevenueCat
-// This links the authenticated user to RevenueCat and transfers any anonymous purchases
-function RevenueCatAuthSync({ children }: { children: React.ReactNode }) {
-  const { data: session } = authClient.useSession();
-  const [syncedUserId, setSyncedUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const syncUserWithRevenueCat = async () => {
-      const userId = session?.user?.id;
-
-      // Skip if no user or already synced this user
-      if (!userId || syncedUserId === userId) {
-        return;
-      }
-
-      // Skip if RevenueCat is not configured
-      if (!isRevenueCatConfigured) {
-        console.log("⏭️  RevenueCat not configured, skipping login");
-        return;
-      }
-
-      try {
-        console.log(
-          `[RC AUTH SYNC] 🔗 Logging in to RevenueCat with user ID: ${userId}`
-        );
-
-        const { customerInfo, created } = await Purchases.logIn(userId);
-
-        console.log(
-          "[RC AUTH SYNC] ✅ Successfully linked user to RevenueCat:",
-          {
-            userId,
-            originalAppUserId: customerInfo.originalAppUserId,
-            created: created,
-            activeEntitlements: Object.keys(customerInfo.entitlements.active),
-          }
-        );
-
-        setSyncedUserId(userId);
-      } catch (error) {
-        console.error(
-          "[RC AUTH SYNC] ❌ Error linking user to RevenueCat:",
-          error
-        );
-        // Don't block the app if this fails - user can still use the app
-      }
-    };
-
-    syncUserWithRevenueCat();
-  }, [session?.user?.id, syncedUserId]);
-
-  return <>{children}</>;
-}
-
 function AppContent() {
   const {
     settings: { isOnboarded },
@@ -226,8 +171,7 @@ export default function RootLayout() {
         <AppSettingsProvider>
           <QueryClientProvider client={queryClient}>
             <RevenueCatProvider>
-              <RevenueCatAuthSync>
-                <SubscriptionProvider>
+              <SubscriptionProvider>
                   <AccentColorProvider>
                     <KeyboardProvider>
                       <PressablesConfig
@@ -252,7 +196,6 @@ export default function RootLayout() {
                     </KeyboardProvider>
                   </AccentColorProvider>
                 </SubscriptionProvider>
-              </RevenueCatAuthSync>
             </RevenueCatProvider>
           </QueryClientProvider>
         </AppSettingsProvider>

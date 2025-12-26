@@ -1,15 +1,19 @@
 import { authClient } from "@/lib/auth-client";
 import { Home } from "@/src/components/screens/Home";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { Stack, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { isLimitReached, subscriptionTier, isLoading } = useUsageLimit();
+  // Use useUsageLimit for generation limits only
+  const { isLimitReached, isLoading: isUsageLoading } = useUsageLimit();
+  // Use useSubscription for subscription status (RevenueCat as source of truth)
+  const { hasActiveSubscription, isLoading: isSubLoading } = useSubscription();
   const { data: session } = authClient.useSession();
   const isAuthenticated = session?.user !== undefined;
-  const hasSubscription = subscriptionTier !== "free";
+  const isLoading = isUsageLoading || isSubLoading;
   const hasShownPaywall = useRef(false);
 
   // Auto-show paywall for free users on app open
@@ -17,13 +21,13 @@ export default function HomeScreen() {
     if (
       !isLoading &&
       isAuthenticated &&
-      subscriptionTier === "free" &&
+      !hasActiveSubscription &&
       !hasShownPaywall.current
     ) {
       hasShownPaywall.current = true;
       router.push("/(paywall)");
     }
-  }, [isLoading, isAuthenticated, subscriptionTier, router]);
+  }, [isLoading, isAuthenticated, hasActiveSubscription, router]);
 
   // Determine button label and action based on user state
   const getButtonConfig = () => {
@@ -43,7 +47,8 @@ export default function HomeScreen() {
     }
 
     // Limit reached or no subscription → Show "Update plan" and go to paywall
-    if (isLimitReached || !hasSubscription) {
+    // Uses hasActiveSubscription from RevenueCat (source of truth)
+    if (isLimitReached || !hasActiveSubscription) {
       return {
         label: "Upgrade plan",
         action: () => router.push("/(paywall)"),

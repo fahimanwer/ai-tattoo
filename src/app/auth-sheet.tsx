@@ -1,3 +1,4 @@
+import { authClient } from "@/lib/auth-client";
 import { AuthContent } from "@/src/components/auth/AuthContent";
 import { useRouter } from "expo-router";
 import { useUserData } from "../hooks/useUserData";
@@ -8,10 +9,18 @@ import { useUserData } from "../hooks/useUserData";
  */
 export default function AuthSheet() {
   const router = useRouter();
-  const { refresh } = useUserData();
+  const { syncAfterAuth } = useUserData();
 
   const handleSuccess = async () => {
-    await refresh();
+    // Get the authenticated user's ID
+    const session = await authClient.getSession();
+    const userId = session?.data?.user?.id;
+
+    if (userId) {
+      // Link RevenueCat with Better Auth user ID + restore purchases + refresh usage
+      await syncAfterAuth(userId);
+    }
+
     router.dismiss();
   };
 

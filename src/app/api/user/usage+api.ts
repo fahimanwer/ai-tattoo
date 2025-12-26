@@ -40,14 +40,29 @@ export const POST = withAuth(async (request: Request, session: any) => {
     const useRevenuecatId = !!revenuecatUserId;
     const queryValue = revenuecatUserId || session.user.id;
 
+    slog("usage+api", "🔍 Querying usage", {
+      betterAuthUserId: session.user.id,
+      revenuecatUserId: revenuecatUserId || "(not provided)",
+      queryMode: useRevenuecatId ? "revenuecatUserId" : "userId",
+      queryValue: queryValue.slice(0, 20) + "...",
+    });
+
     const now = new Date();
+    // Allow for slight timing differences (webhook might create record with future periodStart)
+    const searchWindow = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes ahead
+
+    // Build the OR condition to search by BOTH revenuecatUserId AND userId
+    // This handles the case where the webhook created a record with a different ID
+    const idConditions = useRevenuecatId
+      ? {
+          OR: [{ revenuecatUserId: queryValue }, { userId: session.user.id }],
+        }
+      : { userId: queryValue };
 
     // First, check for free tier record (one-time credits, ignore period dates)
     const freeRecord = await prisma.usage.findFirst({
       where: {
-        ...(useRevenuecatId
-          ? { revenuecatUserId: queryValue }
-          : { userId: queryValue }),
+        ...idConditions,
         entitlement: "free",
       },
       select: {
@@ -60,12 +75,11 @@ export const POST = withAuth(async (request: Request, session: any) => {
     });
 
     // Then check for active paid tier records
+    // Allow periodStart up to 5 minutes in the future (webhook timing)
     const paidRecord = await prisma.usage.findFirst({
       where: {
-        ...(useRevenuecatId
-          ? { revenuecatUserId: queryValue }
-          : { userId: queryValue }),
-        periodStart: { lte: now },
+        ...idConditions,
+        periodStart: { lte: searchWindow },
         periodEnd: { gte: now },
         entitlement: { not: "free" },
       },
@@ -88,6 +102,14 @@ export const POST = withAuth(async (request: Request, session: any) => {
       limit: number;
     } | null = paidRecord || freeRecord || null;
 
+    slog("usage+api", "📊 Found records", {
+      hasFreeRecord: !!freeRecord,
+      hasPaidRecord: !!paidRecord,
+      selectedRecord: activePeriodRecord?.entitlement || "none",
+      freeRecordEntitlement: freeRecord?.entitlement,
+      paidRecordEntitlement: paidRecord?.entitlement,
+    });
+
     // Determine subscription tier
     let subscriptionTier: PlanTier = "free";
 
@@ -95,13 +117,14 @@ export const POST = withAuth(async (request: Request, session: any) => {
       subscriptionTier = entitlementToTier(activePeriodRecord.entitlement);
     }
 
-    // Get the correct limit for the user's tier
-    const tierLimit = getMonthlyLimit(subscriptionTier);
     const planConfig = getPlanConfig(subscriptionTier);
 
     // Calculate current period usage
+    // Use the actual limit from the database record (set by webhook based on product)
+    // Fall back to tier default only if no record exists
     const used = activePeriodRecord?.count || 0;
-    const limit = tierLimit;
+    const limit =
+      activePeriodRecord?.limit || getMonthlyLimit(subscriptionTier);
     const remaining = Math.max(0, limit - used);
     const isLimitReached = used >= limit;
 

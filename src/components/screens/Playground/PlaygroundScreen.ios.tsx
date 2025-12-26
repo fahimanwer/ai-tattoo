@@ -8,7 +8,7 @@ import CoreHaptics from "@/modules/native-core-haptics";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
-import { useUsageLimit } from "@/src/hooks/useUsageLimit";
+import { useSubscription } from "@/src/hooks/useSubscription";
 import {
   Host,
   HStack,
@@ -37,7 +37,8 @@ export function PlaygroundScreen() {
   const isLoading = isPending || isRefetching;
   const params = useLocalSearchParams<{ mode?: string }>();
   const hasHandledMode = useRef(false);
-  const { subscriptionTier } = useUsageLimit();
+  // Use RevenueCat as source of truth for subscription status
+  const { hasActiveSubscription } = useSubscription();
 
   const {
     prompt,
@@ -185,8 +186,8 @@ export function PlaygroundScreen() {
             {
               type: "button",
               label: "Save",
-              variant: subscriptionTier === "free" ? "plain" : "prominent",
-              tintColor: subscriptionTier === "free" ? "white" : "yellow",
+              variant: !hasActiveSubscription ? "plain" : "prominent",
+              tintColor: !hasActiveSubscription ? "white" : "yellow",
               labelStyle: {
                 fontWeight: "bold",
               },
@@ -198,7 +199,7 @@ export function PlaygroundScreen() {
               },
               disabled: activeGenerationUris.length === 0,
             },
-            ...(subscriptionTier === "free" && session?.user !== undefined
+            ...(!hasActiveSubscription && session?.user !== undefined
               ? [
                   {
                     type: "button" as const,
