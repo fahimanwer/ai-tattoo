@@ -23,6 +23,7 @@ import {
   frame,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
+import { isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
@@ -282,7 +283,11 @@ export function PlaygroundScreen() {
                 <SwiftUIButton
                   modifiers={[
                     controlSize("mini"),
-                    buttonStyle("glassProminent"),
+                    buttonStyle(
+                      isLiquidGlassAvailable()
+                        ? "glassProminent"
+                        : "borderedProminent"
+                    ),
                     tint("yellow"),
                     disabled(isPending),
                   ]}
