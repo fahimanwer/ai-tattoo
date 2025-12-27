@@ -42,12 +42,34 @@ export type TextStep = OnboardingStepBase & {
   placeholder?: string;
 };
 
+export type HeroStep = OnboardingStepBase & {
+  kind: "hero";
+};
+
+export type FeatureStep = OnboardingStepBase & {
+  kind: "feature";
+};
+
+export type BeforeAfterStep = OnboardingStepBase & {
+  kind: "beforeAfter";
+};
+
+export type CongratulationsStep = OnboardingStepBase & {
+  kind: "congratulations";
+};
+
+export type ReviewsStep = OnboardingStepBase & {
+  kind: "reviews";
+};
+
 export type OnboardingStep =
   | SingleChoiceStep
   | MultiChoiceStep
   | TextStep
-  | (OnboardingStepBase & {
-      kind: "hero" | "feature" | "beforeAfter" | "congratulations" | "reviews";
-    });
+  | HeroStep
+  | FeatureStep
+  | BeforeAfterStep
+  | CongratulationsStep
+  | ReviewsStep;
 
 export type OnboardingAnswers = Record<string, string | string[]>;

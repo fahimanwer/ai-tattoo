@@ -1,9 +1,9 @@
 import { Text } from "@/src/components/ui/Text";
 import { View } from "react-native";
-import type { OnboardingStepBase } from "../onboardingTypes";
+import type { BeforeAfterStep } from "../onboardingTypes";
 
 type BeforeAfterStepBodyProps = {
-  step: OnboardingStepBase & { kind: "beforeAfter" };
+  step: BeforeAfterStep;
 };
 
 export function BeforeAfterStepBody({ step }: BeforeAfterStepBodyProps) {

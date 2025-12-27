@@ -1,9 +1,9 @@
 import { Text } from "@/src/components/ui/Text";
 import { View } from "react-native";
-import type { OnboardingStepBase } from "../onboardingTypes";
+import type { CongratulationsStep } from "../onboardingTypes";
 
 type CongratulationsStepBodyProps = {
-  step: OnboardingStepBase & { kind: "congratulations" };
+  step: CongratulationsStep;
 };
 
 export function CongratulationsStepBody({
