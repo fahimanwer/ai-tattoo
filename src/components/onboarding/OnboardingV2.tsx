@@ -10,12 +10,11 @@ import * as NativeCoreHaptics from "@/modules/native-core-haptics";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { Image } from "expo-image";
 import { StatusBar } from "expo-status-bar";
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Pressable,
   ScrollView,
   StyleSheet,
   View,
@@ -23,61 +22,17 @@ import {
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { customEvent } from "vexo-analytics";
 import { Button } from "../ui/Button";
-import { Input } from "../ui/Input";
-
-type StepKind =
-  | "hero"
-  | "singleChoice"
-  | "multiChoiceChips"
-  | "multiChoice"
-  | "text"
-  | "feature"
-  | "beforeAfter"
-  | "congratulations"
-  | "reviews";
-
-type ChoiceOption = {
-  id: string;
-  label: string;
-  value: string;
-};
-
-type OnboardingStepBase = {
-  id: string;
-  kind: StepKind;
-  title?: string;
-  description?: string;
-  image?: string;
-  cta?: string;
-  required?: boolean;
-  next?: string;
-};
-
-type SingleChoiceStep = OnboardingStepBase & {
-  kind: "singleChoice";
-  options: ChoiceOption[];
-};
-
-type MultiChoiceStep = OnboardingStepBase & {
-  kind: "multiChoice" | "multiChoiceChips";
-  options: ChoiceOption[];
-  max?: number;
-};
-
-type TextStep = OnboardingStepBase & {
-  kind: "text";
-  placeholder?: string;
-};
-
-type OnboardingStep =
-  | SingleChoiceStep
-  | MultiChoiceStep
-  | TextStep
-  | (OnboardingStepBase & {
-      kind: "hero" | "feature" | "beforeAfter" | "congratulations" | "reviews";
-    });
-
-type OnboardingAnswers = Record<string, string | string[]>;
+import {
+  MultiChoiceStep,
+  OnboardingAnswers,
+  OnboardingStep,
+} from "./onboardingTypes";
+import { BeforeAfterStepBody } from "./steps/BeforeAfterStepBody";
+import { CongratulationsStepBody } from "./steps/CongratulationsStepBody";
+import { MultiChoiceStepBody } from "./steps/MultiChoiceStepBody";
+import { ReviewsStepBody } from "./steps/ReviewsStepBody";
+import { SingleChoiceStepBody } from "./steps/SingleChoiceStepBody";
+import { TextStepBody } from "./steps/TextStepBody";
 
 const ONBOARDING_ANSWERS_VERSION = 1;
 
@@ -224,7 +179,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
     kind: "feature",
     title: "Design the tattoo you want",
     description:
-      "Type a few words and instantly generate unique tattoo designs.",
+      "Type a few words or upload an image and instantly generate unique tattoo designs.",
     image: DEFAULT_ONBOARDING_IMAGE,
   },
   {
@@ -330,7 +285,7 @@ const isStepComplete = (step: OnboardingStep, answers: OnboardingAnswers) => {
     return typeof answer === "string" && answer.length > 0;
   }
 
-  if (step.kind === "multiChoice") {
+  if (step.kind === "multiChoice" || step.kind === "multiChoiceChips") {
     return Array.isArray(answer) && answer.length > 0;
   }
 
@@ -435,51 +390,22 @@ export default function OnboardingV2() {
     setAnswer(step.id, [...existing, value]);
   };
 
-  const stepBody = useMemo(() => {
-    if (!currentStep) {
-      return null;
+  const stepBody = (() => {
+    if (currentStep.kind === "congratulations") {
+      return <CongratulationsStepBody step={currentStep} />;
     }
 
-    if (currentStep.kind === "congratulations") {
-      return (
-        <View style={{ width: "100%", alignItems: "center" }}>
-          <Text type="3xl" weight="bold" style={{ textAlign: "center" }}>
-            Congratulations!
-          </Text>
-          <Text type="xl" style={{ textAlign: "center", marginTop: 12 }}>
-            You&apos;re all set to get started.
-          </Text>
-        </View>
-      );
-    }
     if (currentStep.kind === "singleChoice") {
-      const selected = answers[currentStep.id];
+      const selected =
+        typeof answers[currentStep.id] === "string"
+          ? (answers[currentStep.id] as string)
+          : undefined;
       return (
-        <View style={styles.choiceContainer}>
-          {currentStep.options.map((option) => {
-            const isSelected = selected === option.value;
-            return (
-              <Pressable
-                key={option.id}
-                onPress={() => setAnswer(currentStep.id, option.value)}
-                style={[
-                  styles.choiceChip,
-                  isSelected && styles.choiceChipSelected,
-                ]}
-              >
-                <Text
-                  type="sm"
-                  style={[
-                    styles.choiceChipText,
-                    isSelected && styles.choiceChipTextSelected,
-                  ]}
-                >
-                  {option.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <SingleChoiceStepBody
+          step={currentStep}
+          value={selected}
+          onSelect={(value) => setAnswer(currentStep.id, value)}
+        />
       );
     }
 
@@ -491,36 +417,11 @@ export default function OnboardingV2() {
         ? (answers[currentStep.id] as string[])
         : [];
       return (
-        <View style={styles.choiceContainer}>
-          {currentStep.options.map((option) => {
-            const isSelected = selected.includes(option.value);
-            return (
-              <Pressable
-                key={option.id}
-                onPress={() => toggleMultiChoice(currentStep, option.value)}
-                style={[
-                  styles.choiceChip,
-                  isSelected && styles.choiceChipSelected,
-                ]}
-              >
-                <Text
-                  type="sm"
-                  style={[
-                    styles.choiceChipText,
-                    isSelected && styles.choiceChipTextSelected,
-                  ]}
-                >
-                  {option.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-          {currentStep.max ? (
-            <Text type="sm" style={styles.helperText}>
-              Select up to {currentStep.max}
-            </Text>
-          ) : null}
-        </View>
+        <MultiChoiceStepBody
+          step={currentStep}
+          values={selected}
+          onToggle={(value) => toggleMultiChoice(currentStep, value)}
+        />
       );
     }
 
@@ -530,67 +431,24 @@ export default function OnboardingV2() {
           ? (answers[currentStep.id] as string)
           : "";
       return (
-        <View style={styles.inputContainer}>
-          <Input
-            value={value}
-            onChangeText={(text) => setAnswer(currentStep.id, text)}
-            placeholder={currentStep.placeholder}
-            color="white"
-            variant="subtle"
-            radius="full"
-            style={styles.textInput}
-          />
-        </View>
+        <TextStepBody
+          step={currentStep}
+          value={value}
+          onChange={(text) => setAnswer(currentStep.id, text)}
+        />
       );
     }
 
     if (currentStep.kind === "beforeAfter") {
-      return (
-        <View style={styles.beforeAfterContainer}>
-          <View style={styles.beforeAfterCard}>
-            <View style={styles.beforeAfterImage}>
-              <Text type="sm" style={styles.beforeAfterLabel}>
-                Before
-              </Text>
-            </View>
-            <View style={styles.beforeAfterImage}>
-              <Text type="sm" style={styles.beforeAfterLabel}>
-                After
-              </Text>
-            </View>
-          </View>
-          <Text type="sm" style={styles.helperText}>
-            Compare placement and lighting before you commit.
-          </Text>
-        </View>
-      );
+      return <BeforeAfterStepBody step={currentStep} />;
     }
 
     if (currentStep.kind === "reviews") {
-      return (
-        <View style={styles.reviewsContainer}>
-          <View style={styles.reviewCard}>
-            <Text type="sm" weight="semibold">
-              "Super easy to visualize"
-            </Text>
-            <Text type="sm" style={styles.reviewMeta}>
-              Alex - 5 star
-            </Text>
-          </View>
-          <View style={styles.reviewCard}>
-            <Text type="sm" weight="semibold">
-              "Helped me pick a style"
-            </Text>
-            <Text type="sm" style={styles.reviewMeta}>
-              Jordan - 5 star
-            </Text>
-          </View>
-        </View>
-      );
+      return <ReviewsStepBody step={currentStep} />;
     }
 
     return null;
-  }, [answers, currentStep, setAnswer, toggleMultiChoice]);
+  })();
 
   return (
     <>
@@ -763,37 +621,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  videoView: {
-    width: SCREEN_WIDTH,
-    height: "100%",
-  },
-
-  videoTapArea: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 10,
-  },
-
-  pausedIndicator: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: [{ translateX: -60 }, { translateY: -25 }],
-    zIndex: 20,
-  },
-
-  pausedIndicatorBg: {
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
   container: {
     flex: 1,
     position: "relative",
@@ -862,93 +689,5 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 12,
     alignItems: "center",
-  },
-
-  choiceContainer: {
-    width: "100%",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: 10,
-  },
-
-  choiceChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.25)",
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
-  },
-
-  choiceChipSelected: {
-    borderColor: "rgba(255, 255, 255, 0.85)",
-    backgroundColor: "rgba(255, 255, 255, 0.12)",
-  },
-
-  choiceChipText: {
-    color: "rgba(255, 255, 255, 0.8)",
-  },
-
-  choiceChipTextSelected: {
-    color: "#fff",
-  },
-
-  inputContainer: {
-    width: "100%",
-  },
-
-  textInput: {
-    paddingHorizontal: 16,
-  },
-
-  helperText: {
-    textAlign: "center",
-    opacity: 0.6,
-    marginTop: 8,
-  },
-
-  beforeAfterContainer: {
-    width: "100%",
-    gap: 10,
-  },
-
-  beforeAfterCard: {
-    width: "100%",
-    flexDirection: "row",
-    gap: 12,
-  },
-
-  beforeAfterImage: {
-    flex: 1,
-    height: 120,
-    borderRadius: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.12)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  beforeAfterLabel: {
-    opacity: 0.7,
-  },
-
-  reviewsContainer: {
-    width: "100%",
-    gap: 10,
-  },
-
-  reviewCard: {
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.12)",
-  },
-
-  reviewMeta: {
-    opacity: 0.6,
-    marginTop: 6,
   },
 });
