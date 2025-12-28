@@ -17,6 +17,7 @@ interface OnboardingCTAProps {
   isLastStep: boolean;
   canAdvance: boolean;
   showSignIn: boolean;
+  loading?: boolean;
   onPress: () => void;
 }
 
@@ -25,6 +26,7 @@ export function OnboardingCTA({
   isLastStep,
   canAdvance,
   showSignIn,
+  loading = false,
   onPress,
 }: OnboardingCTAProps) {
   const { bottom } = useSafeAreaInsets();
@@ -43,8 +45,10 @@ export function OnboardingCTA({
     overflow: "hidden" as const,
   }));
 
+  const isDisabled = !canAdvance || loading;
+
   const handlePress = () => {
-    if (!canAdvance) {
+    if (isDisabled) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
@@ -63,14 +67,14 @@ export function OnboardingCTA({
       pointerEvents="auto"
     >
       <Button
-        title={label}
+        title={loading ? "" : label}
         color={isLastStep ? "yellow" : "white"}
         variant="solid"
         size="lg"
         radius="full"
-        style={!canAdvance ? { opacity: 0.5 } : undefined}
+        style={isDisabled ? { opacity: 0.5 } : undefined}
         onPress={handlePress}
-        loading={true}
+        loading={loading}
       />
       <Animated.View
         style={[

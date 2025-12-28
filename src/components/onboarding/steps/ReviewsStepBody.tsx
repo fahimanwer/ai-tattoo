@@ -1,12 +1,15 @@
 import * as Haptics from "expo-haptics";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FlatList, View } from "react-native";
 import { AnimatedText } from "../../screens/Playground/shared/AnimatedText";
 import { Text } from "../../ui/Text";
 import type { ReviewsStep } from "../onboardingTypes";
 
+const DEFAULT_TIMEOUT = 10000; // 10 seconds
+
 type ReviewsStepBodyProps = {
   step: ReviewsStep;
+  onLoadingComplete?: () => void;
 };
 
 const loadingTexts = [
@@ -29,13 +32,40 @@ const reviews = [
   },
 ];
 
-// Goal: Make the user feel like we are building something for them (8s)
+// Goal: Make the user feel like we are building something for them
 // Disable everything during this time
-export function ReviewsStepBody({ step }: ReviewsStepBodyProps) {
+export function ReviewsStepBody({
+  step,
+  onLoadingComplete,
+}: ReviewsStepBodyProps) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const hasCompletedRef = useRef(false);
+  const onLoadingCompleteRef = useRef(onLoadingComplete);
 
+  // Keep callback ref up to date
+  onLoadingCompleteRef.current = onLoadingComplete;
+
+  const timeout = step.timeout ?? DEFAULT_TIMEOUT;
+
+  // Manage the loading timeout - runs once on mount
   useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!hasCompletedRef.current) {
+        hasCompletedRef.current = true;
+        setIsLoading(false);
+        onLoadingCompleteRef.current?.();
+      }
+    }, timeout);
+
+    return () => clearTimeout(timer);
+  }, [timeout]);
+
+  // Text cycling animation (only while loading)
+  useEffect(() => {
+    if (!isLoading) return;
+
     const showDuration = 2000; // how long the text stays visible
     const transitionDuration = 1000; // matches AnimatedText exit duration
 
@@ -49,16 +79,20 @@ export function ReviewsStepBody({ step }: ReviewsStepBodyProps) {
     }, showDuration + transitionDuration);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isLoading]);
 
   // Haptic feedback each time the text changes
   useEffect(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, [index]);
+    if (isLoading) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  }, [index, isLoading]);
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      {visible && <AnimatedText key={index} text={loadingTexts[index]} />}
+      {isLoading && visible && (
+        <AnimatedText key={index} text={loadingTexts[index]} />
+      )}
       <FlatList
         data={reviews}
         renderItem={({ item }) => <Text>{item.title}</Text>}

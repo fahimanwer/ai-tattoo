@@ -61,6 +61,7 @@ export type CongratulationsStep = OnboardingStepBase & {
 
 export type ReviewsStep = OnboardingStepBase & {
   kind: "reviews";
+  timeout?: number; // Duration in ms to show loading state
 };
 
 export type OnboardingStep =

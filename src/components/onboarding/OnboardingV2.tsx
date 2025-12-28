@@ -10,7 +10,7 @@ import * as NativeCoreHaptics from "@/modules/native-core-haptics";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { Image } from "expo-image";
 import { StatusBar } from "expo-status-bar";
-import { use, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   NativeScrollEvent,
@@ -42,10 +42,14 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 export default function OnboardingV2() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [minAllowedIndex, setMinAllowedIndex] = useState(0); // Prevents going back past certain steps
   const scrollViewRef = useRef<ScrollView>(null);
   const hasPlayedEntranceHaptic = useRef(false);
   const onboardingStartTime = useRef<number>(Date.now());
   const stepsViewed = useRef<Set<number>>(new Set([0])); // Track which steps were viewed
+  const currentIndexRef = useRef(currentIndex);
+  currentIndexRef.current = currentIndex; // Keep ref in sync
+
   const { settings, updateSettingsSync } = use(AppSettingsContext);
   const { top } = useSafeAreaInsets();
   const answers = settings.onboardingAnswers ?? {};
@@ -53,6 +57,8 @@ export default function OnboardingV2() {
   const isLastStep = currentIndex >= ONBOARDING_STEPS.length - 1;
   const canAdvance = isStepComplete(currentStep, answers);
   const ctaLabel = currentStep.cta ?? "Continue";
+  const isReviewsStep = currentStep.kind === "reviews";
+  const canGoBack = currentIndex > minAllowedIndex;
 
   // Play entrance haptic on first mount and track first step
   useEffect(() => {
@@ -78,7 +84,7 @@ export default function OnboardingV2() {
     }
   }, [settings.onboardingAnswersVersion, updateSettingsSync]);
 
-  const trackStepViewed = (index: number) => {
+  const trackStepViewed = useCallback((index: number) => {
     if (!stepsViewed.current.has(index)) {
       stepsViewed.current.add(index);
       customEvent("onboarding_step_viewed", {
@@ -87,16 +93,15 @@ export default function OnboardingV2() {
         stepTitle: ONBOARDING_STEPS[index].title,
       });
     }
-  };
+  }, []);
 
+  // Handle scroll events from programmatic scrolling
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / SCREEN_WIDTH);
-    if (
-      index !== currentIndex &&
-      index >= 0 &&
-      index < ONBOARDING_STEPS.length
-    ) {
+    const currIdx = currentIndexRef.current;
+
+    if (index !== currIdx && index >= 0 && index < ONBOARDING_STEPS.length) {
       setCurrentIndex(index);
       trackStepViewed(index);
     }
@@ -136,6 +141,38 @@ export default function OnboardingV2() {
 
   const getArrayAnswer = (id: string) =>
     Array.isArray(answers[id]) ? (answers[id] as string[]) : [];
+
+  // Callback for when reviews step loading completes
+  const handleReviewsComplete = useCallback(() => {
+    const idx = currentIndexRef.current;
+    const step = ONBOARDING_STEPS[idx];
+    const nextIndex = getNextStepIndex(step, idx);
+
+    if (nextIndex >= ONBOARDING_STEPS.length) {
+      const durationMs = Date.now() - onboardingStartTime.current;
+      const durationSeconds = Math.round(durationMs / 1000);
+      customEvent("onboarding_videos_completed", {
+        stepsViewed: stepsViewed.current.size,
+        duration: durationSeconds,
+      });
+      router.push("/(paywall)");
+      return;
+    }
+
+    // Update currentIndex FIRST, then lock navigation
+    setCurrentIndex(nextIndex);
+    trackStepViewed(nextIndex);
+
+    // Lock navigation - can't go back to reviews step
+    setMinAllowedIndex(nextIndex);
+
+    // Scroll to match the new index
+    scrollViewRef.current?.scrollTo({
+      x: nextIndex * SCREEN_WIDTH,
+      animated: true,
+    });
+    NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
+  }, [router, trackStepViewed]);
 
   const stepBody = (() => {
     switch (currentStep.kind) {
@@ -182,7 +219,12 @@ export default function OnboardingV2() {
         return <BeforeAfterStepBody step={currentStep} />;
 
       case "reviews":
-        return <ReviewsStepBody step={currentStep} />;
+        return (
+          <ReviewsStepBody
+            step={currentStep}
+            onLoadingComplete={handleReviewsComplete}
+          />
+        );
 
       default:
         return null;
@@ -195,14 +237,18 @@ export default function OnboardingV2() {
       <Stack.Screen
         options={{
           unstable_headerLeftItems: () =>
-            currentIndex > 0
+            canGoBack && !isReviewsStep
               ? [
                   {
                     type: "button",
                     variant: "plain",
                     onPress: () => {
+                      const prevIndex = Math.max(
+                        currentIndex - 1,
+                        minAllowedIndex
+                      );
                       scrollViewRef.current?.scrollTo({
-                        x: (currentIndex - 1) * SCREEN_WIDTH,
+                        x: prevIndex * SCREEN_WIDTH,
                         animated: true,
                       });
                     },
@@ -258,6 +304,7 @@ export default function OnboardingV2() {
           decelerationRate="fast"
           snapToInterval={SCREEN_WIDTH}
           snapToAlignment="center"
+          scrollEnabled={false}
           style={{
             flex: 1,
           }}
@@ -350,6 +397,7 @@ export default function OnboardingV2() {
             isLastStep={isLastStep}
             canAdvance={canAdvance}
             showSignIn={currentIndex === 0}
+            loading={isReviewsStep}
             onPress={() => {
               const nextIndex = getNextStepIndex(currentStep, currentIndex);
               if (nextIndex >= ONBOARDING_STEPS.length) {
