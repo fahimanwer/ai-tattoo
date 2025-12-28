@@ -1,6 +1,6 @@
 import { Text } from "@/src/components/ui/Text";
 
-import { Link, Stack, useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 
 import {
   onboardingEntranceHaptic,
@@ -18,18 +18,10 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import Animated, {
-  Easing,
-  FadeIn,
-  FadeOut,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { customEvent } from "vexo-analytics";
-import { Button } from "../ui/Button";
 import { CircleProgress } from "./CircleProgress";
+import { OnboardingCTA } from "./OnboardingCTA";
 import {
   getNextStepIndex,
   isStepComplete,
@@ -54,30 +46,12 @@ export default function OnboardingV2() {
   const onboardingStartTime = useRef<number>(Date.now());
   const stepsViewed = useRef<Set<number>>(new Set([0])); // Track which steps were viewed
   const { settings, updateSettingsSync } = use(AppSettingsContext);
-  const { top } = useSafeAreaInsets();
 
   const answers = settings.onboardingAnswers ?? {};
   const currentStep = ONBOARDING_STEPS[currentIndex] ?? ONBOARDING_STEPS[0];
   const isLastStep = currentIndex >= ONBOARDING_STEPS.length - 1;
   const canAdvance = isStepComplete(currentStep, answers);
   const ctaLabel = currentStep.cta ?? (isLastStep ? "Continue" : "Next");
-
-  // Smooth animation for sign-in link visibility
-  const signInVisible = useSharedValue(1);
-
-  useEffect(() => {
-    const targetValue = currentIndex === 0 ? 1 : 0;
-    signInVisible.value = withTiming(targetValue, {
-      duration: 350,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    });
-  }, [currentIndex, signInVisible]);
-
-  const signInAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: signInVisible.value,
-    height: signInVisible.value * 40,
-    overflow: "hidden" as const,
-  }));
 
   // Play entrance haptic on first mount and track first step
   useEffect(() => {
@@ -311,7 +285,6 @@ export default function OnboardingV2() {
         style={{
           flex: 1,
           position: "relative",
-          // backgroundImage is not valid in RN; experimental_backgroundImage prop is used in Expo
           experimental_backgroundImage:
             "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.8) 70%, #000000 100%)",
           zIndex: 2,
@@ -343,8 +316,8 @@ export default function OnboardingV2() {
           >
             <Animated.View
               key={currentIndex}
-              entering={FadeIn.duration(500)}
-              exiting={FadeOut.duration(500)}
+              // entering={FadeIn.duration(500)}
+              // exiting={FadeOut.duration(500)}
               pointerEvents="none"
               style={{
                 width: "100%",
@@ -363,99 +336,41 @@ export default function OnboardingV2() {
               >
                 {currentStep?.description}
               </Text>
+
+              <View style={{ backgroundColor: "blue" }}>{stepBody}</View>
             </Animated.View>
 
-            {/* <Animated.View
-              entering={FadeIn.duration(600).delay(1200)}
-              style={{
-                // gap: 16,
-                // marginTop: 24,
-                // width: "100%",
-                backgroundColor: "red",
-              }}
-              pointerEvents="auto"
-            >
-              {stepBody ? (
-                <View style={styles.stepBodyContainer}>{stepBody}</View>
-              ) : null}
-            </Animated.View> */}
+            <OnboardingCTA
+              label={ctaLabel}
+              isLastStep={isLastStep}
+              canAdvance={canAdvance}
+              showSignIn={currentIndex === 0}
+              onPress={() => {
+                const nextIndex = getNextStepIndex(currentStep, currentIndex);
+                if (nextIndex >= ONBOARDING_STEPS.length) {
+                  // Calculate duration in seconds
+                  const durationMs = Date.now() - onboardingStartTime.current;
+                  const durationSeconds = Math.round(durationMs / 1000);
 
-            {/* CTA Button */}
-            <Animated.View
-              entering={FadeIn.duration(600).delay(1200)}
-              style={{
-                gap: 16,
-                marginTop: 24,
-                width: "100%",
-              }}
-              pointerEvents="auto"
-            >
-              <Button
-                title={ctaLabel}
-                color={
-                  currentIndex === ONBOARDING_STEPS.length - 1
-                    ? "yellow"
-                    : "white"
+                  // Track onboarding completion (paywall comes next)
+                  customEvent("onboarding_videos_completed", {
+                    stepsViewed: stepsViewed.current.size,
+                    duration: durationSeconds,
+                  });
+
+                  // Navigate to paywall (user can purchase before auth)
+                  router.push("/(paywall)");
+                } else {
+                  // Advance to next video
+                  scrollViewRef.current?.scrollTo({
+                    x: nextIndex * SCREEN_WIDTH,
+                    animated: true,
+                  });
+                  // Play swipe haptic
+                  NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
                 }
-                variant="solid"
-                size="lg"
-                radius="full"
-                disabled={!canAdvance}
-                onPress={() => {
-                  const nextIndex = getNextStepIndex(currentStep, currentIndex);
-                  if (nextIndex >= ONBOARDING_STEPS.length) {
-                    // Calculate duration in seconds
-                    const durationMs = Date.now() - onboardingStartTime.current;
-                    const durationSeconds = Math.round(durationMs / 1000);
-
-                    // Track onboarding completion (paywall comes next)
-                    customEvent("onboarding_videos_completed", {
-                      stepsViewed: stepsViewed.current.size,
-                      duration: durationSeconds,
-                    });
-
-                    // Navigate to paywall (user can purchase before auth)
-                    router.push("/(paywall)");
-                  } else {
-                    // Advance to next video
-                    scrollViewRef.current?.scrollTo({
-                      x: nextIndex * SCREEN_WIDTH,
-                      animated: true,
-                    });
-                    // Play swipe haptic
-                    NativeCoreHaptics.default.playPattern(
-                      onboardingSwipeHaptic
-                    );
-                  }
-                }}
-              />
-              <Animated.View
-                style={[
-                  {
-                    alignItems: "center",
-                    width: "100%",
-                  },
-                  signInAnimatedStyle,
-                ]}
-                pointerEvents={currentIndex === 0 ? "auto" : "none"}
-              >
-                <Text
-                  type="sm"
-                  style={{
-                    textAlign: "center",
-                    opacity: 0.5,
-                    lineHeight: 20,
-                  }}
-                >
-                  Already have an account?{" "}
-                  <Link href="/(onboarding)/auth?from=onboarding" asChild>
-                    <Text type="sm" weight="bold">
-                      Sign In
-                    </Text>
-                  </Link>
-                </Text>
-              </Animated.View>
-            </Animated.View>
+              }}
+            />
           </Animated.View>
         </View>
       </View>
