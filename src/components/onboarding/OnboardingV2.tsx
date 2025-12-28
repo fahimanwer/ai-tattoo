@@ -222,6 +222,7 @@ export default function OnboardingV2() {
         return (
           <ReviewsStepBody
             step={currentStep}
+            answers={answers}
             onLoadingComplete={handleReviewsComplete}
           />
         );
