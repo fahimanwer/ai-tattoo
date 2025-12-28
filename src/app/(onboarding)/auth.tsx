@@ -4,7 +4,7 @@ import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { Image } from "expo-image";
-import { Stack } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { use, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,6 +20,7 @@ export default function OnboardingAuth() {
   const { syncAfterAuth } = useUserData();
   const { bottom } = useSafeAreaInsets();
   const [isSyncing, setIsSyncing] = useState(false);
+  const { from } = useLocalSearchParams();
 
   const handleSuccess = async () => {
     // Get the authenticated user's ID
@@ -27,6 +28,11 @@ export default function OnboardingAuth() {
     const userId = session?.data?.user?.id;
 
     if (userId) {
+      if (from === "onboarding") {
+        setIsOnboarded(true);
+        return;
+      }
+
       // Show loading state during sync
       setIsSyncing(true);
 
@@ -86,8 +92,12 @@ export default function OnboardingAuth() {
           </View>
         ) : (
           <AuthContent
-            title="One more step!"
-            description="Please sign in to activate your subscription. This helps us track your subscription and provide you with the best experience."
+            title={from === "onboarding" ? "Welcome back!" : "One more step!"}
+            description={
+              from === "onboarding"
+                ? "Please sign in to continue your journey."
+                : "Please sign in to activate your subscription. This helps us track your subscription and provide you with the best experience."
+            }
             onSuccess={handleSuccess}
             style={{ marginBottom: bottom }}
           />

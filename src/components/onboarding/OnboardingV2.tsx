@@ -1,6 +1,6 @@
 import { Text } from "@/src/components/ui/Text";
 
-import { Link, useRouter } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 
 import {
   onboardingEntranceHaptic,
@@ -20,8 +20,10 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { customEvent } from "vexo-analytics";
 import { Button } from "../ui/Button";
+import { CircleProgress } from "./CircleProgress";
 import {
   MultiChoiceStep,
   OnboardingAnswers,
@@ -47,6 +49,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
     description: "Try-on + AI design in seconds. No regret.",
     image: DEFAULT_ONBOARDING_IMAGE,
     cta: "Get started",
+    cta2: "Sign In",
   },
   {
     id: "goal",
@@ -306,6 +309,7 @@ export default function OnboardingV2() {
   const onboardingStartTime = useRef<number>(Date.now());
   const stepsViewed = useRef<Set<number>>(new Set([0])); // Track which steps were viewed
   const { settings, updateSettingsSync } = use(AppSettingsContext);
+  const { top } = useSafeAreaInsets();
 
   const answers = settings.onboardingAnswers ?? {};
   const currentStep = ONBOARDING_STEPS[currentIndex] ?? ONBOARDING_STEPS[0];
@@ -452,6 +456,47 @@ export default function OnboardingV2() {
 
   return (
     <>
+      <Stack.Screen
+        options={{
+          unstable_headerLeftItems: () =>
+            currentIndex > 0
+              ? [
+                  {
+                    type: "button",
+                    variant: "plain",
+                    onPress: () => {
+                      scrollViewRef.current?.scrollTo({
+                        x: (currentIndex - 1) * SCREEN_WIDTH,
+                        animated: true,
+                      });
+                    },
+                    label: "Back",
+                    icon: {
+                      name: "chevron.left",
+                      type: "sfSymbol",
+                    },
+                  },
+                ]
+              : [],
+          unstable_headerRightItems: () =>
+            currentIndex > 0
+              ? [
+                  {
+                    type: "custom",
+                    variant: "plain",
+                    element: (
+                      <CircleProgress
+                        progress={currentIndex / (ONBOARDING_STEPS.length - 1)}
+                        size={36}
+                        strokeWidth={5}
+                      />
+                    ),
+                    hidesSharedBackground: true,
+                  },
+                ]
+              : [],
+        }}
+      />
       <StatusBar hidden />
       <Animated.View
         entering={FadeIn.duration(700).delay(200)}
@@ -488,23 +533,6 @@ export default function OnboardingV2() {
 
       <View style={styles.container} pointerEvents="box-none">
         <View style={styles.contentContainer} pointerEvents="box-none">
-          {/* Pagination Dots */}
-          <Animated.View
-            entering={FadeIn.duration(600).delay(700)}
-            style={styles.paginationContainer}
-            pointerEvents="none"
-          >
-            {ONBOARDING_STEPS.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.paginationDot,
-                  currentIndex === index && styles.paginationDotActive,
-                ]}
-              />
-            ))}
-          </Animated.View>
-
           <Animated.View
             entering={FadeIn.duration(600).delay(950)}
             style={{
@@ -551,9 +579,13 @@ export default function OnboardingV2() {
             >
               <Button
                 title={ctaLabel}
-                color="yellow"
+                color={
+                  currentIndex === ONBOARDING_STEPS.length - 1
+                    ? "yellow"
+                    : "white"
+                }
                 variant="solid"
-                size="md"
+                size="lg"
                 radius="full"
                 disabled={!canAdvance}
                 onPress={() => {
@@ -586,20 +618,22 @@ export default function OnboardingV2() {
               />
             </Animated.View>
 
-            <Animated.View
-              entering={FadeIn.duration(600).delay(1450)}
-              style={styles.termsContainer}
-              pointerEvents="auto"
-            >
-              <Text type="sm" style={styles.termsText}>
-                By continuing you agree to our{" "}
-                <Link href="/terms-of-service" asChild>
-                  <Text type="sm" style={styles.linkText}>
-                    Terms of Service
-                  </Text>
-                </Link>
-              </Text>
-            </Animated.View>
+            {currentIndex === 0 ? (
+              <Animated.View
+                entering={FadeIn.duration(600).delay(1450)}
+                style={styles.termsContainer}
+                pointerEvents="auto"
+              >
+                <Text type="sm" style={styles.termsText}>
+                  Already have an account?{" "}
+                  <Link href="/(onboarding)/auth?from=onboarding" asChild>
+                    <Text type="sm" weight="bold">
+                      Sign In
+                    </Text>
+                  </Link>
+                </Text>
+              </Animated.View>
+            ) : null}
           </Animated.View>
         </View>
       </View>
@@ -674,10 +708,6 @@ const styles = StyleSheet.create({
 
   termsLink: {
     // Empty style for inline TouchableOpacity
-  },
-
-  linkText: {
-    textDecorationLine: "underline",
   },
 
   imageFallback: {

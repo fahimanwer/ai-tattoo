@@ -3,6 +3,7 @@ import { AppleSignInButton } from "@/src/components/ui/AppleSignInButton";
 import SignInWithGoogleButton from "@/src/components/ui/SignInWithGoogleButton";
 import { Text } from "@/src/components/ui/Text";
 import { Link } from "expo-router";
+import { useState } from "react";
 import { View, ViewStyle } from "react-native";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -29,6 +30,7 @@ export function AuthContent({
   style,
 }: AuthContentProps) {
   const insets = useSafeAreaInsets();
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <View
@@ -50,8 +52,10 @@ export function AuthContent({
       </View>
 
       <SignInWithGoogleButton
+        isLoading={isLoading}
         onPress={async () => {
           try {
+            setIsLoading(true);
             await authClient.signIn.social({
               provider: "google",
               callbackURL: "/(tabs)/home",
@@ -59,8 +63,11 @@ export function AuthContent({
             onSuccess();
           } catch (error) {
             console.error("Google sign-in error:", error);
+          } finally {
+            setIsLoading(false);
           }
         }}
+        disabled={isLoading}
       />
       <AppleSignInButton onSuccess={onSuccess} />
 
@@ -91,4 +98,3 @@ export function AuthContent({
     </View>
   );
 }
-

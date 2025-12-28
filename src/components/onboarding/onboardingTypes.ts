@@ -22,6 +22,7 @@ export type OnboardingStepBase = {
   description?: string;
   image?: string;
   cta?: string;
+  cta2?: string;
   required?: boolean;
   next?: string;
 };

@@ -34,6 +34,7 @@ type AppSettingsContextType = {
   // Individual setters for convenience
   setIsOnboarded: (value: boolean) => Promise<void>;
   setIsOnboardedSync: (value: boolean) => void;
+  setIsOnboardedWithDelay: (value: boolean, delay?: number) => void;
 };
 
 export const AppSettingsContext = createContext<AppSettingsContextType>({
@@ -43,6 +44,7 @@ export const AppSettingsContext = createContext<AppSettingsContextType>({
   resetSettings: () => Promise.resolve(),
   setIsOnboarded: () => Promise.resolve(),
   setIsOnboardedSync: () => {},
+  setIsOnboardedWithDelay: (value: boolean, delay?: number) => {},
 });
 
 // Load settings synchronously from storage
@@ -123,6 +125,15 @@ export function AppSettingsProvider({
     [updateSettingsSync]
   );
 
+  const setIsOnboardedWithDelay = useCallback(
+    (value: boolean, delay?: number) => {
+      setTimeout(() => {
+        setIsOnboardedSync(value);
+      }, delay ?? 2000);
+    },
+    [setIsOnboardedSync]
+  );
+
   const value: AppSettingsContextType = {
     settings,
     updateSettings,
@@ -130,6 +141,7 @@ export function AppSettingsProvider({
     resetSettings,
     setIsOnboarded,
     setIsOnboardedSync,
+    setIsOnboardedWithDelay,
   };
 
   return (
