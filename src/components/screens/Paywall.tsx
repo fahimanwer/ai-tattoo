@@ -341,7 +341,7 @@ export function Paywall() {
       <Stack.Screen
         options={{
           title: "",
-          unstable_headerLeftItems: () => [
+          unstable_headerRightItems: () => [
             {
               type: "custom",
               hidesSharedBackground: true,
@@ -369,7 +369,7 @@ export function Paywall() {
                       <Icon
                         symbol="xmark"
                         size="md"
-                        color={Color.grayscale[50]}
+                        color={Color.grayscale[800]}
                       />
                     </PressableScale>
                   )}

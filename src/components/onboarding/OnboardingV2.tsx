@@ -290,9 +290,12 @@ export default function OnboardingV2() {
               ) : step.image ? (
                 <Image
                   source={{ uri: step.image }}
-                  style={{ width: SCREEN_WIDTH, height: "100%" }}
+                  style={{
+                    width: SCREEN_WIDTH,
+                    height: index === 0 ? "75%" : "100%",
+                  }}
                   contentFit="cover"
-                  contentPosition="center"
+                  contentPosition="left"
                 />
               ) : (
                 <View
