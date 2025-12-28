@@ -51,8 +51,14 @@ export type FeatureStep = OnboardingStepBase & {
   kind: "feature";
 };
 
+export type BeforeAfterImagePair = {
+  before: string;
+  after: string;
+};
+
 export type BeforeAfterStep = OnboardingStepBase & {
   kind: "beforeAfter";
+  imagePairs: BeforeAfterImagePair[];
 };
 
 export type CongratulationsStep = OnboardingStepBase & {

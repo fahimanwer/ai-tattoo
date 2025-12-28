@@ -169,7 +169,50 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     kind: "beforeAfter",
     title: "See the tattoo on your skin",
     description: "Size it, move it, and see it in seconds.",
-    image: undefined,
+    imagePairs: [
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.female-ribs-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.female-ribs-after.avif",
+      },
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.male-arm-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.male-arm-after.avif",
+      },
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.male-chest-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.male-chest-after.avif",
+      },
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.male-shoulder-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.male-shoulder-after.avif",
+      },
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.calf-male-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.calf-male-after.avif",
+      },
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.calf-male-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.calf-male-after.avif",
+      },
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/3.calf-male-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/3.calf-male-after.avif",
+      },
+    ],
   },
   {
     id: "vibe",

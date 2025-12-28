@@ -65,7 +65,6 @@ export function ReviewsStepBody({
   onReady,
 }: ReviewsStepBodyProps) {
   const [index, setIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [progressBarWidth, setProgressBarWidth] = useState(0);
   const hasCompletedRef = useRef(false);
@@ -123,11 +122,8 @@ export function ReviewsStepBody({
     const showDuration = timePerMessage - transitionDuration;
 
     const interval = setInterval(() => {
-      setVisible(false); // trigger unmount animation
-
       setTimeout(() => {
         setIndex((prev) => (prev + 1) % loadingTexts.length);
-        setVisible(true); // remount with new text
       }, transitionDuration);
     }, showDuration + transitionDuration);
 

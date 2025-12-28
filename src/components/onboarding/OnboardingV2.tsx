@@ -30,8 +30,8 @@ import {
   ONBOARDING_ANSWERS_VERSION,
   ONBOARDING_STEPS,
 } from "./onboardingSteps";
-import { MultiChoiceStep } from "./onboardingTypes";
-import { BeforeAfterStepBody } from "./steps/BeforeAfterStepBody";
+import { BeforeAfterStep, MultiChoiceStep } from "./onboardingTypes";
+import { BeforeAfterSlider } from "./steps/BeforeAfterSlider";
 import { CongratulationsStepBody } from "./steps/CongratulationsStepBody";
 import { ReviewsStepBody } from "./steps/ReviewsStepBody";
 import { SelectableOptionsBody } from "./steps/SelectableOptionsBody";
@@ -188,7 +188,8 @@ export default function OnboardingV2() {
         return <CongratulationsStepBody step={currentStep} />;
 
       case "beforeAfter":
-        return <BeforeAfterStepBody step={currentStep} />;
+        // No step body - slider is rendered in background layer
+        return null;
 
       case "reviews":
         return (
@@ -280,11 +281,15 @@ export default function OnboardingV2() {
           }}
           onScroll={handleScroll}
         >
-          {ONBOARDING_STEPS.map((_, index) => (
+          {ONBOARDING_STEPS.map((step, index) => (
             <View key={index} style={{ width: SCREEN_WIDTH, height: "100%" }}>
-              {ONBOARDING_STEPS[index].image ? (
+              {step.kind === "beforeAfter" ? (
+                <BeforeAfterSlider
+                  imagePairs={(step as BeforeAfterStep).imagePairs}
+                />
+              ) : step.image ? (
                 <Image
-                  source={{ uri: ONBOARDING_STEPS[index].image }}
+                  source={{ uri: step.image }}
                   style={{ width: SCREEN_WIDTH, height: "100%" }}
                   contentFit="cover"
                   contentPosition="center"
