@@ -185,7 +185,7 @@ export default function OnboardingV2() {
         );
 
       case "congratulations":
-        return <CongratulationsStepBody step={currentStep} />;
+        return <CongratulationsStepBody step={currentStep} answers={answers} />;
 
       case "beforeAfter":
         // No step body - slider is rendered in background layer
@@ -339,7 +339,9 @@ export default function OnboardingV2() {
             style={{ alignSelf: "center", textAlign: "center" }}
             textBalance
           >
-            {currentStep?.title}
+            {currentStep?.kind === "congratulations" && answers["user-name"]
+              ? `${answers["user-name"]}, you're all set!`
+              : currentStep?.title}
           </Text>
           <Text
             type="xl"

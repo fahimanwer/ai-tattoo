@@ -291,7 +291,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     kind: "congratulations",
     title: "Congratulations!",
     description: "You're all set to get started.",
-    image: DEFAULT_ONBOARDING_IMAGE,
+    image: undefined,
   },
 ];
 
