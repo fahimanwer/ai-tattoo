@@ -30,84 +30,57 @@ function getArrayValue(
 
 /**
  * Generates personalized loading messages for the reviews-loading step.
- * Returns exactly 6 messages focused on setting up the application.
+ * Returns exactly 3 high-impact messages that last longer for better readability.
  * Always returns usable messages even with zero answers.
  */
 export function generateLoadingTexts(answers: OnboardingAnswers): string[] {
-  const location = getArrayValue(answers, "location");
+  // const location = getArrayValue(answers, "location");
   const styles = getArrayValue(answers, "styles");
-  const vibe = getArrayValue(answers, "vibe");
+  // const vibe = getArrayValue(answers, "vibe");
   const goal = getStringValue(answers, "goal");
   const userName = getStringValue(answers, "user-name");
 
   const messages: string[] = [];
 
-  // Phase 1: Understanding preferences (setting up based on their vision)
-  if (userName && messages.length < 1) {
+  // Message 1: Personal acknowledgment - makes them feel heard
+  if (userName) {
     messages.push(`Understanding ${userName}'s vision`);
   } else {
     messages.push("Understanding your vision");
   }
 
-  if (location && location.length > 0 && messages.length < 2) {
-    const firstLocation = location[0];
-    if (firstLocation !== "not_sure") {
-      messages.push(`Setting up for ${firstLocation} placement`);
-    } else {
-      messages.push("Configuring placement options");
-    }
-  } else if (messages.length < 2) {
-    messages.push("Configuring placement options");
-  }
-
-  // Phase 2: Applying preferences (tailoring the experience)
-  if (styles && styles.length > 0 && messages.length < 3) {
-    const firstStyle = styles[0];
-    if (firstStyle !== "not_sure") {
-      messages.push(`Tailoring to your style preferences`);
-    } else {
-      messages.push("Tailoring to your preferences");
-    }
-  } else if (messages.length < 3) {
-    messages.push("Tailoring to your preferences");
-  }
-
-  if (vibe && vibe.length > 0 && messages.length < 4) {
-    messages.push("Applying your aesthetic choices");
-  } else if (messages.length < 4) {
-    messages.push("Applying your preferences");
-  }
-
-  // Phase 3: Special configurations
-  if (goal === "cover_up" && messages.length < 5) {
+  // Message 2: Personalization - shows we're tailoring to their choices
+  if (styles && styles.length > 0 && styles[0] !== "not_sure") {
+    messages.push("Tailoring designs to your style");
+  } else if (goal === "cover_up") {
     messages.push("Setting up cover-up tools");
-  } else if (messages.length < 5) {
-    messages.push("Configuring your workspace");
+  } else {
+    messages.push("Personalizing your experience");
   }
 
-  // Phase 4: Finalization
-  if (messages.length < 6) {
-    messages.push("Almost ready");
-  }
+  // Message 3: Excitement/readiness - builds anticipation
+  messages.push("Preparing your design studio");
 
-  // Ensure we always return exactly 6 messages
-  const fallbackMessages = [
-    "Personalizing your experience",
-    "Setting up your dashboard",
-    "Preparing your workspace",
-  ];
+  // --- Commented out lower-impact messages ---
+  // if (location && location.length > 0 && messages.length < 2) {
+  //   const firstLocation = location[0];
+  //   if (firstLocation !== "not_sure") {
+  //     messages.push(`Setting up for ${firstLocation} placement`);
+  //   } else {
+  //     messages.push("Configuring placement options");
+  //   }
+  // }
 
-  while (messages.length < 6) {
-    const fallback = fallbackMessages.shift();
-    if (fallback) {
-      messages.push(fallback);
-    } else {
-      // Last resort fallback
-      messages.push("Finalizing setup");
-      break;
-    }
-  }
+  // if (vibe && vibe.length > 0) {
+  //   messages.push("Applying your aesthetic choices");
+  // }
 
-  // Return exactly 6 messages
-  return messages.slice(0, 6);
+  // "Configuring your workspace" - too generic
+  // "Setting up your dashboard" - too generic
+  // "Preparing your workspace" - redundant with "design studio"
+  // "Applying your preferences" - too vague
+  // --- End commented out ---
+
+  // Return exactly 3 high-impact messages
+  return messages.slice(0, 3);
 }

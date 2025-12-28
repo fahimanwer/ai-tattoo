@@ -26,7 +26,7 @@ const DEFAULT_TIMEOUT = 7000;
 type ReviewsStepBodyProps = {
   step: ReviewsStep;
   answers?: OnboardingAnswers;
-  onLoadingComplete?: () => void;
+  onReady?: () => void;
 };
 
 const reviews: Review[] = [
@@ -43,34 +43,36 @@ const reviews: Review[] = [
     title: "Actually useful",
     review:
       "The tattoo designs are clean and detailed. Some images take a bit longer to generate, but overall it's one of the best AI tattoo apps out there.",
-    createdAt: new Date("2024-12-20"),
+    createdAt: new Date("2024-12-16"),
     author: "Alexrays1",
   },
   {
     stars: 5,
     title: "I love this",
     review: "Highly recommended 🫵🏼",
-    createdAt: new Date("2024-12-15"),
+    createdAt: new Date("2025-11-18"),
     author: "Antoniozam01",
   },
 ];
 
 // Goal: Make the user feel like we are building something for them
 // Disable everything during this time
+const FINAL_MESSAGE = "Your tattoo journey starts now";
+
 export function ReviewsStepBody({
   step,
   answers = {},
-  onLoadingComplete,
+  onReady,
 }: ReviewsStepBodyProps) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [progressBarWidth, setProgressBarWidth] = useState(0);
   const hasCompletedRef = useRef(false);
-  const onLoadingCompleteRef = useRef(onLoadingComplete);
+  const onReadyRef = useRef(onReady);
 
   // Keep callback ref up to date
-  onLoadingCompleteRef.current = onLoadingComplete;
+  onReadyRef.current = onReady;
 
   // Generate personalized loading messages
   const loadingTexts = useMemo(() => generateLoadingTexts(answers), [answers]);
@@ -102,7 +104,8 @@ export function ReviewsStepBody({
       if (!hasCompletedRef.current) {
         hasCompletedRef.current = true;
         setIsLoading(false);
-        onLoadingCompleteRef.current?.();
+        // Signal that we're ready (enables continue button)
+        onReadyRef.current?.();
       }
     }, timeout);
 
@@ -110,12 +113,14 @@ export function ReviewsStepBody({
   }, [timeout]);
 
   // Text cycling animation (only while loading)
-  // 6 messages over 6 seconds = 1000ms per message
+  // Dynamically calculate duration per message based on total timeout
   useEffect(() => {
     if (!isLoading) return;
 
     const transitionDuration = 200; // transition animation duration
-    const showDuration = 1000 - transitionDuration; // 800ms visible, 200ms transition = 1000ms total per message
+    // Calculate time per message: total timeout / number of messages
+    const timePerMessage = Math.floor(timeout / loadingTexts.length);
+    const showDuration = timePerMessage - transitionDuration;
 
     const interval = setInterval(() => {
       setVisible(false); // trigger unmount animation
@@ -127,7 +132,7 @@ export function ReviewsStepBody({
     }, showDuration + transitionDuration);
 
     return () => clearInterval(interval);
-  }, [isLoading, loadingTexts.length]);
+  }, [isLoading, loadingTexts.length, timeout]);
 
   // Haptic feedback each time the text changes
   useEffect(() => {
@@ -136,10 +141,13 @@ export function ReviewsStepBody({
     }
   }, [index, isLoading]);
 
+  // Determine which text to show
+  const displayText = isLoading ? loadingTexts[index] : FINAL_MESSAGE;
+
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        <AnimatedText text={loadingTexts[index]} />
+        <AnimatedText text={displayText} />
         {/* Subtle progress bar */}
         <View
           onLayout={onProgressBarLayout}
@@ -170,9 +178,11 @@ export function ReviewsStepBody({
               </RoundedRect>
             </Canvas>
           )}
-          <Text type="xs">
-            {index + 1} / {loadingTexts.length}
-          </Text>
+          {isLoading && (
+            <Text type="xs">
+              {index + 1} / {loadingTexts.length}
+            </Text>
+          )}
         </View>
       </View>
 
