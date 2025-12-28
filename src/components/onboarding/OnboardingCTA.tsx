@@ -70,6 +70,7 @@ export function OnboardingCTA({
         radius="full"
         style={!canAdvance ? { opacity: 0.5 } : undefined}
         onPress={handlePress}
+        loading={true}
       />
       <Animated.View
         style={[

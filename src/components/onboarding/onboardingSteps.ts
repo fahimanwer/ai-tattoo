@@ -215,9 +215,9 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "reviews-loading",
     kind: "reviews",
-    title: "Perfect - building your tattoo set",
-    description: undefined,
-    image: DEFAULT_ONBOARDING_IMAGE,
+    title: "Perfect! \nBuilding your tattoo set",
+    description: "Hang tight, we're building your tattoo set.",
+    image: undefined,
   },
   {
     id: "congratulations",
