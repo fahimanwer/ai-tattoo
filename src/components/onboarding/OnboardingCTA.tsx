@@ -57,7 +57,7 @@ export function OnboardingCTA({
 
   return (
     <Animated.View
-      entering={FadeIn.duration(600).delay(1200)}
+      entering={FadeIn}
       style={{
         gap: 16,
         width: "100%",

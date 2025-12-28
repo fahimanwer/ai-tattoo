@@ -256,7 +256,7 @@ export default function OnboardingV2() {
         }}
       />
       <Animated.View
-        entering={FadeIn.duration(700).delay(200)}
+        entering={FadeIn}
         style={{
           position: "absolute",
           top: 0,
@@ -312,7 +312,7 @@ export default function OnboardingV2() {
       </Animated.View>
 
       <Animated.View
-        entering={FadeIn.duration(600).delay(950)}
+        entering={FadeIn}
         style={{
           flex: 1,
           position: "relative",
