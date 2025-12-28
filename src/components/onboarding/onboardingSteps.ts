@@ -212,6 +212,30 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
         after:
           "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/3.calf-male-after.avif",
       },
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.arm-male-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.arm-male-after.avif",
+      },
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.arm-male-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.arm-male-after.avif",
+      },
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/3.arm-male-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/3.arm-male-after.avif",
+      },
+      {
+        before:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/4.arm-male-before.avif",
+        after:
+          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/4.arm-male-after.avif",
+      },
     ],
   },
   {
