@@ -18,6 +18,7 @@ import {
   ScrollView,
   View,
 } from "react-native";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { customEvent } from "vexo-analytics";
@@ -163,6 +164,14 @@ export default function OnboardingV2() {
             step={currentStep}
             value={getStringAnswer(currentStep.id) ?? ""}
             onChange={(text) => setAnswer(currentStep.id, text)}
+            onSubmit={() => {
+              // Assuming this is not the last step
+              const nextIndex = getNextStepIndex(currentStep, currentIndex);
+              scrollViewRef.current?.scrollTo({
+                x: nextIndex * SCREEN_WIDTH,
+                animated: true,
+              });
+            }}
           />
         );
 
@@ -202,6 +211,7 @@ export default function OnboardingV2() {
                       name: "chevron.left",
                       type: "sfSymbol",
                     },
+                    hidesSharedBackground: true,
                   },
                 ]
               : [],
@@ -212,11 +222,15 @@ export default function OnboardingV2() {
                     type: "custom",
                     variant: "plain",
                     element: (
-                      <CircleProgress
-                        progress={currentIndex / (ONBOARDING_STEPS.length - 1)}
-                        size={36}
-                        strokeWidth={5}
-                      />
+                      <Animated.View entering={FadeIn} exiting={FadeOut}>
+                        <CircleProgress
+                          progress={
+                            currentIndex / (ONBOARDING_STEPS.length - 1)
+                          }
+                          size={36}
+                          strokeWidth={5}
+                        />
+                      </Animated.View>
                     ),
                     hidesSharedBackground: true,
                   },
@@ -330,39 +344,39 @@ export default function OnboardingV2() {
         )}
 
         {/* CTA - always at the bottom with safe area */}
-        <OnboardingCTA
-          label={ctaLabel}
-          isLastStep={isLastStep}
-          canAdvance={canAdvance}
-          showSignIn={currentIndex === 0}
-          onPress={() => {
-            console.log("currentIndex", currentIndex);
-            const nextIndex = getNextStepIndex(currentStep, currentIndex);
-            if (nextIndex >= ONBOARDING_STEPS.length) {
-              // Calculate duration in seconds
-              const durationMs = Date.now() - onboardingStartTime.current;
-              const durationSeconds = Math.round(durationMs / 1000);
+        <KeyboardStickyView style={{}} offset={{ opened: top - 16, closed: 0 }}>
+          <OnboardingCTA
+            label={ctaLabel}
+            isLastStep={isLastStep}
+            canAdvance={canAdvance}
+            showSignIn={currentIndex === 0}
+            onPress={() => {
+              const nextIndex = getNextStepIndex(currentStep, currentIndex);
+              if (nextIndex >= ONBOARDING_STEPS.length) {
+                // Calculate duration in seconds
+                const durationMs = Date.now() - onboardingStartTime.current;
+                const durationSeconds = Math.round(durationMs / 1000);
 
-              // Track onboarding completion (paywall comes next)
-              customEvent("onboarding_videos_completed", {
-                stepsViewed: stepsViewed.current.size,
-                duration: durationSeconds,
-              });
+                // Track onboarding completion (paywall comes next)
+                customEvent("onboarding_videos_completed", {
+                  stepsViewed: stepsViewed.current.size,
+                  duration: durationSeconds,
+                });
 
-              // Navigate to paywall (user can purchase before auth)
-              router.push("/(paywall)");
-            } else {
-              console.log("nextIndex", nextIndex);
-              // Advance to next video
-              scrollViewRef.current?.scrollTo({
-                x: nextIndex * SCREEN_WIDTH,
-                animated: true,
-              });
-              // Play swipe haptic
-              NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
-            }
-          }}
-        />
+                // Navigate to paywall (user can purchase before auth)
+                router.push("/(paywall)");
+              } else {
+                // Advance to next video
+                scrollViewRef.current?.scrollTo({
+                  x: nextIndex * SCREEN_WIDTH,
+                  animated: true,
+                });
+                // Play swipe haptic
+                NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
+              }
+            }}
+          />
+        </KeyboardStickyView>
       </Animated.View>
     </>
   );

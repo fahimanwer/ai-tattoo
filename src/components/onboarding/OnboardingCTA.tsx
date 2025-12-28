@@ -1,4 +1,5 @@
 import { Text } from "@/src/components/ui/Text";
+import * as Haptics from "expo-haptics";
 import { Link } from "expo-router";
 import { useEffect } from "react";
 import Animated, {
@@ -42,6 +43,14 @@ export function OnboardingCTA({
     overflow: "hidden" as const,
   }));
 
+  const handlePress = () => {
+    if (!canAdvance) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
+    onPress();
+  };
+
   return (
     <Animated.View
       entering={FadeIn.duration(600).delay(1200)}
@@ -59,8 +68,8 @@ export function OnboardingCTA({
         variant="solid"
         size="lg"
         radius="full"
-        disabled={!canAdvance}
-        onPress={onPress}
+        style={!canAdvance ? { opacity: 0.5 } : undefined}
+        onPress={handlePress}
       />
       <Animated.View
         style={[
