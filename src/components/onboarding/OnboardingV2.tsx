@@ -18,7 +18,7 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { customEvent } from "vexo-analytics";
 import { CircleProgress } from "./CircleProgress";
@@ -305,6 +305,8 @@ export default function OnboardingV2() {
             width: "100%",
             paddingTop: 24,
           }}
+          entering={FadeIn}
+          exiting={FadeOut}
         >
           <Text
             type="4xl"
