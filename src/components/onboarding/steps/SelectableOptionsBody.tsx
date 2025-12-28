@@ -2,7 +2,7 @@ import type { HapticPatternData } from "@/modules/native-core-haptics";
 import CoreHaptics from "@/modules/native-core-haptics";
 import { Color } from "@/src/constants/TWPalette";
 import { PressableScale } from "pressto";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, {
   FadeIn,
@@ -30,11 +30,13 @@ const TIMING = {
     initialDelay: 200, // ms before first item appears
     staggerDelay: 100, // ms between each option appearing
     fadeDuration: 350, // duration of fade animation
+    sharpness: 0.3,
   },
   chips: {
     initialDelay: 66, // 3x faster
     staggerDelay: 33, // 3x faster
     fadeDuration: 117, // 3x faster
+    sharpness: 0.01,
   },
 } as const;
 
@@ -93,7 +95,7 @@ function createOptionsEntranceHaptic(
     const intensity = Math.min(baseIntensity + intensityVariation, 0.5);
 
     // Lower sharpness = softer, rounder feel (like soft piano)
-    const sharpness = 0.3 + 0.05 * (i % 2);
+    const sharpness = timing.sharpness + 0.05 * (i % 2);
 
     events.push({
       eventType: "hapticTransient" as const,
@@ -232,7 +234,6 @@ function isSingleSelection(
 }
 
 export function SelectableOptionsBody(props: SelectableOptionsBodyProps) {
-  const hasPlayedHaptic = useRef(false);
   const { step } = props;
 
   const variant = getVariant(step);
@@ -254,11 +255,8 @@ export function SelectableOptionsBody(props: SelectableOptionsBodyProps) {
     }
   };
 
-  // Play the piano-like haptic pattern when component mounts
+  // Play the piano-like haptic pattern when step changes or on mount
   useEffect(() => {
-    if (hasPlayedHaptic.current) return;
-    hasPlayedHaptic.current = true;
-
     const hapticPattern = createOptionsEntranceHaptic(
       step.options.length,
       timing
@@ -272,7 +270,7 @@ export function SelectableOptionsBody(props: SelectableOptionsBodyProps) {
     }, 0);
 
     return () => clearTimeout(timer);
-  }, [step.options.length, timing]);
+  }, [step.id, step.options.length, timing]);
 
   return (
     <View
