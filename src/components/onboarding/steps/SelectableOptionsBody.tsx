@@ -14,7 +14,11 @@ import Animated, {
 } from "react-native-reanimated";
 import { Icon } from "../../ui/Icon";
 import { Text } from "../../ui/Text";
-import type { ChoiceOption, MultiChoiceStep } from "../onboardingTypes";
+import type {
+  ChoiceOption,
+  MultiChoiceStep,
+  SingleChoiceStep,
+} from "../onboardingTypes";
 
 const AnimatedPressableScale = Animated.createAnimatedComponent(PressableScale);
 
@@ -36,11 +40,23 @@ const TIMING = {
 
 type SelectableOptionsVariant = "list" | "chips";
 
-type SelectableOptionsBodyProps = {
+type ChoiceStep = SingleChoiceStep | MultiChoiceStep;
+
+// Props for single selection mode
+type SingleSelectionProps = {
+  step: SingleChoiceStep;
+  value?: string;
+  onSelect: (value: string) => void;
+};
+
+// Props for multi selection mode
+type MultiSelectionProps = {
   step: MultiChoiceStep;
   values: string[];
   onToggle: (value: string) => void;
 };
+
+type SelectableOptionsBodyProps = SingleSelectionProps | MultiSelectionProps;
 
 type TimingConfig = (typeof TIMING)[SelectableOptionsVariant];
 
@@ -115,6 +131,10 @@ function createOptionsEntranceHaptic(
       },
     ],
   };
+}
+
+function getVariant(step: ChoiceStep): SelectableOptionsVariant {
+  return step.kind === "multiChoiceChips" ? "chips" : "list";
 }
 
 function SelectableOption({
@@ -204,15 +224,35 @@ function SelectableOption({
   );
 }
 
-export function SelectableOptionsBody({
-  step,
-  values,
-  onToggle,
-}: SelectableOptionsBodyProps) {
+// Type guard to check if props are for single selection
+function isSingleSelection(
+  props: SelectableOptionsBodyProps
+): props is SingleSelectionProps {
+  return props.step.kind === "singleChoice";
+}
+
+export function SelectableOptionsBody(props: SelectableOptionsBodyProps) {
   const hasPlayedHaptic = useRef(false);
-  const variant: SelectableOptionsVariant =
-    step.kind === "multiChoiceChips" ? "chips" : "list";
+  const { step } = props;
+
+  const variant = getVariant(step);
   const timing = TIMING[variant];
+
+  // Get selected values based on selection mode
+  const selectedValues: string[] = isSingleSelection(props)
+    ? props.value
+      ? [props.value]
+      : []
+    : props.values;
+
+  // Handle option press based on selection mode
+  const handleOptionPress = (value: string) => {
+    if (isSingleSelection(props)) {
+      props.onSelect(value);
+    } else {
+      props.onToggle(value);
+    }
+  };
 
   // Play the piano-like haptic pattern when component mounts
   useEffect(() => {
@@ -251,8 +291,8 @@ export function SelectableOptionsBody({
         <SelectableOption
           key={option.id}
           option={option}
-          isSelected={values.includes(option.value)}
-          onPress={() => onToggle(option.value)}
+          isSelected={selectedValues.includes(option.value)}
+          onPress={() => handleOptionPress(option.value)}
           index={index}
           variant={variant}
           timing={timing}
@@ -261,6 +301,3 @@ export function SelectableOptionsBody({
     </View>
   );
 }
-
-// Re-export with old name for backwards compatibility
-export { SelectableOptionsBody as MultiChoiceStepBody };

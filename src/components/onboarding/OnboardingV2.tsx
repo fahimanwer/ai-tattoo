@@ -34,7 +34,6 @@ import { BeforeAfterStepBody } from "./steps/BeforeAfterStepBody";
 import { CongratulationsStepBody } from "./steps/CongratulationsStepBody";
 import { ReviewsStepBody } from "./steps/ReviewsStepBody";
 import { SelectableOptionsBody } from "./steps/SelectableOptionsBody";
-import { SingleChoiceStepBody } from "./steps/SingleChoiceStepBody";
 import { TextStepBody } from "./steps/TextStepBody";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -124,75 +123,66 @@ export default function OnboardingV2() {
       return;
     }
 
-    if (step.max && existing.length >= step.max) {
+    if (step.max && existing.length > step.max) {
       return;
     }
 
     setAnswer(step.id, [...existing, value]);
   };
 
+  const getStringAnswer = (id: string) =>
+    typeof answers[id] === "string" ? (answers[id] as string) : undefined;
+
+  const getArrayAnswer = (id: string) =>
+    Array.isArray(answers[id]) ? (answers[id] as string[]) : [];
+
   const stepBody = (() => {
-    if (currentStep.kind === "congratulations") {
-      return <CongratulationsStepBody step={currentStep} />;
-    }
+    switch (currentStep.kind) {
+      case "singleChoice":
+        return (
+          <SelectableOptionsBody
+            step={currentStep}
+            value={getStringAnswer(currentStep.id)}
+            onSelect={(value) => setAnswer(currentStep.id, value)}
+          />
+        );
 
-    if (currentStep.kind === "singleChoice") {
-      const selected =
-        typeof answers[currentStep.id] === "string"
-          ? (answers[currentStep.id] as string)
-          : undefined;
-      return (
-        <SingleChoiceStepBody
-          step={currentStep}
-          value={selected}
-          onSelect={(value) => setAnswer(currentStep.id, value)}
-        />
-      );
-    }
+      case "multiChoice":
+      case "multiChoiceChips":
+        return (
+          <SelectableOptionsBody
+            step={currentStep}
+            values={getArrayAnswer(currentStep.id)}
+            onToggle={(value) => toggleMultiChoice(currentStep, value)}
+          />
+        );
 
-    if (
-      currentStep.kind === "multiChoice" ||
-      currentStep.kind === "multiChoiceChips"
-    ) {
-      const selected = Array.isArray(answers[currentStep.id])
-        ? (answers[currentStep.id] as string[])
-        : [];
-      return (
-        <SelectableOptionsBody
-          step={currentStep}
-          values={selected}
-          onToggle={(value) => toggleMultiChoice(currentStep, value)}
-        />
-      );
-    }
+      case "text":
+        return (
+          <TextStepBody
+            step={currentStep}
+            value={getStringAnswer(currentStep.id) ?? ""}
+            onChange={(text) => setAnswer(currentStep.id, text)}
+          />
+        );
 
-    if (currentStep.kind === "text") {
-      const value =
-        typeof answers[currentStep.id] === "string"
-          ? (answers[currentStep.id] as string)
-          : "";
-      return (
-        <TextStepBody
-          step={currentStep}
-          value={value}
-          onChange={(text) => setAnswer(currentStep.id, text)}
-        />
-      );
-    }
+      case "congratulations":
+        return <CongratulationsStepBody step={currentStep} />;
 
-    if (currentStep.kind === "beforeAfter") {
-      return <BeforeAfterStepBody step={currentStep} />;
-    }
+      case "beforeAfter":
+        return <BeforeAfterStepBody step={currentStep} />;
 
-    if (currentStep.kind === "reviews") {
-      return <ReviewsStepBody step={currentStep} />;
-    }
+      case "reviews":
+        return <ReviewsStepBody step={currentStep} />;
 
-    return null;
+      default:
+        return null;
+    }
   })();
 
   return (
     <>
+      <StatusBar hidden />
       <Stack.Screen
         options={{
           unstable_headerLeftItems: () =>
@@ -234,7 +224,6 @@ export default function OnboardingV2() {
               : [],
         }}
       />
-      <StatusBar hidden />
       <Animated.View
         entering={FadeIn.duration(700).delay(200)}
         style={{
