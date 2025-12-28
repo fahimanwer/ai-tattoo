@@ -32,8 +32,8 @@ import {
 import { MultiChoiceStep } from "./onboardingTypes";
 import { BeforeAfterStepBody } from "./steps/BeforeAfterStepBody";
 import { CongratulationsStepBody } from "./steps/CongratulationsStepBody";
-import { MultiChoiceStepBody } from "./steps/MultiChoiceStepBody";
 import { ReviewsStepBody } from "./steps/ReviewsStepBody";
+import { SelectableOptionsBody } from "./steps/SelectableOptionsBody";
 import { SingleChoiceStepBody } from "./steps/SingleChoiceStepBody";
 import { TextStepBody } from "./steps/TextStepBody";
 
@@ -158,7 +158,7 @@ export default function OnboardingV2() {
         ? (answers[currentStep.id] as string[])
         : [];
       return (
-        <MultiChoiceStepBody
+        <SelectableOptionsBody
           step={currentStep}
           values={selected}
           onToggle={(value) => toggleMultiChoice(currentStep, value)}

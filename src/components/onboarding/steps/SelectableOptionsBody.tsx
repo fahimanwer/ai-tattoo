@@ -19,37 +19,56 @@ import type { ChoiceOption, MultiChoiceStep } from "../onboardingTypes";
 const AnimatedPressableScale = Animated.createAnimatedComponent(PressableScale);
 
 const ANIMATION_DURATION = 200;
-const INITIAL_DELAY = 200; // ms before first item appears
-const STAGGER_DELAY = 100; // ms between each option appearing
-const FADE_DURATION = 350; // duration of fade animation
 
-type MultiChoiceStepBodyProps = {
+// Timing configuration per variant
+const TIMING = {
+  list: {
+    initialDelay: 200, // ms before first item appears
+    staggerDelay: 100, // ms between each option appearing
+    fadeDuration: 350, // duration of fade animation
+  },
+  chips: {
+    initialDelay: 66, // 3x faster
+    staggerDelay: 33, // 3x faster
+    fadeDuration: 117, // 3x faster
+  },
+} as const;
+
+type SelectableOptionsVariant = "list" | "chips";
+
+type SelectableOptionsBodyProps = {
   step: MultiChoiceStep;
   values: string[];
   onToggle: (value: string) => void;
 };
 
-type MultiChoiceOptionProps = {
+type TimingConfig = (typeof TIMING)[SelectableOptionsVariant];
+
+type SelectableOptionProps = {
   option: ChoiceOption;
   isSelected: boolean;
   onPress: () => void;
   index: number;
+  variant: SelectableOptionsVariant;
+  timing: TimingConfig;
 };
 
 /**
- * Creates a piano-like haptic pattern for multi-choice options appearing
+ * Creates a piano-like haptic pattern for options appearing
  * Each "note" is slightly different, creating a gentle melodic feel
  * Like soft piano keys: toon toon toon toon ♪
  */
-function createMultiChoiceEntranceHaptic(
-  optionCount: number
+function createOptionsEntranceHaptic(
+  optionCount: number,
+  timing: TimingConfig
 ): HapticPatternData {
-  const baseDelay = INITIAL_DELAY / 1000; // Sync with animation initial delay
+  const baseDelay = timing.initialDelay / 1000; // Sync with animation initial delay
+  const staggerDelay = timing.staggerDelay / 1000;
   const events = [];
 
   for (let i = 0; i < optionCount; i++) {
     // Calculate time based on stagger delay
-    const time = baseDelay + (i * STAGGER_DELAY) / 1000;
+    const time = baseDelay + i * staggerDelay;
 
     // Vary intensity and sharpness slightly for each "note"
     // Creates a gentle ascending feel, like walking up piano keys
@@ -71,11 +90,12 @@ function createMultiChoiceEntranceHaptic(
   }
 
   // Add a gentle settling continuous haptic at the end
-  const settlingTime = baseDelay + (optionCount * STAGGER_DELAY) / 1000 + 0.1;
+  const settlingTime = baseDelay + optionCount * staggerDelay + 0.05;
+  const settlingDuration = timing === TIMING.chips ? 0.05 : 0.15;
   events.push({
     eventType: "hapticContinuous" as const,
     time: settlingTime,
-    eventDuration: 0.15,
+    eventDuration: settlingDuration,
     parameters: [
       { parameterID: "hapticIntensity" as const, value: 0.12 },
       { parameterID: "hapticSharpness" as const, value: 0.08 },
@@ -90,20 +110,23 @@ function createMultiChoiceEntranceHaptic(
         relativeTime: settlingTime,
         controlPoints: [
           { relativeTime: 0.0, value: 0.15 },
-          { relativeTime: 0.15, value: 0.0 },
+          { relativeTime: settlingDuration, value: 0.0 },
         ],
       },
     ],
   };
 }
 
-function MultiChoiceOption({
+function SelectableOption({
   option,
   isSelected,
   onPress,
   index,
-}: MultiChoiceOptionProps) {
+  variant,
+  timing,
+}: SelectableOptionProps) {
   const progress = useSharedValue(isSelected ? 1 : 0);
+  const isChip = variant === "chips";
 
   useEffect(() => {
     progress.value = withTiming(isSelected ? 1 : 0, {
@@ -134,12 +157,13 @@ function MultiChoiceOption({
   }));
 
   // Calculate stagger delay for this option (with initial delay before first item)
-  const enteringDelay = INITIAL_DELAY + index * STAGGER_DELAY;
+  const enteringDelay = timing.initialDelay + index * timing.staggerDelay;
 
   return (
     <Animated.View
-      entering={FadeIn.duration(FADE_DURATION).delay(enteringDelay)}
+      entering={FadeIn.duration(timing.fadeDuration).delay(enteringDelay)}
       exiting={FadeOut.duration(200)}
+      style={{}}
     >
       <AnimatedPressableScale
         onPress={onPress}
@@ -147,26 +171,32 @@ function MultiChoiceOption({
           {
             flexDirection: "row",
             alignItems: "center",
-            gap: 12,
-            paddingHorizontal: 17,
-            paddingVertical: 17,
+            gap: isChip ? 0 : 12,
+            paddingHorizontal: isChip ? 16 : 17,
+            paddingVertical: isChip ? 5 : 17,
             borderWidth: 1,
             borderRadius: 68,
           },
           animatedCardStyle,
         ]}
       >
-        {/* Icon with crossfade animation */}
-        <View style={{ width: 26, height: 26 }}>
-          <Animated.View style={unselectedIconOpacity}>
-            <Icon symbol="circle.fill" size="lg" color={Color.grayscale[700]} />
-          </Animated.View>
-          <Animated.View style={selectedIconOpacity}>
-            <Icon symbol="checkmark.circle.fill" size="lg" color="white" />
-          </Animated.View>
-        </View>
+        {/* Icon with crossfade animation - only for list variant */}
+        {!isChip && (
+          <View style={{ width: 26, height: 26 }}>
+            <Animated.View style={unselectedIconOpacity}>
+              <Icon
+                symbol="circle.fill"
+                size="lg"
+                color={Color.grayscale[700]}
+              />
+            </Animated.View>
+            <Animated.View style={selectedIconOpacity}>
+              <Icon symbol="checkmark.circle.fill" size="lg" color="white" />
+            </Animated.View>
+          </View>
+        )}
 
-        <Text weight="medium" style={{ flex: 1 }}>
+        <Text weight="medium" style={isChip ? undefined : { flex: 1 }}>
           {option.label}
         </Text>
       </AnimatedPressableScale>
@@ -174,41 +204,58 @@ function MultiChoiceOption({
   );
 }
 
-export function MultiChoiceStepBody({
+export function SelectableOptionsBody({
   step,
   values,
   onToggle,
-}: MultiChoiceStepBodyProps) {
+}: SelectableOptionsBodyProps) {
   const hasPlayedHaptic = useRef(false);
+  const variant: SelectableOptionsVariant =
+    step.kind === "multiChoiceChips" ? "chips" : "list";
+  const timing = TIMING[variant];
 
   // Play the piano-like haptic pattern when component mounts
   useEffect(() => {
     if (hasPlayedHaptic.current) return;
     hasPlayedHaptic.current = true;
 
-    const hapticPattern = createMultiChoiceEntranceHaptic(step.options.length);
+    const hapticPattern = createOptionsEntranceHaptic(
+      step.options.length,
+      timing
+    );
 
     // Sync haptic with the animation start
     const timer = setTimeout(() => {
       CoreHaptics.playPattern(hapticPattern).catch((error) => {
-        console.error("Failed to play multi-choice entrance haptic:", error);
+        console.error("Failed to play options entrance haptic:", error);
       });
     }, 0);
 
     return () => clearTimeout(timer);
-  }, [step.options.length]);
+  }, [step.options.length, timing]);
 
   return (
-    <View style={{ gap: 12 }}>
+    <View
+      style={
+        variant === "chips"
+          ? { flexDirection: "row", flexWrap: "wrap", gap: 10 }
+          : { gap: 12 }
+      }
+    >
       {step.options.map((option, index) => (
-        <MultiChoiceOption
+        <SelectableOption
           key={option.id}
           option={option}
           isSelected={values.includes(option.value)}
           onPress={() => onToggle(option.value)}
           index={index}
+          variant={variant}
+          timing={timing}
         />
       ))}
     </View>
   );
 }
+
+// Re-export with old name for backwards compatibility
+export { SelectableOptionsBody as MultiChoiceStepBody };
