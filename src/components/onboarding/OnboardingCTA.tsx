@@ -8,6 +8,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "../ui/Button";
 
 interface OnboardingCTAProps {
@@ -25,6 +26,7 @@ export function OnboardingCTA({
   showSignIn,
   onPress,
 }: OnboardingCTAProps) {
+  const { bottom } = useSafeAreaInsets();
   const signInVisible = useSharedValue(showSignIn ? 1 : 0);
 
   useEffect(() => {
@@ -45,8 +47,9 @@ export function OnboardingCTA({
       entering={FadeIn.duration(600).delay(1200)}
       style={{
         gap: 16,
-        marginTop: 24,
         width: "100%",
+        paddingTop: 24,
+        paddingBottom: Math.max(bottom, 16),
       }}
       pointerEvents="auto"
     >

@@ -19,6 +19,7 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { customEvent } from "vexo-analytics";
 import { CircleProgress } from "./CircleProgress";
 import { OnboardingCTA } from "./OnboardingCTA";
@@ -46,12 +47,12 @@ export default function OnboardingV2() {
   const onboardingStartTime = useRef<number>(Date.now());
   const stepsViewed = useRef<Set<number>>(new Set([0])); // Track which steps were viewed
   const { settings, updateSettingsSync } = use(AppSettingsContext);
-
+  const { top } = useSafeAreaInsets();
   const answers = settings.onboardingAnswers ?? {};
   const currentStep = ONBOARDING_STEPS[currentIndex] ?? ONBOARDING_STEPS[0];
   const isLastStep = currentIndex >= ONBOARDING_STEPS.length - 1;
   const canAdvance = isStepComplete(currentStep, answers);
-  const ctaLabel = currentStep.cta ?? (isLastStep ? "Continue" : "Next");
+  const ctaLabel = currentStep.cta ?? "Continue";
 
   // Play entrance haptic on first mount and track first step
   useEffect(() => {
@@ -264,9 +265,9 @@ export default function OnboardingV2() {
               {ONBOARDING_STEPS[index].image ? (
                 <Image
                   source={{ uri: ONBOARDING_STEPS[index].image }}
-                  style={{ width: SCREEN_WIDTH, height: "75%" }}
+                  style={{ width: SCREEN_WIDTH, height: "100%" }}
                   contentFit="cover"
-                  contentPosition="left"
+                  contentPosition="center"
                 />
               ) : (
                 <View
@@ -281,99 +282,90 @@ export default function OnboardingV2() {
           ))}
         </ScrollView>
       </Animated.View>
-      <View
+
+      <Animated.View
+        entering={FadeIn.duration(600).delay(950)}
         style={{
           flex: 1,
           position: "relative",
           experimental_backgroundImage:
             "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.8) 70%, #000000 100%)",
           zIndex: 2,
+          justifyContent: "flex-end",
+          paddingHorizontal: 16,
+          paddingTop: top + 32,
         }}
         pointerEvents="box-none"
       >
-        <View
+        {/* Title and Description */}
+        <Animated.View
+          key={currentIndex}
+          pointerEvents="none"
           style={{
-            height: "100%",
-            flex: 1,
-            justifyContent: "flex-end",
-            alignItems: "center",
-            left: 0,
-            right: 0,
-            bottom: 0,
-            paddingBottom: 32,
-            paddingHorizontal: 16,
+            width: "100%",
+            paddingTop: 24,
           }}
-          pointerEvents="box-none"
         >
-          <Animated.View
-            entering={FadeIn.duration(600).delay(950)}
+          <Text type="3xl" weight="bold" style={{ textAlign: "center" }}>
+            {currentStep?.title}
+          </Text>
+          <Text
+            type="xl"
             style={{
-              width: "100%",
-              alignItems: "center",
-              position: "relative",
+              opacity: 0.6,
+              textAlign: "center",
+              marginTop: 12,
+            }}
+          >
+            {currentStep?.description}
+          </Text>
+        </Animated.View>
+
+        {/* Step body - takes available space */}
+        {stepBody && (
+          <View
+            style={{
+              flex: 1,
             }}
             pointerEvents="box-none"
           >
-            <Animated.View
-              key={currentIndex}
-              // entering={FadeIn.duration(500)}
-              // exiting={FadeOut.duration(500)}
-              pointerEvents="none"
-              style={{
-                width: "100%",
-              }}
-            >
-              <Text type="3xl" weight="bold" style={{ textAlign: "center" }}>
-                {currentStep?.title}
-              </Text>
-              <Text
-                type="xl"
-                style={{
-                  opacity: 0.6,
-                  textAlign: "center",
-                  marginTop: 12,
-                }}
-              >
-                {currentStep?.description}
-              </Text>
+            {stepBody}
+          </View>
+        )}
 
-              <View style={{ backgroundColor: "blue" }}>{stepBody}</View>
-            </Animated.View>
+        {/* CTA - always at the bottom with safe area */}
+        <OnboardingCTA
+          label={ctaLabel}
+          isLastStep={isLastStep}
+          canAdvance={canAdvance}
+          showSignIn={currentIndex === 0}
+          onPress={() => {
+            const nextIndex = getNextStepIndex(currentStep, currentIndex);
+            if (nextIndex >= ONBOARDING_STEPS.length) {
+              // Calculate duration in seconds
+              const durationMs = Date.now() - onboardingStartTime.current;
+              const durationSeconds = Math.round(durationMs / 1000);
 
-            <OnboardingCTA
-              label={ctaLabel}
-              isLastStep={isLastStep}
-              canAdvance={canAdvance}
-              showSignIn={currentIndex === 0}
-              onPress={() => {
-                const nextIndex = getNextStepIndex(currentStep, currentIndex);
-                if (nextIndex >= ONBOARDING_STEPS.length) {
-                  // Calculate duration in seconds
-                  const durationMs = Date.now() - onboardingStartTime.current;
-                  const durationSeconds = Math.round(durationMs / 1000);
+              // Track onboarding completion (paywall comes next)
+              customEvent("onboarding_videos_completed", {
+                stepsViewed: stepsViewed.current.size,
+                duration: durationSeconds,
+              });
 
-                  // Track onboarding completion (paywall comes next)
-                  customEvent("onboarding_videos_completed", {
-                    stepsViewed: stepsViewed.current.size,
-                    duration: durationSeconds,
-                  });
-
-                  // Navigate to paywall (user can purchase before auth)
-                  router.push("/(paywall)");
-                } else {
-                  // Advance to next video
-                  scrollViewRef.current?.scrollTo({
-                    x: nextIndex * SCREEN_WIDTH,
-                    animated: true,
-                  });
-                  // Play swipe haptic
-                  NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
-                }
-              }}
-            />
-          </Animated.View>
-        </View>
-      </View>
+              // Navigate to paywall (user can purchase before auth)
+              router.push("/(paywall)");
+            } else {
+              // Advance to next video
+              scrollViewRef.current?.scrollTo({
+                x: nextIndex * SCREEN_WIDTH,
+                animated: true,
+              });
+              // Play swipe haptic
+              NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
+            }
+          }}
+        />
+      </Animated.View>
     </>
   );
 }
