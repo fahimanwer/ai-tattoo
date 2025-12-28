@@ -6,7 +6,7 @@ import { useUserData } from "@/src/hooks/useUserData";
 import { Image } from "expo-image";
 import { Link, Stack, useRouter } from "expo-router";
 import { PressableScale } from "pressto";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import Purchases, {
   PACKAGE_TYPE,
@@ -16,6 +16,7 @@ import Purchases, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { customEvent } from "vexo-analytics";
+import type { OnboardingAnswers } from "../onboarding/onboardingTypes";
 import { CTAButton } from "../paywall/CTAButton";
 import { OfferingCard } from "../paywall/OfferingCard";
 import { Icon } from "../ui/Icon";
@@ -24,6 +25,59 @@ import { Text } from "../ui/Text";
 type BillingPeriod = "weekly" | "monthly";
 
 const CLOSE_BUTTON_DELAY_MS = 2500;
+
+/**
+ * Helper to safely extract an array value from answers
+ */
+function getArrayValue(
+  answers: OnboardingAnswers | undefined,
+  key: string
+): string[] | undefined {
+  if (!answers) return undefined;
+  const value = answers[key];
+  if (Array.isArray(value) && value.length > 0) {
+    return value.filter((v) => typeof v === "string" && v.trim().length > 0);
+  }
+  return undefined;
+}
+
+/**
+ * Generate personalized paywall headline based on user's onboarding answers
+ */
+function getPersonalizedHeadline(
+  answers: OnboardingAnswers | undefined
+): string {
+  const userType = getArrayValue(answers, "user-description");
+  const goals = getArrayValue(answers, "goal");
+
+  // Artist-specific headline
+  if (userType?.includes("artist")) {
+    return "Show clients their tattoo before you ink";
+  }
+
+  // Cover-up focused headline
+  if (goals?.includes("cover_up")) {
+    return "Transform your tattoo with confidence";
+  }
+
+  // Try-on focused headline
+  if (goals?.includes("try_on")) {
+    return "See your tattoo before you commit";
+  }
+
+  // Generate/design focused headline
+  if (goals?.includes("generate")) {
+    return "Design the tattoo you've always wanted";
+  }
+
+  // Browsing/inspiration focused
+  if (goals?.includes("browse")) {
+    return "Find your perfect tattoo design";
+  }
+
+  // Default: Strong, universal headline
+  return "Design the tattoo you've always wanted";
+}
 
 export function Paywall() {
   const [defaultOffering, setDefaultOffering] =
@@ -44,6 +98,12 @@ export function Paywall() {
 
   // Detect if we're in the onboarding flow (user hasn't completed onboarding yet)
   const isOnboardingFlow = !settings.isOnboarded;
+
+  // Personalized headline based on onboarding answers
+  const headline = useMemo(
+    () => getPersonalizedHeadline(settings.onboardingAnswers),
+    [settings.onboardingAnswers]
+  );
 
   // Check if user is authenticated
   const { data: session } = authClient.useSession();
@@ -281,7 +341,7 @@ export function Paywall() {
       <Stack.Screen
         options={{
           title: "",
-          unstable_headerLeftItems: () => [
+          unstable_headerRightItems: () => [
             {
               type: "custom",
               hidesSharedBackground: true,
@@ -309,7 +369,7 @@ export function Paywall() {
                       <Icon
                         symbol="xmark"
                         size="md"
-                        color={Color.grayscale[50]}
+                        color={Color.grayscale[800]}
                       />
                     </PressableScale>
                   )}
@@ -360,7 +420,7 @@ export function Paywall() {
           }}
         >
           <Text type="4xl" weight="bold" style={styles.heroTitle}>
-            Design the tattoo you&apos;ve always wanted
+            {headline}
           </Text>
           <Text
             type="base"

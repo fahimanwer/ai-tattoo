@@ -354,8 +354,8 @@ export default function Container() {
                     const durationMs = Date.now() - onboardingStartTime.current;
                     const durationSeconds = Math.round(durationMs / 1000);
 
-                    // Track onboarding videos completion (paywall comes next)
-                    customEvent("onboarding_videos_completed", {
+                    // Track onboarding completion (paywall comes next)
+                    customEvent("onboarding_completed", {
                       stepsViewed: stepsViewed.current.size,
                       duration: durationSeconds,
                     });

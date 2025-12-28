@@ -9,7 +9,8 @@
     "prewidget": "EXPO_NO_GIT_STATUS=1 npx expo prebuild --template ./node_modules/@bacons/apple-targets/prebuild-blank.tgz --clean",
     "web": "expo start --web",
     "lint": "expo lint",
-    "deploy:web": "npx expo export -p web --no-ssg --clear && eas deploy --prod",
+    "deploy:web:prod": "npx expo export -p web --no-ssg --clear && eas deploy --prod",
+    "deploy:web:preview": "npx expo export -p web --no-ssg --clear && eas deploy --alias preview",
     "deploy:testflight": "npx eas-cli@latest workflow:run .eas/workflows/testflight.yaml"
   },
   "dependencies": {

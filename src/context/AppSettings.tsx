@@ -9,6 +9,8 @@ type AppSettings = {
   isOnboarded: boolean;
   improvePrompt: boolean;
   hasSeenPaywall: boolean;
+  onboardingAnswers: Record<string, string | string[]>;
+  onboardingAnswersVersion: number;
 };
 
 /**
@@ -18,6 +20,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   isOnboarded: false,
   improvePrompt: true,
   hasSeenPaywall: false,
+  onboardingAnswers: {},
+  onboardingAnswersVersion: 1,
 };
 
 const STORAGE_KEY = "@app_settings";
@@ -30,6 +34,7 @@ type AppSettingsContextType = {
   // Individual setters for convenience
   setIsOnboarded: (value: boolean) => Promise<void>;
   setIsOnboardedSync: (value: boolean) => void;
+  setIsOnboardedWithDelay: (value: boolean, delay?: number) => void;
 };
 
 export const AppSettingsContext = createContext<AppSettingsContextType>({
@@ -39,6 +44,7 @@ export const AppSettingsContext = createContext<AppSettingsContextType>({
   resetSettings: () => Promise.resolve(),
   setIsOnboarded: () => Promise.resolve(),
   setIsOnboardedSync: () => {},
+  setIsOnboardedWithDelay: (value: boolean, delay?: number) => {},
 });
 
 // Load settings synchronously from storage
@@ -119,6 +125,15 @@ export function AppSettingsProvider({
     [updateSettingsSync]
   );
 
+  const setIsOnboardedWithDelay = useCallback(
+    (value: boolean, delay?: number) => {
+      setTimeout(() => {
+        setIsOnboardedSync(value);
+      }, delay ?? 2000);
+    },
+    [setIsOnboardedSync]
+  );
+
   const value: AppSettingsContextType = {
     settings,
     updateSettings,
@@ -126,6 +141,7 @@ export function AppSettingsProvider({
     resetSettings,
     setIsOnboarded,
     setIsOnboardedSync,
+    setIsOnboardedWithDelay,
   };
 
   return (

@@ -1,13 +1,17 @@
+import { Color } from "@/src/constants/TWPalette";
 import { PressableScale } from "pressto";
-import { Image, View } from "react-native";
+import { Activity } from "react";
+import { ActivityIndicator, Image, View } from "react-native";
 import { Text } from "./Text";
 
 export default function SignInWithGoogleButton({
   onPress,
   disabled = false,
+  isLoading = false,
 }: {
   onPress: () => void;
   disabled?: boolean;
+  isLoading?: boolean;
 }) {
   return (
     <PressableScale
@@ -24,22 +28,26 @@ export default function SignInWithGoogleButton({
           alignItems: "center",
           justifyContent: "center",
           borderRadius: 100,
-          backgroundColor: "#000",
-          borderWidth: 1,
-          borderColor: "gray",
+          backgroundColor: Color.grayscale[100],
         }}
       >
-        <Image
-          source={require("@/assets/images/google-icon.png")}
-          style={{
-            width: 18,
-            height: 18,
-            marginRight: 6,
-          }}
-        />
-        <Text type="default" weight="semibold" style={{ color: "#fff" }}>
-          Continue with Google
-        </Text>
+        <Activity mode={isLoading ? "visible" : "hidden"}>
+          <ActivityIndicator style={{ height: 44 }} color="#fff" />
+        </Activity>
+
+        <Activity mode={!isLoading ? "visible" : "hidden"}>
+          <Image
+            source={require("@/assets/images/google-icon.png")}
+            style={{
+              width: 18,
+              height: 18,
+              marginRight: 6,
+            }}
+          />
+          <Text type="default" weight="semibold" style={{ color: "#fff" }}>
+            Continue with Google
+          </Text>
+        </Activity>
       </View>
     </PressableScale>
   );

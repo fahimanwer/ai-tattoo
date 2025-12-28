@@ -44,5 +44,6 @@ export const auth = betterAuth({
     "http://localhost:8081",
     "https://appleid.apple.com",
     "https://ai-tattoo.expo.app",
+    "https://ai-tattoo--preview.expo.app",
   ],
 });
