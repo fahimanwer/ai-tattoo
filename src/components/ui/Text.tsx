@@ -1,8 +1,15 @@
-import { type ReactNode } from "react";
+import {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   Text as RNText,
   StyleSheet,
   type TextProps as RNTextProps,
+  type TextLayoutLine,
 } from "react-native";
 
 import { useThemeColor } from "@/src/hooks/useThemeColor";
@@ -45,6 +52,13 @@ export type TextProps = RNTextProps & {
     | "heavy"
     | "black";
   variant?: "serif" | "poster";
+  /**
+   * When true, balances text across lines to create visually pleasing text blocks.
+   * Uses onTextLayout to measure lines and constrains width for balanced wrapping.
+   * Best for headlines and short text blocks (2-6 lines).
+   * @see https://developer.chrome.com/docs/css-ui/css-text-wrap-balance
+   */
+  textBalance?: boolean;
 };
 
 export function Text({
@@ -54,6 +68,8 @@ export function Text({
   type = "default",
   weight,
   variant,
+  textBalance,
+  onTextLayout: userOnTextLayout,
   ...rest
 }: TextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
@@ -74,6 +90,78 @@ export function Text({
   const systemFontWeightStyle =
     !selectedFont && weight ? getSystemFontWeightStyle(weight) : undefined;
 
+  // Text balancing state
+  const [balanceState, setBalanceState] = useState<{
+    width?: number;
+    ready: boolean;
+  }>(() => ({ ready: !textBalance })); // Ready immediately if not balancing
+
+  const hasProcessed = useRef(false);
+  const pendingLines = useRef<TextLayoutLine[] | null>(null);
+
+  // Handle text layout measurement - store lines in ref for useLayoutEffect
+  const handleTextLayout = useCallback(
+    (e: Parameters<NonNullable<RNTextProps["onTextLayout"]>>[0]) => {
+      // Always call user's handler if provided
+      userOnTextLayout?.(e);
+
+      // Skip if not balancing or already processed
+      if (!textBalance || hasProcessed.current) return;
+
+      // Store lines and trigger re-render for useLayoutEffect to process
+      pendingLines.current = e.nativeEvent.lines;
+      setBalanceState((prev) => ({ ...prev })); // Force re-render
+    },
+    [textBalance, userOnTextLayout]
+  );
+
+  // Process balance synchronously with Fabric's useLayoutEffect
+  // This runs after render but before paint - no intermediate state visible
+  useLayoutEffect(() => {
+    if (!textBalance || hasProcessed.current || !pendingLines.current) return;
+
+    const lines = pendingLines.current;
+    hasProcessed.current = true;
+    pendingLines.current = null;
+
+    // Only balance 2-6 lines (matching CSS behavior for performance)
+    if (lines.length < 2 || lines.length > 6) {
+      setBalanceState({ ready: true });
+      return;
+    }
+
+    const lineWidths = lines.map((line) => line.width);
+    const maxLineWidth = Math.max(...lineWidths);
+    const totalWidth = lineWidths.reduce((sum, w) => sum + w, 0);
+    const avgWidth = totalWidth / lines.length;
+
+    // Calculate target width that would create more balanced lines
+    // Similar to browser algorithm: find smallest width that maintains line count
+    const targetWidth = Math.ceil(
+      Math.max(avgWidth * 1.05, maxLineWidth * 0.82)
+    );
+
+    // Only apply if it would actually reduce the max width meaningfully
+    if (targetWidth < maxLineWidth - 10) {
+      setBalanceState({ width: targetWidth, ready: true });
+    } else {
+      setBalanceState({ ready: true });
+    }
+  }, [textBalance, balanceState]);
+
+  // Style for balanced text:
+  // - Hidden (opacity: 0) while measuring to prevent visual shift
+  // - Constrained width and aligned to start once balanced
+  const balanceStyle = textBalance
+    ? {
+        ...(balanceState.width
+          ? { maxWidth: balanceState.width, alignSelf: "flex-start" as const }
+          : {}),
+        // Hide until ready - Fabric ensures this happens before paint
+        ...(balanceState.ready ? {} : { opacity: 0 }),
+      }
+    : undefined;
+
   return (
     <RNText
       style={
@@ -83,10 +171,12 @@ export function Text({
           adjustedSizeStyle,
           fontFamilyStyle,
           systemFontWeightStyle,
+          balanceStyle,
           style,
         ] as any
       }
       textBreakStrategy="simple"
+      onTextLayout={textBalance ? handleTextLayout : userOnTextLayout}
       {...rest}
     />
   );

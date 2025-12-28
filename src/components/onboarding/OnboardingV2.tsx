@@ -306,7 +306,12 @@ export default function OnboardingV2() {
             paddingTop: 24,
           }}
         >
-          <Text type="3xl" weight="bold" style={{ textAlign: "center" }}>
+          <Text
+            type="4xl"
+            weight="bold"
+            style={{ alignSelf: "center", textAlign: "center" }}
+            textBalance
+          >
             {currentStep?.title}
           </Text>
           <Text
@@ -340,6 +345,7 @@ export default function OnboardingV2() {
           canAdvance={canAdvance}
           showSignIn={currentIndex === 0}
           onPress={() => {
+            console.log("currentIndex", currentIndex);
             const nextIndex = getNextStepIndex(currentStep, currentIndex);
             if (nextIndex >= ONBOARDING_STEPS.length) {
               // Calculate duration in seconds
@@ -355,6 +361,7 @@ export default function OnboardingV2() {
               // Navigate to paywall (user can purchase before auth)
               router.push("/(paywall)");
             } else {
+              console.log("nextIndex", nextIndex);
               // Advance to next video
               scrollViewRef.current?.scrollTo({
                 x: nextIndex * SCREEN_WIDTH,

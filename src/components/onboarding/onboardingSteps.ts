@@ -14,6 +14,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     image: DEFAULT_ONBOARDING_IMAGE,
     cta: "Get started",
     cta2: "Sign In",
+    required: false,
   },
   {
     id: "goal",
@@ -21,7 +22,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "What would you like to do?",
     description: undefined,
     image: undefined,
-    required: true,
+    required: false,
     options: [
       { id: "try-on", label: "Try tattoos on my photos", value: "try_on" },
       { id: "generate", label: "Generate tattoo ideas", value: "generate" },
@@ -43,7 +44,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "Where do you want the tattoo?",
     description: undefined,
     image: undefined,
-    required: true,
+    required: false,
     options: [
       { id: "wrist", label: "Wrist", value: "wrist" },
       { id: "chest", label: "Chest", value: "chest" },
@@ -79,7 +80,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "What is your name?",
     description: "We'll use this to personalize your experience.",
     image: undefined,
-    required: true,
+    required: false,
     placeholder: "Your name",
   },
   {
@@ -88,7 +89,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "Which best describes you?",
     description: undefined,
     image: undefined,
-    required: true,
+    required: false,
     options: [
       { id: "artist", label: "Tattoo artist", value: "artist" },
       { id: "client", label: "Getting a tattoo", value: "client" },
@@ -155,7 +156,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "When are you thinking of getting the tattoo?",
     description: undefined,
     image: undefined,
-    required: true,
+    required: false,
     options: [
       { id: "this-week", label: "This week", value: "this_week" },
       { id: "this-month", label: "This month", value: "this_month" },
