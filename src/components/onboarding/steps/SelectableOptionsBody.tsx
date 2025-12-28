@@ -238,7 +238,12 @@ export function SelectableOptionsBody({
     <View
       style={
         variant === "chips"
-          ? { flexDirection: "row", flexWrap: "wrap", gap: 10 }
+          ? {
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: 10,
+            }
           : { gap: 12 }
       }
     >
