@@ -386,7 +386,7 @@ export default function OnboardingV2() {
                 const durationSeconds = Math.round(durationMs / 1000);
 
                 // Track onboarding completion (paywall comes next)
-                customEvent("onboarding_videos_completed", {
+                customEvent("onboarding_completed", {
                   stepsViewed: stepsViewed.current.size,
                   duration: durationSeconds,
                 });
