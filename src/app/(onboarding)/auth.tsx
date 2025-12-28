@@ -50,7 +50,7 @@ export default function OnboardingAuth() {
     <>
       <Stack.Screen
         options={{
-          gestureEnabled: false,
+          gestureEnabled: from === "onboarding" ? true : false,
           headerShown: false,
         }}
       />

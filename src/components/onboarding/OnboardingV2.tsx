@@ -19,7 +19,14 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import Animated, {
+  Easing,
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { customEvent } from "vexo-analytics";
 import { Button } from "../ui/Button";
@@ -317,6 +324,23 @@ export default function OnboardingV2() {
   const canAdvance = isStepComplete(currentStep, answers);
   const ctaLabel = currentStep.cta ?? (isLastStep ? "Continue" : "Next");
 
+  // Smooth animation for sign-in link visibility
+  const signInVisible = useSharedValue(1);
+
+  useEffect(() => {
+    const targetValue = currentIndex === 0 ? 1 : 0;
+    signInVisible.value = withTiming(targetValue, {
+      duration: 350,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
+  }, [currentIndex, signInVisible]);
+
+  const signInAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: signInVisible.value,
+    height: signInVisible.value * 40,
+    overflow: "hidden" as const,
+  }));
+
   // Play entrance haptic on first mount and track first step
   useEffect(() => {
     if (!hasPlayedEntranceHaptic.current) {
@@ -572,6 +596,7 @@ export default function OnboardingV2() {
               ) : null}
             </Animated.View>
 
+            {/* CTA Button */}
             <Animated.View
               entering={FadeIn.duration(600).delay(1200)}
               style={{ gap: 16, marginTop: 24, width: "100%" }}
@@ -616,13 +641,9 @@ export default function OnboardingV2() {
                   }
                 }}
               />
-            </Animated.View>
-
-            {currentIndex === 0 ? (
               <Animated.View
-                entering={FadeIn.duration(600).delay(1450)}
-                style={styles.termsContainer}
-                pointerEvents="auto"
+                style={[styles.signInContainer, signInAnimatedStyle]}
+                pointerEvents={currentIndex === 0 ? "auto" : "none"}
               >
                 <Text type="sm" style={styles.termsText}>
                   Already have an account?{" "}
@@ -633,7 +654,7 @@ export default function OnboardingV2() {
                   </Link>
                 </Text>
               </Animated.View>
-            ) : null}
+            </Animated.View>
           </Animated.View>
         </View>
       </View>
@@ -719,5 +740,10 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 12,
     alignItems: "center",
+  },
+
+  signInContainer: {
+    alignItems: "center",
+    width: "100%",
   },
 });
