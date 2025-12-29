@@ -230,7 +230,6 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
       { id: "cyberpunk", label: "Cyberpunk", value: "cyberpunk" },
       { id: "3d", label: "3D", value: "3d" },
       { id: "astrology", label: "Astrology", value: "astrology" },
-      { id: "not-sure", label: "Not sure", value: "not_sure" },
     ],
   },
 
