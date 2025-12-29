@@ -291,7 +291,12 @@ export function PlaygroundScreen() {
                     tint("yellow"),
                     disabled(isPending),
                   ]}
-                  onPress={() => router.push("/auth-sheet")}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/auth-sheet",
+                      params: { dismissImmediately: "true" },
+                    })
+                  }
                 >
                   <HStack
                     spacing={8}

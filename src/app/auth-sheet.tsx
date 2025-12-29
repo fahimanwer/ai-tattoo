@@ -1,6 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 import { AuthContent } from "@/src/components/auth/AuthContent";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useUserData } from "../hooks/useUserData";
 
 /**
@@ -10,8 +10,18 @@ import { useUserData } from "../hooks/useUserData";
 export default function AuthSheet() {
   const router = useRouter();
   const { syncAfterAuth } = useUserData();
+  const params = useLocalSearchParams<{ dismissImmediately?: string }>();
+
+  // Dismiss immediately when coming from PlaygroundScreen to avoid keyboard conflict during sheet dismissal
+  const shouldDismissImmediately = params.dismissImmediately === "true";
 
   const handleSuccess = async () => {
+    // Skip sync and dismiss right away (e.g., from PlaygroundScreen where keyboard auto-focuses)
+    if (shouldDismissImmediately) {
+      router.dismiss();
+      return;
+    }
+
     // Get the authenticated user's ID
     const session = await authClient.getSession();
     const userId = session?.data?.user?.id;
