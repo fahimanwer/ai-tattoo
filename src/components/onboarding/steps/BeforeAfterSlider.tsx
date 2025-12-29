@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   },
   handleWrapper: {
     position: "absolute",
-    top: "50%",
+    top: "40%",
     left: 0,
     marginTop: -HANDLE_SIZE / 2,
   },

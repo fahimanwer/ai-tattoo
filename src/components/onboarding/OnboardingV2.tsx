@@ -193,7 +193,7 @@ export default function OnboardingV2() {
           <TextStepBody
             step={currentStep}
             value={getStringAnswer(currentStep.id) ?? ""}
-            onChange={(text) => setAnswer(currentStep.id, text)}
+            onChange={(text) => setAnswer(currentStep.id, text.trim())}
             onSubmit={() => {
               // Assuming this is not the last step
               const nextIndex = getNextStepIndex(currentStep, currentIndex);
@@ -277,7 +277,7 @@ export default function OnboardingV2() {
         }}
       />
       <Animated.View
-        entering={FadeIn}
+        // entering={FadeIn}
         style={{
           position: "absolute",
           top: 0,
@@ -333,7 +333,7 @@ export default function OnboardingV2() {
       </Animated.View>
 
       <Animated.View
-        entering={FadeIn}
+        // entering={FadeIn}
         style={{
           flex: 1,
           position: "relative",
@@ -354,8 +354,8 @@ export default function OnboardingV2() {
             width: "100%",
             paddingTop: 24,
           }}
-          entering={FadeIn}
-          exiting={FadeOut}
+          // entering={SlideInRight}
+          // exiting={SlideOutLeft}
         >
           <Text
             type="4xl"
@@ -365,6 +365,8 @@ export default function OnboardingV2() {
           >
             {currentStep?.kind === "congratulations" && answers["user-name"]
               ? `${answers["user-name"]}, you're all set!`
+              : currentStep?.id === "user-description" && answers["user-name"]
+              ? `${answers["user-name"]}, which best describes you?`
               : currentStep?.title}
           </Text>
           <Text
@@ -392,7 +394,7 @@ export default function OnboardingV2() {
         )}
 
         {/* CTA - always at the bottom with safe area */}
-        <KeyboardStickyView style={{}} offset={{ opened: top - 16, closed: 0 }}>
+        <KeyboardStickyView style={{}} offset={{ opened: top - 32, closed: 0 }}>
           <OnboardingCTA
             label={ctaLabel}
             isLastStep={isLastStep}

@@ -80,7 +80,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "What is your name?",
     description: "We'll use this to personalize your experience.",
     image: undefined,
-    required: true,
+    required: false,
     placeholder: "Your name",
   },
   {

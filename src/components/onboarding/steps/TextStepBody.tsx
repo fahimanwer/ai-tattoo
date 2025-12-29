@@ -57,6 +57,8 @@ export function TextStepBody({
           autoFocus
           value={value}
           onChangeText={onChange}
+          maxLength={25}
+          textContentType="name"
           placeholder={step.placeholder}
           size="lg"
           variant="subtle"

@@ -184,7 +184,7 @@ function SelectableOption({
   return (
     <Animated.View
       entering={FadeIn.duration(timing.fadeDuration).delay(enteringDelay)}
-      exiting={FadeOut.duration(200)}
+      exiting={FadeOut.duration(16)}
       style={{}}
     >
       <AnimatedPressableScale
