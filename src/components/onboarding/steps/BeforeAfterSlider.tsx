@@ -40,10 +40,6 @@ const playDragEndHaptic = () => {
   NativeCoreHaptics.default.impact(0.25, 0.35);
 };
 
-const playImageChangeHaptic = () => {
-  NativeCoreHaptics.default.impact(1, 0.8);
-};
-
 export function BeforeAfterSlider({ imagePairs }: BeforeAfterSliderProps) {
   // Slider position (0 = left edge, SCREEN_WIDTH = right edge)
   const sliderX = useSharedValue(SCREEN_WIDTH / 2);
@@ -83,9 +79,6 @@ export function BeforeAfterSlider({ imagePairs }: BeforeAfterSliderProps) {
   useEffect(() => {
     const interval = setInterval(() => {
       const { layerAIndex, layerBIndex, isLayerAActive } = stateRef.current;
-
-      // Play subtle haptic when image changes
-      playImageChangeHaptic();
 
       if (isLayerAActive) {
         // Layer A is visible, fade to layer B
