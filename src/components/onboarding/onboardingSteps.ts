@@ -94,10 +94,25 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "feature-tryon",
     kind: "feature",
-    title: "We'll tailor Inkigo for you",
-    description: "Inkigo adapts to your workflow and preferences.",
+    title: "Welcome",
+    description: "Let's tailor your Inkigo experience now.",
     image:
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.calf-male-after.avif",
+  },
+  {
+    id: "user-description",
+    kind: "multiChoice",
+    title: "Which best describes you?",
+    description:
+      "This helps up personalize the experience based on how you relate to tattoos",
+    image: undefined,
+    required: false,
+    options: [
+      { id: "artist", label: "I create tattoos", value: "artist" },
+      { id: "client", label: "I'm getting a tattoo", value: "client" },
+      { id: "model", label: "I use tattoos for content", value: "model" },
+      { id: "explorer", label: "I'm just exploring", value: "explorer" },
+    ],
   },
   // {
   //   id: "hero",
@@ -131,6 +146,15 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
         value: "cover_up",
       },
     ],
+  },
+  {
+    id: "feature-design",
+    kind: "feature",
+    title: "Design the tattoo you want",
+    description:
+      "Type a few words or upload an image and instantly generate unique tattoo designs.",
+    image:
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.arm-male-after.avif",
   },
   {
     id: "location",
@@ -167,21 +191,6 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
       { id: "foot", label: "Foot", value: "foot" },
       { id: "palm", label: "Palm", value: "palm" },
       { id: "not-sure", label: "Not sure", value: "not_sure" },
-    ],
-  },
-
-  {
-    id: "user-description",
-    kind: "multiChoice",
-    title: "Which best describes you?",
-    description: "This helps us ",
-    image: undefined,
-    required: false,
-    options: [
-      { id: "artist", label: "Tattoo artist", value: "artist" },
-      { id: "client", label: "Getting a tattoo", value: "client" },
-      { id: "model", label: "Model/Influencer for tattoos", value: "model" },
-      { id: "explorer", label: "Just exploring", value: "explorer" },
     ],
   },
 
@@ -224,15 +233,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
       { id: "not-sure", label: "Not sure", value: "not_sure" },
     ],
   },
-  {
-    id: "feature-design",
-    kind: "feature",
-    title: "Design the tattoo you want",
-    description:
-      "Type a few words or upload an image and instantly generate unique tattoo designs.",
-    image:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.arm-male-after.avif",
-  },
+
   {
     id: "timeframe",
     kind: "singleChoice",

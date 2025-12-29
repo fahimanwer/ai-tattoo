@@ -395,8 +395,10 @@ export default function OnboardingV2() {
           >
             {currentStep?.kind === "congratulations" && answers["user-name"]
               ? `${answers["user-name"]}, you're all set!`
-              : currentStep?.id === "user-description" && answers["user-name"]
-              ? `${answers["user-name"]}, which best describes you?`
+              : // : currentStep?.id === "user-description" && answers["user-name"]
+              // ? `${answers["user-name"]}, which best describes you?`
+              currentStep?.id === "feature-tryon" && answers["user-name"]
+              ? `Welcome ${answers["user-name"]}`
               : currentStep?.title}
           </Text>
           <Text
