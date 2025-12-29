@@ -12,6 +12,8 @@ import { Image } from "expo-image";
 import { StatusBar } from "expo-status-bar";
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import {
+  AppState,
+  AppStateStatus,
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -92,6 +94,25 @@ export default function OnboardingV2() {
         stepTitle: ONBOARDING_STEPS[index].title,
       });
     }
+  }, []);
+
+  // Track drop-offs when app goes to background
+  useEffect(() => {
+    const handleAppStateChange = (nextState: AppStateStatus) => {
+      if (nextState === "background" || nextState === "inactive") {
+        customEvent("onboarding_dropoff", {
+          step: currentIndexRef.current + 1,
+          stepId: ONBOARDING_STEPS[currentIndexRef.current].id,
+          stepTitle: ONBOARDING_STEPS[currentIndexRef.current].title,
+        });
+      }
+    };
+
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+    return () => subscription.remove();
   }, []);
 
   // Handle scroll events from programmatic scrolling
