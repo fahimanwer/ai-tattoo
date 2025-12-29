@@ -1,12 +1,13 @@
 import LinearGradient from "@/src/components/LinearGradient";
 import { Color } from "@/src/constants/TWPalette";
 import { BlurView } from "expo-blur";
-import { Image } from "expo-image";
+import { Image, type ImageContentFit, type ImageContentPosition } from "expo-image";
 import {
   StyleSheet,
   useColorScheme,
   View,
   type ColorValue,
+  type DimensionValue,
 } from "react-native";
 
 export interface LinearGradientImageBlurProps {
@@ -14,12 +15,21 @@ export interface LinearGradientImageBlurProps {
   showImage?: boolean;
   showGradient?: boolean;
   gradientColors?: {
-    light: readonly [ColorValue, ColorValue, ColorValue];
-    dark: readonly [ColorValue, ColorValue, ColorValue];
+    light:
+      | readonly [ColorValue, ColorValue, ColorValue]
+      | readonly [ColorValue, ColorValue, ColorValue, ColorValue]
+      | readonly [ColorValue, ColorValue, ColorValue, ColorValue, ColorValue];
+    dark:
+      | readonly [ColorValue, ColorValue, ColorValue]
+      | readonly [ColorValue, ColorValue, ColorValue, ColorValue]
+      | readonly [ColorValue, ColorValue, ColorValue, ColorValue, ColorValue];
   };
   imageUrl?: string;
   blurIntensity?: number;
   solidColor?: string;
+  contentFit?: ImageContentFit;
+  contentPosition?: ImageContentPosition;
+  imageHeight?: DimensionValue;
 }
 
 export default function LinearGradientImageBlur({
@@ -33,6 +43,9 @@ export default function LinearGradientImageBlur({
   imageUrl,
   blurIntensity = 30,
   solidColor,
+  contentFit = "cover",
+  contentPosition = "top",
+  imageHeight = "100%",
 }: LinearGradientImageBlurProps) {
   const isDarkMode = useColorScheme() === "dark";
 
@@ -58,11 +71,11 @@ export default function LinearGradientImageBlur({
 
       {/* Image Section*/}
       {showImage || imageUrl ? (
-        <View style={styles.imageContainer}>
+        <View style={[styles.imageContainer, { height: imageHeight }]}>
           <Image
             style={styles.image}
-            contentFit="cover"
-            contentPosition="top"
+            contentFit={contentFit}
+            contentPosition={contentPosition}
             source={imageUrl}
           />
         </View>

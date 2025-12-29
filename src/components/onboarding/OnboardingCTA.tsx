@@ -1,5 +1,4 @@
 import { Text } from "@/src/components/ui/Text";
-import * as Haptics from "expo-haptics";
 import { Link } from "expo-router";
 import { useEffect } from "react";
 import Animated, {
@@ -10,7 +9,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Button } from "../ui/Button";
+import { OnboardingButton } from "./OnboardingButton";
 
 interface OnboardingCTAProps {
   label: string;
@@ -47,34 +46,23 @@ export function OnboardingCTA({
 
   const isDisabled = !canAdvance || loading;
 
-  const handlePress = () => {
-    if (isDisabled) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return;
-    }
-    onPress();
-  };
-
   return (
     <Animated.View
       entering={FadeIn}
       style={{
-        gap: 16,
+        marginTop: 24,
+        gap: 24,
         width: "100%",
-        paddingTop: 24,
         paddingBottom: Math.max(bottom, 16),
       }}
       pointerEvents="auto"
     >
-      <Button
-        title={loading ? "" : label}
-        color={isLastStep ? "yellow" : "white"}
-        variant="solid"
-        size="lg"
-        radius="full"
-        style={isDisabled ? { opacity: 0.5 } : undefined}
-        onPress={handlePress}
+      <OnboardingButton
+        title={label}
+        onPress={onPress}
         loading={loading}
+        disabled={isDisabled}
+        isLastStep={isLastStep}
       />
       <Animated.View
         style={[

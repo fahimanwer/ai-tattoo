@@ -281,5 +281,6 @@ const styles = StyleSheet.create({
     top: "40%",
     left: 0,
     marginTop: -HANDLE_SIZE / 2,
+    zIndex: 2,
   },
 });

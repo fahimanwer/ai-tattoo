@@ -160,12 +160,12 @@ function SelectableOption({
     borderColor: interpolateColor(
       progress.value,
       [0, 1],
-      [Color.grayscale[100], "white"]
+      [Color.grayscale[300] + "90", "white"]
     ),
     backgroundColor: interpolateColor(
       progress.value,
       [0, 1],
-      ["black", Color.grayscale[100]]
+      ["black", Color.grayscale[300] + "80"]
     ),
   }));
 
@@ -209,7 +209,7 @@ function SelectableOption({
               <Icon
                 symbol="circle.fill"
                 size="lg"
-                color={Color.grayscale[700]}
+                color={Color.grayscale[200]}
               />
             </Animated.View>
             <Animated.View style={selectedIconOpacity}>

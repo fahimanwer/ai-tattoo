@@ -1,14 +1,13 @@
-import { Text } from "@/src/components/ui/Text";
-
-import { Stack, useRouter } from "expo-router";
-
 import {
   onboardingEntranceHaptic,
   onboardingSwipeHaptic,
 } from "@/lib/haptics-patterns.ios";
 import * as NativeCoreHaptics from "@/modules/native-core-haptics";
+import LinearGradientImageBlur from "@/src/components/LinearGradientImageBlur";
+import { Text } from "@/src/components/ui/Text";
 import { AppSettingsContext } from "@/src/context/AppSettings";
-import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
+import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -303,30 +302,58 @@ export default function OnboardingV2() {
           onScroll={handleScroll}
         >
           {ONBOARDING_STEPS.map((step, index) => (
-            <View key={index} style={{ width: SCREEN_WIDTH, height: "100%" }}>
+            <View
+              key={index}
+              style={{
+                width: SCREEN_WIDTH,
+                height: "100%",
+              }}
+            >
               {step.kind === "beforeAfter" ? (
-                <BeforeAfterSlider
-                  imagePairs={(step as BeforeAfterStep).imagePairs}
-                />
-              ) : step.image ? (
-                <Image
-                  source={{ uri: step.image }}
-                  style={{
-                    width: SCREEN_WIDTH,
-                    height: index === 0 ? "75%" : "100%",
-                  }}
-                  contentFit="cover"
-                  contentPosition="left"
-                />
-              ) : (
                 <View
                   style={{
-                    height: "75%",
+                    width: "100%",
+                    height: "100%",
                     backgroundColor: "#000",
-                    width: SCREEN_WIDTH,
+                    position: "relative",
                   }}
+                >
+                  <LinearGradient
+                    colors={[
+                      "transparent",
+                      "transparent",
+                      "transparent",
+                      "#000000",
+                      "#000000",
+                    ]}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      zIndex: 1,
+                    }}
+                  />
+
+                  <BeforeAfterSlider
+                    imagePairs={(step as BeforeAfterStep).imagePairs}
+                  />
+                </View>
+              ) : step.image ? (
+                <LinearGradientImageBlur
+                  imageUrl={step.image}
+                  showBlur={false}
+                  showGradient={true}
+                  gradientColors={{
+                    light: ["transparent", "transparent", "#000000", "#000000"],
+                    dark: ["transparent", "transparent", "#000000", "#000000"],
+                  }}
+                  contentFit="cover"
+                  contentPosition={index === 0 ? { left: -166 } : { left: 0 }}
+                  imageHeight={index === 0 ? "75%" : "100%"}
                 />
-              )}
+              ) : null}
             </View>
           ))}
         </ScrollView>
@@ -337,12 +364,10 @@ export default function OnboardingV2() {
         style={{
           flex: 1,
           position: "relative",
-          experimental_backgroundImage:
-            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.8) 70%, #000000 100%)",
           zIndex: 2,
           justifyContent: "flex-end",
-          paddingHorizontal: 16,
-          paddingTop: top + 32,
+          paddingTop: top + 56,
+          width: "100%",
         }}
         pointerEvents="box-none"
       >
@@ -352,16 +377,21 @@ export default function OnboardingV2() {
           pointerEvents="none"
           style={{
             width: "100%",
-            paddingTop: 24,
           }}
+
           // entering={SlideInRight}
           // exiting={SlideOutLeft}
         >
           <Text
             type="4xl"
             weight="bold"
-            style={{ alignSelf: "center", textAlign: "center" }}
-            textBalance
+            style={{
+              width: "100%",
+              alignSelf: "center",
+              textAlign: "center",
+              lineHeight: 34,
+              paddingHorizontal: 16,
+            }}
           >
             {currentStep?.kind === "congratulations" && answers["user-name"]
               ? `${answers["user-name"]}, you're all set!`
@@ -374,7 +404,8 @@ export default function OnboardingV2() {
             style={{
               opacity: 0.6,
               textAlign: "center",
-              marginTop: 12,
+              marginTop: 8,
+              letterSpacing: -0.3,
             }}
           >
             {currentStep?.description}
