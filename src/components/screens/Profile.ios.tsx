@@ -8,6 +8,7 @@ import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { useUserData } from "@/src/hooks/useUserData";
 import {
   Button,
+  ContentUnavailableView,
   DisclosureGroup,
   Form,
   Host,
@@ -20,6 +21,7 @@ import {
   VStack,
 } from "@expo/ui/swift-ui";
 import {
+  buttonStyle,
   font,
   foregroundStyle,
   refreshable,
@@ -124,7 +126,10 @@ export function Profile() {
   const handleContactSupport = async () => {
     try {
       const subject = "Inkigo App Support Request";
-      const body = `Hi,\n\nI need help with the Inkigo app.\n\nUser ID: ${user?.id}\nEmail: ${user?.email}\n\nDescription:\n[Please describe your issue here]\n\nThanks!`;
+      const userInfo = user
+        ? `User ID: ${user.id}\nEmail: ${user.email}`
+        : "(Not signed in)";
+      const body = `Hi,\n\nI need help with the Inkigo app.\n\n${userInfo}\n\nDescription:\n[Please describe your issue here]\n\nThanks!`;
       const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
         subject
       )}&body=${encodeURIComponent(body)}`;
@@ -137,7 +142,10 @@ export function Profile() {
   const handleArtistContact = async () => {
     try {
       const subject = "Are you an artist? - Inkigo";
-      const body = `Hi!\n\nI'm interested in collaborating or have suggestions/complaints.\n\nMy account email: ${user?.email}\nMy user ID: ${user?.id}\n\n[Please share your suggestions, complaints, or tell us about yourself as an artist]\n\nThanks!`;
+      const userInfo = user
+        ? `My account email: ${user.email}\nMy user ID: ${user.id}`
+        : "(Not signed in)";
+      const body = `Hi!\n\nI'm interested in collaborating or have suggestions/complaints.\n\n${userInfo}\n\n[Please share your suggestions, complaints, or tell us about yourself as an artist]\n\nThanks!`;
       const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
         subject
       )}&body=${encodeURIComponent(body)}`;
@@ -187,7 +195,6 @@ export function Profile() {
 
   const handleSignOut = async () => {
     try {
-      router.back();
       await refresh();
       await authClient.signOut();
     } catch (error) {
@@ -248,20 +255,7 @@ export function Profile() {
     return model;
   }, [hasActiveSubscription]);
 
-  if (!user) {
-    return (
-      <Host
-        style={{
-          flex: 1,
-          padding: 20,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text>Not signed in</Text>
-      </Host>
-    );
-  }
+  const isAuthenticated = !!user;
 
   const displayName = user?.name?.includes("@")
     ? user.name.slice(0, user.name.indexOf("@"))
@@ -270,24 +264,62 @@ export function Profile() {
   return (
     <Host style={{ flex: 1 }}>
       <Form modifiers={[refreshable(handleRefresh)]}>
-        <Section title="Account">
-          <LabeledContent label="Name">
-            <Text>{displayName}</Text>
-          </LabeledContent>
-          <LabeledContent label="Email">
-            <Text>{user.email}</Text>
-          </LabeledContent>
-          <LabeledContent label="Model">
-            <Text>{modelDisplayName}</Text>
-          </LabeledContent>
-          {memberSince && (
-            <LabeledContent label="Member Since">
-              <Text color={Color.zinc[400]}>{memberSince}</Text>
-            </LabeledContent>
-          )}
-        </Section>
+        {/* Sign-in prompt for unauthenticated users */}
+        <Activity mode={isAuthenticated ? "hidden" : "visible"}>
+          <Section>
+            <VStack>
+              <ContentUnavailableView
+                title="Not signed in"
+                description="Sign in to access your account details, subscription info, and personalized features"
+                systemImage="person.crop.circle.badge.exclamationmark"
+              />
+              <Button
+                label="Sign in"
+                modifiers={[
+                  buttonStyle("borderedProminent"),
+                  tint("white"),
+                  foregroundStyle("black"),
+                  font({ weight: "bold" }),
+                ]}
+                onPress={() =>
+                  router.push({
+                    pathname: "/auth-sheet",
+                    params: { dismissImmediately: "true" },
+                  })
+                }
+              />
+            </VStack>
+          </Section>
+        </Activity>
 
-        {(hasActiveSubscription || hasActiveUsagePeriod) && (
+        {/* Account section - only for authenticated users */}
+        <Activity mode={isAuthenticated ? "visible" : "hidden"}>
+          <Section title="Account">
+            <LabeledContent label="Name">
+              <Text>{displayName}</Text>
+            </LabeledContent>
+            <LabeledContent label="Email">
+              <Text>{user?.email ?? ""}</Text>
+            </LabeledContent>
+            <LabeledContent label="Model">
+              <Text>{modelDisplayName}</Text>
+            </LabeledContent>
+            <Activity mode={memberSince ? "visible" : "hidden"}>
+              <LabeledContent label="Member Since">
+                <Text color={Color.zinc[400]}>{memberSince ?? ""}</Text>
+              </LabeledContent>
+            </Activity>
+          </Section>
+        </Activity>
+
+        {/* Plan section - only for authenticated users with subscription/usage */}
+        <Activity
+          mode={
+            isAuthenticated && (hasActiveSubscription || hasActiveUsagePeriod)
+              ? "visible"
+              : "hidden"
+          }
+        >
           <Section
             title={
               hasActiveSubscription
@@ -337,92 +369,134 @@ export function Profile() {
                     : "Free"}
                 </Text>
               </LabeledContent>
-              {hasActiveSubscription && lastSubscription && (
+              <Activity
+                mode={
+                  hasActiveSubscription && lastSubscription
+                    ? "visible"
+                    : "hidden"
+                }
+              >
                 <LabeledContent label="Status">
                   <Text weight="bold" color={getStatusDisplay().color}>
-                    {lastSubscription.unsubscribeDetectedAt
+                    {lastSubscription?.unsubscribeDetectedAt
                       ? "Cancelled (Active Until Expiration)"
                       : getStatusDisplay().text}
                   </Text>
                 </LabeledContent>
-              )}
-              {hasActiveSubscription && lastSubscription?.expiresDate && (
+              </Activity>
+              <Activity
+                mode={
+                  hasActiveSubscription && lastSubscription?.expiresDate
+                    ? "visible"
+                    : "hidden"
+                }
+              >
                 <LabeledContent
                   label={
-                    lastSubscription.unsubscribeDetectedAt
+                    lastSubscription?.unsubscribeDetectedAt
                       ? "Access Ends On"
-                      : lastSubscription.willRenew
+                      : lastSubscription?.willRenew
                       ? "Renews On"
                       : "Expires On"
                   }
                 >
                   <Text
                     weight={
-                      lastSubscription.unsubscribeDetectedAt
+                      lastSubscription?.unsubscribeDetectedAt
                         ? "bold"
                         : "regular"
                     }
                   >
-                    {new Date(
-                      lastSubscription.expiresDate
-                    ).toLocaleDateString()}
+                    {lastSubscription?.expiresDate
+                      ? new Date(
+                          lastSubscription.expiresDate
+                        ).toLocaleDateString()
+                      : ""}
                   </Text>
                 </LabeledContent>
-              )}
-              {hasActiveSubscription &&
-                lastSubscription &&
-                lastSubscription.daysRemaining !== null &&
-                lastSubscription.daysRemaining > 0 && (
-                  <LabeledContent label="Days Remaining">
-                    <Text
-                      weight="bold"
-                      color={
-                        lastSubscription.daysRemaining <= 3
-                          ? "yellow"
-                          : Color.green[500]
-                      }
-                    >
-                      {`${lastSubscription.daysRemaining} days`}
-                    </Text>
-                  </LabeledContent>
-                )}
-              {hasActiveSubscription && lastSubscription && (
+              </Activity>
+              <Activity
+                mode={
+                  hasActiveSubscription &&
+                  lastSubscription &&
+                  lastSubscription.daysRemaining !== null &&
+                  lastSubscription.daysRemaining > 0
+                    ? "visible"
+                    : "hidden"
+                }
+              >
+                <LabeledContent label="Days Remaining">
+                  <Text
+                    weight="bold"
+                    color={
+                      (lastSubscription?.daysRemaining ?? 0) <= 3
+                        ? "yellow"
+                        : Color.green[500]
+                    }
+                  >
+                    {`${lastSubscription?.daysRemaining ?? 0} days`}
+                  </Text>
+                </LabeledContent>
+              </Activity>
+              <Activity
+                mode={
+                  hasActiveSubscription && lastSubscription
+                    ? "visible"
+                    : "hidden"
+                }
+              >
                 <LabeledContent label="Auto-Renew">
                   <Text
                     color={
-                      lastSubscription.willRenew
+                      lastSubscription?.willRenew
                         ? Color.green[500]
                         : Color.red[500]
                     }
                   >
-                    {lastSubscription.willRenew ? "On" : "Off"}
+                    {lastSubscription?.willRenew ? "On" : "Off"}
                   </Text>
                 </LabeledContent>
-              )}
-              {hasActiveSubscription &&
-                lastSubscription?.unsubscribeDetectedAt && (
-                  <LabeledContent label="Cancelled At">
-                    <Text weight="bold" color={Color.yellow[500]}>
-                      {new Date(
-                        lastSubscription.unsubscribeDetectedAt
-                      ).toLocaleString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </Text>
-                  </LabeledContent>
-                )}
-              {hasActiveSubscription && lastSubscription?.price && (
+              </Activity>
+              <Activity
+                mode={
+                  hasActiveSubscription &&
+                  lastSubscription?.unsubscribeDetectedAt
+                    ? "visible"
+                    : "hidden"
+                }
+              >
+                <LabeledContent label="Cancelled At">
+                  <Text weight="bold" color={Color.yellow[500]}>
+                    {lastSubscription?.unsubscribeDetectedAt
+                      ? new Date(
+                          lastSubscription.unsubscribeDetectedAt
+                        ).toLocaleString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })
+                      : ""}
+                  </Text>
+                </LabeledContent>
+              </Activity>
+              <Activity
+                mode={
+                  hasActiveSubscription && lastSubscription?.price
+                    ? "visible"
+                    : "hidden"
+                }
+              >
                 <LabeledContent label="Price">
                   <Text>
-                    {`${lastSubscription.price.currency} $${lastSubscription.price.amount}`}
+                    {lastSubscription?.price
+                      ? `${lastSubscription.price.currency} $${lastSubscription.price.amount}`
+                      : ""}
                   </Text>
                 </LabeledContent>
-              )}
+              </Activity>
               <LabeledContent label="Billing Period">
                 <Text>
                   {`${
@@ -436,53 +510,65 @@ export function Profile() {
               </LabeledContent>
             </DisclosureGroup>
           </Section>
-        )}
+        </Activity>
 
-        {!hasActiveSubscription &&
-          !hasActiveUsagePeriod &&
-          lastSubscription && (
-            <Section
-              title="💔 We Miss You!"
-              footer={
-                <Text color={Color.zinc[400]}>
-                  {
-                    "Ready to create more amazing tattoos? Come back and let's design something incredible together."
-                  }
-                </Text>
-              }
+        {/* We Miss You section - only for authenticated users with expired subscription */}
+        <Activity
+          mode={
+            isAuthenticated &&
+            !hasActiveSubscription &&
+            !hasActiveUsagePeriod &&
+            lastSubscription
+              ? "visible"
+              : "hidden"
+          }
+        >
+          <Section
+            title="💔 We Miss You!"
+            footer={
+              <Text color={Color.zinc[400]}>
+                {
+                  "Ready to create more amazing tattoos? Come back and let's design something incredible together."
+                }
+              </Text>
+            }
+          >
+            <LabeledContent label="Previous Plan">
+              <Text weight="bold" color={planColor}>
+                {lastSubscription?.productName || "Unknown"}
+              </Text>
+            </LabeledContent>
+            <LabeledContent label="Status">
+              <Text weight="bold" color={getStatusDisplay().color}>
+                {getStatusDisplay().text}
+              </Text>
+            </LabeledContent>
+            <Activity
+              mode={lastSubscription?.expiresDate ? "visible" : "hidden"}
             >
-              <LabeledContent label="Previous Plan">
-                <Text weight="bold" color={planColor}>
-                  {lastSubscription.productName || "Unknown"}
+              <LabeledContent label="Expired On">
+                <Text>
+                  {lastSubscription?.expiresDate
+                    ? new Date(
+                        lastSubscription.expiresDate
+                      ).toLocaleDateString()
+                    : ""}
                 </Text>
               </LabeledContent>
-              <LabeledContent label="Status">
-                <Text weight="bold" color={getStatusDisplay().color}>
-                  {getStatusDisplay().text}
-                </Text>
-              </LabeledContent>
-              {lastSubscription.expiresDate && (
-                <LabeledContent label="Expired On">
-                  <Text>
-                    {new Date(
-                      lastSubscription.expiresDate
-                    ).toLocaleDateString()}
-                  </Text>
-                </LabeledContent>
-              )}
-              <FormButton
-                title="🎨 Come Back & Create"
-                systemImage="sparkles"
-                onPress={() => router.push("/(paywall)")}
-                color="yellow"
-              />
-              <FormButton
-                title={isRefreshing ? "Refreshing..." : "Refresh data"}
-                systemImage="arrow.clockwise"
-                onPress={handleRefresh}
-              />
-            </Section>
-          )}
+            </Activity>
+            <FormButton
+              title="🎨 Come Back & Create"
+              systemImage="sparkles"
+              onPress={() => router.push("/(paywall)")}
+              color="yellow"
+            />
+            <FormButton
+              title={isRefreshing ? "Refreshing..." : "Refresh data"}
+              systemImage="arrow.clockwise"
+              onPress={handleRefresh}
+            />
+          </Section>
+        </Activity>
 
         <Section
           footer={
@@ -522,7 +608,8 @@ export function Profile() {
               systemImage="envelope.fill"
               onPress={() => {
                 const subject = "Inkigo Feedback";
-                const body = `Hi!\n\nI have some feedback about Inkigo:\n\n[Your feedback here]\n\nThanks!`;
+                const userInfo = user ? `\n\nAccount: ${user.email}` : "";
+                const body = `Hi!\n\nI have some feedback about Inkigo:\n\n[Your feedback here]${userInfo}\n\nThanks!`;
                 const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
                   subject
                 )}&body=${encodeURIComponent(body)}`;
@@ -640,59 +727,65 @@ export function Profile() {
           />
         </Section>
 
-        <Section>
-          <FormButton
-            title="Log out"
-            systemImage="rectangle.portrait.and.arrow.right.fill"
-            onPress={handleSignOut}
-          />
-        </Section>
+        {/* Log out - only for authenticated users */}
+        <Activity mode={isAuthenticated ? "visible" : "hidden"}>
+          <Section>
+            <FormButton
+              title="Log out"
+              systemImage="rectangle.portrait.and.arrow.right.fill"
+              onPress={handleSignOut}
+            />
+          </Section>
+        </Activity>
 
-        <Section
-          title="Danger Zone"
-          footer={
-            <Text>
-              Deleting your account is permanent and cannot be undone. All your
-              data, tattoos, and history will be lost forever. This does NOT
-              cancel active subscriptions — cancel in Settings → Apple ID →
-              Subscriptions first.
-            </Text>
-          }
-        >
-          <FormButton
-            title="Delete Account"
-            systemImage="exclamationmark.triangle.fill"
-            color={Color.zinc[500]}
-            onPress={() =>
-              Alert.alert(
-                "Delete Account",
-                "Are you sure you want to delete your account? This action cannot be undone, and all your data will be permanently deleted. Note that deleting your account will NOT cancel any active subscriptions. You can manage or cancel your subscriptions at any time from your iCloud settings.",
-                [
-                  {
-                    text: "Cancel",
-                    style: "cancel",
-                  },
-                  {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: async () => {
-                      try {
-                        router.dismissAll();
-
-                        // TODO: Delete account, currently people are deleteing and recreating accounts to get free generations. :(
-                        // await authClient.deleteUser();
-
-                        await authClient.signOut();
-                      } catch (error) {
-                        console.error("Error deleting account:", error);
-                      }
-                    },
-                  },
-                ]
-              )
+        {/* Danger Zone - only for authenticated users */}
+        <Activity mode={isAuthenticated ? "visible" : "hidden"}>
+          <Section
+            title="Danger Zone"
+            footer={
+              <Text>
+                Deleting your account is permanent and cannot be undone. All
+                your data, tattoos, and history will be lost forever. This does
+                NOT cancel active subscriptions — cancel in Settings → Apple ID
+                → Subscriptions first.
+              </Text>
             }
-          />
-        </Section>
+          >
+            <FormButton
+              title="Delete Account"
+              systemImage="exclamationmark.triangle.fill"
+              color={Color.zinc[500]}
+              onPress={() =>
+                Alert.alert(
+                  "Delete Account",
+                  "Are you sure you want to delete your account? This action cannot be undone, and all your data will be permanently deleted. Note that deleting your account will NOT cancel any active subscriptions. You can manage or cancel your subscriptions at any time from your iCloud settings.",
+                  [
+                    {
+                      text: "Cancel",
+                      style: "cancel",
+                    },
+                    {
+                      text: "Delete",
+                      style: "destructive",
+                      onPress: async () => {
+                        try {
+                          router.dismissAll();
+
+                          // TODO: Delete account, currently people are deleteing and recreating accounts to get free generations. :(
+                          // await authClient.deleteUser();
+
+                          await authClient.signOut();
+                        } catch (error) {
+                          console.error("Error deleting account:", error);
+                        }
+                      },
+                    },
+                  ]
+                )
+              }
+            />
+          </Section>
+        </Activity>
       </Form>
     </Host>
   );

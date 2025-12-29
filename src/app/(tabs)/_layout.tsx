@@ -70,7 +70,7 @@ export default function TabLayout() {
         <NativeTabs.Trigger.Label>My Tattoos</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="photo.fill.on.rectangle.fill" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile" hidden={!isAuthenticated}>
+      <NativeTabs.Trigger name="profile">
         <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="person.fill" />
       </NativeTabs.Trigger>
