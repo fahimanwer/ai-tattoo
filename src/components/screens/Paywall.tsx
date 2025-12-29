@@ -437,6 +437,7 @@ export function Paywall() {
               <View style={{ flexDirection: "column", gap: 12 }}>
                 <OfferingCard
                   title="Weekly"
+                  term="Week"
                   package={weeklyPackage}
                   onPress={() => setSelectedPeriod("weekly")}
                   isSelected={selectedPeriod === "weekly"}
@@ -447,6 +448,7 @@ export function Paywall() {
 
                 <OfferingCard
                   title="Monthly"
+                  term="Month"
                   package={monthlyPackage}
                   onPress={() => setSelectedPeriod("monthly")}
                   isSelected={selectedPeriod === "monthly"}

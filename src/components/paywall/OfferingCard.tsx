@@ -21,6 +21,7 @@ type OfferingCardProps = {
   isCurrentPlan?: boolean;
   isSelected?: boolean;
   disabled?: boolean;
+  term: "Week" | "Month";
 };
 
 const ANIMATION_DURATION = 200;
@@ -32,6 +33,7 @@ export function OfferingCard({
   isCurrentPlan = false,
   disabled = false,
   isSelected = false,
+  term,
 }: OfferingCardProps) {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const progress = useSharedValue(isSelected ? 1 : 0);
@@ -122,7 +124,7 @@ export function OfferingCard({
               type="base"
               style={{ color: Color.grayscale[400] }}
             >
-              {product.priceString.replace(/\s/g, "")}/Month
+              {product.priceString.replace(/\s/g, "")}/{term}
             </Text>
           </View>
         </View>
