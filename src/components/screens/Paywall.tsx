@@ -534,7 +534,7 @@ export function Paywall() {
           </View>
           <Text
             type="xs"
-            style={{ textAlign: "center", color: Color.grayscale[300] }}
+            style={{ textAlign: "center", color: Color.grayscale[400] }}
           >
             AI design generation includes fair-use limits.
           </Text>

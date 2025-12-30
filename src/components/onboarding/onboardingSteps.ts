@@ -302,7 +302,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "congratulations",
     kind: "congratulations",
-    title: "Congratulations!",
+    title: "You're all set!",
     description: "You're all set to get started.",
     image: undefined,
   },

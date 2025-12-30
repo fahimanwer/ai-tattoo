@@ -396,6 +396,7 @@ export default function OnboardingV2() {
           pointerEvents="none"
           style={{
             width: "100%",
+            paddingTop: 16,
           }}
 
           // entering={SlideInRight}
@@ -412,7 +413,7 @@ export default function OnboardingV2() {
             }}
           >
             {currentStep?.kind === "congratulations" && answers["user-name"]
-              ? `${answers["user-name"]}, you're all set!`
+              ? `Welcome aboard, ${answers["user-name"]}!`
               : // : currentStep?.id === "user-description" && answers["user-name"]
               // ? `${answers["user-name"]}, which best describes you?`
               currentStep?.id === "feature-tryon" && answers["user-name"]
