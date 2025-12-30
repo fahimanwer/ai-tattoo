@@ -97,6 +97,7 @@ export function OfferingCard({
           paddingVertical: 8,
           borderWidth: 1,
           borderRadius: 18,
+          borderCurve: "continuous",
         },
         animatedCardStyle,
       ]}

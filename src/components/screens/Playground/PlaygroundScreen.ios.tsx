@@ -23,6 +23,7 @@ import {
   frame,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
+import { useQueryClient } from "@tanstack/react-query";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -57,6 +58,8 @@ export function PlaygroundScreen() {
     focusInput,
     blurInput,
   } = use(PlaygroundContext);
+
+  const queryClient = useQueryClient();
 
   const { width } = useWindowDimensions();
 
@@ -143,6 +146,29 @@ export function PlaygroundScreen() {
                 type: "sfSymbol",
               },
               onPress: () => {
+                if (activeMutation.isPending) {
+                  Alert.alert(
+                    "Cancel Generation?",
+                    "You're about to cancel the current generation. This will remove the current generation and start a new session.",
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      {
+                        text: "Cancel Generation",
+                        style: "destructive",
+                        isPreferred: true,
+                        onPress: () => {
+                          queryClient.resetQueries();
+                          setSessionGenerations([]);
+                          setActiveGenerationIndex(undefined);
+                          setPrompt("");
+                          dismissToHome();
+                        },
+                      },
+                    ]
+                  );
+                  return;
+                }
+
                 if (sessionGenerations.length > 0) {
                   Alert.alert(
                     "Clear Everything?",
@@ -154,6 +180,7 @@ export function PlaygroundScreen() {
                         style: "destructive",
                         isPreferred: true,
                         onPress: () => {
+                          queryClient.resetQueries();
                           setSessionGenerations([]);
                           setActiveGenerationIndex(undefined);
                           setPrompt("");
@@ -182,7 +209,10 @@ export function PlaygroundScreen() {
                   await handleShare(activeGenerationUris[0]);
                 }
               },
-              disabled: activeGenerationUris.length === 0,
+              disabled:
+                activeGenerationUris.length === 0 ||
+                isPending ||
+                activeMutation.isPending,
             },
             {
               type: "button",
@@ -198,7 +228,10 @@ export function PlaygroundScreen() {
                   await handleSave(activeGenerationUris[0]);
                 }
               },
-              disabled: activeGenerationUris.length === 0,
+              disabled:
+                activeGenerationUris.length === 0 ||
+                isPending ||
+                activeMutation.isPending,
             },
             ...(!hasActiveSubscription && session?.user !== undefined
               ? [
@@ -326,6 +359,7 @@ export function PlaygroundScreen() {
                 activeMutation.isPending
               }
               autoFocus={true} // this is causing side effects when true
+              isSheetDisabled={isPending || activeMutation.isPending}
             />
           </Activity>
         </View>

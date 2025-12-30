@@ -40,6 +40,7 @@ export function InputControls({
   autoFocus,
   isSubmitDisabled = false,
   prompt = "",
+  isSheetDisabled = false,
 }: InputControlsProps) {
   const { bottom } = useSafeAreaInsets();
   const { inputControlsRef, addImagesToSession, activeGenerationUris } =
@@ -152,6 +153,7 @@ export function InputControls({
                       isLiquidGlassAvailable() ? "transparent" : "#000000"
                     ),
                     clipShape("circle"),
+                    disabled(isSheetDisabled),
                   ]}
                 >
                   <Image

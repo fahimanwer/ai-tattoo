@@ -78,7 +78,11 @@ export function TextToImageResult({
       <PlaygroundError
         errorType={errorType}
         errorMessage={mutation.error?.message}
-        onDismiss={() => mutation.reset()}
+        onDismiss={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+          blurInput();
+          mutation.reset();
+        }}
       />
     );
   }

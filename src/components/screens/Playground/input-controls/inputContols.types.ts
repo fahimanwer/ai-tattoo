@@ -4,4 +4,5 @@ export interface InputControlsProps {
   autoFocus?: boolean;
   isSubmitDisabled?: boolean;
   prompt?: string;
+  isSheetDisabled?: boolean;
 }
