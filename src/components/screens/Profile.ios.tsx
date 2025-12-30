@@ -302,6 +302,7 @@ export function Profile() {
               <Text
                 modifiers={[
                   onTapGesture(async () => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                     await Clipboard.setStringAsync(user?.id ?? "");
                     toast.success("User ID copied to clipboard");
                   }),
