@@ -18,6 +18,7 @@ type WebhookEventType =
   | "buildUploadStateUpdated"
   | "buildBundleProcessingStateUpdated"
   | "appStoreVersionStateUpdated"
+  | "appStoreVersionAppVersionStateUpdated"
   | "betaAppReviewSubmissionStateUpdated";
 
 // Build upload states
@@ -64,9 +65,12 @@ interface AppleWebhookPayload {
     attributes: {
       // For ping events
       timestamp?: string;
-      // For state change events
+      // For state change events (legacy format)
       oldState?: string;
       newState?: string;
+      // For state change events (new format)
+      oldValue?: string;
+      newValue?: string;
     };
     relationships?: {
       instance?: {
@@ -108,19 +112,19 @@ const BUILD_UPLOAD_STATE_CONFIG: Record<BuildUploadState, MessageConfig> = {
     color: "#FFA500",
     emoji: "⏳",
     title: "Build Uploading",
-    message: "Your build is being uploaded to App Store Connect.",
+    message: "Uploading your build to App Store Connect...",
   },
   COMPLETE: {
     color: "#36a64f",
     emoji: "✅",
-    title: "Build Upload Complete",
-    message: "Your build has been uploaded successfully!",
+    title: "Build Uploaded",
+    message: "Build uploaded successfully!",
   },
   FAILED: {
     color: "#E01E5A",
     emoji: "❌",
-    title: "Build Upload Failed",
-    message: "Build upload failed. Please check Xcode for details.",
+    title: "Upload Failed",
+    message: "Build upload failed. Check Xcode for details.",
   },
 };
 
@@ -132,28 +136,26 @@ const BUILD_BUNDLE_STATE_CONFIG: Record<
   PROCESSING: {
     color: "#FFA500",
     emoji: "⏳",
-    title: "Build Processing",
-    message: "Your build is being processed by App Store Connect.",
+    title: "Processing Build",
+    message: "Processing your build...",
   },
   VALID: {
     color: "#36a64f",
     emoji: "✅",
-    title: "Build Ready for Testing",
-    message: "Your build has been processed and is ready for TestFlight! 🎉",
+    title: "Build Ready",
+    message: "Build processed and ready for TestFlight!",
   },
   INVALID: {
     color: "#E01E5A",
     emoji: "⚠️",
-    title: "Build Invalid",
-    message:
-      "Your build is invalid. Please check App Store Connect for details.",
+    title: "Invalid Build",
+    message: "Build is invalid. Check App Store Connect for details.",
   },
   FAILED: {
     color: "#E01E5A",
     emoji: "❌",
-    title: "Build Processing Failed",
-    message:
-      "Build processing failed. Please check App Store Connect for details.",
+    title: "Processing Failed",
+    message: "Build processing failed. Check App Store Connect for details.",
   },
 };
 
@@ -162,119 +164,116 @@ const APP_VERSION_STATE_CONFIG: Record<AppStoreVersionState, MessageConfig> = {
   ACCEPTED: {
     color: "#36a64f",
     emoji: "✅",
-    title: "Version Accepted",
-    message: "Your app version has been accepted!",
+    title: "Accepted",
+    message: "App version accepted!",
   },
   DEVELOPER_REJECTED: {
     color: "#FFA500",
     emoji: "🔙",
     title: "Developer Rejected",
-    message: "You've rejected this version from review.",
+    message: "You rejected this version from review.",
   },
   DEVELOPER_REMOVED_FROM_SALE: {
     color: "#808080",
     emoji: "🚫",
     title: "Removed from Sale",
-    message: "You've removed this version from sale.",
+    message: "You removed this version from sale.",
   },
   IN_REVIEW: {
     color: "#007AFF",
     emoji: "👀",
     title: "In Review",
-    message: "Your app is being reviewed by Apple! Usually takes 24-48 hours.",
+    message: "Apple is reviewing your app. Usually 24-48 hours.",
   },
   INVALID_BINARY: {
     color: "#E01E5A",
     emoji: "❌",
     title: "Invalid Binary",
-    message:
-      "The binary for this version is invalid. Please upload a new build.",
+    message: "Binary is invalid. Upload a new build.",
   },
   METADATA_REJECTED: {
     color: "#E01E5A",
     emoji: "📝",
     title: "Metadata Rejected",
-    message:
-      "Your app metadata was rejected. Please check App Store Connect for details.",
+    message: "App metadata was rejected. Check App Store Connect.",
   },
   PENDING_APPLE_RELEASE: {
     color: "#36a64f",
     emoji: "🍎",
     title: "Pending Apple Release",
-    message: "Your app is approved and waiting for Apple to release it!",
+    message: "Approved! Waiting for Apple to release.",
   },
   PENDING_CONTRACT: {
     color: "#FFA500",
     emoji: "📄",
     title: "Pending Contract",
-    message: "Waiting for contract agreement completion.",
+    message: "Waiting for contract agreement.",
   },
   PENDING_DEVELOPER_RELEASE: {
     color: "#36a64f",
     emoji: "🚀",
     title: "Ready to Release",
-    message: "Your app is approved! Release it when you're ready.",
+    message: "Approved! Release whenever you're ready.",
   },
   PREPARE_FOR_SUBMISSION: {
     color: "#808080",
     emoji: "📋",
-    title: "Preparing for Submission",
-    message: "Version is being prepared for submission.",
+    title: "Preparing",
+    message: "Preparing for submission.",
   },
   PREORDER_READY_FOR_SALE: {
     color: "#36a64f",
     emoji: "🛒",
     title: "Pre-order Ready",
-    message: "Your app pre-order is ready for sale!",
+    message: "Pre-order is ready for sale!",
   },
   PROCESSING_FOR_APP_STORE: {
     color: "#FFA500",
     emoji: "⏳",
-    title: "Processing for App Store",
-    message: "Your app is being processed for the App Store.",
+    title: "Processing",
+    message: "Processing for App Store...",
   },
   READY_FOR_REVIEW: {
     color: "#007AFF",
     emoji: "📤",
     title: "Ready for Review",
-    message: "Your app is ready to be submitted for review.",
+    message: "Ready to submit for review.",
   },
   READY_FOR_SALE: {
     color: "#36a64f",
     emoji: "🎉",
-    title: "Live on App Store!",
-    message: "Congratulations! Your app is now live on the App Store! 🥳",
+    title: "Live!",
+    message: "Your app is now live on the App Store!",
   },
   REJECTED: {
     color: "#E01E5A",
     emoji: "❌",
-    title: "App Rejected",
-    message:
-      "Your app was rejected. Please check App Store Connect for details.",
+    title: "Rejected",
+    message: "App was rejected. Check App Store Connect.",
   },
   REMOVED_FROM_SALE: {
     color: "#808080",
     emoji: "🚫",
     title: "Removed from Sale",
-    message: "This version has been removed from sale.",
+    message: "Version removed from sale.",
   },
   REPLACED_WITH_NEW_VERSION: {
     color: "#808080",
     emoji: "🔄",
     title: "Version Replaced",
-    message: "This version has been replaced with a newer version.",
+    message: "Replaced with a newer version.",
   },
   WAITING_FOR_EXPORT_COMPLIANCE: {
     color: "#FFA500",
     emoji: "📋",
-    title: "Export Compliance Required",
-    message: "Please complete export compliance information.",
+    title: "Export Compliance",
+    message: "Complete export compliance info.",
   },
   WAITING_FOR_REVIEW: {
     color: "#007AFF",
     emoji: "⏳",
-    title: "Waiting for Review",
-    message: "Your app is in the review queue. Usually takes 24-48 hours.",
+    title: "In Queue",
+    message: "Submitted! In the review queue. Usually 24-48 hours.",
   },
 };
 
@@ -286,27 +285,26 @@ const BETA_REVIEW_STATE_CONFIG: Record<
   WAITING_FOR_REVIEW: {
     color: "#007AFF",
     emoji: "⏳",
-    title: "TestFlight Review Pending",
-    message: "Your build is waiting for TestFlight beta review.",
+    title: "TestFlight Pending",
+    message: "Waiting for TestFlight review.",
   },
   IN_REVIEW: {
     color: "#007AFF",
     emoji: "👀",
     title: "TestFlight In Review",
-    message: "Your build is being reviewed for TestFlight.",
+    message: "TestFlight build is being reviewed.",
   },
   REJECTED: {
     color: "#E01E5A",
     emoji: "❌",
-    title: "TestFlight Review Rejected",
-    message:
-      "Your TestFlight build was rejected. Check App Store Connect for details.",
+    title: "TestFlight Rejected",
+    message: "TestFlight build rejected. Check App Store Connect.",
   },
   APPROVED: {
     color: "#36a64f",
     emoji: "✅",
     title: "TestFlight Approved",
-    message: "Your build is approved for external TestFlight testing! 🎉",
+    message: "Build approved for external testing!",
   },
 };
 
@@ -375,12 +373,6 @@ async function verifyAppleSignature(
   }
 }
 
-// App Store Connect URLs
-const APP_STORE_CONNECT_URL =
-  "https://appstoreconnect.apple.com/teams/44a10798-a75d-4b45-8c9d-0b7656df7976/apps/6751748193";
-const TESTFLIGHT_URL = `${APP_STORE_CONNECT_URL}/testflight/ios`;
-const APP_STORE_URL = `${APP_STORE_CONNECT_URL}/appstore`;
-
 /**
  * Format timestamp for Slack
  */
@@ -400,11 +392,8 @@ function formatTimestamp(): string {
  */
 async function sendSlackNotification(
   config: MessageConfig,
-  eventCategory: string,
   oldState?: string,
-  newState?: string,
-  buttonUrl?: string,
-  buttonText?: string
+  newState?: string
 ): Promise<boolean> {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL;
 
@@ -414,73 +403,31 @@ async function sendSlackNotification(
   }
 
   const transitionText =
-    oldState && newState
-      ? `${oldState} → *${newState}*`
-      : newState
-      ? `*${newState}*`
-      : "";
+    oldState && newState ? `${oldState} → ${newState}` : newState || "";
 
   const blocks: any[] = [
-    {
-      type: "header",
-      text: {
-        type: "plain_text",
-        text: `${config.emoji} ${config.title}`,
-        emoji: true,
-      },
-    },
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: config.message,
+        text: `${config.emoji} *${config.title}*\n${config.message}`,
       },
     },
   ];
 
-  // Add status fields if we have state info
+  // Add context with transition and timestamp
+  const contextParts = [];
   if (transitionText) {
-    blocks.push({
-      type: "section",
-      fields: [
-        {
-          type: "mrkdwn",
-          text: `*Status*\n${transitionText}`,
-        },
-        {
-          type: "mrkdwn",
-          text: `*App*\nInkigo`,
-        },
-      ],
-    });
+    contextParts.push(transitionText);
   }
+  contextParts.push(formatTimestamp());
 
-  // Add action button if provided
-  if (buttonUrl && buttonText) {
-    blocks.push({
-      type: "actions",
-      elements: [
-        {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: buttonText,
-            emoji: true,
-          },
-          url: buttonUrl,
-          style: config.color === "#36a64f" ? "primary" : undefined,
-        },
-      ],
-    });
-  }
-
-  // Add timestamp
   blocks.push({
     type: "context",
     elements: [
       {
         type: "mrkdwn",
-        text: `📅 ${formatTimestamp()} • ${eventCategory}`,
+        text: contextParts.join(" • "),
       },
     ],
   });
@@ -524,16 +471,25 @@ async function sendSlackNotification(
  * Handle ping event
  */
 async function handlePingEvent(): Promise<boolean> {
-  return sendSlackNotification(
-    {
-      color: "#36a64f",
-      emoji: "🍎",
-      title: "Webhook Connected",
-      message:
-        "App Store Connect webhook is now connected! You'll receive notifications here for build and app status changes.",
-    },
-    "Ping"
-  );
+  return sendSlackNotification({
+    color: "#36a64f",
+    emoji: "🍎",
+    title: "Webhook Connected",
+    message:
+      "App Store Connect webhook connected. You'll get build and app status alerts here.",
+  });
+}
+
+/**
+ * Get old and new state from payload attributes (supports both formats)
+ */
+function getStateTransition(
+  attributes: AppleWebhookPayload["data"]["attributes"]
+) {
+  return {
+    oldState: attributes.oldState || attributes.oldValue,
+    newState: attributes.newState || attributes.newValue,
+  };
 }
 
 /**
@@ -542,19 +498,12 @@ async function handlePingEvent(): Promise<boolean> {
 async function handleBuildUploadState(
   payload: AppleWebhookPayload
 ): Promise<boolean> {
-  const { oldState, newState } = payload.data.attributes;
+  const { oldState, newState } = getStateTransition(payload.data.attributes);
   const state = (newState || "PROCESSING") as BuildUploadState;
   const config =
     BUILD_UPLOAD_STATE_CONFIG[state] || BUILD_UPLOAD_STATE_CONFIG.PROCESSING;
 
-  return sendSlackNotification(
-    config,
-    "Build Upload",
-    oldState,
-    newState,
-    TESTFLIGHT_URL,
-    "📱 Open TestFlight"
-  );
+  return sendSlackNotification(config, oldState, newState);
 }
 
 /**
@@ -563,19 +512,12 @@ async function handleBuildUploadState(
 async function handleBuildBundleState(
   payload: AppleWebhookPayload
 ): Promise<boolean> {
-  const { oldState, newState } = payload.data.attributes;
+  const { oldState, newState } = getStateTransition(payload.data.attributes);
   const state = (newState || "PROCESSING") as BuildBundleProcessingState;
   const config =
     BUILD_BUNDLE_STATE_CONFIG[state] || BUILD_BUNDLE_STATE_CONFIG.PROCESSING;
 
-  return sendSlackNotification(
-    config,
-    "Build Processing",
-    oldState,
-    newState,
-    TESTFLIGHT_URL,
-    "📱 Open TestFlight"
-  );
+  return sendSlackNotification(config, oldState, newState);
 }
 
 /**
@@ -584,23 +526,16 @@ async function handleBuildBundleState(
 async function handleAppVersionState(
   payload: AppleWebhookPayload
 ): Promise<boolean> {
-  const { oldState, newState } = payload.data.attributes;
+  const { oldState, newState } = getStateTransition(payload.data.attributes);
   const state = (newState || "PREPARE_FOR_SUBMISSION") as AppStoreVersionState;
   const config = APP_VERSION_STATE_CONFIG[state] || {
     color: "#808080",
     emoji: "📦",
-    title: `Version State: ${newState}`,
-    message: `App version state changed to ${newState}.`,
+    title: newState || "Unknown",
+    message: `State changed to ${newState}.`,
   };
 
-  return sendSlackNotification(
-    config,
-    "App Store Version",
-    oldState,
-    newState,
-    APP_STORE_URL,
-    "🍎 Open App Store Connect"
-  );
+  return sendSlackNotification(config, oldState, newState);
 }
 
 /**
@@ -609,21 +544,14 @@ async function handleAppVersionState(
 async function handleBetaReviewState(
   payload: AppleWebhookPayload
 ): Promise<boolean> {
-  const { oldState, newState } = payload.data.attributes;
+  const { oldState, newState } = getStateTransition(payload.data.attributes);
   const state = (newState ||
     "WAITING_FOR_REVIEW") as BetaAppReviewSubmissionState;
   const config =
     BETA_REVIEW_STATE_CONFIG[state] ||
     BETA_REVIEW_STATE_CONFIG.WAITING_FOR_REVIEW;
 
-  return sendSlackNotification(
-    config,
-    "TestFlight Review",
-    oldState,
-    newState,
-    TESTFLIGHT_URL,
-    "📱 Open TestFlight"
-  );
+  return sendSlackNotification(config, oldState, newState);
 }
 
 /**
@@ -633,20 +561,17 @@ async function handleUnknownEvent(
   payload: AppleWebhookPayload
 ): Promise<boolean> {
   const { type } = payload.data;
-  const { oldState, newState } = payload.data.attributes;
+  const { oldState, newState } = getStateTransition(payload.data.attributes);
 
   return sendSlackNotification(
     {
       color: "#808080",
       emoji: "📬",
-      title: "App Store Connect Event",
-      message: `Received event: ${type}`,
+      title: "App Store Event",
+      message: `Event: ${type}`,
     },
-    type,
     oldState,
-    newState,
-    APP_STORE_CONNECT_URL,
-    "🍎 Open App Store Connect"
+    newState
   );
 }
 
@@ -688,11 +613,14 @@ export async function POST(request: Request) {
     const payload: AppleWebhookPayload = JSON.parse(rawBody);
     const eventType = payload.data?.type;
 
+    const { oldState, newState } = getStateTransition(
+      payload.data?.attributes || {}
+    );
     slog("apple-webhook", "📦 Webhook payload", {
       type: eventType,
       id: payload.data?.id,
-      oldState: payload.data?.attributes?.oldState,
-      newState: payload.data?.attributes?.newState,
+      oldState,
+      newState,
     });
 
     // Route to appropriate handler
@@ -713,6 +641,7 @@ export async function POST(request: Request) {
         break;
 
       case "appStoreVersionStateUpdated":
+      case "appStoreVersionAppVersionStateUpdated":
         slog("apple-webhook", "📱 App version state changed");
         await handleAppVersionState(payload);
         break;
