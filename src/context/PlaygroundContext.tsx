@@ -4,6 +4,7 @@ import {
   clearSessionCache,
   getCachedImageAsBase64,
 } from "@/lib/image-cache";
+import { clog } from "@/lib/log";
 import {
   textAndImageToImage,
   TextAndImageToImageInput,
@@ -66,6 +67,7 @@ export interface PlaygroundContextValue {
   handleTattooGeneration: () => void;
   removeImageFromActiveGroup: (uri: string) => void;
   resetMutations: () => void;
+  cancelGeneration: () => void; // Cancel any in-progress generation
   // Input controls
   inputControlsRef: React.RefObject<InputControlsHandle | null>;
   focusInput: () => void;
@@ -90,6 +92,7 @@ export const PlaygroundContext = React.createContext<PlaygroundContextValue>({
   handleTattooGeneration: () => {},
   removeImageFromActiveGroup: () => {},
   resetMutations: () => {},
+  cancelGeneration: () => {},
   inputControlsRef: { current: null },
   focusInput: () => {},
   blurInput: () => {},
@@ -122,6 +125,9 @@ export function PlaygroundProvider({
     []
   );
 
+  // AbortController for canceling in-progress generations
+  const abortControllerRef = React.useRef<AbortController | null>(null);
+
   // Combined setter that updates both state and the text field ref
   const setPrompt = React.useCallback((text: string) => {
     setPromptState(text);
@@ -135,7 +141,8 @@ export function PlaygroundProvider({
     mutationFn: async ({
       prompt,
       improvePrompt = settings.improvePrompt ?? true,
-    }: TextToImageInput) => {
+      signal,
+    }: TextToImageInput & { signal?: AbortSignal }) => {
       // Get RevenueCat user ID for accurate usage tracking
       let revenuecatUserId: string | undefined;
       try {
@@ -145,11 +152,14 @@ export function PlaygroundProvider({
         // Continue without RC ID (backwards compatibility)
       }
 
-      return textToImage({
-        prompt,
-        improvePrompt,
-        revenuecatUserId,
-      });
+      return textToImage(
+        {
+          prompt,
+          improvePrompt,
+          revenuecatUserId,
+        },
+        signal
+      );
     },
     onSuccess: async (data) => {
       if (data?.imageData) {
@@ -168,6 +178,13 @@ export function PlaygroundProvider({
       }
     },
     onError: (error) => {
+      // Don't show error toast for aborted requests
+      if (error.name === "AbortError") {
+        clog("PlaygroundContext", "Generation aborted", {
+          error: error.message,
+        });
+        return;
+      }
       customEvent("generation_failed", {
         type: "text_to_image",
         error: error.message,
@@ -187,7 +204,8 @@ export function PlaygroundProvider({
       prompt,
       images_base64,
       improvePrompt,
-    }: TextAndImageToImageInput) => {
+      signal,
+    }: TextAndImageToImageInput & { signal?: AbortSignal }) => {
       // Get RevenueCat user ID for accurate usage tracking
       let revenuecatUserId: string | undefined;
       try {
@@ -197,12 +215,15 @@ export function PlaygroundProvider({
         // Continue without RC ID (backwards compatibility)
       }
 
-      return textAndImageToImage({
-        prompt,
-        images_base64,
-        improvePrompt,
-        revenuecatUserId,
-      });
+      return textAndImageToImage(
+        {
+          prompt,
+          images_base64,
+          improvePrompt,
+          revenuecatUserId,
+        },
+        signal
+      );
     },
     onSuccess: async (data) => {
       if (data?.imageData) {
@@ -221,6 +242,10 @@ export function PlaygroundProvider({
       }
     },
     onError: (error) => {
+      // Don't show error toast for aborted requests
+      if (error.name === "AbortError") {
+        return;
+      }
       customEvent("generation_failed", {
         type: "image_to_image",
         error: error.message,
@@ -248,6 +273,13 @@ export function PlaygroundProvider({
     setPrompt("");
     Keyboard.dismiss();
 
+    // Cancel any in-progress generation and create a new AbortController
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     // Normal tattoo generation
     // Text to image generation
     if (isTextToImage) {
@@ -262,6 +294,7 @@ export function PlaygroundProvider({
       textToImageMutation.mutate({
         prompt,
         improvePrompt: settings.improvePrompt,
+        signal,
       });
     } else {
       customEvent("generation_started", {
@@ -281,6 +314,7 @@ export function PlaygroundProvider({
       );
       textAndImageToImageMutation.mutate({
         prompt: promptToUse,
+        signal,
         images_base64: base64Images,
         improvePrompt: settings.improvePrompt,
       });
@@ -548,6 +582,16 @@ export function PlaygroundProvider({
     textAndImageToImageMutation.reset();
   }, [textToImageMutation, textAndImageToImageMutation]);
 
+  // Cancel any in-progress generation (useful when leaving screen)
+  const cancelGeneration = React.useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    textToImageMutation.reset();
+    textAndImageToImageMutation.reset();
+  }, [textToImageMutation, textAndImageToImageMutation]);
+
   return (
     <PlaygroundContext.Provider
       value={{
@@ -568,6 +612,7 @@ export function PlaygroundProvider({
         handleTattooGeneration,
         removeImageFromActiveGroup,
         resetMutations,
+        cancelGeneration,
         inputControlsRef,
         focusInput,
         blurInput,

@@ -57,6 +57,7 @@ export function PlaygroundScreen() {
     handleTattooGeneration,
     focusInput,
     blurInput,
+    cancelGeneration,
   } = use(PlaygroundContext);
 
   const queryClient = useQueryClient();
@@ -157,7 +158,7 @@ export function PlaygroundScreen() {
                         style: "destructive",
                         isPreferred: true,
                         onPress: () => {
-                          queryClient.resetQueries();
+                          cancelGeneration();
                           setSessionGenerations([]);
                           setActiveGenerationIndex(undefined);
                           setPrompt("");
@@ -180,7 +181,7 @@ export function PlaygroundScreen() {
                         style: "destructive",
                         isPreferred: true,
                         onPress: () => {
-                          queryClient.resetQueries();
+                          cancelGeneration();
                           setSessionGenerations([]);
                           setActiveGenerationIndex(undefined);
                           setPrompt("");

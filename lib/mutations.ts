@@ -5,7 +5,11 @@ export function createJsonMutation<TInput, TOutput>(
   method: "POST" | "PUT" | "PATCH" | "DELETE",
   mapInputToBody: (input: TInput) => unknown = (x) => x
 ) {
-  return async (input: TInput): Promise<TOutput> => {
-    return apiFetch<TOutput>(path, { method, body: mapInputToBody(input) });
+  return async (input: TInput, signal?: AbortSignal): Promise<TOutput> => {
+    return apiFetch<TOutput>(path, {
+      method,
+      body: mapInputToBody(input),
+      signal,
+    });
   };
 }

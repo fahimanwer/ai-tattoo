@@ -16,6 +16,7 @@ type ApiFetchOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   headers?: Record<string, string>;
+  signal?: AbortSignal;
 };
 
 const getBaseURL = () => {
@@ -28,7 +29,7 @@ const getBaseURL = () => {
 
 export async function apiFetch<TResponse>(
   path: string,
-  { method = "GET", body, headers }: ApiFetchOptions = {}
+  { method = "GET", body, headers, signal }: ApiFetchOptions = {}
 ): Promise<TResponse> {
   const baseUrl = getBaseURL();
   const isFormData =
@@ -46,6 +47,7 @@ export async function apiFetch<TResponse>(
       Cookie: authClient.getCookie(),
       ...headers,
     },
+    signal,
   });
 
   const json = await response.json().catch(() => undefined);
