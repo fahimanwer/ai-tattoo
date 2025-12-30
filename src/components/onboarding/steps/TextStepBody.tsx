@@ -56,6 +56,7 @@ export function TextStepBody({
         <Input
           autoFocus
           value={value}
+          cursorColor={"yellow"}
           onChangeText={onChange}
           maxLength={25}
           textContentType="name"

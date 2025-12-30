@@ -102,7 +102,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "user-description",
     kind: "multiChoice",
-    title: "Which best describes you?",
+    title: "Which best \n describes you?",
     description:
       "This helps up personalize the experience based on how you relate to tattoos",
     image: undefined,
@@ -127,7 +127,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "goal",
     kind: "multiChoice",
-    title: "What would you like to do?",
+    title: "What would you\n like to do?",
     description:
       "This helps us understand how you want to explore tattoos and what tools would be most useful to you.",
     image: undefined,
@@ -150,7 +150,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "feature-design",
     kind: "feature",
-    title: "Design the tattoo you want",
+    title: "Design the \n tattoo you want",
     description:
       "Type a few words or upload an image and instantly generate unique tattoo designs.",
     image:
@@ -159,7 +159,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "location",
     kind: "multiChoiceChips",
-    title: "Where do you want the tattoo?",
+    title: "Where do you\n want the tattoo?",
     description:
       "Placement affects the design, size, and flow which helps us tailor ideas to your body.",
     image: undefined,
@@ -197,12 +197,12 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "styles",
     kind: "multiChoiceChips",
-    title: "Pick up to 5 styles you like",
+    title: "Pick up to 5 \n styles you like",
     description:
       "Your style choices help us narrow down designs that match your taste.",
     image: undefined,
     required: false,
-    max: 5,
+    max: 4,
     options: [
       { id: "traditional", label: "Traditional", value: "traditional" },
       { id: "realism", label: "Realism", value: "realism" },
@@ -236,8 +236,8 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "timeframe",
     kind: "singleChoice",
-    title: "When are you thinking of getting the tattoo?",
-    description: "This helps us match the experience to your timeline.",
+    title: "When are you thinking\n of getting the tattoo?",
+    description: "This helps us match the\n experience to your timeline.",
     image: undefined,
     required: false,
     options: [
@@ -251,7 +251,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "vibe",
     kind: "multiChoiceChips",
-    title: "What vibe are you going for?",
+    title: "What vibe are\n you going for?",
     description:
       "Tattoos carry emotions, this helps us understand the story behind yours.",
     image: undefined,
@@ -293,7 +293,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "reviews-loading",
     kind: "reviews",
-    title: "Setting things up for you",
+    title: "Setting things up\n for you",
     description: undefined,
     image: undefined,
   },

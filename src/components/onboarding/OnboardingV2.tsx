@@ -390,7 +390,6 @@ export default function OnboardingV2() {
               alignSelf: "center",
               textAlign: "center",
               lineHeight: 34,
-              paddingHorizontal: 16,
             }}
           >
             {currentStep?.kind === "congratulations" && answers["user-name"]
@@ -408,6 +407,7 @@ export default function OnboardingV2() {
               textAlign: "center",
               marginTop: 8,
               letterSpacing: -0.3,
+              paddingHorizontal: 16,
             }}
           >
             {currentStep?.description}
