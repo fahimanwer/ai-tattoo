@@ -204,6 +204,10 @@ async function sendPingNotification(): Promise<boolean> {
   }
 }
 
+// TestFlight URL for Inkigo
+const TESTFLIGHT_URL =
+  "https://appstoreconnect.apple.com/teams/44a10798-a75d-4b45-8c9d-0b7656df7976/apps/6751748193/testflight/ios";
+
 /**
  * Format and send Slack notification for build state changes
  */
@@ -217,13 +221,10 @@ async function sendBuildStateNotification(
     return false;
   }
 
-  const { attributes, relationships } = payload.data;
+  const { attributes } = payload.data;
   const newState = attributes.newState || "PROCESSING";
   const oldState = attributes.oldState;
   const config = STATE_CONFIG[newState] || STATE_CONFIG.PROCESSING;
-
-  // Get the App Store Connect link if available
-  const appStoreLink = relationships?.instance?.links?.self;
 
   // Build status transition text
   const transitionText = oldState
@@ -262,17 +263,21 @@ async function sendBuildStateNotification(
           },
         ],
       },
-      ...(appStoreLink
-        ? [
-            {
-              type: "section",
-              text: {
-                type: "mrkdwn",
-                text: `<${appStoreLink}|View in App Store Connect>`,
-              },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "📱 Open TestFlight",
+              emoji: true,
             },
-          ]
-        : []),
+            url: TESTFLIGHT_URL,
+            style: newState === "COMPLETE" ? "primary" : undefined,
+          },
+        ],
+      },
       {
         type: "context",
         elements: [
