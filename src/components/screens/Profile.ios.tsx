@@ -664,14 +664,28 @@ export function Profile() {
 
         <Section title="Follow Us">
           <FormButton
-            title="@inkigoapp on X"
-            systemImage="bubble.left.fill"
-            onPress={() => Linking.openURL("https://x.com/inkigoapp")}
-          />
-          <FormButton
             title="inkigo.ai"
             systemImage="globe"
             onPress={() => Linking.openURL("https://inkigo.ai")}
+          />
+          <FormButton
+            title="Instagram"
+            systemImage="photo.fill"
+            onPress={() =>
+              Linking.openURL("https://www.instagram.com/inkigoapp")
+            }
+          />
+          <FormButton
+            title="TikTok"
+            systemImage="video.fill"
+            onPress={() =>
+              Linking.openURL("https://www.tiktok.com/@inkigo369p")
+            }
+          />
+          <FormButton
+            title="X"
+            systemImage="bubble.left.fill"
+            onPress={() => Linking.openURL("https://x.com/inkigoapp")}
           />
         </Section>
 
