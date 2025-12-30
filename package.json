@@ -35,6 +35,7 @@
     "expo-blur": "16.0.0-canary-20251216-3f01dbf",
     "expo-build-properties": "1.0.11-canary-20251216-3f01dbf",
     "expo-camera": "17.1.0-canary-20251216-3f01dbf",
+    "expo-clipboard": "8.0.9-canary-20251216-3f01dbf",
     "expo-constants": "18.1.0-canary-20251216-3f01dbf",
     "expo-dev-client": "6.1.0-canary-20251216-3f01dbf",
     "expo-device": "8.0.11-canary-20251216-3f01dbf",

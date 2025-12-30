@@ -24,16 +24,18 @@ import {
   buttonStyle,
   font,
   foregroundStyle,
+  onTapGesture,
   refreshable,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
 import * as Application from "expo-application";
+import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { Activity, use, useMemo, useState } from "react";
 import { Alert, Linking, Share } from "react-native";
 import type { SFSymbol } from "sf-symbols-typescript";
-
+import { toast } from "sonner-native";
 // Button component for Form sections with haptic feedback
 function FormButton({
   title,
@@ -294,7 +296,19 @@ export function Profile() {
 
         {/* Account section - only for authenticated users */}
         <Activity mode={isAuthenticated ? "visible" : "hidden"}>
-          <Section title="Account">
+          <Section
+            title="Account"
+            footer={
+              <Text
+                modifiers={[
+                  onTapGesture(async () => {
+                    await Clipboard.setStringAsync(user?.id ?? "");
+                    toast.success("User ID copied to clipboard");
+                  }),
+                ]}
+              >{`User ID: ${user?.id}`}</Text>
+            }
+          >
             <LabeledContent label="Name">
               <Text>{displayName}</Text>
             </LabeledContent>
