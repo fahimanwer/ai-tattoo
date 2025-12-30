@@ -436,17 +436,6 @@ export function Paywall() {
             <>
               <View style={{ flexDirection: "column", gap: 12 }}>
                 <OfferingCard
-                  title="Weekly"
-                  term="Week"
-                  package={weeklyPackage}
-                  onPress={() => setSelectedPeriod("weekly")}
-                  isSelected={selectedPeriod === "weekly"}
-                  isCurrentPlan={customerInfo?.activeSubscriptions?.includes(
-                    weeklyPackage.product.identifier
-                  )}
-                />
-
-                <OfferingCard
                   title="Monthly"
                   term="Month"
                   package={monthlyPackage}
@@ -454,6 +443,17 @@ export function Paywall() {
                   isSelected={selectedPeriod === "monthly"}
                   isCurrentPlan={customerInfo?.activeSubscriptions?.includes(
                     monthlyPackage.product.identifier
+                  )}
+                  discountBadge="Save 50%"
+                />
+                <OfferingCard
+                  title="Weekly"
+                  term="Week"
+                  package={weeklyPackage}
+                  onPress={() => setSelectedPeriod("weekly")}
+                  isSelected={selectedPeriod === "weekly"}
+                  isCurrentPlan={customerInfo?.activeSubscriptions?.includes(
+                    weeklyPackage.product.identifier
                   )}
                 />
               </View>

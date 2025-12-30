@@ -22,6 +22,7 @@ type OfferingCardProps = {
   isSelected?: boolean;
   disabled?: boolean;
   term: "Week" | "Month";
+  discountBadge?: string;
 };
 
 const ANIMATION_DURATION = 200;
@@ -34,6 +35,7 @@ export function OfferingCard({
   disabled = false,
   isSelected = false,
   term,
+  discountBadge,
 }: OfferingCardProps) {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const progress = useSharedValue(isSelected ? 1 : 0);
@@ -135,18 +137,35 @@ export function OfferingCard({
         {product.pricePerWeekString?.replace(/\s/g, "")}/Week
       </Text>
 
+      <Activity mode={discountBadge ? "visible" : "hidden"}>
+        <View
+          style={{
+            position: "absolute",
+            top: -8,
+            right: 16,
+            backgroundColor: Color.grayscale[950],
+            paddingHorizontal: 8,
+            borderRadius: 50,
+          }}
+        >
+          <Text weight="semibold" type="xs" style={{ color: "black" }}>
+            {discountBadge}
+          </Text>
+        </View>
+      </Activity>
+
       <Activity mode={isCurrentPlan ? "visible" : "hidden"}>
         <View
           style={{
             position: "absolute",
-            top: 0,
-            right: 0,
+            top: -8,
+            right: 16,
             backgroundColor: "yellow",
             paddingHorizontal: 8,
-            borderRadius: 8,
+            borderRadius: 30,
           }}
         >
-          <Text weight="bold" style={{ color: "black", fontSize: 12 }}>
+          <Text weight="semibold" type="xs" style={{ color: "black" }}>
             CURRENT
           </Text>
         </View>
