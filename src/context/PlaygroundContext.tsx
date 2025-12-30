@@ -499,29 +499,37 @@ export function PlaygroundProvider({
     (imageUris: string[]) => {
       if (imageUris.length === 0) return;
 
-      // Check if we can add to the active group
-      const canAddToActiveGroup =
-        activeGenerationIndex !== undefined &&
-        sessionGenerations[activeGenerationIndex].length + imageUris.length <=
-          2;
+      // Use setSessionGenerations with functional update to get the actual current state
+      setSessionGenerations((prev) => {
+        // Check if we can add to the active group using actual current state
+        const canAddToActiveGroup =
+          activeGenerationIndex !== undefined &&
+          prev[activeGenerationIndex] &&
+          prev[activeGenerationIndex].length + imageUris.length <= 2;
 
-      if (canAddToActiveGroup) {
-        // Add to existing group
-        setSessionGenerations((prev) => {
+        clog("PlaygroundContext", "addImagesToSession", {
+          activeGenerationIndex,
+          canAddToActiveGroup,
+          prevLength: prev.length,
+        });
+
+        if (canAddToActiveGroup) {
+          // Add to existing group - keep the same active index
           const newGenerations = [...prev];
           newGenerations[activeGenerationIndex!] = [
             ...newGenerations[activeGenerationIndex!],
             ...imageUris,
           ];
           return newGenerations;
-        });
-      } else {
-        // Create a new group with all provided images
-        setSessionGenerations((prev) => [...prev, imageUris]);
-        setActiveGenerationIndex(sessionGenerations.length);
-      }
+        } else {
+          // Create a new group at the end and set it as active
+          // Use prev.length as the new index (this is the actual current length)
+          setActiveGenerationIndex(prev.length);
+          return [...prev, imageUris];
+        }
+      });
     },
-    [sessionGenerations, activeGenerationIndex]
+    [activeGenerationIndex]
   );
 
   // Compute the active generation URIs from the index
