@@ -20,6 +20,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
+import * as StoreReview from "expo-store-review";
 import * as React from "react";
 import { Alert, Keyboard } from "react-native";
 import Purchases from "react-native-purchases";
@@ -101,7 +102,7 @@ export function PlaygroundProvider({
 }) {
   // Hooks
   const queryClient = useQueryClient();
-  const { settings } = React.use(AppSettingsContext);
+  const { settings, updateSettings } = React.use(AppSettingsContext);
   const [prompt, setPromptState] = React.useState("");
   const [sessionGenerations, setSessionGenerations] = React.useState<
     string[][]
@@ -329,6 +330,22 @@ export function PlaygroundProvider({
       dismissible: true,
       duration: 1_000,
     });
+
+    // Request store review after first save (only once ever)
+    if (!settings.hasRequestedReview) {
+      // Delay to let user see the success toast first
+      setTimeout(async () => {
+        try {
+          const hasAction = await StoreReview.hasAction();
+          if (hasAction) {
+            await StoreReview.requestReview();
+            await updateSettings({ hasRequestedReview: true });
+          }
+        } catch (error) {
+          console.error("Failed to request store review:", error);
+        }
+      }, 1500);
+    }
   }
 
   function handleReset() {

@@ -42,6 +42,7 @@
         "expo-secure-store": "15.0.9-canary-20251216-3f01dbf",
         "expo-sqlite": "16.1.0-canary-20251216-3f01dbf",
         "expo-status-bar": "3.0.10-canary-20251216-3f01dbf",
+        "expo-store-review": "9.0.10-canary-20251216-3f01dbf",
         "expo-symbols": "1.1.0-canary-20251216-3f01dbf",
         "expo-system-ui": "6.0.10-canary-20251216-3f01dbf",
         "expo-updates": "29.1.0-canary-20251216-3f01dbf",
@@ -1055,6 +1056,8 @@
     "expo-sqlite": ["expo-sqlite@16.1.0-canary-20251216-3f01dbf", "", { "dependencies": { "await-lock": "^2.2.2" }, "peerDependencies": { "expo": "55.0.0-canary-20251216-3f01dbf", "react": "*", "react-native": "*" } }, "sha512-BbGbZdOiOQAIgOx3c4EFNbGXUcdvULwwBuXfVbrEOhw6CUgZUXrehS8UpBpMW0Bh0ujVixb5pGggbZfHrA8m0g=="],
 
     "expo-status-bar": ["expo-status-bar@3.0.10-canary-20251216-3f01dbf", "", { "dependencies": { "react-native-is-edge-to-edge": "^1.2.1" }, "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-gItzWp4VSJmTiYVNhrp8W680unYgP4QhmuuFPXn2C3qYtTJ4MiOaV2CUd9jElNR8YMKW4X2DIkJzeOY6gZrwmw=="],
+
+    "expo-store-review": ["expo-store-review@9.0.10-canary-20251216-3f01dbf", "", { "peerDependencies": { "expo": "55.0.0-canary-20251216-3f01dbf", "react-native": "*" } }, "sha512-p39PAi+nGNGXuIHJ016R7d300Bi7kx7o5CKLwtPxJb4niWBQUQEiurgvZ6kvba+vLWEUlaw5yYFZZIaY2B75DQ=="],
 
     "expo-structured-headers": ["expo-structured-headers@5.0.1-canary-20251216-3f01dbf", "", {}, "sha512-Spoita/BmFmNFM67HRcjQNRjw6fzrI+fC+lHunc7e3SmZrFT0KjachBbny6wWyosz0yWOiVM8HOyns2PKezP3Q=="],
 

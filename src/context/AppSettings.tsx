@@ -9,6 +9,7 @@ type AppSettings = {
   isOnboarded: boolean;
   improvePrompt: boolean;
   hasSeenPaywall: boolean;
+  hasRequestedReview: boolean;
   onboardingAnswers: Record<string, string | string[]>;
   onboardingAnswersVersion: number;
 };
@@ -20,6 +21,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   isOnboarded: false,
   improvePrompt: true,
   hasSeenPaywall: false,
+  hasRequestedReview: false,
   onboardingAnswers: {},
   onboardingAnswersVersion: 1,
 };
