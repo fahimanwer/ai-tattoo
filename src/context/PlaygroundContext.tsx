@@ -178,8 +178,11 @@ export function PlaygroundProvider({
       }
     },
     onError: (error) => {
-      // Don't show error toast for aborted requests
       if (error.name === "AbortError") {
+        customEvent("generation_aborted", {
+          type: "text_to_image",
+          error: error.message,
+        });
         clog("PlaygroundContext", "Generation aborted", {
           error: error.message,
         });
@@ -188,10 +191,6 @@ export function PlaygroundProvider({
       customEvent("generation_failed", {
         type: "text_to_image",
         error: error.message,
-      });
-      toast.error("Failed to generate tattoo!", {
-        dismissible: true,
-        duration: 5000,
       });
     },
   });
@@ -249,10 +248,6 @@ export function PlaygroundProvider({
       customEvent("generation_failed", {
         type: "image_to_image",
         error: error.message,
-      });
-      toast.error("Failed to generate tattoo!", {
-        dismissible: true,
-        duration: 5000,
       });
     },
   });

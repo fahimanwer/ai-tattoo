@@ -56,6 +56,7 @@ export type GeminiErrorStatus =
 export type GeminiFinishReason =
   | "STOP"
   | "SAFETY"
+  | "IMAGE_SAFETY"
   | "RECITATION"
   | "OTHER"
   | "MAX_TOKENS"
@@ -84,14 +85,33 @@ export type GeminiImageResult =
  * User-friendly error messages for different error types
  */
 export const GEMINI_USER_ERROR_MESSAGES: Record<string, string> = {
-  SAFETY: "This prompt couldn't be processed. Try a different description.",
-  RESOURCE_EXHAUSTED: "Server is busy. Please try again in a moment.",
-  INVALID_ARGUMENT: "Invalid request. Please try a different prompt.",
-  UNAUTHENTICATED: "Authentication error. Please try again later.",
-  PERMISSION_DENIED: "Service temporarily unavailable. Please try again later.",
-  NOT_FOUND: "Service configuration error. Please contact support.",
-  UNAVAILABLE: "Service temporarily unavailable. Please try again.",
-  DEADLINE_EXCEEDED: "Request timed out. Please try again.",
+  SAFETY:
+    "This request can't be processed due to safety restrictions. Try rephrasing your prompt.",
+
+  IMAGE_SAFETY:
+    "This image can't be processed due to safety restrictions. Try using a different image.",
+
+  RESOURCE_EXHAUSTED:
+    "The service is currently busy. Please try again in a moment.",
+
+  INVALID_ARGUMENT:
+    "We couldn't process this request. Try adjusting your prompt and try again.",
+
+  UNAUTHENTICATED:
+    "You're not signed in. Please refresh the page or sign in again.",
+
+  PERMISSION_DENIED:
+    "You don't have access to this feature right now. Please try again later.",
+
+  NOT_FOUND:
+    "Something is misconfigured on our side. Please contact support if this keeps happening.",
+
+  UNAVAILABLE:
+    "The service is temporarily unavailable. Please try again shortly.",
+
+  DEADLINE_EXCEEDED:
+    "This request took too long to complete. Please try again.",
+
   DEFAULT: "Something went wrong. Please try again.",
 };
 
