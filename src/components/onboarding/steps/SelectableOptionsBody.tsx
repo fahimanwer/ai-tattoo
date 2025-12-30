@@ -281,8 +281,9 @@ export function SelectableOptionsBody(props: SelectableOptionsBodyProps) {
               flexWrap: "wrap",
               justifyContent: "center",
               gap: 10,
+              marginTop: 32,
             }
-          : { gap: 12 }
+          : { gap: 12, marginTop: 32 }
       }
     >
       {step.options.map((option, index) => (

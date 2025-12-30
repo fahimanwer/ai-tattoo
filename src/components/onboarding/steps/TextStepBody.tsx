@@ -19,7 +19,7 @@ const glowIn: CSSAnimationKeyframes = {
     boxShadow: "0 0 0 0 rgba(255, 255, 255, 0)",
   },
   to: {
-    boxShadow: "0 0 32px 4px rgba(255, 255, 255, 0.35)",
+    boxShadow: "0 0 32px 4px rgba(255, 255, 255, 0.5)",
   },
 };
 
@@ -43,7 +43,7 @@ export function TextStepBody({
   }, []);
 
   return (
-    <View style={{ paddingTop: 46 }}>
+    <View style={{ paddingTop: 46, width: "100%", paddingHorizontal: 32 }}>
       <Animated.View
         style={{
           borderRadius: 9999,
