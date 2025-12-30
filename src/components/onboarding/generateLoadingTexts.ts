@@ -75,12 +75,12 @@ export function generateLoadingTexts(answers: OnboardingAnswers): string[] {
   //   messages.push("Applying your aesthetic choices");
   // }
 
-  // "Configuring your workspace" - too generic
+  messages.push("Configuring your workspace");
   // "Setting up your dashboard" - too generic
   // "Preparing your workspace" - redundant with "design studio"
-  // "Applying your preferences" - too vague
+  messages.push("Applying your preferences");
   // --- End commented out ---
 
   // Return exactly 3 high-impact messages
-  return messages.slice(0, 3);
+  return messages.slice(0, 4);
 }

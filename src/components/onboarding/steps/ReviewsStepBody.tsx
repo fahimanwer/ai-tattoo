@@ -1,10 +1,3 @@
-import { Color } from "@/src/constants/TWPalette";
-import {
-  Canvas,
-  LinearGradient,
-  RoundedRect,
-  vec,
-} from "@shopify/react-native-skia";
 import * as Haptics from "expo-haptics";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, FlatList, LayoutChangeEvent, View } from "react-native";
@@ -14,14 +7,13 @@ import {
   withTiming,
 } from "react-native-reanimated";
 import { AnimatedText } from "../../screens/Playground/shared/AnimatedText";
-import { Text } from "../../ui/Text";
 import { generateLoadingTexts } from "../generateLoadingTexts";
 import type { OnboardingAnswers, ReviewsStep } from "../onboardingTypes";
 import { ReviewItem, type Review } from "./ReviewItem";
 
 const { width } = Dimensions.get("window");
 
-const DEFAULT_TIMEOUT = 7000;
+const DEFAULT_TIMEOUT = 8_000;
 
 type ReviewsStepBodyProps = {
   step: ReviewsStep;
@@ -145,7 +137,7 @@ export function ReviewsStepBody({
       <View style={{ flex: 1 }}>
         <AnimatedText text={displayText} />
         {/* Subtle progress bar */}
-        <View
+        {/* <View
           onLayout={onProgressBarLayout}
           style={{
             position: "absolute",
@@ -179,7 +171,7 @@ export function ReviewsStepBody({
               {index + 1} / {loadingTexts.length}
             </Text>
           )}
-        </View>
+        </View> */}
       </View>
 
       <View style={{ height: 250 }}>

@@ -1,6 +1,7 @@
 import {
   onboardingEntranceHaptic,
   onboardingSwipeHaptic,
+  playgroundEntranceHaptic,
 } from "@/lib/haptics-patterns.ios";
 import * as NativeCoreHaptics from "@/modules/native-core-haptics";
 import LinearGradientImageBlur from "@/src/components/LinearGradientImageBlur";
@@ -9,7 +10,7 @@ import { AppSettingsContext } from "@/src/context/AppSettings";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { use, useCallback, useEffect, useRef, useState } from "react";
+import { Activity, use, useCallback, useEffect, useRef, useState } from "react";
 import {
   AppState,
   AppStateStatus,
@@ -58,7 +59,6 @@ export default function OnboardingV2() {
   const canAdvance = isStepComplete(currentStep, answers);
   const ctaLabel = currentStep.cta ?? "Continue";
   const canGoBack = currentIndex < 11 && currentIndex !== 0; // Prevents going back after reviews step
-  const [isReviewsReady, setIsReviewsReady] = useState(false);
 
   // Play entrance haptic on first mount and track first step
   useEffect(() => {
@@ -161,11 +161,6 @@ export default function OnboardingV2() {
   const getArrayAnswer = (id: string) =>
     Array.isArray(answers[id]) ? (answers[id] as string[]) : [];
 
-  // Callback for when reviews step is ready (enables continue button)
-  const handleReviewsReady = useCallback(() => {
-    setIsReviewsReady(true);
-  }, []);
-
   const stepBody = (() => {
     switch (currentStep.kind) {
       case "singleChoice":
@@ -216,7 +211,14 @@ export default function OnboardingV2() {
           <ReviewsStepBody
             step={currentStep}
             answers={answers}
-            onReady={handleReviewsReady}
+            onReady={() => {
+              NativeCoreHaptics.default.playPattern(playgroundEntranceHaptic);
+              const nextIndex = getNextStepIndex(currentStep, currentIndex);
+              scrollViewRef.current?.scrollTo({
+                x: nextIndex * SCREEN_WIDTH,
+                animated: true,
+              });
+            }}
           />
         );
 
@@ -428,38 +430,41 @@ export default function OnboardingV2() {
 
         {/* CTA - always at the bottom with safe area */}
         <KeyboardStickyView style={{}} offset={{ opened: top - 32, closed: 0 }}>
-          <OnboardingCTA
-            label={ctaLabel}
-            isLastStep={isLastStep}
-            canAdvance={canAdvance}
-            showSignIn={currentIndex === 0}
-            loading={currentStep.kind === "reviews" && !isReviewsReady}
-            onPress={() => {
-              const nextIndex = getNextStepIndex(currentStep, currentIndex);
-              if (nextIndex >= ONBOARDING_STEPS.length) {
-                // Calculate duration in seconds
-                const durationMs = Date.now() - onboardingStartTime.current;
-                const durationSeconds = Math.round(durationMs / 1000);
+          <Activity
+            mode={currentStep.kind === "reviews" ? "hidden" : "visible"}
+          >
+            <OnboardingCTA
+              label={ctaLabel}
+              isLastStep={isLastStep}
+              canAdvance={canAdvance}
+              showSignIn={currentIndex === 0}
+              onPress={() => {
+                const nextIndex = getNextStepIndex(currentStep, currentIndex);
+                if (nextIndex >= ONBOARDING_STEPS.length) {
+                  // Calculate duration in seconds
+                  const durationMs = Date.now() - onboardingStartTime.current;
+                  const durationSeconds = Math.round(durationMs / 1000);
 
-                // Track onboarding completion (paywall comes next)
-                customEvent("onboarding_completed", {
-                  stepsViewed: stepsViewed.current.size,
-                  duration: durationSeconds,
-                });
+                  // Track onboarding completion (paywall comes next)
+                  customEvent("onboarding_completed", {
+                    stepsViewed: stepsViewed.current.size,
+                    duration: durationSeconds,
+                  });
 
-                // Navigate to paywall (user can purchase before auth)
-                router.push("/(paywall)");
-              } else {
-                // Advance to next video
-                scrollViewRef.current?.scrollTo({
-                  x: nextIndex * SCREEN_WIDTH,
-                  animated: true,
-                });
-                // Play swipe haptic
-                NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
-              }
-            }}
-          />
+                  // Navigate to paywall (user can purchase before auth)
+                  router.push("/(paywall)");
+                } else {
+                  // Advance to next video
+                  scrollViewRef.current?.scrollTo({
+                    x: nextIndex * SCREEN_WIDTH,
+                    animated: true,
+                  });
+                  // Play swipe haptic
+                  NativeCoreHaptics.default.playPattern(onboardingSwipeHaptic);
+                }
+              }}
+            />
+          </Activity>
         </KeyboardStickyView>
       </Animated.View>
     </>

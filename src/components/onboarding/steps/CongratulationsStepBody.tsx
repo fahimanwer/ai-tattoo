@@ -121,23 +121,31 @@ function generateFeatures(answers: OnboardingAnswers): Feature[] {
     });
   }
 
-  // Default features if we don't have enough
-  if (features.length < 3) {
-    if (!features.find((f) => f.icon === "camera.viewfinder")) {
-      features.push({
-        icon: "camera.viewfinder",
-        title: "Realistic Try-On",
-        description: "See exactly how it will look on you",
-      });
-    }
-  }
-
-  if (features.length < 3) {
-    features.push({
+  // Default features to fill up to 3 if needed
+  const defaultFeatures: Feature[] = [
+    {
+      icon: "camera.viewfinder",
+      title: "Realistic Try-On",
+      description: "See exactly how it will look on you",
+    },
+    {
       icon: "square.and.arrow.down",
       title: "Save & Share",
       description: "Keep your favorites and share with your artist",
-    });
+    },
+    {
+      icon: "wand.and.stars",
+      title: "AI Design Studio",
+      description: "Generate unique tattoo designs instantly",
+    },
+  ];
+
+  // Add default features until we have at least 3
+  for (const defaultFeature of defaultFeatures) {
+    if (features.length >= 3) break;
+    if (!features.find((f) => f.icon === defaultFeature.icon)) {
+      features.push(defaultFeature);
+    }
   }
 
   // Return top 3 most relevant features
@@ -224,7 +232,7 @@ export function CongratulationsStepBody({
               <SymbolView
                 name={feature.icon as any}
                 size={24}
-                tintColor={"yellow"}
+                tintColor={"white"}
               />
             </View>
             <View style={styles.featureContent}>
@@ -256,6 +264,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 24,
+    paddingHorizontal: 16,
   },
   header: {
     alignItems: "center",
@@ -300,7 +309,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   urgencyText: {
-    color: "yellow",
+    color: "white",
     textAlign: "center",
   },
 });

@@ -183,9 +183,9 @@ function SelectableOption({
 
   return (
     <Animated.View
+      style={{ paddingHorizontal: isChip ? 0 : 16 }}
       entering={FadeIn.duration(timing.fadeDuration).delay(enteringDelay)}
       exiting={FadeOut.duration(16)}
-      style={{}}
     >
       <AnimatedPressableScale
         onPress={onPress}
