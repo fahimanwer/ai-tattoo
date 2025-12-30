@@ -342,6 +342,23 @@ export default function OnboardingV2() {
                     imagePairs={(step as BeforeAfterStep).imagePairs}
                   />
                 </View>
+              ) : step.video ? (
+                <LinearGradientImageBlur
+                  videoUrl={step.video}
+                  videoOptions={{
+                    loop: true,
+                    playbackRate: 1,
+                    muted: true,
+                    autoPlay: true,
+                  }}
+                  showBlur={false}
+                  showGradient={true}
+                  gradientColors={{
+                    light: ["transparent", "transparent", "#000000", "#000000"],
+                    dark: ["transparent", "transparent", "#000000", "#000000"],
+                  }}
+                  imageHeight={index === 0 ? "75%" : "100%"}
+                />
               ) : step.image ? (
                 <LinearGradientImageBlur
                   imageUrl={step.image}

@@ -97,7 +97,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "Welcome",
     description: "Let's tailor your Inkigo experience now.",
     image:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.calf-male-after.avif",
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.arm-male-after.avif",
   },
   {
     id: "user-description",
@@ -155,6 +155,8 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
       "Type a few words or upload an image and instantly generate unique tattoo designs.",
     image:
       "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.arm-male-after.avif",
+    video:
+      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding22.mov",
   },
   {
     id: "location",

@@ -25,6 +25,7 @@ export type OnboardingStepBase = {
   cta2?: string;
   required?: boolean;
   next?: string;
+  video?: string;
 };
 
 export type SingleChoiceStep = OnboardingStepBase & {
