@@ -4,80 +4,68 @@ import { slog } from "@/lib/log";
  * Apple App Store Connect Build Upload Status Webhook
  *
  * Receives notifications when build upload status changes:
- * - Processing: Build is being processed
- * - Complete: Build processed successfully, ready for testing
- * - Failed: Build encountered an issue
+ * - PROCESSING: Build is being processed
+ * - COMPLETE: Build processed successfully, ready for testing
+ * - FAILED: Build encountered an issue
  *
  * Sends formatted Slack notifications to #ai-tattoo-app channel.
  */
 
-// Build upload status types from Apple
-type BuildUploadStatus = "PROCESSING" | "COMPLETE" | "FAILED";
+// Build upload state types from Apple
+type BuildUploadState = "PROCESSING" | "COMPLETE" | "FAILED";
 
-// Apple webhook event types
-type AppleWebhookEventType =
-  | "webhookPingCreated" // Test ping from App Store Connect
-  | "buildUploadStatusChanged"; // Actual build status change
-
-// Apple webhook payload structure (based on App Store Connect webhooks)
+// Apple webhook payload structure (actual format from App Store Connect)
 interface AppleWebhookPayload {
   data: {
-    type: AppleWebhookEventType;
+    type: string; // "webhookPingCreated" | "buildUploadStateUpdated"
     id: string;
     version?: number;
     attributes: {
       // For ping events
       timestamp?: string;
-      // For build events
-      appId?: string;
-      appName?: string;
-      bundleId?: string;
-      version?: string;
-      buildNumber?: string;
-      status?: BuildUploadStatus;
-      platform?: string;
-      processingState?: string;
-      uploadedDate?: string;
-      expirationDate?: string;
-      minOsVersion?: string;
-      iconAssetToken?: string;
-      // Error details for failed builds
-      errors?: {
-        code: string;
-        detail: string;
-      }[];
-      warnings?: {
-        code: string;
-        detail: string;
-      }[];
+      // For build state change events
+      oldState?: BuildUploadState;
+      newState?: BuildUploadState;
     };
-  };
-  meta?: {
-    webhook?: {
-      eventTimestamp?: string;
+    relationships?: {
+      instance?: {
+        data?: {
+          type: string;
+          id: string;
+        };
+        links?: {
+          self: string;
+        };
+      };
     };
   };
 }
 
-// Slack message attachment colors
-const STATUS_CONFIG: Record<
-  BuildUploadStatus,
-  { color: string; emoji: string; title: string }
+// Slack message config for each state
+const STATE_CONFIG: Record<
+  BuildUploadState,
+  { color: string; emoji: string; title: string; message: string }
 > = {
   PROCESSING: {
     color: "#FFA500", // Orange
     emoji: "⏳",
     title: "Build Processing",
+    message:
+      "Your build is being processed by App Store Connect. You'll be notified when it's ready.",
   },
   COMPLETE: {
     color: "#36a64f", // Green
     emoji: "✅",
     title: "Build Ready for Testing!",
+    message:
+      "Your build has been processed successfully and is now ready for testing on TestFlight! 🎉",
   },
   FAILED: {
     color: "#E01E5A", // Red
     emoji: "❌",
     title: "Build Failed",
+    message:
+      "Your build failed to process. Please check App Store Connect for details and resolve the issues before re-uploading.",
   },
 };
 
@@ -217,9 +205,9 @@ async function sendPingNotification(): Promise<boolean> {
 }
 
 /**
- * Format and send Slack notification for build status changes
+ * Format and send Slack notification for build state changes
  */
-async function sendBuildStatusNotification(
+async function sendBuildStateNotification(
   payload: AppleWebhookPayload
 ): Promise<boolean> {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL;
@@ -229,111 +217,87 @@ async function sendBuildStatusNotification(
     return false;
   }
 
-  const { attributes } = payload.data;
-  const status = attributes.status || "PROCESSING";
-  const config = STATUS_CONFIG[status] || STATUS_CONFIG.PROCESSING;
+  const { attributes, relationships } = payload.data;
+  const newState = attributes.newState || "PROCESSING";
+  const oldState = attributes.oldState;
+  const config = STATE_CONFIG[newState] || STATE_CONFIG.PROCESSING;
 
-  // Build the fields array
-  const fields: { title: string; value: string; short: boolean }[] = [];
+  // Get the App Store Connect link if available
+  const appStoreLink = relationships?.instance?.links?.self;
 
-  if (attributes.appName) {
-    fields.push({ title: "App", value: attributes.appName, short: true });
-  }
+  // Build status transition text
+  const transitionText = oldState
+    ? `${oldState} → *${newState}*`
+    : `*${newState}*`;
 
-  if (attributes.version) {
-    fields.push({ title: "Version", value: attributes.version, short: true });
-  }
-
-  if (attributes.buildNumber) {
-    fields.push({
-      title: "Build",
-      value: attributes.buildNumber,
-      short: true,
-    });
-  }
-
-  if (attributes.platform) {
-    fields.push({
-      title: "Platform",
-      value: attributes.platform,
-      short: true,
-    });
-  }
-
-  if (attributes.bundleId) {
-    fields.push({
-      title: "Bundle ID",
-      value: attributes.bundleId,
-      short: false,
-    });
-  }
-
-  // Add error details for failed builds
-  if (status === "FAILED" && attributes.errors?.length) {
-    const errorText = attributes.errors
-      .map((e) => `• ${e.code}: ${e.detail}`)
-      .join("\n");
-    fields.push({ title: "Errors", value: errorText, short: false });
-  }
-
-  // Add warnings if present
-  if (attributes.warnings?.length) {
-    const warningText = attributes.warnings
-      .map((w) => `• ${w.code}: ${w.detail}`)
-      .join("\n");
-    fields.push({ title: "Warnings", value: warningText, short: false });
-  }
-
-  // Construct Slack message with attachments for rich formatting
+  // Construct a simple, clean Slack message
   const slackMessage = {
     text: `${config.emoji} ${config.title}`,
+    blocks: [
+      {
+        type: "header",
+        text: {
+          type: "plain_text",
+          text: `${config.emoji} ${config.title}`,
+          emoji: true,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: config.message,
+        },
+      },
+      {
+        type: "section",
+        fields: [
+          {
+            type: "mrkdwn",
+            text: `*Status*\n${transitionText}`,
+          },
+          {
+            type: "mrkdwn",
+            text: `*App*\nInkigo`,
+          },
+        ],
+      },
+      ...(appStoreLink
+        ? [
+            {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: `<${appStoreLink}|View in App Store Connect>`,
+              },
+            },
+          ]
+        : []),
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `📅 ${new Date().toLocaleString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+              timeZoneName: "short",
+            })}`,
+          },
+        ],
+      },
+    ],
+  };
+
+  // Add color using attachment wrapper
+  const slackPayload = {
     attachments: [
       {
         color: config.color,
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: getStatusMessage(status, attributes),
-            },
-          },
-          {
-            type: "section",
-            fields: fields.slice(0, 4).map((f) => ({
-              type: "mrkdwn",
-              text: `*${f.title}*\n${f.value}`,
-            })),
-          },
-          // Add remaining fields if any
-          ...(fields.length > 4
-            ? [
-                {
-                  type: "section",
-                  fields: fields.slice(4).map((f) => ({
-                    type: "mrkdwn",
-                    text: `*${f.title}*\n${f.value}`,
-                  })),
-                },
-              ]
-            : []),
-          {
-            type: "context",
-            elements: [
-              {
-                type: "mrkdwn",
-                text: `📅 ${new Date().toLocaleString("en-US", {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "2-digit",
-                  timeZoneName: "short",
-                })}`,
-              },
-            ],
-          },
-        ],
+        blocks: slackMessage.blocks,
       },
     ],
   };
@@ -342,48 +306,29 @@ async function sendBuildStatusNotification(
     const response = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(slackMessage),
+      body: JSON.stringify(slackPayload),
     });
 
     if (!response.ok) {
+      const responseText = await response.text();
       slog("apple-webhook", "❌ Slack notification failed", {
         status: response.status,
         statusText: response.statusText,
+        response: responseText,
       });
       return false;
     }
 
-    slog("apple-webhook", "✅ Slack notification sent", { status });
+    slog("apple-webhook", "✅ Slack notification sent", {
+      newState,
+      oldState,
+    });
     return true;
   } catch (error) {
     slog("apple-webhook", "❌ Slack notification error", {
       error: error instanceof Error ? error.message : "Unknown error",
     });
     return false;
-  }
-}
-
-/**
- * Get human-readable status message
- */
-function getStatusMessage(
-  status: BuildUploadStatus,
-  attributes: AppleWebhookPayload["data"]["attributes"]
-): string {
-  const appName = attributes.appName || "Your app";
-  const version = attributes.version || "";
-  const build = attributes.buildNumber || "";
-  const versionInfo = version && build ? ` (${version} build ${build})` : "";
-
-  switch (status) {
-    case "PROCESSING":
-      return `🔄 *${appName}*${versionInfo} is being processed by App Store Connect. You'll be notified when it's ready.`;
-    case "COMPLETE":
-      return `🎉 *${appName}*${versionInfo} has been processed successfully and is now ready for testing on TestFlight!`;
-    case "FAILED":
-      return `⚠️ *${appName}*${versionInfo} failed to process. Please check App Store Connect for details and resolve the issues before re-uploading.`;
-    default:
-      return `Build status update for *${appName}*${versionInfo}: ${status}`;
   }
 }
 
@@ -432,11 +377,8 @@ export async function POST(request: Request) {
       type: payload.data?.type,
       id: payload.data?.id,
       version: payload.data?.version,
-      status: payload.data?.attributes?.status,
-      appName: payload.data?.attributes?.appName,
-      buildVersion: payload.data?.attributes?.version,
-      buildNumber: payload.data?.attributes?.buildNumber,
-      platform: payload.data?.attributes?.platform,
+      oldState: payload.data?.attributes?.oldState,
+      newState: payload.data?.attributes?.newState,
       timestamp: payload.data?.attributes?.timestamp,
     });
 
@@ -447,9 +389,13 @@ export async function POST(request: Request) {
       // This is a test ping from App Store Connect
       slog("apple-webhook", "🏓 Received ping event - webhook is connected!");
       await sendPingNotification();
+    } else if (eventType === "buildUploadStateUpdated") {
+      // This is an actual build state change
+      await sendBuildStateNotification(payload);
     } else {
-      // This is an actual build status change
-      await sendBuildStatusNotification(payload);
+      // Unknown event type - log and send generic notification
+      slog("apple-webhook", `⚠️ Unknown event type: ${eventType}`);
+      await sendBuildStateNotification(payload);
     }
 
     slog("apple-webhook", "✅ Webhook processed successfully");
