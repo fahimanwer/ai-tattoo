@@ -670,7 +670,7 @@ export function Profile() {
           />
           <FormButton
             title="Instagram"
-            systemImage="photo.fill"
+            systemImage="camera.fill"
             onPress={() =>
               Linking.openURL("https://www.instagram.com/inkigoapp")
             }
