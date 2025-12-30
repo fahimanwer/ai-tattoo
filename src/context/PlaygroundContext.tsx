@@ -507,12 +507,6 @@ export function PlaygroundProvider({
           prev[activeGenerationIndex] &&
           prev[activeGenerationIndex].length + imageUris.length <= 2;
 
-        clog("PlaygroundContext", "addImagesToSession", {
-          activeGenerationIndex,
-          canAddToActiveGroup,
-          prevLength: prev.length,
-        });
-
         if (canAddToActiveGroup) {
           // Add to existing group - keep the same active index
           const newGenerations = [...prev];
