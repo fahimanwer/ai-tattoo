@@ -125,7 +125,7 @@ export function ReviewsStepBody({
   // Haptic feedback each time the text changes
   useEffect(() => {
     if (isLoading) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
   }, [index, isLoading]);
 

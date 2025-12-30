@@ -116,7 +116,7 @@ export function TextToImageResult({
                 <PressableScale
                   onPress={() => {
                     blurInput();
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                     router.push({
                       pathname: "/(playground)/playground-preview",
                       params: { imageUri: uri },

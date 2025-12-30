@@ -49,7 +49,7 @@ function FormButton({
   return (
     <Button
       onPress={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         onPress();
       }}
       modifiers={[foregroundStyle({ type: "color", color })]}

@@ -46,7 +46,7 @@ export function CTAButton({
         ]}
         onPress={() => {
           if (buttonDisabled) return;
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           onPress();
         }}
       >
