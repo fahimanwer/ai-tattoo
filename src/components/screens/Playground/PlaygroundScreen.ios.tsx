@@ -29,7 +29,8 @@ import * as Haptics from "expo-haptics";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
-import { InputControls } from "./input-controls/InputControls";
+// import { InputControls } from "./input-controls/InputControls";
+import { MinimalTextFieldTest } from "./input-controls/MinimalTextFieldTest.ios";
 import { SessionHistoryList } from "./session-history/SessionHistoryList";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
@@ -349,18 +350,10 @@ export function PlaygroundScreen() {
           </Activity>
 
           <Activity mode={isAuthenticated ? "visible" : "hidden"}>
-            <InputControls
+            <MinimalTextFieldTest
               onChangeText={setPrompt}
               prompt={prompt}
-              onSubmit={handleTattooGeneration}
-              isSubmitDisabled={
-                prompt.length === 0 ||
-                isPending ||
-                isLoading ||
-                activeMutation.isPending
-              }
-              autoFocus={true} // this is causing side effects when true
-              isSheetDisabled={isPending || activeMutation.isPending}
+              autoFocus={true}
             />
           </Activity>
         </View>
