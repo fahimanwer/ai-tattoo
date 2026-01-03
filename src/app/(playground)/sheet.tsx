@@ -524,6 +524,18 @@ export default function Sheet() {
               );
             }}
           />
+          <OptionRow
+            icon="lightbulb"
+            title="Request a Feature"
+            description="Tell us what you'd like Inkigo to support next"
+            onPress={() => {
+              customEvent("sheet_action_pressed", {
+                action: "feature_request",
+                hasActiveImage,
+              });
+              router.push("/(playground)/feature-request" as any);
+            }}
+          />
         </View>
       </ScrollView>
     </>

@@ -39,6 +39,20 @@ export default function PlaygroundLayout() {
           presentation: "modal",
         }}
       />
+      <Stack.Screen
+        name="feature-request"
+        options={{
+          presentation: "formSheet",
+          headerTransparent: isGlassEffectAPIAvailable() ? true : false,
+          contentStyle: {
+            backgroundColor: isGlassEffectAPIAvailable()
+              ? "transparent"
+              : "black",
+          },
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.7],
+        }}
+      />
     </Stack>
   );
 }
