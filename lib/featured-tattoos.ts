@@ -39,6 +39,431 @@ export interface BodyPartCategory {
 
 export const featuredTattoos: FeaturedTattoo[] = [
   {
+    id: 14,
+    title: "Patchwork",
+    short_description:
+      "A bold black and grey patchwork sleeve made of individual traditional-inspired motifs with strong lines, solid blacks, and open skin between pieces for a sticker-like collage effect.",
+    description:
+      "Patchwork is a contemporary evolution of American Traditional and Neo Traditional tattooing, built from many individual standalone pieces that gradually accumulate across any part of the body. Instead of a single continuous mural, areas such as arms, legs, torso, or other body parts are covered over time with distinct tattoos—flowers, snakes, script, daggers, hearts, flames, dice, eyes, and other classic motifs—each with its own clear silhouette. The style is characterized by bold black linework, solid black fills, and dotwork shading, usually with little to no color. Negative space is left intentionally between the pieces so that the skin itself becomes part of the composition, resulting in a sticker-like collage effect on the body. Motifs are typically simplified for readability from a distance, but include enough texture and stippling for visual richness and detail. This approach is popular with those who collect tattoos gradually, allowing each piece to remain distinct while contributing to an overall cohesive look. Patchwork tattoos bridge the gap between classic flash tattoo culture and modern blackwork aesthetics, offering a flexible and highly personal way to build a unique tattoo collection over time.",
+    style: "Patchwork",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/cover.avif",
+      blurhash: "",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/abdomen-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your abdomen is perfect for patchwork art that builds your tattoo collection over time. Individual traditional-inspired motifs like flowers represent beauty, snakes symbolize transformation, daggers show courage, and hearts mean love. This placement allows you to add pieces gradually, creating a personal collection. The bold black linework and negative space create a sticker-like collage effect that's both bold and meaningful.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/arm-female-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your arm is ideal for a patchwork sleeve that tells your story through multiple standalone pieces. Flowers represent beauty, script shows personal meaning, hearts symbolize love, flames mean passion, and dice represent chance. This placement allows you to build your collection gradually, with each piece remaining distinct while contributing to an overall cohesive look. Perfect for expressing your unique journey.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/arm-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The arm is perfect for patchwork art that creates a sticker-like collage effect. A collection of distinct tattoos with bold black linework, dotwork shading, and intentional spacing allows each piece to stand alone while contributing to the whole. This placement is ideal for building your tattoo collection over time—every piece tells part of your story.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/arm-male.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your arm is ideal for a patchwork sleeve that honors classic tattoo tradition. Individual motifs like snakes represent transformation, daggers show courage, eyes mean awareness, and classic symbols carry meaning. This placement allows you to build your collection gradually, with open skin between pieces creating balance. Perfect for expressing your appreciation of tattoo culture.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/back-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your back is perfect for large-scale patchwork art that builds your collection over time. Multiple standalone tattoos with bold black linework and negative space create a cohesive patchwork composition. This placement allows for larger pieces that tell your complete story. The intentional spacing ensures each piece remains distinct while contributing to the whole.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/back-male.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The back is ideal for patchwork art that honors traditional tattoo culture. A collection of distinct traditional-inspired motifs with solid black fills and dotwork shading creates a cohesive composition. This placement allows for larger designs that showcase the full beauty of patchwork art. Perfect for building your tattoo collection over time.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/chest-male-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your chest is perfect for patchwork art that creates a sticker-sleeve aesthetic. Individual motifs like flowers represent beauty, snakes symbolize transformation, script shows personal meaning, and hearts mean love. This placement allows you to build your collection gradually, with bold linework ensuring each piece stands out. Perfect for expressing your unique journey.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/chest-male-3.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The chest is ideal for patchwork art that creates a collage effect. Multiple standalone pieces with strong contrast, clean silhouettes, and negative space allow each tattoo to remain distinct while contributing to the whole. This placement is perfect for building your collection over time—every piece tells part of your story.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/chest-male.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your chest is perfect for patchwork art that honors traditional tattoo culture. Traditional-inspired motifs with bold black linework, solid fills, and intentional spacing create a cohesive composition. This placement allows you to build your collection gradually, with each piece remaining meaningful. Perfect for expressing your appreciation of classic tattoo art.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/hands-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your hands are ideal for patchwork art that builds your collection over time. Individual motifs like small flowers represent beauty, symbols carry meaning, and script shows personal expression. This placement allows you to add pieces gradually, with bold black linework ensuring each piece stands out. Perfect for expressing your unique journey.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/leg-male.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your leg is perfect for patchwork art that creates a cohesive composition. Multiple standalone tattoos with traditional-inspired motifs, bold linework, and intentional spacing allow each piece to remain distinct while contributing to the whole. This placement is ideal for building your collection over time—every piece tells part of your story.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/neck-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your neck is ideal for patchwork art that creates a sticker-like effect. Individual motifs with bold black linework, solid fills, and intentional negative space allow each piece to stand alone while contributing to the whole. This placement is perfect for building your collection gradually—every piece remains meaningful.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/ribs-female-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your ribs are perfect for patchwork art that builds your collection over time. Multiple standalone pieces including flowers, hearts, or symbols with bold linework and negative space create a cohesive composition. This placement allows you to add pieces gradually, with each tattoo remaining distinct. Perfect for expressing your unique journey.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/ribs-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The ribs are ideal for patchwork art that honors traditional tattoo culture. A collection of distinct traditional-inspired motifs with solid black fills and dotwork shading creates a cohesive composition. This placement allows for larger designs that showcase the full beauty of patchwork art. Perfect for building your tattoo collection over time.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/shoulder-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your shoulder is perfect for patchwork art that builds your collection over time. Individual motifs like flowers represent beauty, snakes symbolize transformation, and classic symbols carry meaning. This placement allows you to add pieces gradually, with bold black linework ensuring each piece stands out. Perfect for expressing your unique journey.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/thigh-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your thigh is ideal for patchwork art that creates a sticker-sleeve collage aesthetic. Multiple standalone pieces with strong lines, solid blacks, and negative space allow each tattoo to remain distinct while contributing to the whole. This placement is perfect for building your collection over time—every piece tells part of your story.",
+      },
+    ],
+    prompt:
+      "Create a Patchwork Blackwork Sleeve style tattoo design. This style is built from multiple individual motifs that together create a cohesive sleeve, rather than a single continuous mural. Each motif should have bold, consistent black linework, solid black fills, and dotwork (stippling) shading, using only black and grey—no color. Common motifs include flowers, snakes, daggers, hearts, flames, script lettering, eyes, classic symbols, and small decorative shapes, all rendered in a style that blends American Traditional and Neo Traditional influences. Designs must prioritize clean silhouettes, strong contrast, and high readability from a distance. Leave intentional negative space between motifs so the skin becomes part of the composition, creating a sticker-sleeve or collage aesthetic instead of one big blocked-out piece. All lines should be crisp and closed, with no broken paths, and black fills must be solid and even. The layout should feel like a collection of tattoos that belong together—balanced, harmonious, and flowing with the body—while still allowing each individual piece to stand alone. The artwork should be ultra-detailed, high resolution, and suitable for professional tattooing, with a clear patchwork blackwork sleeve identity.",
+  },
+  {
+    id: 7,
+    title: "Couples",
+    short_description:
+      "A romantic style designed for partners, featuring complementary designs, matching motifs, and interconnected symbols that celebrate love and unity through shared body art.",
+    description:
+      "Couples tattoos represent a modern expression of partnership, commitment, and shared identity through complementary body art. This style emerged from the tradition of matching tattoos but has evolved into sophisticated designs that work both independently and as a unified pair. Couples tattoos can feature complementary motifs like puzzle pieces that fit together, split designs that complete each other, matching symbols with personal variations, or interconnected patterns that tell a shared story. The art form celebrates relationships through meaningful imagery—hearts, infinity symbols, coordinates of special places, dates, quotes, or custom designs that reflect the unique bond between partners. Whether minimalist or elaborate, couples tattoos serve as permanent declarations of love, unity, and the journey shared between two people. This style emphasizes harmony, balance, and the beautiful way two separate pieces can create a complete visual narrative when viewed together.",
+    style: "Couples / Matching",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/cover.avif",
+      blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-female-1.avif",
+        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+        prompt: "",
+        more_about:
+          "Your arm is perfect for a couples tattoo that tells your love story. This placement makes your matching design visible daily, reminding you of your partner and the bond you share. Whether it's puzzle pieces that fit together, split designs that complete each other, or matching symbols, your arm is ideal for expressing unity and commitment. Every glance reminds you of the love you've chosen to honor permanently.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/feet-couple-1.avif",
+        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
+        prompt: "",
+        more_about:
+          "Your feet are perfect for matching couples tattoos that celebrate your shared journey. When you stand together, your complementary designs create a complete picture of unity and love. This placement is ideal for expressing that you're walking through life together—every step forward is taken side by side. The feet's intimate nature makes this art deeply personal and meaningful.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-1.avif",
+        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
+        prompt: "",
+        more_about:
+          "Your arms are perfect for couples tattoos that create a complete visual narrative when viewed together. Interconnected patterns or split designs tell your shared story—when you're apart, each piece stands alone beautifully, but together they form something greater. This placement is ideal for expressing unity and partnership, visible whenever you're together.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/shin-couple-1.avif",
+        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
+        prompt: "",
+        more_about:
+          "Your shins are perfect for matching couples tattoos that celebrate partnership and commitment. Puzzle pieces that fit together, split designs that complete each other, or matching symbols express your unity. This placement is ideal for expressing that you're moving forward together—every step reminds you of the journey you're sharing. Perfect for designs that represent your bond.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/shoulder-female-1.avif",
+        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
+        prompt: "",
+        more_about:
+          "Your shoulder is perfect for a couples tattoo that expresses love and unity. Hearts symbolize your love, infinity symbols represent forever, and complementary designs show your connection. This placement is ideal for expressing commitment—the shoulder's prominence makes your matching art visible when you're together, reminding you of the bond you share.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/wrist-couple-1.avif",
+        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
+        prompt: "",
+        more_about:
+          "Your wrists are perfect for matching couples tattoos that symbolize shared identity. Complementary designs work independently but create harmony when viewed together. This placement is ideal for expressing unity—every gesture reminds you of your partner. The wrist's visibility means your matching art is always with you, celebrating the love you've chosen to honor permanently.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-2.avif",
+        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
+        prompt: "",
+        more_about:
+          "Your arms are ideal for couples tattoos that reflect your unique bond. Matching symbols with personal variations—coordinates of special places, important dates, meaningful quotes, or custom designs—tell your story. This placement is perfect for expressing what makes your relationship special. Every glance reminds you of the moments and places that define your love.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-3.avif",
+        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
+        prompt: "",
+        more_about:
+          "Your arms are perfect for couples tattoos that tell your shared story. Complementary puzzle pieces, split designs, or interconnected patterns express partnership and unity. This placement is ideal for expressing commitment—when you're together, your designs create something beautiful. The arm's visibility means your matching art is always part of your presence.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-4.avif",
+        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
+        prompt: "",
+        more_about:
+          "Your arms are ideal for couples tattoos that celebrate love, commitment, and your shared journey. Matching or complementary designs express romantic symbolism that's deeply personal. This placement is perfect for expressing unity—every gesture reminds you of your partner and the bond you share. The arm's visibility means your matching art is always meaningful.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/calf-couple-1.avif",
+        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
+        prompt: "",
+        more_about:
+          "Your calves are perfect for matching couples tattoos that express partnership through body art. Complementary motifs work both independently and as a unified pair, celebrating your bond. This placement is ideal for expressing unity—every step forward reminds you of the journey you're sharing. Perfect for designs that represent your commitment to each other.",
+      },
+    ],
+    prompt:
+      "Create a Couples tattoo design style, featuring complementary and matching designs designed for partners. This style emphasizes romantic symbolism, unity, and shared identity through interconnected body art. Common motifs include complementary puzzle pieces that fit together, split designs that complete each other when viewed together, matching symbols with personal variations (hearts, infinity symbols, coordinates, dates, quotes), or interconnected patterns that tell a shared story. The designs should work both independently as beautiful individual pieces and as a unified pair when viewed together. The style can range from minimalist and delicate to elaborate and detailed, but always maintains harmony and balance between the two pieces. Color choices should complement each other, using either matching palettes or complementary colors that create visual cohesion. The composition should emphasize the relationship between the designs—whether through symmetry, mirroring, or complementary elements—while ensuring each piece remains meaningful and aesthetically pleasing on its own. The tattoo should celebrate love, commitment, and partnership through meaningful imagery that reflects the unique bond between two people. The design should be suitable for professional tattoo application, creating a permanent declaration of unity and shared journey.",
+  },
+  {
+    id: 10,
+    title: "Mini",
+    short_description:
+      "A delicate and minimalist fine-line style featuring ultra-thin single-needle work, romantic symbolism, and clean compositions perfect for first tattoos and subtle body art.",
+    description:
+      "Mini tattoos represent a modern, minimalist approach to body art that has gained immense popularity through social media platforms like Instagram and Pinterest. This style emerged in the 2010s as a response to the growing demand for subtle, elegant tattoos that are easy to wear and meaningful to the individual. Characterized by extremely fine lines created with single-needle techniques, mini tattoos emphasize simplicity, breathing room, and delicate aesthetics. The style draws inspiration from romantic flash art, featuring symbolic iconography like hearts, flowers, ribbons, Cupid motifs, and script lettering. These designs are particularly popular among first-time tattoo clients seeking small, discreet pieces with emotional significance. Common placement areas include the wrist, collarbone, fingers, inner forearm, ankle, and behind the ear—locations that allow for personal expression while maintaining professional discretion. The color palette is typically very soft or monochromatic, often using only black outlines with minimal or no color fills. Mini tattoos celebrate the beauty of simplicity, proving that meaningful body art doesn't require size or complexity to make a powerful statement.",
+    style: "Mini",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/cover.avif",
+      blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/arm-male-1.avif",
+        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+        prompt: "",
+        more_about:
+          "Your arm is perfect for a delicate mini tattoo that's subtle yet meaningful. Hearts represent love, flowers symbolize growth, ribbons add elegance, and script lettering carries personal meaning. This placement is ideal for your first tattoo or a design you want to see daily—the ultra-thin lines create art that's both elegant and discreet. Perfect for expressing your romantic side and personal values.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/arm-male-2.avif",
+        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
+        prompt: "",
+        more_about:
+          "The arm is ideal for a mini tattoo that's perfect for first-time clients. The minimalist design with clean lines and generous breathing room creates art that's both subtle and meaningful. This placement makes your tattoo visible daily, reminding you of what matters. The delicate style ensures it's professional and timeless—perfect for expressing your values without overwhelming your look.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/feet-female-1.avif",
+        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
+        prompt: "",
+        more_about:
+          "Your feet are perfect for a delicate mini tattoo that's both subtle and romantic. Small flowers represent beauty, hearts symbolize love, and geometric shapes carry personal meaning. This placement is ideal for expressing your feminine side—the ultra-thin lines create art that's elegant and discreet. Perfect for designs that remind you of beauty and love with every step.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/feet-male-1.avif",
+        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
+        prompt: "",
+        more_about:
+          "The feet are ideal for a mini tattoo that's perfect for first-time clients. The minimalist fine-line work creates clean compositions that are both subtle and meaningful. This placement is perfect for expressing your values—every step reminds you of what matters. The delicate style ensures it's professional and timeless.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/neck-female-1.avif",
+        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
+        prompt: "",
+        more_about:
+          "Your neck is perfect for a delicate mini tattoo that's both romantic and discreet. Small hearts represent love, flowers symbolize beauty, and delicate script carries personal meaning. This placement is ideal for expressing your romantic side—the ultra-thin lines create art that's elegant and subtle. Perfect for designs that remind you of love and beauty.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/neck-male-1.avif",
+        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
+        prompt: "",
+        more_about:
+          "The neck is ideal for a mini tattoo that's perfect for discreet body art. The minimalist design with clean lines creates art that's both subtle and meaningful. This placement is perfect for expressing your values—every glance reminds you of what matters. The delicate style ensures it's professional and timeless.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/shoulder-female-1.avif",
+        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
+        prompt: "",
+        more_about:
+          "Your shoulder is perfect for a delicate mini tattoo that's both romantic and elegant. Ribbons and bows add a feminine touch, small floral elements represent beauty, and the ultra-thin lines create art that's subtle yet meaningful. This placement is ideal for expressing your romantic side—the shoulder's prominence makes your art visible when you're confident.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/shoulder-female-2.avif",
+        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
+        prompt: "",
+        more_about:
+          "The shoulder is ideal for a mini tattoo that's inspired by modern social media trends. The minimalist fine-line work creates clean compositions that are both romantic and aesthetic. This placement is perfect for expressing your contemporary style—the delicate design ensures it's professional and timeless. Perfect for designs that remind you of beauty and elegance.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/shoulder-male-1.avif",
+        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
+        prompt: "",
+        more_about:
+          "Your shoulder is perfect for a mini tattoo that's subtle yet meaningful. The ultra-thin single-needle work creates art that's both elegant and discreet. This placement is ideal for expressing your values—the shoulder's prominence makes your art visible when you're confident. The clean minimalist design ensures it's professional and timeless.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/wrist-female-1.avif",
+        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
+        prompt: "",
+        more_about:
+          "Your wrist is perfect for a delicate mini tattoo that's always visible and meaningful. Hearts represent love, flowers symbolize beauty, and delicate script carries personal meaning. This placement is ideal for expressing your romantic side—every gesture reminds you of what matters. The ultra-thin lines create art that's both elegant and discreet.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/wrist-female-2.avif",
+        blurhash: "L4AJKB9u0000PV?G01^O~V?G01WB",
+        prompt: "",
+        more_about:
+          "The wrist is ideal for a mini tattoo that's perfect for subtle body art. The minimalist design with clean lines and generous breathing room creates art that's both romantic and aesthetic. This placement is perfect for expressing your values—every gesture reminds you of what matters. The delicate style ensures it's professional and timeless.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/wrist-male-1.avif",
+        blurhash: "LGE30V00_ND%xaM{ofadM{t7WBt7",
+        prompt: "",
+        more_about:
+          "Your wrist is perfect for a mini tattoo that's subtle yet meaningful. The ultra-thin single-needle work creates art that's both elegant and discreet. This placement is ideal for expressing your values—every gesture reminds you of what matters. The clean minimalist composition ensures it's professional and timeless.",
+      },
+    ],
+    prompt:
+      "Create a Mini (Fine-line / Minimalist) style tattoo design. This delicate and modern style is characterized by extremely fine lines created with single-needle techniques, creating ultra-thin, precise linework that appears delicate and elegant. The composition emphasizes clean, minimal designs with generous breathing room between elements, allowing each motif to stand out clearly. The style features romantic and symbolic iconography including hearts representing love and emotion, flowers (roses, daisies, small blossoms) symbolizing beauty and growth, ribbons and bows adding a feminine, decorative touch, Cupid motifs representing romance and affection, script lettering with delicate typography for words, quotes, or names, and small geometric shapes or symbols with personal meaning. The color palette is very soft and minimal, typically using only black outlines with no fills, or very subtle, muted color accents if any color is used at all. The designs are small, simple, and easy to tattoo, perfect for first-time clients or those seeking subtle, discreet body art. The aesthetic is inspired by modern social media trends (Pinterest/Instagram style), featuring a romantic flash sheet aesthetic that feels contemporary and feminine. The composition should emphasize simplicity, elegance, and emotional meaning, with each element carefully placed to create a harmonious, balanced design. The linework must be ultra-fine and precise, with clean edges and no unnecessary complexity. The design should be suitable for professional tattoo application, rendered with delicate detail that maintains clarity even at small sizes. The overall feel should be romantic, aesthetic, and universally appealing, perfect for placement on the wrist, collarbone, fingers, inner forearm, ankle, or behind the ear.",
+  },
+  {
+    id: 11,
+    title: "Aesthetic",
+    short_description:
+      "A modern visual style prioritizing beauty, harmony, and decorative design through clean geometric patterns, stylized natural elements, and ornamental compositions.",
+    description:
+      "Aesthetic tattooing represents a contemporary movement that emerged in the 2010s, heavily influenced by digital design, modern art, and social media visual culture. This style prioritizes visual beauty and harmonious composition over traditional symbolism, creating tattoos that function as decorative art pieces on the skin. The aesthetic movement draws inspiration from Art Deco, Bauhaus design principles, Scandinavian minimalism, and contemporary graphic design. Characterized by clean lines, geometric patterns, stylized natural elements, and ornamental compositions, aesthetic tattoos emphasize balance, symmetry, and visual appeal. The style often incorporates abstract shapes, botanical illustrations, celestial motifs, and decorative borders that create cohesive, visually pleasing designs. Unlike traditional tattoo styles rooted in cultural heritage, aesthetic tattoos focus on universal beauty and modern design sensibilities, making them popular among younger generations who value visual harmony and contemporary artistic expression. The color palette ranges from monochromatic black work to soft pastels and muted tones, always maintaining a refined, sophisticated appearance. Aesthetic tattoos celebrate the intersection of body art and modern design, proving that tattoos can be both meaningful personal expressions and beautiful decorative elements.",
+    style: "Aesthetic",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/cover.avif",
+      blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/arm-female-4.avif",
+        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+        prompt: "",
+        more_about:
+          "Your arm is perfect for aesthetic art that prioritizes visual beauty and harmony. Clean geometric patterns create rhythm, stylized natural elements add elegance, and ornamental compositions ensure balance. This placement makes your modern design sensibility visible daily, reminding you of your appreciation for contemporary art. The refined appearance ensures your tattoo looks sophisticated and timeless.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/arm-male-1.avif",
+        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
+        prompt: "",
+        more_about:
+          "The arm is ideal for aesthetic art that celebrates modern design. Clean lines create elegance, geometric shapes add structure, and decorative patterns show your contemporary taste. This placement makes your artistic appreciation visible daily, reminding you of your modern sensibility. The design elements ensure your tattoo looks refined and sophisticated.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/back-male-1.avif",
+        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
+        prompt: "",
+        more_about:
+          "Your back is perfect for large-scale aesthetic art that creates visual harmony. Abstract shapes add rhythm, botanical illustrations bring nature, and celestial motifs represent the universe. This placement allows for complex compositions that showcase the full beauty of modern design. The ornamental compositions ensure your tattoo looks sophisticated and timeless.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/feet-male-1.avif",
+        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
+        prompt: "",
+        more_about:
+          "The feet are ideal for aesthetic art that's both refined and sophisticated. Clean geometric patterns create structure, stylized natural elements add elegance, and decorative borders frame the design beautifully. This placement is perfect for expressing your modern design appreciation—every step reminds you of your contemporary taste.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/neck-female-1.avif",
+        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
+        prompt: "",
+        more_about:
+          "Your neck is perfect for aesthetic art that prioritizes beauty and balance. Clean lines create elegance, geometric patterns add structure, and ornamental compositions ensure harmony. This placement makes your modern design sensibility visible and meaningful—every glance reminds you of your appreciation for contemporary art.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/neck-male-1.avif",
+        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
+        prompt: "",
+        more_about:
+          "The neck is ideal for aesthetic art inspired by Art Deco, Bauhaus principles, or Scandinavian minimalism. Contemporary design elements show your modern taste, while clean lines ensure sophistication. This placement makes your artistic appreciation visible and meaningful. Perfect for expressing your appreciation of modern design movements.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/shoulder-female-1.avif",
+        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
+        prompt: "",
+        more_about:
+          "Your shoulder is perfect for aesthetic art that functions as decorative art. Clean geometric patterns create structure, stylized botanical elements add nature, and ornamental compositions ensure balance. This placement makes your modern design sensibility visible when you're confident, reminding you of your appreciation for contemporary art.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/shoulder-male-1.avif",
+        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
+        prompt: "",
+        more_about:
+          "The shoulder is ideal for aesthetic art that celebrates contemporary artistic expression. Geometric shapes create structure, abstract patterns add interest, and visual harmony ensures balance. This placement makes your modern design appreciation visible and meaningful. Perfect for expressing your contemporary taste.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/wrist-female-1.avif",
+        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
+        prompt: "",
+        more_about:
+          "Your wrist is perfect for aesthetic art that prioritizes visual beauty. Clean lines create elegance, geometric patterns add structure, and decorative designs ensure harmony. This placement makes your modern design sensibility visible daily—every gesture reminds you of your appreciation for contemporary art.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/wrist-female-2.avif",
+        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
+        prompt: "",
+        more_about:
+          "The wrist is ideal for aesthetic art with ornamental compositions. Stylized natural elements add elegance, celestial motifs represent the universe, and decorative borders frame the design beautifully. This placement makes your modern design appreciation visible and meaningful. Perfect for expressing your contemporary taste.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/wrist-female-3.avif",
+        blurhash: "L4AJKB9u0000PV?G01^O~V?G01WB",
+        prompt: "",
+        more_about:
+          "Your wrist is perfect for aesthetic art inspired by contemporary visual culture. Clean geometric patterns create structure, while the refined appearance ensures sophistication. This placement makes your modern design sensibility visible daily—every gesture reminds you of your appreciation for contemporary art.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/wrist-male-1.avif",
+        blurhash: "LGE30V00_ND%xaM{ofadM{t7WBt7",
+        prompt: "",
+        more_about:
+          "The wrist is ideal for aesthetic art that celebrates modern design sensibilities. Clean lines create elegance, geometric shapes add structure, and decorative patterns ensure harmony. This placement makes your contemporary taste visible and meaningful. Perfect for expressing your appreciation of modern design.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/wrist-male-2.avif",
+        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
+        prompt: "",
+        more_about:
+          "Your wrist is perfect for aesthetic art with contemporary graphic design aesthetics. Ornamental compositions create structure, abstract shapes add interest, and stylized elements ensure sophistication. This placement makes your modern design appreciation visible daily—every gesture reminds you of your contemporary taste.",
+      },
+    ],
+    prompt:
+      "Create an Aesthetic style tattoo design that prioritizes visual beauty, harmony, and decorative composition. This modern style emerged from contemporary design culture, drawing inspiration from Art Deco, Bauhaus principles, Scandinavian minimalism, and contemporary graphic design. The design should emphasize clean, precise lines, geometric patterns, and ornamental compositions that create visual balance and harmony. Common aesthetic motifs include abstract geometric shapes and patterns that create rhythm and flow, stylized botanical elements like leaves, flowers, and plants rendered with clean lines and simplified forms, celestial motifs such as moons, stars, and constellations in decorative arrangements, ornamental borders and frames that add structure and elegance, minimalist line art that creates elegant silhouettes, and decorative patterns inspired by modern design movements. The composition should prioritize visual harmony, balance, and aesthetic appeal over traditional symbolism, creating designs that function as beautiful decorative art on the skin. The color palette can range from monochromatic black work to soft pastels, muted tones, or selective color accents, always maintaining a refined and sophisticated appearance. The style emphasizes clean execution, precise linework, and thoughtful use of negative space to create designs that are both modern and timeless. The aesthetic should feel contemporary, visually pleasing, and universally appealing, celebrating the intersection of body art and modern design. The design should be suitable for professional tattoo application, rendered with clean detail and careful attention to composition, balance, and visual harmony.",
+  },
+  {
     id: 1,
     title: "Japanese",
     short_description:
@@ -673,93 +1098,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
     prompt:
       "Create a Watercolor style tattoo design. This contemporary style mimics fine art watercolor painting, featuring flowing brushstrokes, paint splashes, and vibrant translucent color gradients that appear to be absorbed into the skin. The palette uses vibrant, saturated colors including blues, reds, purples, greens, yellows, oranges, and pinks, often blending and bleeding into each other naturally. The style intentionally avoids harsh black outlines, instead using soft edges, color transitions, and organic shapes that suggest movement and fluidity. Common motifs include abstract compositions, nature scenes, flowers, animals, or any subject rendered with painterly techniques like color washes, drips, splatters, and blooms. The design should follow body anatomy naturally, with colors that appear to blend seamlessly with skin texture. Transparency and layering effects create depth, mimicking how watercolor pigments interact on paper. The composition should emphasize artistic expression and creativity, using diffused edges and color bleeding to create an impressionistic, living-painting effect. The design should be suitable for professional tattoo application while maintaining the vibrant, fluid aesthetic of watercolor art.",
   },
-  {
-    id: 7,
-    title: "Couples",
-    short_description:
-      "A romantic style designed for partners, featuring complementary designs, matching motifs, and interconnected symbols that celebrate love and unity through shared body art.",
-    description:
-      "Couples tattoos represent a modern expression of partnership, commitment, and shared identity through complementary body art. This style emerged from the tradition of matching tattoos but has evolved into sophisticated designs that work both independently and as a unified pair. Couples tattoos can feature complementary motifs like puzzle pieces that fit together, split designs that complete each other, matching symbols with personal variations, or interconnected patterns that tell a shared story. The art form celebrates relationships through meaningful imagery—hearts, infinity symbols, coordinates of special places, dates, quotes, or custom designs that reflect the unique bond between partners. Whether minimalist or elaborate, couples tattoos serve as permanent declarations of love, unity, and the journey shared between two people. This style emphasizes harmony, balance, and the beautiful way two separate pieces can create a complete visual narrative when viewed together.",
-    style: "Couples / Matching",
-    image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/cover.avif",
-      blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
-    },
-    gallery: [
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-female-1.avif",
-        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
-        prompt: "",
-        more_about:
-          "Your arm is perfect for a couples tattoo that tells your love story. This placement makes your matching design visible daily, reminding you of your partner and the bond you share. Whether it's puzzle pieces that fit together, split designs that complete each other, or matching symbols, your arm is ideal for expressing unity and commitment. Every glance reminds you of the love you've chosen to honor permanently.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/feet-couple-1.avif",
-        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
-        prompt: "",
-        more_about:
-          "Your feet are perfect for matching couples tattoos that celebrate your shared journey. When you stand together, your complementary designs create a complete picture of unity and love. This placement is ideal for expressing that you're walking through life together—every step forward is taken side by side. The feet's intimate nature makes this art deeply personal and meaningful.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-1.avif",
-        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
-        prompt: "",
-        more_about:
-          "Your arms are perfect for couples tattoos that create a complete visual narrative when viewed together. Interconnected patterns or split designs tell your shared story—when you're apart, each piece stands alone beautifully, but together they form something greater. This placement is ideal for expressing unity and partnership, visible whenever you're together.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/shin-couple-1.avif",
-        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
-        prompt: "",
-        more_about:
-          "Your shins are perfect for matching couples tattoos that celebrate partnership and commitment. Puzzle pieces that fit together, split designs that complete each other, or matching symbols express your unity. This placement is ideal for expressing that you're moving forward together—every step reminds you of the journey you're sharing. Perfect for designs that represent your bond.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/shoulder-female-1.avif",
-        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
-        prompt: "",
-        more_about:
-          "Your shoulder is perfect for a couples tattoo that expresses love and unity. Hearts symbolize your love, infinity symbols represent forever, and complementary designs show your connection. This placement is ideal for expressing commitment—the shoulder's prominence makes your matching art visible when you're together, reminding you of the bond you share.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/wrist-couple-1.avif",
-        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
-        prompt: "",
-        more_about:
-          "Your wrists are perfect for matching couples tattoos that symbolize shared identity. Complementary designs work independently but create harmony when viewed together. This placement is ideal for expressing unity—every gesture reminds you of your partner. The wrist's visibility means your matching art is always with you, celebrating the love you've chosen to honor permanently.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-2.avif",
-        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
-        prompt: "",
-        more_about:
-          "Your arms are ideal for couples tattoos that reflect your unique bond. Matching symbols with personal variations—coordinates of special places, important dates, meaningful quotes, or custom designs—tell your story. This placement is perfect for expressing what makes your relationship special. Every glance reminds you of the moments and places that define your love.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-3.avif",
-        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
-        prompt: "",
-        more_about:
-          "Your arms are perfect for couples tattoos that tell your shared story. Complementary puzzle pieces, split designs, or interconnected patterns express partnership and unity. This placement is ideal for expressing commitment—when you're together, your designs create something beautiful. The arm's visibility means your matching art is always part of your presence.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/arm-couple-4.avif",
-        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
-        prompt: "",
-        more_about:
-          "Your arms are ideal for couples tattoos that celebrate love, commitment, and your shared journey. Matching or complementary designs express romantic symbolism that's deeply personal. This placement is perfect for expressing unity—every gesture reminds you of your partner and the bond you share. The arm's visibility means your matching art is always meaningful.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/couples/calf-couple-1.avif",
-        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
-        prompt: "",
-        more_about:
-          "Your calves are perfect for matching couples tattoos that express partnership through body art. Complementary motifs work both independently and as a unified pair, celebrating your bond. This placement is ideal for expressing unity—every step forward reminds you of the journey you're sharing. Perfect for designs that represent your commitment to each other.",
-      },
-    ],
-    prompt:
-      "Create a Couples tattoo design style, featuring complementary and matching designs designed for partners. This style emphasizes romantic symbolism, unity, and shared identity through interconnected body art. Common motifs include complementary puzzle pieces that fit together, split designs that complete each other when viewed together, matching symbols with personal variations (hearts, infinity symbols, coordinates, dates, quotes), or interconnected patterns that tell a shared story. The designs should work both independently as beautiful individual pieces and as a unified pair when viewed together. The style can range from minimalist and delicate to elaborate and detailed, but always maintains harmony and balance between the two pieces. Color choices should complement each other, using either matching palettes or complementary colors that create visual cohesion. The composition should emphasize the relationship between the designs—whether through symmetry, mirroring, or complementary elements—while ensuring each piece remains meaningful and aesthetically pleasing on its own. The tattoo should celebrate love, commitment, and partnership through meaningful imagery that reflects the unique bond between two people. The design should be suitable for professional tattoo application, creating a permanent declaration of unity and shared journey.",
-  },
+
   {
     id: 8,
     title: "Hindu Goddess",
@@ -983,215 +1322,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
     prompt:
       "Create a Chicano style tattoo design rooted in Mexican-American barrio culture and traditions. This distinctive style is characterized by fine-line black and gray work with sophisticated shading techniques, though selective color accents (particularly red) may be used strategically. The technique emphasizes realism with precise fine-line work, smooth black and gray washes that create depth and dimension, and compositions that tell personal stories. Iconic Chicano motifs include beautiful women (cholas) with dramatic makeup, styled hair, and expressive features representing strength and beauty, roses symbolizing love, beauty, and the fleeting nature of life, religious imagery such as the Virgin of Guadalupe, crucifixes, and praying hands representing faith, devotion, and spiritual protection, skulls (calaveras) reflecting Day of the Dead traditions and mortality, clocks and pocket watches symbolizing time, mortality, and the passage of life, gothic lettering and script work with ornate typography, and portraits of family members, cultural icons, or loved ones. The color palette primarily uses black and gray tones with smooth gradients and shading, with selective use of red accents for roses, lettering, or symbolic elements. The style draws inspiration from Mexican muralism, Catholic iconography, lowrider culture, and prison art traditions. The composition should emphasize storytelling, cultural identity, and personal meaning, with each element carefully placed to create a cohesive narrative. The design should honor the rich heritage of Chicano culture while maintaining the distinctive fine-line aesthetic and symbolic power that makes this style unique. The artwork should be suitable for professional tattoo application, rendered with ultra-fine detail and sophisticated shading techniques that capture the depth and realism characteristic of master Chicano tattoo work.",
   },
-  {
-    id: 10,
-    title: "Mini",
-    short_description:
-      "A delicate and minimalist fine-line style featuring ultra-thin single-needle work, romantic symbolism, and clean compositions perfect for first tattoos and subtle body art.",
-    description:
-      "Mini tattoos represent a modern, minimalist approach to body art that has gained immense popularity through social media platforms like Instagram and Pinterest. This style emerged in the 2010s as a response to the growing demand for subtle, elegant tattoos that are easy to wear and meaningful to the individual. Characterized by extremely fine lines created with single-needle techniques, mini tattoos emphasize simplicity, breathing room, and delicate aesthetics. The style draws inspiration from romantic flash art, featuring symbolic iconography like hearts, flowers, ribbons, Cupid motifs, and script lettering. These designs are particularly popular among first-time tattoo clients seeking small, discreet pieces with emotional significance. Common placement areas include the wrist, collarbone, fingers, inner forearm, ankle, and behind the ear—locations that allow for personal expression while maintaining professional discretion. The color palette is typically very soft or monochromatic, often using only black outlines with minimal or no color fills. Mini tattoos celebrate the beauty of simplicity, proving that meaningful body art doesn't require size or complexity to make a powerful statement.",
-    style: "Mini",
-    image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/cover.avif",
-      blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
-    },
-    gallery: [
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/arm-male-1.avif",
-        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
-        prompt: "",
-        more_about:
-          "Your arm is perfect for a delicate mini tattoo that's subtle yet meaningful. Hearts represent love, flowers symbolize growth, ribbons add elegance, and script lettering carries personal meaning. This placement is ideal for your first tattoo or a design you want to see daily—the ultra-thin lines create art that's both elegant and discreet. Perfect for expressing your romantic side and personal values.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/arm-male-2.avif",
-        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
-        prompt: "",
-        more_about:
-          "The arm is ideal for a mini tattoo that's perfect for first-time clients. The minimalist design with clean lines and generous breathing room creates art that's both subtle and meaningful. This placement makes your tattoo visible daily, reminding you of what matters. The delicate style ensures it's professional and timeless—perfect for expressing your values without overwhelming your look.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/feet-female-1.avif",
-        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
-        prompt: "",
-        more_about:
-          "Your feet are perfect for a delicate mini tattoo that's both subtle and romantic. Small flowers represent beauty, hearts symbolize love, and geometric shapes carry personal meaning. This placement is ideal for expressing your feminine side—the ultra-thin lines create art that's elegant and discreet. Perfect for designs that remind you of beauty and love with every step.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/feet-male-1.avif",
-        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
-        prompt: "",
-        more_about:
-          "The feet are ideal for a mini tattoo that's perfect for first-time clients. The minimalist fine-line work creates clean compositions that are both subtle and meaningful. This placement is perfect for expressing your values—every step reminds you of what matters. The delicate style ensures it's professional and timeless.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/neck-female-1.avif",
-        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
-        prompt: "",
-        more_about:
-          "Your neck is perfect for a delicate mini tattoo that's both romantic and discreet. Small hearts represent love, flowers symbolize beauty, and delicate script carries personal meaning. This placement is ideal for expressing your romantic side—the ultra-thin lines create art that's elegant and subtle. Perfect for designs that remind you of love and beauty.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/neck-male-1.avif",
-        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
-        prompt: "",
-        more_about:
-          "The neck is ideal for a mini tattoo that's perfect for discreet body art. The minimalist design with clean lines creates art that's both subtle and meaningful. This placement is perfect for expressing your values—every glance reminds you of what matters. The delicate style ensures it's professional and timeless.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/shoulder-female-1.avif",
-        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
-        prompt: "",
-        more_about:
-          "Your shoulder is perfect for a delicate mini tattoo that's both romantic and elegant. Ribbons and bows add a feminine touch, small floral elements represent beauty, and the ultra-thin lines create art that's subtle yet meaningful. This placement is ideal for expressing your romantic side—the shoulder's prominence makes your art visible when you're confident.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/shoulder-female-2.avif",
-        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
-        prompt: "",
-        more_about:
-          "The shoulder is ideal for a mini tattoo that's inspired by modern social media trends. The minimalist fine-line work creates clean compositions that are both romantic and aesthetic. This placement is perfect for expressing your contemporary style—the delicate design ensures it's professional and timeless. Perfect for designs that remind you of beauty and elegance.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/shoulder-male-1.avif",
-        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
-        prompt: "",
-        more_about:
-          "Your shoulder is perfect for a mini tattoo that's subtle yet meaningful. The ultra-thin single-needle work creates art that's both elegant and discreet. This placement is ideal for expressing your values—the shoulder's prominence makes your art visible when you're confident. The clean minimalist design ensures it's professional and timeless.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/wrist-female-1.avif",
-        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
-        prompt: "",
-        more_about:
-          "Your wrist is perfect for a delicate mini tattoo that's always visible and meaningful. Hearts represent love, flowers symbolize beauty, and delicate script carries personal meaning. This placement is ideal for expressing your romantic side—every gesture reminds you of what matters. The ultra-thin lines create art that's both elegant and discreet.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/wrist-female-2.avif",
-        blurhash: "L4AJKB9u0000PV?G01^O~V?G01WB",
-        prompt: "",
-        more_about:
-          "The wrist is ideal for a mini tattoo that's perfect for subtle body art. The minimalist design with clean lines and generous breathing room creates art that's both romantic and aesthetic. This placement is perfect for expressing your values—every gesture reminds you of what matters. The delicate style ensures it's professional and timeless.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/mini/wrist-male-1.avif",
-        blurhash: "LGE30V00_ND%xaM{ofadM{t7WBt7",
-        prompt: "",
-        more_about:
-          "Your wrist is perfect for a mini tattoo that's subtle yet meaningful. The ultra-thin single-needle work creates art that's both elegant and discreet. This placement is ideal for expressing your values—every gesture reminds you of what matters. The clean minimalist composition ensures it's professional and timeless.",
-      },
-    ],
-    prompt:
-      "Create a Mini (Fine-line / Minimalist) style tattoo design. This delicate and modern style is characterized by extremely fine lines created with single-needle techniques, creating ultra-thin, precise linework that appears delicate and elegant. The composition emphasizes clean, minimal designs with generous breathing room between elements, allowing each motif to stand out clearly. The style features romantic and symbolic iconography including hearts representing love and emotion, flowers (roses, daisies, small blossoms) symbolizing beauty and growth, ribbons and bows adding a feminine, decorative touch, Cupid motifs representing romance and affection, script lettering with delicate typography for words, quotes, or names, and small geometric shapes or symbols with personal meaning. The color palette is very soft and minimal, typically using only black outlines with no fills, or very subtle, muted color accents if any color is used at all. The designs are small, simple, and easy to tattoo, perfect for first-time clients or those seeking subtle, discreet body art. The aesthetic is inspired by modern social media trends (Pinterest/Instagram style), featuring a romantic flash sheet aesthetic that feels contemporary and feminine. The composition should emphasize simplicity, elegance, and emotional meaning, with each element carefully placed to create a harmonious, balanced design. The linework must be ultra-fine and precise, with clean edges and no unnecessary complexity. The design should be suitable for professional tattoo application, rendered with delicate detail that maintains clarity even at small sizes. The overall feel should be romantic, aesthetic, and universally appealing, perfect for placement on the wrist, collarbone, fingers, inner forearm, ankle, or behind the ear.",
-  },
-  {
-    id: 11,
-    title: "Aesthetic",
-    short_description:
-      "A modern visual style prioritizing beauty, harmony, and decorative design through clean geometric patterns, stylized natural elements, and ornamental compositions.",
-    description:
-      "Aesthetic tattooing represents a contemporary movement that emerged in the 2010s, heavily influenced by digital design, modern art, and social media visual culture. This style prioritizes visual beauty and harmonious composition over traditional symbolism, creating tattoos that function as decorative art pieces on the skin. The aesthetic movement draws inspiration from Art Deco, Bauhaus design principles, Scandinavian minimalism, and contemporary graphic design. Characterized by clean lines, geometric patterns, stylized natural elements, and ornamental compositions, aesthetic tattoos emphasize balance, symmetry, and visual appeal. The style often incorporates abstract shapes, botanical illustrations, celestial motifs, and decorative borders that create cohesive, visually pleasing designs. Unlike traditional tattoo styles rooted in cultural heritage, aesthetic tattoos focus on universal beauty and modern design sensibilities, making them popular among younger generations who value visual harmony and contemporary artistic expression. The color palette ranges from monochromatic black work to soft pastels and muted tones, always maintaining a refined, sophisticated appearance. Aesthetic tattoos celebrate the intersection of body art and modern design, proving that tattoos can be both meaningful personal expressions and beautiful decorative elements.",
-    style: "Aesthetic",
-    image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/cover.avif",
-      blurhash: "L6F=dU-:00E1o$j@WAxa~AoJ01Ip",
-    },
-    gallery: [
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/arm-female-4.avif",
-        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
-        prompt: "",
-        more_about:
-          "Your arm is perfect for aesthetic art that prioritizes visual beauty and harmony. Clean geometric patterns create rhythm, stylized natural elements add elegance, and ornamental compositions ensure balance. This placement makes your modern design sensibility visible daily, reminding you of your appreciation for contemporary art. The refined appearance ensures your tattoo looks sophisticated and timeless.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/arm-male-1.avif",
-        blurhash: "LVH1}P?b9vtR~WxuIpt79ZNGnhjZ",
-        prompt: "",
-        more_about:
-          "The arm is ideal for aesthetic art that celebrates modern design. Clean lines create elegance, geometric shapes add structure, and decorative patterns show your contemporary taste. This placement makes your artistic appreciation visible daily, reminding you of your modern sensibility. The design elements ensure your tattoo looks refined and sophisticated.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/back-male-1.avif",
-        blurhash: "L7CPV3E100-:00?G~B9a01EM?asl",
-        prompt: "",
-        more_about:
-          "Your back is perfect for large-scale aesthetic art that creates visual harmony. Abstract shapes add rhythm, botanical illustrations bring nature, and celestial motifs represent the universe. This placement allows for complex compositions that showcase the full beauty of modern design. The ornamental compositions ensure your tattoo looks sophisticated and timeless.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/feet-male-1.avif",
-        blurhash: "LEDSBy=|0Kbb%M0L0K~B={WB%2~V",
-        prompt: "",
-        more_about:
-          "The feet are ideal for aesthetic art that's both refined and sophisticated. Clean geometric patterns create structure, stylized natural elements add elegance, and decorative borders frame the design beautifully. This placement is perfect for expressing your modern design appreciation—every step reminds you of your contemporary taste.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/neck-female-1.avif",
-        blurhash: "L5CiUA~W0000Ekxu~AV?tQ?G4:s9",
-        prompt: "",
-        more_about:
-          "Your neck is perfect for aesthetic art that prioritizes beauty and balance. Clean lines create elegance, geometric patterns add structure, and ornamental compositions ensure harmony. This placement makes your modern design sensibility visible and meaningful—every glance reminds you of your appreciation for contemporary art.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/neck-male-1.avif",
-        blurhash: "L8E_y~~V^i^%E+bIsloe009Z02E1",
-        prompt: "",
-        more_about:
-          "The neck is ideal for aesthetic art inspired by Art Deco, Bauhaus principles, or Scandinavian minimalism. Contemporary design elements show your modern taste, while clean lines ensure sophistication. This placement makes your artistic appreciation visible and meaningful. Perfect for expressing your appreciation of modern design movements.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/shoulder-female-1.avif",
-        blurhash: "LCCPFh%LV@0fRj01%2xu~AEL$*WC",
-        prompt: "",
-        more_about:
-          "Your shoulder is perfect for aesthetic art that functions as decorative art. Clean geometric patterns create structure, stylized botanical elements add nature, and ornamental compositions ensure balance. This placement makes your modern design sensibility visible when you're confident, reminding you of your appreciation for contemporary art.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/shoulder-male-1.avif",
-        blurhash: "L29?]|~V009ZBW9a4T?H00D%.8XT",
-        prompt: "",
-        more_about:
-          "The shoulder is ideal for aesthetic art that celebrates contemporary artistic expression. Geometric shapes create structure, abstract patterns add interest, and visual harmony ensures balance. This placement makes your modern design appreciation visible and meaningful. Perfect for expressing your contemporary taste.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/wrist-female-1.avif",
-        blurhash: "LCCFn$j[WAIV}@56?GS4={0LNHt7",
-        prompt: "",
-        more_about:
-          "Your wrist is perfect for aesthetic art that prioritizes visual beauty. Clean lines create elegance, geometric patterns add structure, and decorative designs ensure harmony. This placement makes your modern design sensibility visible daily—every gesture reminds you of your appreciation for contemporary art.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/wrist-female-2.avif",
-        blurhash: "L4B3A}~B0KIoFfkD9Gsn4.NG0f9u",
-        prompt: "",
-        more_about:
-          "The wrist is ideal for aesthetic art with ornamental compositions. Stylized natural elements add elegance, celestial motifs represent the universe, and decorative borders frame the design beautifully. This placement makes your modern design appreciation visible and meaningful. Perfect for expressing your contemporary taste.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/wrist-female-3.avif",
-        blurhash: "L4AJKB9u0000PV?G01^O~V?G01WB",
-        prompt: "",
-        more_about:
-          "Your wrist is perfect for aesthetic art inspired by contemporary visual culture. Clean geometric patterns create structure, while the refined appearance ensures sophistication. This placement makes your modern design sensibility visible daily—every gesture reminds you of your appreciation for contemporary art.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/wrist-male-1.avif",
-        blurhash: "LGE30V00_ND%xaM{ofadM{t7WBt7",
-        prompt: "",
-        more_about:
-          "The wrist is ideal for aesthetic art that celebrates modern design sensibilities. Clean lines create elegance, geometric shapes add structure, and decorative patterns ensure harmony. This placement makes your contemporary taste visible and meaningful. Perfect for expressing your appreciation of modern design.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/aesthetic/wrist-male-2.avif",
-        blurhash: "L29Ziy=K00tR~qIo0K?H000fWExu",
-        prompt: "",
-        more_about:
-          "Your wrist is perfect for aesthetic art with contemporary graphic design aesthetics. Ornamental compositions create structure, abstract shapes add interest, and stylized elements ensure sophistication. This placement makes your modern design appreciation visible daily—every gesture reminds you of your contemporary taste.",
-      },
-    ],
-    prompt:
-      "Create an Aesthetic style tattoo design that prioritizes visual beauty, harmony, and decorative composition. This modern style emerged from contemporary design culture, drawing inspiration from Art Deco, Bauhaus principles, Scandinavian minimalism, and contemporary graphic design. The design should emphasize clean, precise lines, geometric patterns, and ornamental compositions that create visual balance and harmony. Common aesthetic motifs include abstract geometric shapes and patterns that create rhythm and flow, stylized botanical elements like leaves, flowers, and plants rendered with clean lines and simplified forms, celestial motifs such as moons, stars, and constellations in decorative arrangements, ornamental borders and frames that add structure and elegance, minimalist line art that creates elegant silhouettes, and decorative patterns inspired by modern design movements. The composition should prioritize visual harmony, balance, and aesthetic appeal over traditional symbolism, creating designs that function as beautiful decorative art on the skin. The color palette can range from monochromatic black work to soft pastels, muted tones, or selective color accents, always maintaining a refined and sophisticated appearance. The style emphasizes clean execution, precise linework, and thoughtful use of negative space to create designs that are both modern and timeless. The aesthetic should feel contemporary, visually pleasing, and universally appealing, celebrating the intersection of body art and modern design. The design should be suitable for professional tattoo application, rendered with clean detail and careful attention to composition, balance, and visual harmony.",
-  },
+
   {
     id: 12,
     title: "Anime",
@@ -1407,135 +1538,6 @@ export const featuredTattoos: FeaturedTattoo[] = [
     ],
     prompt:
       "Create a Geometric Animal style tattoo design inspired by animals and nature. This style emphasizes bold shapes, lines, and patterns that create a sense of movement and energy. Common geometric animal motifs include animals rendered with simple geometric shapes and lines, animals with bold, geometric patterns, animals with simple, clean lines, animals with bold, geometric patterns, animals with simple, clean lines, animals with bold, geometric patterns, animals with simple, clean lines.",
-  },
-  {
-    id: 14,
-    title: "Patchwork",
-    short_description:
-      "A bold black and grey patchwork sleeve made of individual traditional-inspired motifs with strong lines, solid blacks, and open skin between pieces for a sticker-like collage effect.",
-    description:
-      "Patchwork is a contemporary evolution of American Traditional and Neo Traditional tattooing, built from many individual standalone pieces that gradually accumulate across any part of the body. Instead of a single continuous mural, areas such as arms, legs, torso, or other body parts are covered over time with distinct tattoos—flowers, snakes, script, daggers, hearts, flames, dice, eyes, and other classic motifs—each with its own clear silhouette. The style is characterized by bold black linework, solid black fills, and dotwork shading, usually with little to no color. Negative space is left intentionally between the pieces so that the skin itself becomes part of the composition, resulting in a sticker-like collage effect on the body. Motifs are typically simplified for readability from a distance, but include enough texture and stippling for visual richness and detail. This approach is popular with those who collect tattoos gradually, allowing each piece to remain distinct while contributing to an overall cohesive look. Patchwork tattoos bridge the gap between classic flash tattoo culture and modern blackwork aesthetics, offering a flexible and highly personal way to build a unique tattoo collection over time.",
-    style: "Patchwork",
-    image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/cover.avif",
-      blurhash: "",
-    },
-    gallery: [
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/abdomen-female.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your abdomen is perfect for patchwork art that builds your tattoo collection over time. Individual traditional-inspired motifs like flowers represent beauty, snakes symbolize transformation, daggers show courage, and hearts mean love. This placement allows you to add pieces gradually, creating a personal collection. The bold black linework and negative space create a sticker-like collage effect that's both bold and meaningful.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/arm-female-2.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your arm is ideal for a patchwork sleeve that tells your story through multiple standalone pieces. Flowers represent beauty, script shows personal meaning, hearts symbolize love, flames mean passion, and dice represent chance. This placement allows you to build your collection gradually, with each piece remaining distinct while contributing to an overall cohesive look. Perfect for expressing your unique journey.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/arm-female.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "The arm is perfect for patchwork art that creates a sticker-like collage effect. A collection of distinct tattoos with bold black linework, dotwork shading, and intentional spacing allows each piece to stand alone while contributing to the whole. This placement is ideal for building your tattoo collection over time—every piece tells part of your story.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/arm-male.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your arm is ideal for a patchwork sleeve that honors classic tattoo tradition. Individual motifs like snakes represent transformation, daggers show courage, eyes mean awareness, and classic symbols carry meaning. This placement allows you to build your collection gradually, with open skin between pieces creating balance. Perfect for expressing your appreciation of tattoo culture.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/back-female.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your back is perfect for large-scale patchwork art that builds your collection over time. Multiple standalone tattoos with bold black linework and negative space create a cohesive patchwork composition. This placement allows for larger pieces that tell your complete story. The intentional spacing ensures each piece remains distinct while contributing to the whole.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/back-male.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "The back is ideal for patchwork art that honors traditional tattoo culture. A collection of distinct traditional-inspired motifs with solid black fills and dotwork shading creates a cohesive composition. This placement allows for larger designs that showcase the full beauty of patchwork art. Perfect for building your tattoo collection over time.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/chest-male-2.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your chest is perfect for patchwork art that creates a sticker-sleeve aesthetic. Individual motifs like flowers represent beauty, snakes symbolize transformation, script shows personal meaning, and hearts mean love. This placement allows you to build your collection gradually, with bold linework ensuring each piece stands out. Perfect for expressing your unique journey.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/chest-male-3.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "The chest is ideal for patchwork art that creates a collage effect. Multiple standalone pieces with strong contrast, clean silhouettes, and negative space allow each tattoo to remain distinct while contributing to the whole. This placement is perfect for building your collection over time—every piece tells part of your story.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/chest-male.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your chest is perfect for patchwork art that honors traditional tattoo culture. Traditional-inspired motifs with bold black linework, solid fills, and intentional spacing create a cohesive composition. This placement allows you to build your collection gradually, with each piece remaining meaningful. Perfect for expressing your appreciation of classic tattoo art.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/hands-female.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your hands are ideal for patchwork art that builds your collection over time. Individual motifs like small flowers represent beauty, symbols carry meaning, and script shows personal expression. This placement allows you to add pieces gradually, with bold black linework ensuring each piece stands out. Perfect for expressing your unique journey.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/leg-male.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your leg is perfect for patchwork art that creates a cohesive composition. Multiple standalone tattoos with traditional-inspired motifs, bold linework, and intentional spacing allow each piece to remain distinct while contributing to the whole. This placement is ideal for building your collection over time—every piece tells part of your story.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/neck-female.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your neck is ideal for patchwork art that creates a sticker-like effect. Individual motifs with bold black linework, solid fills, and intentional negative space allow each piece to stand alone while contributing to the whole. This placement is perfect for building your collection gradually—every piece remains meaningful.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/ribs-female-2.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your ribs are perfect for patchwork art that builds your collection over time. Multiple standalone pieces including flowers, hearts, or symbols with bold linework and negative space create a cohesive composition. This placement allows you to add pieces gradually, with each tattoo remaining distinct. Perfect for expressing your unique journey.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/ribs-female.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "The ribs are ideal for patchwork art that honors traditional tattoo culture. A collection of distinct traditional-inspired motifs with solid black fills and dotwork shading creates a cohesive composition. This placement allows for larger designs that showcase the full beauty of patchwork art. Perfect for building your tattoo collection over time.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/shoulder-female.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your shoulder is perfect for patchwork art that builds your collection over time. Individual motifs like flowers represent beauty, snakes symbolize transformation, and classic symbols carry meaning. This placement allows you to add pieces gradually, with bold black linework ensuring each piece stands out. Perfect for expressing your unique journey.",
-      },
-      {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/patchwork/thigh-female.avif",
-        blurhash: "",
-        prompt: "",
-        more_about:
-          "Your thigh is ideal for patchwork art that creates a sticker-sleeve collage aesthetic. Multiple standalone pieces with strong lines, solid blacks, and negative space allow each tattoo to remain distinct while contributing to the whole. This placement is perfect for building your collection over time—every piece tells part of your story.",
-      },
-    ],
-    prompt:
-      "Create a Patchwork Blackwork Sleeve style tattoo design. This style is built from multiple individual motifs that together create a cohesive sleeve, rather than a single continuous mural. Each motif should have bold, consistent black linework, solid black fills, and dotwork (stippling) shading, using only black and grey—no color. Common motifs include flowers, snakes, daggers, hearts, flames, script lettering, eyes, classic symbols, and small decorative shapes, all rendered in a style that blends American Traditional and Neo Traditional influences. Designs must prioritize clean silhouettes, strong contrast, and high readability from a distance. Leave intentional negative space between motifs so the skin becomes part of the composition, creating a sticker-sleeve or collage aesthetic instead of one big blocked-out piece. All lines should be crisp and closed, with no broken paths, and black fills must be solid and even. The layout should feel like a collection of tattoos that belong together—balanced, harmonious, and flowing with the body—while still allowing each individual piece to stand alone. The artwork should be ultra-detailed, high resolution, and suitable for professional tattooing, with a clear patchwork blackwork sleeve identity.",
   },
 ];
 

@@ -134,7 +134,7 @@ export function PlaygroundScreen() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: "",
+          headerTitle: "Inkigo",
           headerShadowVisible: false,
           gestureEnabled: false,
           unstable_headerLeftItems: (props) => [

@@ -7,8 +7,6 @@ import { StyleSheet, View } from "react-native";
 import { customEvent } from "vexo-analytics";
 
 export function GetInspiration() {
-  const inspirationStyles = [...featuredTattoos].reverse();
-
   return (
     <View style={{ flex: 1, gap: 16 }}>
       <Text type="subtitle" weight="bold" style={{ paddingHorizontal: 16 }}>
@@ -17,7 +15,7 @@ export function GetInspiration() {
       {/* <GlassContainerDemo /> */}
       <LegendList
         horizontal
-        data={inspirationStyles}
+        data={featuredTattoos}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item: style }) => (
           <VerticalCard
