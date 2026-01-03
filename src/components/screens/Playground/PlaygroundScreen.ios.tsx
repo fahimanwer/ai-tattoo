@@ -23,7 +23,6 @@ import {
   frame,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
-import { useQueryClient } from "@tanstack/react-query";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -60,8 +59,6 @@ export function PlaygroundScreen() {
     cancelGeneration,
   } = use(PlaygroundContext);
 
-  const queryClient = useQueryClient();
-
   const { width } = useWindowDimensions();
 
   // Play playful entrance haptic on first load
@@ -91,12 +88,22 @@ export function PlaygroundScreen() {
       }, 300);
     } else if (mode === "remove") {
       hasHandledMode.current = true;
+
       // Open gallery for remove mode
       setTimeout(() => {
+        setPrompt(
+          "Remove the tattoo from this photo and restore the area as natural skin. Keep the rest of the image unchanged and do not add any new design."
+        );
         pickImageFromGallery();
       }, 300);
     }
-  }, [params.mode, isAuthenticated, isLoading, pickImageFromGallery]);
+  }, [
+    params.mode,
+    isAuthenticated,
+    isLoading,
+    pickImageFromGallery,
+    setPrompt,
+  ]);
 
   function dismissToHome() {
     if (router.canGoBack()) {
@@ -352,15 +359,11 @@ export function PlaygroundScreen() {
             <InputControls
               onChangeText={setPrompt}
               prompt={prompt}
+              // Don't auto-focus when mode opens gallery/camera immediately
+              autoFocus={!params.mode || params.mode === ""}
               onSubmit={handleTattooGeneration}
-              isSubmitDisabled={
-                prompt.length === 0 ||
-                isPending ||
-                isLoading ||
-                activeMutation.isPending
-              }
-              autoFocus={true} // this is causing side effects when true
-              isSheetDisabled={isPending || activeMutation.isPending}
+              isSubmitDisabled={activeMutation.isPending}
+              isSheetDisabled={activeMutation.isPending}
             />
           </Activity>
         </View>
