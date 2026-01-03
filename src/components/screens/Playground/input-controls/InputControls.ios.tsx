@@ -24,10 +24,18 @@ import {
   shapes,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
+import { useFocusEffect } from "@react-navigation/native";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { router } from "expo-router";
-import React, { use, useId, useImperativeHandle, useRef } from "react";
-import { Alert, View } from "react-native";
+import React, {
+  use,
+  useCallback,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useRef,
+} from "react";
+import { Alert, Keyboard, View } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PlaygroundSuggestions } from "../shared/suggestions/PlaygroundSuggestions";
@@ -60,6 +68,63 @@ export function InputControls({
     blur: () => textFieldRef.current?.blur(),
     setText: (text: string) => textFieldRef.current?.setText(text),
   }));
+
+  // Refocus tracking - backup in case 800ms delay isn't enough
+  const focusAttempts = useRef(0);
+  const needsRefocus = useRef(false);
+  const maxRefocusAttempts = 1;
+
+  // Handle navigation-induced blur by refocusing when keyboard hides unexpectedly
+  useEffect(() => {
+    const willShow = Keyboard.addListener("keyboardWillShow", () => {
+      needsRefocus.current = false;
+    });
+
+    const willHide = Keyboard.addListener("keyboardWillHide", () => {
+      if (autoFocus && focusAttempts.current < maxRefocusAttempts) {
+        needsRefocus.current = true;
+      }
+    });
+
+    const didHide = Keyboard.addListener("keyboardDidHide", () => {
+      if (needsRefocus.current) {
+        needsRefocus.current = false;
+        focusAttempts.current++;
+        setTimeout(() => {
+          textFieldRef.current?.focus();
+        }, 50);
+      }
+    });
+
+    return () => {
+      willShow.remove();
+      willHide.remove();
+      didHide.remove();
+    };
+  }, [autoFocus]);
+
+  // Focus the input after navigation transition completes
+  // We use useFocusEffect which fires after the screen is fully focused
+  // 800ms delay ensures the navigation transition is fully complete
+  useFocusEffect(
+    useCallback(() => {
+      if (!autoFocus) return;
+
+      // Reset refocus tracking for this navigation
+      focusAttempts.current = 0;
+      needsRefocus.current = false;
+
+      // Wait 800ms for the navigation transition to fully complete
+      // This prevents the flicker caused by navigation stealing focus
+      const timer = setTimeout(() => {
+        textFieldRef.current?.focus();
+      }, 800);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }, [autoFocus])
+  );
 
   function handleSubmit() {
     // If free user has reached their limit, redirect to paywall
@@ -200,7 +265,9 @@ export function InputControls({
                     multiline
                     allowNewlines
                     numberOfLines={5}
-                    autoFocus={autoFocus}
+                    // NOTE: Don't use autoFocus prop - it causes focus flicker
+                    // because the native focus happens during the navigation transition.
+                    // Instead, we use useFocusEffect + programmatic focus after transition.
                     modifiers={[padding({ vertical: 12, horizontal: 16 })]}
                     onChangeText={onChangeText}
                     onSubmit={handleSubmit}

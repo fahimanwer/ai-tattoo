@@ -23,14 +23,12 @@ import {
   frame,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
-import { useQueryClient } from "@tanstack/react-query";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
-// import { InputControls } from "./input-controls/InputControls";
-import { MinimalTextFieldTest } from "./input-controls/MinimalTextFieldTest.ios";
+import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryList } from "./session-history/SessionHistoryList";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
@@ -60,8 +58,6 @@ export function PlaygroundScreen() {
     blurInput,
     cancelGeneration,
   } = use(PlaygroundContext);
-
-  const queryClient = useQueryClient();
 
   const { width } = useWindowDimensions();
 
@@ -350,10 +346,14 @@ export function PlaygroundScreen() {
           </Activity>
 
           <Activity mode={isAuthenticated ? "visible" : "hidden"}>
-            <MinimalTextFieldTest
+            <InputControls
               onChangeText={setPrompt}
               prompt={prompt}
-              autoFocus={true}
+              // Don't auto-focus when mode opens gallery/camera immediately
+              autoFocus={!params.mode || params.mode === ""}
+              onSubmit={handleTattooGeneration}
+              isSubmitDisabled={activeMutation.isPending}
+              isSheetDisabled={activeMutation.isPending}
             />
           </Activity>
         </View>
