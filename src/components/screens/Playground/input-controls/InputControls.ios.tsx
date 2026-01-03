@@ -20,7 +20,6 @@ import {
   clipShape,
   disabled,
   glassEffect,
-  offset,
   padding,
   shapes,
   tint,
@@ -208,39 +207,31 @@ export function InputControls({
                   />
                 </VStack>
 
-                {prompt.length > 0 && (
-                  <SwiftUIButton
-                    onPress={handleSubmit}
-                    modifiers={[
-                      tint("yellow"),
-                      buttonStyle(
-                        isLiquidGlassAvailable() ? "glassProminent" : "bordered"
-                      ),
-                      background(
-                        isLiquidGlassAvailable() ? "transparent" : "yellow"
-                      ),
-                      clipShape("circle"),
-                      offset({ x: prompt.length > 0 ? 0 : 100 }),
-                      animation(
-                        Animation.spring({
-                          duration: 0.5,
-                          dampingFraction: 0.5,
-                          blendDuration: 0.5,
-                          bounce: 0.5,
-                        }),
-                        prompt.length > 0
-                      ),
-                      disabled(isSubmitDisabled),
-                    ]}
-                  >
-                    <Image
-                      systemName="arrow.up"
-                      size={16}
-                      color={"black"}
-                      modifiers={[padding({ vertical: 6, horizontal: 2 })]}
-                    />
-                  </SwiftUIButton>
-                )}
+                <SwiftUIButton
+                  onPress={handleSubmit}
+                  modifiers={[
+                    tint(prompt.length > 0 ? "yellow" : "gray"),
+                    buttonStyle(
+                      isLiquidGlassAvailable() ? "glassProminent" : "bordered"
+                    ),
+                    background(
+                      isLiquidGlassAvailable()
+                        ? "transparent"
+                        : prompt.length > 0
+                        ? "yellow"
+                        : "#333333"
+                    ),
+                    clipShape("circle"),
+                    disabled(isSubmitDisabled || prompt.length === 0),
+                  ]}
+                >
+                  <Image
+                    systemName={"arrow.up"}
+                    size={16}
+                    color={prompt.length > 0 ? "black" : "gray"}
+                    modifiers={[padding({ vertical: 6, horizontal: 2 })]}
+                  />
+                </SwiftUIButton>
               </HStack>
             </GlassEffectContainer>
           </Namespace>
