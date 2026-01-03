@@ -72,18 +72,11 @@ export function InputControls({
   // Refocus tracking - backup in case 800ms delay isn't enough
   const focusAttempts = useRef(0);
   const needsRefocus = useRef(false);
-  const maxRefocusAttempts = 1;
 
   // Handle navigation-induced blur by refocusing when keyboard hides unexpectedly
   useEffect(() => {
     const willShow = Keyboard.addListener("keyboardWillShow", () => {
       needsRefocus.current = false;
-    });
-
-    const willHide = Keyboard.addListener("keyboardWillHide", () => {
-      if (autoFocus && focusAttempts.current < maxRefocusAttempts) {
-        needsRefocus.current = true;
-      }
     });
 
     const didHide = Keyboard.addListener("keyboardDidHide", () => {
@@ -98,7 +91,6 @@ export function InputControls({
 
     return () => {
       willShow.remove();
-      willHide.remove();
       didHide.remove();
     };
   }, [autoFocus]);

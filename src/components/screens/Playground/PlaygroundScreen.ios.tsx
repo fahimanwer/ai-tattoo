@@ -88,12 +88,22 @@ export function PlaygroundScreen() {
       }, 300);
     } else if (mode === "remove") {
       hasHandledMode.current = true;
+
       // Open gallery for remove mode
       setTimeout(() => {
+        setPrompt(
+          "Remove the tattoo from this photo and restore the area as natural skin. Keep the rest of the image unchanged and do not add any new design."
+        );
         pickImageFromGallery();
       }, 300);
     }
-  }, [params.mode, isAuthenticated, isLoading, pickImageFromGallery]);
+  }, [
+    params.mode,
+    isAuthenticated,
+    isLoading,
+    pickImageFromGallery,
+    setPrompt,
+  ]);
 
   function dismissToHome() {
     if (router.canGoBack()) {
