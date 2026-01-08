@@ -693,9 +693,7 @@ export function Profile() {
           <FormButton
             title="TikTok"
             systemImage="video.fill"
-            onPress={() =>
-              Linking.openURL("https://www.tiktok.com/@inkigo369p")
-            }
+            onPress={() => Linking.openURL("https://www.tiktok.com/@inkigoapp")}
           />
           <FormButton
             title="X"
