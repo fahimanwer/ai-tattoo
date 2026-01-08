@@ -39,6 +39,184 @@ export interface BodyPartCategory {
 
 export const featuredTattoos: FeaturedTattoo[] = [
   {
+    id: 15,
+    title: "Dotwork",
+    short_description:
+      "A precise style using thousands of individual dots to create texture, shading, and intricate patterns through stippling techniques that build depth and dimension.",
+    description:
+      "Dotwork is a meticulous tattoo style that uses thousands of individual dots, applied through a technique called stippling, to create texture, shading, and intricate patterns. This style emerged from traditional tattoo techniques but has evolved into a sophisticated art form that emphasizes precision, patience, and the meditative process of building images point by point. Dotwork tattoos can range from geometric mandalas and sacred geometry to organic patterns, botanical designs, and realistic portraits. The technique uses varying dot densities—closer dots create darker areas and shadows, while spaced dots create lighter tones and highlights. This creates a unique visual texture that's both delicate and bold, with designs that appear to shimmer and shift as light moves across the skin. Dotwork is often combined with bold linework to create contrast, or used exclusively to build entire compositions through pure stippling. The style requires exceptional technical skill and time, as each dot must be carefully placed to achieve the desired effect. Dotwork tattoos are celebrated for their meditative quality, intricate detail, and the way they transform simple dots into complex, meaningful art. This style appeals to those who appreciate precision, patience, and the beauty that emerges from thousands of individual moments coming together to create something extraordinary.",
+    style: "Dotwork",
+    image: {
+      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/cover.avif",
+      blurhash: "",
+    },
+    gallery: [
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/arm-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your arm is perfect for dotwork art that showcases intricate detail and precision. The stippling technique creates texture and depth that flows beautifully with your arm's natural curves. This placement is ideal for expressing your appreciation for meticulous craftsmanship and meditative artistry. Every dot contributes to a larger pattern, making this art a testament to patience and precision.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/arm-male.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The arm is ideal for dotwork that demonstrates the power of precision. Thousands of individual dots create patterns that shimmer and shift with movement, showcasing the meditative quality of stippling. This placement is perfect for expressing your appreciation for intricate detail and the beauty that emerges from patience. The dotwork technique creates art that's both delicate and bold.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/back-female-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your back is perfect for large-scale dotwork art that showcases intricate patterns and textures. This placement allows for complex compositions that demonstrate the full potential of stippling techniques. The dotwork creates depth and dimension that flows beautifully with your body's natural curves. Perfect for expressing your appreciation for meticulous artistry and meditative craftsmanship.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/back-female-3.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The back is ideal for dotwork that creates striking visual impact through precision and detail. Large-scale dotwork compositions showcase the meditative quality of stippling, with patterns that build depth and texture. This placement is perfect for expressing your appreciation for intricate artistry and the beauty that emerges from thousands of individual moments coming together.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/back-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your back is the ultimate canvas for dotwork art that demonstrates exceptional craftsmanship. The stippling technique creates intricate patterns and textures that wrap beautifully around your body. This placement is ideal for expressing your appreciation for precision, patience, and the meditative process of building art point by point.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/calf-male.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your calf is perfect for dotwork that moves with every step. The vertical placement enhances the intricate dotwork patterns, creating depth and texture that flows with your leg's natural shape. This placement is ideal for expressing your appreciation for meticulous detail and the meditative quality of stippling artistry.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/chest-female-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your chest is ideal for dotwork art that showcases precision and detail. The stippling technique creates texture and depth that flows beautifully with your body's natural curves. This placement is perfect for expressing your appreciation for intricate craftsmanship and the beauty that emerges from thousands of individual dots.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/chest-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The chest is perfect for dotwork that demonstrates the power of precision. Intricate dotwork patterns create depth and dimension that enhance your natural form. This placement is ideal for expressing your appreciation for meticulous artistry and the meditative process of building art through stippling techniques.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/chest-male-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your chest is ideal for dotwork art that showcases intricate detail and craftsmanship. The stippling technique creates patterns that shimmer and shift, demonstrating the meditative quality of dotwork. This placement is perfect for expressing your appreciation for precision and the beauty that emerges from patience and meticulous artistry.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/chest-male.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The chest is perfect for dotwork that creates striking visual impact through precision and detail. Large dotwork compositions showcase the intricate patterns and textures that stippling can achieve. This placement is ideal for expressing your appreciation for meticulous craftsmanship and the meditative process of building art point by point.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/couples-hands-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your hands are perfect for matching dotwork couples tattoos that celebrate your shared journey. The intricate stippling creates patterns that symbolize the thousands of moments you've shared together. This placement is ideal for expressing unity and commitment through the meditative quality of dotwork artistry.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/couples-hands.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your hands are ideal for complementary dotwork couples tattoos that tell your love story. The precision of stippling reflects the care and attention in your relationship, with each dot representing a moment together. This placement is perfect for expressing your bond through intricate artistry and meaningful detail.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/couples-wrist-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your wrists are perfect for matching dotwork couples tattoos that celebrate your connection. The intricate patterns created through stippling symbolize the complexity and beauty of your relationship. This placement is ideal for expressing unity and commitment through the meditative quality of dotwork artistry.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/couples-wrist.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your wrists are ideal for complementary dotwork couples tattoos that represent your shared journey. The precision of stippling reflects the care in your relationship, with intricate patterns that flow together beautifully. This placement is perfect for expressing your bond through meticulous artistry and meaningful detail.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/fullarm-male.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your full arm is the perfect canvas for dotwork art that showcases intricate detail and precision. The stippling technique creates texture and depth that flows beautifully along your entire arm. This placement is ideal for expressing your appreciation for meticulous craftsmanship and the meditative process of building art through thousands of individual dots.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/leg-female-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your leg is perfect for dotwork that moves with every step. The intricate stippling creates patterns and textures that demonstrate the meditative quality of dotwork artistry. This placement is ideal for expressing your appreciation for precision and the beauty that emerges from patience and meticulous detail.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/leg-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The leg is ideal for dotwork art that showcases intricate detail and craftsmanship. The stippling technique creates depth and texture that flows beautifully with your leg's natural curves. This placement is perfect for expressing your appreciation for meticulous artistry and the meditative process of building art point by point.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/ribs-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your ribs are perfect for dotwork art that creates striking visual impact through precision and detail. The stippling technique creates intricate patterns and textures that flow beautifully with your body's natural curves. This placement is ideal for expressing your appreciation for meticulous craftsmanship and the meditative quality of dotwork artistry.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/shoulder-male-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your shoulder is ideal for dotwork that showcases intricate detail and precision. The stippling technique creates patterns that shimmer and shift, demonstrating the meditative quality of dotwork. This placement is perfect for expressing your appreciation for meticulous artistry and the beauty that emerges from thousands of individual dots coming together.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/shoulder-male.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The shoulder is perfect for dotwork art that demonstrates the power of precision. Intricate dotwork patterns create depth and dimension that enhance your natural strength. This placement is ideal for expressing your appreciation for meticulous craftsmanship and the meditative process of building art through stippling techniques.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/thigh-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your thigh is ideal for dotwork art that showcases intricate detail and craftsmanship. The stippling technique creates patterns and textures that flow beautifully with your leg's natural curves. This placement is perfect for expressing your appreciation for precision and the meditative quality of dotwork artistry.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/wrist-female-2.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "Your wrist is perfect for dotwork that showcases intricate detail and precision. The stippling technique creates delicate patterns and textures that demonstrate the meditative quality of dotwork artistry. This placement is ideal for expressing your appreciation for meticulous craftsmanship and the beauty that emerges from patience and detail.",
+      },
+      {
+        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/dotwork/wrist-female.avif",
+        blurhash: "",
+        prompt: "",
+        more_about:
+          "The wrist is ideal for dotwork art that demonstrates the power of precision. Intricate dotwork patterns create depth and texture that flow beautifully with your wrist's natural shape. This placement is perfect for expressing your appreciation for meticulous artistry and the meditative process of building art through thousands of individual dots.",
+      },
+    ],
+    prompt:
+      "Create a Dotwork style tattoo design characterized by the meticulous use of thousands of individual dots applied through stippling techniques. This style emphasizes precision, patience, and the meditative process of building images point by point to create texture, shading, and intricate patterns. Dotwork tattoos can feature geometric mandalas, sacred geometry, organic patterns, botanical designs, realistic portraits, or abstract compositions. The technique uses varying dot densities—closer dots create darker areas, shadows, and depth, while spaced dots create lighter tones, highlights, and texture. This creates a unique visual texture that appears to shimmer and shift as light moves across the skin. Dotwork can be combined with bold linework to create contrast, or used exclusively to build entire compositions through pure stippling. Common motifs include geometric patterns and mandalas with intricate dotwork shading, botanical elements rendered through stippling techniques, sacred geometry with precise dot placement, organic patterns that flow with body contours, and realistic imagery built entirely from dots. The composition must be precise, harmonious, and visually balanced, with careful attention to dot spacing, density, and placement. Each dot should be intentionally placed to contribute to the overall pattern and texture. The design should emphasize the meditative quality of dotwork, showcasing intricate detail and the beauty that emerges from thousands of individual moments coming together. The artwork should be ultra-detailed, high resolution, and suitable for professional tattoo application, with exceptional technical precision and attention to the stippling technique.",
+  },
+  {
     id: 14,
     title: "Patchwork",
     short_description:
@@ -1539,6 +1717,7 @@ export const featuredTattoos: FeaturedTattoo[] = [
     prompt:
       "Create a Geometric Animal style tattoo design inspired by animals and nature. This style emphasizes bold shapes, lines, and patterns that create a sense of movement and energy. Common geometric animal motifs include animals rendered with simple geometric shapes and lines, animals with bold, geometric patterns, animals with simple, clean lines, animals with bold, geometric patterns, animals with simple, clean lines, animals with bold, geometric patterns, animals with simple, clean lines.",
   },
+ 
 ];
 
 export const getTattooStyleById = (id: number): FeaturedTattoo | undefined => {
