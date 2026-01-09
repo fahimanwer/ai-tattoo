@@ -2,6 +2,7 @@ import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import { getSketchDesignByStyleId } from "@/lib/sketch-design";
 import ParallaxScrollView from "@/src/components/about/ParallaxScrollView";
 import { NotFound } from "@/src/components/screens/notFound";
+import { Button } from "@/src/components/ui/Button";
 import { VerticalCard } from "@/src/components/ui/VerticalCard";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -39,9 +40,26 @@ export default function SketchDesigns() {
       <ParallaxScrollView
         imageUrl={coverImage}
         title={selectedDesign.title}
-        shortDescription={selectedDesign.style}
+        shortDescription={selectedDesign.description}
         imageBlurhash={coverImageBlurhash}
       >
+        <Button
+          title="Read More"
+          variant="link"
+          color="white"
+          style={{
+            justifyContent: "flex-start",
+            paddingLeft: 16,
+          }}
+          onPress={() =>
+            router.push({
+              pathname: "/(tabs)/(home)/about/learn-more",
+              params: {
+                style: selectedDesign.id.toString(),
+              },
+            })
+          }
+        />
         <View style={styles.content}>
           {selectedDesign.gallery && selectedDesign.gallery.length > 0 && (
             <View>

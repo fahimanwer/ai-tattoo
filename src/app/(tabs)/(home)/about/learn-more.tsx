@@ -1,6 +1,7 @@
 import { tattooCategories, TattooCategory } from "@/lib/celebrity-tattoos";
 import { FeaturedTattoo, featuredTattoos } from "@/lib/featured-tattoos";
 import { getMoodById, Mood } from "@/lib/moods";
+import { getSketchDesignByStyleId } from "@/lib/sketch-design";
 import { NotFound } from "@/src/components/screens/notFound";
 import { Button } from "@/src/components/ui/Button";
 import { Text } from "@/src/components/ui/Text";
@@ -10,7 +11,7 @@ import { ScrollView } from "react-native";
 export default function LearnMore() {
   const { style } = useLocalSearchParams<{ style: string }>();
 
-  // First search in moods, then tattooCategories, then in featuredTattoos
+  // First search in moods, then tattooCategories, then in featuredTattoos, then sketch designs
   const selectedMood: Mood | undefined = getMoodById(
     parseInt(style || "0", 10)
   );
@@ -23,8 +24,13 @@ export default function LearnMore() {
     (tattoo) => tattoo.id.toString() === style
   );
 
-  // Use mood if found, then category, otherwise use featured tattoo
-  const currentStyle = selectedMood || selectedCategory || selectedStyle;
+  const selectedSketchDesign = getSketchDesignByStyleId(
+    parseInt(style || "0", 10)
+  );
+
+  // Use mood if found, then category, then featured tattoo, then sketch design
+  const currentStyle =
+    selectedMood || selectedCategory || selectedStyle || selectedSketchDesign;
 
   const router = useRouter();
 
