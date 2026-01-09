@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { CelebrityTattoos } from "../home/CelebrityTattoos";
+import { DiscoverSketchDesigns } from "../home/DiscoverSketchDesigns";
 import { GetInspiration } from "../home/GetInspiration";
 import { Moods } from "../home/Moods";
 import { QuickActions } from "../home/QuickActions";
@@ -40,6 +41,7 @@ export function Home() {
         <GetInspiration />
         <CelebrityTattoos />
         <Moods />
+        <DiscoverSketchDesigns />
       </Animated.View>
     </ScrollView>
   );

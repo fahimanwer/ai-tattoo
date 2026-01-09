@@ -49,6 +49,13 @@ export default function ProfileLayout() {
           presentation: "card",
         }}
       />
+      <Stack.Screen
+        name="about/sketch-designs"
+        options={{
+          headerBackButtonDisplayMode: "minimal",
+          headerLargeTitle: false,
+        }}
+      />
     </Stack>
   );
 }
