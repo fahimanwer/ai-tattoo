@@ -65,7 +65,7 @@ export default function FeatureRequest() {
 
   const handleContactSupport = async () => {
     try {
-      const subject = "Inkigo Feature Request Help";
+      const subject = "Inkigo AI Feature Request Help";
       const userInfo = user
         ? `User ID: ${user.id}\nEmail: ${user.email}`
         : "(Not signed in)";

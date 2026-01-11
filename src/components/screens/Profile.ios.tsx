@@ -127,7 +127,7 @@ export function Profile() {
 
   const handleContactSupport = async () => {
     try {
-      const subject = "Inkigo App Support Request";
+      const subject = "Inkigo AI App Support Request";
       const userInfo = user
         ? `User ID: ${user.id}\nEmail: ${user.email}`
         : "(Not signed in)";
@@ -143,7 +143,7 @@ export function Profile() {
 
   const handleArtistContact = async () => {
     try {
-      const subject = "Are you an artist? - Inkigo";
+      const subject = "Are you an artist? - Inkigo AI";
       const userInfo = user
         ? `My account email: ${user.email}\nMy user ID: ${user.id}`
         : "(Not signed in)";

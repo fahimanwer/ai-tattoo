@@ -37,7 +37,7 @@ export default function PlaygroundPreview() {
     <>
       <Stack.Screen
         options={{
-          title: "Inkigo",
+          title: "Inkigo AI",
           headerStyle: {
             backgroundColor: "transparent",
           },

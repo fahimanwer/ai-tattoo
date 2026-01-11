@@ -17,7 +17,7 @@ export default function ProfileLayout() {
       <Stack.Screen
         name="index"
         options={{
-          title: "Inkigo",
+          title: "Inkigo AI",
           headerLargeTitle: true,
         }}
       />

@@ -22,6 +22,7 @@ const textToImageSchema = z.object({
   prompt: z.string().min(1, "Prompt is required and cannot be empty"),
   improvePrompt: z.boolean().optional().default(true),
   revenuecatUserId: z.string().optional(),
+  blackAndWhiteMode: z.boolean().optional().default(false),
 });
 
 export const POST = withAuth(async (request: Request, session: Session) => {
@@ -29,7 +30,7 @@ export const POST = withAuth(async (request: Request, session: Session) => {
 
   try {
     const body = await request.json();
-    const { prompt, improvePrompt, revenuecatUserId } =
+    const { prompt, improvePrompt, revenuecatUserId, blackAndWhiteMode } =
       textToImageSchema.parse(body);
 
     // Check usage and limits (pass revenuecatUserId for accurate lookup)
@@ -37,7 +38,7 @@ export const POST = withAuth(async (request: Request, session: Session) => {
     if (!usageCheck.success) {
       return usageCheck.error;
     }
-    const { usage, isFreeTier } = usageCheck;
+    const { usage } = usageCheck;
     slog("text-to-image+api", `received prompt: ${prompt}`);
 
     // Improve and enhance prompt
@@ -45,7 +46,8 @@ export const POST = withAuth(async (request: Request, session: Session) => {
       prompt,
       request.url,
       false,
-      improvePrompt
+      improvePrompt,
+      blackAndWhiteMode
     );
     const enhancedPrompt = enhancePromptForTextToImage(improvedPrompt);
 

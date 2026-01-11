@@ -21,6 +21,7 @@ const textAndImageToImageSchema = z.object({
     .array(z.string())
     .min(1, "Images base64 are required and cannot be empty"),
   improvePrompt: z.boolean().optional().default(true),
+  blackAndWhiteMode: z.boolean().optional().default(false),
   revenuecatUserId: z.string().optional(),
 });
 
@@ -29,8 +30,13 @@ export const POST = withAuth(async (request: Request, session: Session) => {
 
   try {
     const body = await request.json();
-    const { prompt, images_base64, improvePrompt, revenuecatUserId } =
-      textAndImageToImageSchema.parse(body);
+    const {
+      prompt,
+      images_base64,
+      improvePrompt,
+      blackAndWhiteMode,
+      revenuecatUserId,
+    } = textAndImageToImageSchema.parse(body);
 
     // Check usage and limits (pass revenuecatUserId for accurate lookup)
     const usageCheck = await checkUserUsage(session, revenuecatUserId);
@@ -49,7 +55,8 @@ export const POST = withAuth(async (request: Request, session: Session) => {
       prompt,
       request.url,
       true,
-      disabledImprovePrompt
+      disabledImprovePrompt,
+      blackAndWhiteMode
     );
     const enhancedPrompt = enhancePromptForImageEditing(
       improvedPrompt,

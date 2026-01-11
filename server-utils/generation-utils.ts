@@ -288,10 +288,14 @@ export async function improvePrompt(
   prompt: string,
   requestUrl: string,
   hasExistingImage: boolean = false,
-  improvePrompt: boolean = true
+  improvePrompt: boolean = true,
+  blackAndWhiteMode: boolean = false
 ): Promise<string> {
+  const promptToImprove = blackAndWhiteMode
+    ? `${prompt} make it grayscale`
+    : prompt;
   if (!improvePrompt) {
-    return prompt;
+    return promptToImprove;
   }
   try {
     const response = await fetch(
@@ -299,31 +303,31 @@ export async function improvePrompt(
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, hasExistingImage }),
+        body: JSON.stringify({ prompt: promptToImprove, hasExistingImage }),
       }
     );
 
     if (response.ok) {
       const data = await response.json();
-      const improvedPrompt = data.improvedPrompt || prompt;
+      const improvedPrompt = data.improvedPrompt || promptToImprove;
       slog("generation-utils", "Prompt improved", {
-        original: prompt,
+        original: promptToImprove,
         improved: improvedPrompt,
       });
       return improvedPrompt;
     }
 
     slog("generation-utils", "Failed to improve prompt, using original", {
-      original: prompt,
+      original: promptToImprove,
       response: response.statusText,
     });
-    return prompt;
+    return promptToImprove;
   } catch (error) {
     slog("generation-utils", "Error improving prompt, using original", {
       original: prompt,
       error: error,
     });
-    return prompt;
+    return promptToImprove;
   }
 }
 

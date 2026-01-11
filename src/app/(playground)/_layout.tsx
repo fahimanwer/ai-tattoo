@@ -21,7 +21,7 @@ export default function PlaygroundLayout() {
       <Stack.Screen
         name="sheet"
         options={{
-          headerTitle: "Inkigo",
+          headerTitle: "Inkigo AI",
           presentation: "formSheet",
           headerTransparent: isGlassEffectAPIAvailable() ? true : false,
           contentStyle: {
