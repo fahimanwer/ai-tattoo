@@ -37,7 +37,7 @@ export const POST = withAuth(async (request: Request, session: Session) => {
     if (!usageCheck.success) {
       return usageCheck.error;
     }
-    const { usage, isFreeTier } = usageCheck;
+    const { usage } = usageCheck;
     console.log("server", "received prompt", prompt);
 
     // Disable prompt improvement when combining images

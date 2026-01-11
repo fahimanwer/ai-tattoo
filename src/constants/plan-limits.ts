@@ -9,7 +9,7 @@
  * Free tier limit - single source of truth
  * Change this value to update the free tier limit across the entire codebase
  */
-export const FREE_TIER_LIMIT = 2;
+export const FREE_TIER_LIMIT = 1;
 
 export type PlanTier = "free" | "starter" | "plus" | "pro" | "premium";
 
