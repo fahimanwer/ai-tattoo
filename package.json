@@ -20,6 +20,7 @@
     "@expo/ui": "0.2.0-canary-20251216-3f01dbf",
     "@expo/vector-icons": "^15.0.3",
     "@legendapp/list": "^2.0.15",
+    "@prisma/client": "6.19.0",
     "@prisma/extension-accelerate": "^2.0.2",
     "@react-native-masked-view/masked-view": "0.3.2",
     "@react-navigation/bottom-tabs": "^7.0.0-rc.37",
@@ -85,6 +86,7 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "10.0.1-canary-20251216-3f01dbf",
     "expo-atlas": "^0.4.0",
+    "prisma": "6.19.0",
     "typescript": "~5.9.2"
   },
   "private": true,
