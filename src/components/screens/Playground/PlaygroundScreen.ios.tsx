@@ -230,26 +230,26 @@ export function PlaygroundScreen() {
                 isPending ||
                 activeMutation.isPending,
             },
-            // {
-            //   type: "button",
-            //   label: "Save",
-            //   icon: { name: "square.and.arrow.down", type: "sfSymbol" },
-            //   variant: !hasActiveSubscription ? "plain" : "prominent",
-            //   tintColor: !hasActiveSubscription ? "white" : "yellow",
-            //   labelStyle: {
-            //     fontWeight: "bold",
-            //   },
-            //   onPress: async () => {
-            //     // Save the first image in the active group
-            //     if (activeGenerationUris.length > 0) {
-            //       await handleSave(activeGenerationUris[0]);
-            //     }
-            //   },
-            //   disabled:
-            //     activeGenerationUris.length === 0 ||
-            //     isPending ||
-            //     activeMutation.isPending,
-            // },
+            {
+              type: "button",
+              label: "Save",
+              icon: { name: "square.and.arrow.down", type: "sfSymbol" },
+              variant: !hasActiveSubscription ? "plain" : "prominent",
+              tintColor: !hasActiveSubscription ? "white" : "yellow",
+              labelStyle: {
+                fontWeight: "bold",
+              },
+              onPress: async () => {
+                // Save the first image in the active group
+                if (activeGenerationUris.length > 0) {
+                  await handleSave(activeGenerationUris[0]);
+                }
+              },
+              disabled:
+                activeGenerationUris.length === 0 ||
+                isPending ||
+                activeMutation.isPending,
+            },
             ...(!hasActiveSubscription && session?.user !== undefined
               ? [
                   {

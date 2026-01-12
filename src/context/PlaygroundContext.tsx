@@ -21,9 +21,10 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
+import * as MediaLibrary from "expo-media-library";
 import * as StoreReview from "expo-store-review";
 import * as React from "react";
-import { Alert, Keyboard } from "react-native";
+import { Alert, Keyboard, Linking } from "react-native";
 import Purchases from "react-native-purchases";
 import { toast } from "sonner-native";
 import { customEvent } from "vexo-analytics";
@@ -353,33 +354,68 @@ export function PlaygroundProvider({
   async function handleSave(fileUri?: string) {
     if (!fileUri) return;
 
-    // Convert file URI to base64 for saving
-    const base64Image = await getCachedImageAsBase64(fileUri);
-    await saveBase64ToAlbum(base64Image, "png");
+    try {
+      // Check permissions first
+      const permission = await MediaLibrary.getPermissionsAsync();
 
-    customEvent("tattoo_saved", {
-      source: "playground",
-    });
+      if (!permission.granted) {
+        // Request permission if not granted
+        const requestResult = await MediaLibrary.requestPermissionsAsync();
 
-    toast.success("Image saved to gallery!", {
-      dismissible: true,
-      duration: 1_000,
-    });
-
-    // Request store review after first save (only once ever)
-    if (!settings.hasRequestedReview) {
-      // Delay to let user see the success toast first
-      setTimeout(async () => {
-        try {
-          const hasAction = await StoreReview.hasAction();
-          if (hasAction) {
-            await StoreReview.requestReview();
-            await updateSettings({ hasRequestedReview: true });
-          }
-        } catch (error) {
-          console.error("Failed to request store review:", error);
+        if (!requestResult.granted) {
+          // Permission denied - show alert with option to open settings
+          Alert.alert(
+            "Photo Access Needed",
+            "To save images to your gallery, we need access to your photos. You can enable this in Settings.",
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Open Settings",
+                style: "default",
+                onPress: () => {
+                  Linking.openURL("app-settings:");
+                },
+              },
+            ]
+          );
+          return;
         }
-      }, 1500);
+      }
+
+      // Convert file URI to base64 for saving
+      const base64Image = await getCachedImageAsBase64(fileUri);
+      await saveBase64ToAlbum(base64Image, "png");
+
+      customEvent("tattoo_saved", {
+        source: "playground",
+      });
+
+      toast.success("Image saved to gallery!", {
+        dismissible: true,
+        duration: 1_000,
+      });
+
+      // Request store review after first save (only once ever)
+      if (!settings.hasRequestedReview) {
+        // Delay to let user see the success toast first
+        setTimeout(async () => {
+          try {
+            const hasAction = await StoreReview.hasAction();
+            if (hasAction) {
+              await StoreReview.requestReview();
+              await updateSettings({ hasRequestedReview: true });
+            }
+          } catch (error) {
+            console.error("Failed to request store review:", error);
+          }
+        }, 1500);
+      }
+    } catch (error) {
+      console.error("Error saving image:", error);
+      toast.error("Failed to save image. Please try again.", {
+        dismissible: true,
+        duration: 2_000,
+      });
     }
   }
 
