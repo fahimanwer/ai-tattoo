@@ -8,7 +8,6 @@ import React, { createContext, useCallback, useState } from "react";
 type AppSettings = {
   isOnboarded: boolean;
   improvePrompt: boolean;
-  blackAndWhiteMode: boolean;
   hasSeenPaywall: boolean;
   hasRequestedReview: boolean;
   onboardingAnswers: Record<string, string | string[]>;
@@ -21,7 +20,6 @@ type AppSettings = {
 const DEFAULT_SETTINGS: AppSettings = {
   isOnboarded: false,
   improvePrompt: true,
-  blackAndWhiteMode: false,
   hasSeenPaywall: false,
   hasRequestedReview: false,
   onboardingAnswers: {},

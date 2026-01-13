@@ -142,7 +142,6 @@ export function PlaygroundProvider({
     mutationFn: async ({
       prompt,
       improvePrompt = settings.improvePrompt ?? true,
-      blackAndWhiteMode = settings.blackAndWhiteMode ?? false,
       signal,
     }: TextToImageInput & { signal?: AbortSignal }) => {
       // Get RevenueCat user ID for accurate usage tracking
@@ -158,7 +157,6 @@ export function PlaygroundProvider({
         {
           prompt,
           improvePrompt,
-          blackAndWhiteMode,
           revenuecatUserId,
         },
         signal
@@ -206,7 +204,6 @@ export function PlaygroundProvider({
       prompt,
       images_base64,
       improvePrompt,
-      blackAndWhiteMode,
       signal,
     }: TextAndImageToImageInput & { signal?: AbortSignal }) => {
       // Get RevenueCat user ID for accurate usage tracking
@@ -223,7 +220,6 @@ export function PlaygroundProvider({
           prompt,
           images_base64,
           improvePrompt,
-          blackAndWhiteMode,
           revenuecatUserId,
         },
         signal
@@ -294,7 +290,6 @@ export function PlaygroundProvider({
       textToImageMutation.mutate({
         prompt,
         improvePrompt: settings.improvePrompt,
-        blackAndWhiteMode: settings.blackAndWhiteMode,
         signal,
       });
     } else {
@@ -318,7 +313,6 @@ export function PlaygroundProvider({
         signal,
         images_base64: base64Images,
         improvePrompt: settings.improvePrompt,
-        blackAndWhiteMode: settings.blackAndWhiteMode,
       });
     }
   }

@@ -12,17 +12,12 @@ import {
 } from "@/server-utils/generation-utils";
 import { z } from "zod";
 
-const {
-  GEMINI_IMAGE_BASE_URL_NANOBANANA,
-  GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
-  GEMINI_API_KEY,
-} = constants;
+const { GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO, GEMINI_API_KEY } = constants;
 
 const textToImageSchema = z.object({
   prompt: z.string().min(1, "Prompt is required and cannot be empty"),
   improvePrompt: z.boolean().optional().default(true),
   revenuecatUserId: z.string().optional(),
-  blackAndWhiteMode: z.boolean().optional().default(false),
 });
 
 export const POST = withAuth(async (request: Request, session: Session) => {
@@ -30,7 +25,7 @@ export const POST = withAuth(async (request: Request, session: Session) => {
 
   try {
     const body = await request.json();
-    const { prompt, improvePrompt, revenuecatUserId, blackAndWhiteMode } =
+    const { prompt, improvePrompt, revenuecatUserId } =
       textToImageSchema.parse(body);
 
     // Check usage and limits (pass revenuecatUserId for accurate lookup)
@@ -45,9 +40,7 @@ export const POST = withAuth(async (request: Request, session: Session) => {
     const improvedPrompt = await handleImprovePrompt(
       prompt,
       request.url,
-      false,
-      improvePrompt,
-      blackAndWhiteMode
+      improvePrompt
     );
     const enhancedPrompt = enhancePromptForTextToImage(improvedPrompt);
 

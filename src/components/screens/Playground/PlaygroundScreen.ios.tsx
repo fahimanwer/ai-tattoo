@@ -30,7 +30,6 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 import { InputControls } from "./input-controls/InputControls";
 import { SessionHistoryList } from "./session-history/SessionHistoryList";
-import { SettingsMenu } from "./SettingsMenu.ios";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
 export function PlaygroundScreen() {
@@ -203,75 +202,72 @@ export function PlaygroundScreen() {
               },
             },
           ],
-          unstable_headerRightItems: (props) => [
-            {
-              type: "custom",
-              element: <SettingsMenu />,
-              icon: {
-                name: "square.and.arrow.up",
-                type: "sfSymbol",
-              },
-            },
-            {
-              type: "button",
-              label: "Share",
-              icon: {
-                name: "square.and.arrow.up",
-                type: "sfSymbol",
-              },
-              onPress: async () => {
-                // Share the first image in the active group
-                if (activeGenerationUris.length > 0) {
-                  await handleShare(activeGenerationUris[0]);
-                }
-              },
-              disabled:
-                activeGenerationUris.length === 0 ||
-                isPending ||
-                activeMutation.isPending,
-            },
-            {
-              type: "button",
-              label: "Save",
-              icon: { name: "square.and.arrow.down", type: "sfSymbol" },
-              variant: !hasActiveSubscription ? "plain" : "prominent",
-              tintColor: !hasActiveSubscription ? "white" : "yellow",
-              labelStyle: {
-                fontWeight: "bold",
-              },
-              onPress: async () => {
-                // Save the first image in the active group
-                if (activeGenerationUris.length > 0) {
-                  await handleSave(activeGenerationUris[0]);
-                }
-              },
-              disabled:
-                activeGenerationUris.length === 0 ||
-                isPending ||
-                activeMutation.isPending,
-            },
-            ...(!hasActiveSubscription && session?.user !== undefined
-              ? [
-                  {
-                    type: "button" as const,
-                    label: "Upgrade",
-                    variant: "prominent" as const,
-                    tintColor: "yellow",
-                    icon: {
-                      name: "star.fill" as const,
-                      type: "sfSymbol" as const,
-                    },
-                    labelStyle: {
-                      fontWeight: "bold" as const,
-                    },
-                    onPress: () => {
-                      blurInput();
-                      router.push("/(paywall)");
-                    },
+          unstable_headerRightItems: (props) => {
+            // Not authenticated - show no right-side header items
+            if (!isAuthenticated) {
+              return [];
+            }
+
+            // Authenticated but no subscription - show only Upgrade button
+            if (!hasActiveSubscription) {
+              return [
+                {
+                  type: "button" as const,
+                  label: "Upgrade",
+                  variant: "prominent" as const,
+                  tintColor: "yellow",
+                  labelStyle: {
+                    fontWeight: "bold" as const,
                   },
-                ]
-              : []),
-          ],
+                  onPress: () => {
+                    blurInput();
+                    router.push("/(paywall)");
+                  },
+                },
+              ];
+            }
+
+            // Authenticated with subscription - show Share and Save buttons
+            return [
+              {
+                type: "button",
+                label: "Share",
+                icon: {
+                  name: "square.and.arrow.up",
+                  type: "sfSymbol",
+                },
+                onPress: async () => {
+                  // Share the first image in the active group
+                  if (activeGenerationUris.length > 0) {
+                    await handleShare(activeGenerationUris[0]);
+                  }
+                },
+                disabled:
+                  activeGenerationUris.length === 0 ||
+                  isPending ||
+                  activeMutation.isPending,
+              },
+              {
+                type: "button",
+                label: "Save",
+                variant: "prominent",
+                tintColor: "yellow",
+                labelStyle: {
+                  fontWeight: "bold",
+                },
+                onPress: async () => {
+                  // Save the first image in the active group
+                  if (activeGenerationUris.length > 0) {
+                    await handleSave(activeGenerationUris[0]);
+                  }
+                },
+                disabled:
+                  activeGenerationUris.length === 0 ||
+                  isPending ||
+                  activeMutation.isPending,
+              },
+            ];
+          },
         }}
       />
       <GestureDetector gesture={composedGesture}>

@@ -5,7 +5,6 @@ import { createJsonMutation } from "./mutations";
 export type TextToImageInput = {
   prompt: string;
   improvePrompt: boolean;
-  blackAndWhiteMode?: boolean;
   revenuecatUserId?: string;
 };
 export type TextToImageResponse = { imageData: string };
@@ -16,10 +15,9 @@ export const textToImage = createJsonMutation<
 >(
   "/api/nano/text-to-image",
   "POST",
-  ({ prompt, improvePrompt, blackAndWhiteMode, revenuecatUserId }) => ({
+  ({ prompt, improvePrompt, revenuecatUserId }) => ({
     prompt,
     improvePrompt,
-    blackAndWhiteMode,
     revenuecatUserId,
   })
 );
@@ -31,7 +29,6 @@ export type TextAndImageToImageInput = {
   prompt: string;
   images_base64: string[];
   improvePrompt?: boolean;
-  blackAndWhiteMode?: boolean;
   revenuecatUserId?: string;
 };
 export type TextAndImageToImageResponse = { imageData: string };
@@ -42,11 +39,10 @@ export const textAndImageToImage = createJsonMutation<
 >(
   "/api/nano/text-and-image-to-image",
   "POST",
-  ({ prompt, images_base64, improvePrompt, blackAndWhiteMode, revenuecatUserId }) => ({
+  ({ prompt, images_base64, improvePrompt, revenuecatUserId }) => ({
     prompt,
     images_base64,
     improvePrompt,
-    blackAndWhiteMode,
     revenuecatUserId,
   })
 );
