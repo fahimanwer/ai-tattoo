@@ -243,7 +243,7 @@ export function PlaygroundScreen() {
                   }
                 },
                 disabled:
-                  activeGenerationUris.length === 0 ||
+                  activeGenerationUris.length !== 1 ||
                   isPending ||
                   activeMutation.isPending,
               },
@@ -262,7 +262,7 @@ export function PlaygroundScreen() {
                   }
                 },
                 disabled:
-                  activeGenerationUris.length === 0 ||
+                  activeGenerationUris.length !== 1 ||
                   isPending ||
                   activeMutation.isPending,
               },
