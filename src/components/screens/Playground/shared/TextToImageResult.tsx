@@ -215,8 +215,8 @@ export function TextToImageResult({
         <AnimatedText
           style={{ flex: 0.3 }}
           text="Describe your tattoo or choose a suggestion below"
-          color={isKeyboardVisible ? Color.pink[400] : Color.zinc[400]}
-          colorDark={isKeyboardVisible ? Color.purple[700] : Color.zinc[700]}
+          color={Color.zinc[400]}
+          colorDark={Color.zinc[700]}
         />
       </Activity>
     </>
