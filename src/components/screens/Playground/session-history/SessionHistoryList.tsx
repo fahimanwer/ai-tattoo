@@ -1,3 +1,4 @@
+import { deleteCachedImage } from "@/lib/image-cache";
 import * as Haptics from "expo-haptics";
 import { FlatList, View } from "react-native";
 import { SessionHistoryItem } from "./SessionHistoryItem";
@@ -6,9 +7,14 @@ export interface SessionHistoryListProps {
   sessionGenerations: string[][];
   activeGenerationIndex: number | undefined;
   setActiveGenerationIndex: (
-    index: number | undefined | ((prev: number | undefined) => number)
+    index:
+      | number
+      | undefined
+      | ((prev: number | undefined) => number | undefined)
   ) => void;
-  setSessionGenerations: (generations: string[][]) => void;
+  setSessionGenerations: (
+    generations: string[][] | ((prev: string[][]) => string[][])
+  ) => void;
   handleSave: (uri: string) => Promise<void>;
   handleShare: (uri: string) => Promise<void>;
 }
@@ -32,6 +38,7 @@ export function SessionHistoryList({
         renderItem={({ item: imageGroup, index }) => (
           <SessionHistoryItem
             uri={imageGroup[0]} // Show first image of the group
+            secondUri={imageGroup[1]} // Show second image if exists
             imageCount={imageGroup.length}
             onSave={() => handleSave(imageGroup[0])}
             onShare={() => handleShare(imageGroup[0])}
@@ -39,20 +46,34 @@ export function SessionHistoryList({
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               setActiveGenerationIndex(() => index);
             }}
-            onDelete={() => {
-              const newGenerations = sessionGenerations.filter(
-                (_, i) => i !== index
-              );
-              setSessionGenerations(newGenerations);
-              // Update active index if needed
-              if (activeGenerationIndex === index) {
-                setActiveGenerationIndex(undefined);
-              } else if (
-                activeGenerationIndex !== undefined &&
-                activeGenerationIndex > index
-              ) {
-                setActiveGenerationIndex(activeGenerationIndex - 1);
+            onDelete={async () => {
+              // Delete all cached images in this group from the file system
+              for (const uri of imageGroup) {
+                await deleteCachedImage(uri);
               }
+
+              // Remove the group from the session array using functional update
+              // to ensure we're working with the latest state
+              // Use imageGroup reference to find the correct item to delete
+              setSessionGenerations((prev) =>
+                prev.filter((group) => group !== imageGroup)
+              );
+
+              // Update active index if needed
+              setActiveGenerationIndex((prevActiveIndex) => {
+                if (prevActiveIndex === undefined) return undefined;
+
+                // Find the current index of the item we're deleting
+                const deletedIndex = sessionGenerations.indexOf(imageGroup);
+
+                if (prevActiveIndex === deletedIndex) {
+                  return undefined;
+                } else if (prevActiveIndex > deletedIndex) {
+                  return prevActiveIndex - 1;
+                }
+
+                return prevActiveIndex;
+              });
             }}
             onSelect={() => setActiveGenerationIndex(index)}
             isActive={activeGenerationIndex === index}
