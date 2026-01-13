@@ -1,5 +1,5 @@
 import { BLURHASH } from "@/lib/image-cache";
-import { Button } from "@/src/components/ui/Button";
+import { OnboardingButton } from "@/src/components/onboarding/OnboardingButton";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import {
@@ -7,6 +7,7 @@ import {
   PlaygroundContext,
 } from "@/src/context/PlaygroundContext";
 import { useSubscription } from "@/src/hooks/useSubscription";
+import { spaceScale } from "@/src/theme/theme";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -79,8 +80,9 @@ export function TextToImageResult({
         <Animated.View
           style={{
             flex: 1,
-            paddingHorizontal: 16,
-            gap: 12,
+            paddingTop: spaceScale(8),
+            paddingHorizontal: spaceScale(16),
+            gap: spaceScale(12),
           }}
           entering={FadeIn.duration(500)}
           exiting={FadeOut.duration(500)}
@@ -88,9 +90,7 @@ export function TextToImageResult({
           <View
             style={{
               flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 8,
-              justifyContent: "center",
+              justifyContent: "space-between",
             }}
           >
             {lastGenerationUris.map((uri, index) => (
@@ -125,40 +125,28 @@ export function TextToImageResult({
           <Activity
             mode={lastGenerationUris.length === 2 ? "visible" : "hidden"}
           >
-            <Button
-              title="Apply Tattoo"
-              color="yellow"
-              variant="solid"
-              radius="full"
+            <OnboardingButton
+              title="Preview Tattoo on Body"
               onPress={handleTattooGeneration}
-              haptic
-              style={{ zIndex: 100 }}
+              // controlSizeProp=""
+              fullWidth={false}
+              isLastStep={true}
             />
-            <Text
-              type="xs"
-              weight="medium"
-              style={{ color: Color.zinc[400], textAlign: "center" }}
-            >
-              Select one tattoo image and one body part photo.
-            </Text>
           </Activity>
 
-          <Activity mode={lastGenerationUris.length > 0 ? "visible" : "hidden"}>
+          <Activity
+            mode={
+              lastGenerationUris.length > 0 && lastGenerationUris.length < 2
+                ? "visible"
+                : "hidden"
+            }
+          >
             <Text
               type="xs"
               weight="medium"
               style={{ color: Color.zinc[400], textAlign: "center" }}
             >
-              {lastGenerationUris.length === 1
-                ? "1 image selected - add one more to combine"
-                : `${lastGenerationUris.length} images selected (max)`}
-            </Text>
-            <Text
-              type="xs"
-              weight="medium"
-              style={{ color: Color.zinc[400], textAlign: "center" }}
-            >
-              Only currently selected images are sent to the model.
+              1 image selected - add one more to combine
             </Text>
           </Activity>
         </Animated.View>

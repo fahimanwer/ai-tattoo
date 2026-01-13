@@ -6,6 +6,8 @@ interface OnboardingButtonProps {
   loading?: boolean;
   disabled?: boolean;
   isLastStep?: boolean;
+  controlSizeProp?: "small" | "regular" | "mini" | "large" | "extraLarge";
+  fullWidth?: boolean;
 }
 
 export function OnboardingButton({
@@ -23,7 +25,6 @@ export function OnboardingButton({
       disabled={disabled}
       variant="solid"
       color={isLastStep ? "yellow" : "white"}
-      size="lg"
       radius="lg"
       haptic
       hapticStyle="light"

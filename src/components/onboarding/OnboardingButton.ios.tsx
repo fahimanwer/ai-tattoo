@@ -18,6 +18,8 @@ interface OnboardingButtonProps {
   loading?: boolean;
   disabled?: boolean;
   isLastStep?: boolean;
+  controlSizeProp?: "small" | "regular" | "mini" | "large" | "extraLarge";
+  fullWidth?: boolean;
 }
 
 export function OnboardingButton({
@@ -26,6 +28,8 @@ export function OnboardingButton({
   loading = false,
   disabled: isDisabled = false,
   isLastStep = false,
+  controlSizeProp = "large",
+  fullWidth = true,
 }: OnboardingButtonProps) {
   const { width } = Dimensions.get("window");
   const buttonDisabled = loading || isDisabled;
@@ -43,7 +47,7 @@ export function OnboardingButton({
             isLiquidGlassAvailable() ? "glassProminent" : "borderedProminent"
           ),
           tint(isLastStep ? "yellow" : "white"),
-          controlSize("large"),
+          controlSize(controlSizeProp),
           disabled(buttonDisabled),
         ]}
         onPress={() => {
@@ -55,7 +59,7 @@ export function OnboardingButton({
         <Label
           title={loading ? "" : title}
           modifiers={[
-            frame({ width: width - 64 }),
+            frame({ width: fullWidth ? width - 64 : undefined }),
             foregroundStyle("black"),
             font({ weight: "bold" }),
           ]}
