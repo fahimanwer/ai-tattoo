@@ -13,7 +13,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { PressableScale } from "pressto";
 import { Activity, use, useEffect, useState } from "react";
-import { Keyboard, View } from "react-native";
+import { View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AnimatedText } from "./AnimatedText";
@@ -33,25 +33,11 @@ export function TextToImageResult({
     use(PlaygroundContext);
   // Use RevenueCat as source of truth for subscription status
   const { hasActiveSubscription } = useSubscription();
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const isFreeTier = !hasActiveSubscription;
 
   function simulateTattoMachineVibrations() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
   }
-
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-      setIsKeyboardVisible(true);
-    });
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-      setIsKeyboardVisible(false);
-    });
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, [setIsKeyboardVisible]);
 
   // Vibrate periodically while generation is pending
   useEffect(() => {
