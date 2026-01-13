@@ -284,6 +284,7 @@ export function PlaygroundScreen() {
 
           {/* Text to image result */}
           <TextToImageResult
+            key={activeGenerationUris.join(",")} // helps re-render when the active generation changes this is good for the context menus otherwise they won't update
             mutation={activeMutation}
             lastGenerationUris={activeGenerationUris}
           />
