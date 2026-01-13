@@ -170,9 +170,8 @@ export function Profile() {
   const handleShareApp = async () => {
     try {
       await Share.share({
-        message:
-          "Check out Inkigo - the amazing app for creating custom tattoo designs with AI! Download it now on the App Store.",
-        url: "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193",
+        message: "Check out Inkigo AI",
+        url: "https://cwb.sh/inkigo-ios?r=app",
       });
     } catch (error) {
       console.error("Error sharing:", error);

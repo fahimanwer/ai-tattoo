@@ -325,11 +325,9 @@ export function PlaygroundProvider({
     try {
       // Convert file URI to base64 for sharing
       const base64Image = await getCachedImageAsBase64(fileUri);
-      const appStoreUrl =
-        "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193";
 
       const shareResult = await Share.open({
-        message: `I just got tattooed! Check out this photo \n🎨 Try it yourself: ${appStoreUrl}`,
+        message: "https://cwb.sh/inkigo-ios?r=app",
         url: base64Image,
       });
 

@@ -67,12 +67,6 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
     if (!asset || !Share) return;
 
     try {
-      const appStoreUrl =
-        "https://apps.apple.com/us/app/ai-tattoo-try-on/id6751748193";
-      const shareMessage =
-        "I just got tattooed! Check out this photo \n🎨 Try it yourself: " +
-        appStoreUrl;
-
       // Get asset info to get the URI
       const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
       const fileUri = assetInfo.localUri || assetInfo.uri;
@@ -82,9 +76,8 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
         return;
       }
 
-      // Share using react-native-share with the file URI
       await Share.open({
-        message: shareMessage,
+        message: "https://cwb.sh/inkigo-ios?r=app",
         url: fileUri,
       });
 
