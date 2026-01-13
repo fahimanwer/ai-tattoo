@@ -287,7 +287,7 @@ export function InputControls({
                   <Image
                     systemName={"arrow.up"}
                     size={16}
-                    color={prompt.length > 0 ? "black" : "gray"}
+                    color={prompt.length > 0 ? "black" : undefined}
                     modifiers={[padding({ vertical: 6, horizontal: 2 })]}
                   />
                 </SwiftUIButton>
