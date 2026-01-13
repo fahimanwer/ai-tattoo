@@ -1,6 +1,5 @@
 import { BLURHASH } from "@/lib/image-cache";
 import { Button } from "@/src/components/ui/Button";
-import { Icon } from "@/src/components/ui/Icon";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import {
@@ -11,13 +10,12 @@ import { useSubscription } from "@/src/hooks/useSubscription";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { PressableScale } from "pressto";
 import { Activity, use, useEffect, useState } from "react";
 import { View } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AnimatedText } from "./AnimatedText";
 import { getPlaygroundErrorType, PlaygroundError } from "./PlaygroundError";
+import { ResultImage } from "./ResultImage";
 
 interface TextToImageResultProps {
   mutation: ImageGenerationMutation;
@@ -101,9 +99,11 @@ export function TextToImageResult({
                 style={{
                   position: "relative",
                   width: lastGenerationUris.length === 1 ? "100%" : "48%",
+                  height: lastGenerationUris.length === 1 ? 400 : 200,
                 }}
               >
-                <PressableScale
+                <ResultImage
+                  uri={uri}
                   onPress={() => {
                     blurInput();
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -112,46 +112,13 @@ export function TextToImageResult({
                       params: { imageUri: uri },
                     });
                   }}
-                  animationType="timing"
-                >
-                  <Image
-                    source={{ uri }}
-                    placeholder={{ blurhash: BLURHASH }}
-                    cachePolicy="memory-disk"
-                    style={{
-                      width: "100%",
-                      height: lastGenerationUris.length === 1 ? 400 : 200,
-                      borderRadius: 16,
-                      borderWidth: 1,
-                      borderColor: Color.gray[500] + "30",
-                    }}
-                    contentFit="cover"
-                    contentPosition="center"
-                    transition={350}
-                  />
-                </PressableScale>
-                <Pressable
-                  onPress={() => {
+                  isSingleImage={lastGenerationUris.length === 1}
+                  onRemove={() => {
                     blurInput();
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
                     removeImageFromActiveGroup(uri);
                   }}
-                  hitSlop={8}
-                  style={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    width: 24,
-                    height: 24,
-                    borderRadius: 12,
-                    backgroundColor: "black",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    zIndex: 10,
-                  }}
-                >
-                  <Icon symbol="xmark" size="xs" color="white" />
-                </Pressable>
+                />
               </View>
             ))}
           </View>
