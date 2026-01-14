@@ -170,7 +170,7 @@ export function Profile() {
   const handleShareApp = async () => {
     try {
       await Share.share({
-        message: "Check out Inkigo AI",
+        message: "Check out Inkigo AI \n",
         url: "https://cwb.sh/inkigo-ios?r=app",
       });
     } catch (error) {

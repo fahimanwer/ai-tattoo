@@ -323,12 +323,9 @@ export function PlaygroundProvider({
     }
 
     try {
-      // Convert file URI to base64 for sharing
-      const base64Image = await getCachedImageAsBase64(fileUri);
-
       const shareResult = await Share.open({
+        url: fileUri,
         message: "https://cwb.sh/inkigo-ios?r=app",
-        url: base64Image,
       });
 
       if (shareResult.dismissedAction) {
@@ -340,6 +337,12 @@ export function PlaygroundProvider({
       });
     } catch (error) {
       console.error("Error sharing:", error);
+      // User cancelled or error occurred
+      if ((error as any)?.message !== "User did not share") {
+        toast.error("Failed to share image", {
+          dismissible: true,
+        });
+      }
     }
   }
 
