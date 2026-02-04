@@ -16,8 +16,8 @@ import {
   Label,
   LabeledContent,
   Section,
-  Switch,
   Text,
+  Toggle,
   VStack,
 } from "@expo/ui/swift-ui";
 import {
@@ -320,7 +320,13 @@ export function Profile() {
             </LabeledContent>
             <Activity mode={memberSince ? "visible" : "hidden"}>
               <LabeledContent label="Member Since">
-                <Text color={Color.zinc[400]}>{memberSince ?? ""}</Text>
+                <Text
+                  modifiers={[
+                    foregroundStyle({ type: "color", color: Color.zinc[400] }),
+                  ]}
+                >
+                  {memberSince ?? ""}
+                </Text>
               </LabeledContent>
             </Activity>
           </Section>
@@ -344,7 +350,9 @@ export function Profile() {
             }
             footer={
               <Activity mode={remaining === 0 ? "visible" : "hidden"}>
-                <Text color="orange">
+                <Text
+                  modifiers={[foregroundStyle({ type: "color", color: "orange" })]}
+                >
                   You&apos;ve reached your AI tattoo generation limit for this
                   plan. Upgrade to continue creating tattoos or contact us.
                 </Text>
@@ -355,8 +363,10 @@ export function Profile() {
               <HStack spacing={6}>
                 <Label systemImage={planBadge.icon} />
                 <Text
-                  color={planBadge.color}
-                  modifiers={[font({ weight: "bold" })]}
+                  modifiers={[
+                    foregroundStyle({ type: "color", color: planBadge.color }),
+                    font({ weight: "bold" }),
+                  ]}
                 >
                   {planBadge.name}
                 </Text>
@@ -372,12 +382,17 @@ export function Profile() {
             />
             <DisclosureGroup
               isExpanded={isPlanDetailsExpanded}
-              onStateChange={setIsPlanDetailsExpanded}
+              onIsExpandedChange={setIsPlanDetailsExpanded}
               label="Plan Details"
               modifiers={[tint("white")]}
             >
               <LabeledContent label="Plan">
-                <Text modifiers={[font({ weight: "bold" })]} color={planColor}>
+                <Text
+                  modifiers={[
+                    font({ weight: "bold" }),
+                    foregroundStyle({ type: "color", color: planColor }),
+                  ]}
+                >
                   {hasActiveSubscription && lastSubscription
                     ? lastSubscription.productName || "Unknown"
                     : "Free"}
@@ -391,7 +406,15 @@ export function Profile() {
                 }
               >
                 <LabeledContent label="Status">
-                  <Text weight="bold" color={getStatusDisplay().color}>
+                  <Text
+                    modifiers={[
+                      font({ weight: "bold" }),
+                      foregroundStyle({
+                        type: "color",
+                        color: getStatusDisplay().color,
+                      }),
+                    ]}
+                  >
                     {lastSubscription?.unsubscribeDetectedAt
                       ? "Cancelled (Active Until Expiration)"
                       : getStatusDisplay().text}
@@ -415,11 +438,13 @@ export function Profile() {
                   }
                 >
                   <Text
-                    weight={
-                      lastSubscription?.unsubscribeDetectedAt
-                        ? "bold"
-                        : "regular"
-                    }
+                    modifiers={[
+                      font({
+                        weight: lastSubscription?.unsubscribeDetectedAt
+                          ? "bold"
+                          : "regular",
+                      }),
+                    ]}
                   >
                     {lastSubscription?.expiresDate
                       ? new Date(
@@ -441,12 +466,16 @@ export function Profile() {
               >
                 <LabeledContent label="Days Remaining">
                   <Text
-                    weight="bold"
-                    color={
-                      (lastSubscription?.daysRemaining ?? 0) <= 3
-                        ? "yellow"
-                        : Color.green[500]
-                    }
+                    modifiers={[
+                      font({ weight: "bold" }),
+                      foregroundStyle({
+                        type: "color",
+                        color:
+                          (lastSubscription?.daysRemaining ?? 0) <= 3
+                            ? "yellow"
+                            : Color.green[500],
+                      }),
+                    ]}
                   >
                     {`${lastSubscription?.daysRemaining ?? 0} days`}
                   </Text>
@@ -461,11 +490,14 @@ export function Profile() {
               >
                 <LabeledContent label="Auto-Renew">
                   <Text
-                    color={
-                      lastSubscription?.willRenew
-                        ? Color.green[500]
-                        : Color.red[500]
-                    }
+                    modifiers={[
+                      foregroundStyle({
+                        type: "color",
+                        color: lastSubscription?.willRenew
+                          ? Color.green[500]
+                          : Color.red[500],
+                      }),
+                    ]}
                   >
                     {lastSubscription?.willRenew ? "On" : "Off"}
                   </Text>
@@ -480,7 +512,15 @@ export function Profile() {
                 }
               >
                 <LabeledContent label="Cancelled At">
-                  <Text weight="bold" color={Color.yellow[500]}>
+                  <Text
+                    modifiers={[
+                      font({ weight: "bold" }),
+                      foregroundStyle({
+                        type: "color",
+                        color: Color.yellow[500],
+                      }),
+                    ]}
+                  >
                     {lastSubscription?.unsubscribeDetectedAt
                       ? new Date(
                           lastSubscription.unsubscribeDetectedAt
@@ -540,7 +580,11 @@ export function Profile() {
           <Section
             title="💔 We Miss You!"
             footer={
-              <Text color={Color.zinc[400]}>
+              <Text
+                modifiers={[
+                  foregroundStyle({ type: "color", color: Color.zinc[400] }),
+                ]}
+              >
                 {
                   "Ready to create more amazing tattoos? Come back and let's design something incredible together."
                 }
@@ -548,12 +592,25 @@ export function Profile() {
             }
           >
             <LabeledContent label="Previous Plan">
-              <Text weight="bold" color={planColor}>
+              <Text
+                modifiers={[
+                  font({ weight: "bold" }),
+                  foregroundStyle({ type: "color", color: planColor }),
+                ]}
+              >
                 {lastSubscription?.productName || "Unknown"}
               </Text>
             </LabeledContent>
             <LabeledContent label="Status">
-              <Text weight="bold" color={getStatusDisplay().color}>
+              <Text
+                modifiers={[
+                  font({ weight: "bold" }),
+                  foregroundStyle({
+                    type: "color",
+                    color: getStatusDisplay().color,
+                  }),
+                ]}
+              >
                 {getStatusDisplay().text}
               </Text>
             </LabeledContent>
@@ -587,7 +644,11 @@ export function Profile() {
         <Section
           footer={
             isSecretExpanded ? (
-              <Text color={Color.zinc[400]}>
+              <Text
+                modifiers={[
+                  foregroundStyle({ type: "color", color: Color.zinc[400] }),
+                ]}
+              >
                 Your feedback helps us improve the app for everyone.
               </Text>
             ) : null
@@ -595,16 +656,24 @@ export function Profile() {
         >
           <DisclosureGroup
             isExpanded={isSecretExpanded}
-            onStateChange={setIsSecretExpanded}
+            onIsExpandedChange={setIsSecretExpanded}
             label="🎁    Enjoying the app?"
             modifiers={[tint("white")]}
           >
             <VStack spacing={16} alignment="leading">
-              <Text color={Color.zinc[300]}>
+              <Text
+                modifiers={[
+                  foregroundStyle({ type: "color", color: Color.zinc[300] }),
+                ]}
+              >
                 {"We'd love to hear from you!"}
               </Text>
 
-              <Text color={Color.zinc[400]}>
+              <Text
+                modifiers={[
+                  foregroundStyle({ type: "color", color: Color.zinc[400] }),
+                ]}
+              >
                 {
                   "If you're enjoying Inkigo, a review on the App Store helps other tattoo lovers discover us. You can also reach out anytime with feedback or feature ideas."
                 }
@@ -637,12 +706,16 @@ export function Profile() {
         <Section>
           <DisclosureGroup
             isExpanded={isArtistExpanded}
-            onStateChange={setIsArtistExpanded}
+            onIsExpandedChange={setIsArtistExpanded}
             label="🎨    Are you an artist?"
             modifiers={[tint("white")]}
           >
             <VStack spacing={16} alignment="leading">
-              <Text color={Color.zinc[300]}>
+              <Text
+                modifiers={[
+                  foregroundStyle({ type: "color", color: Color.zinc[300] }),
+                ]}
+              >
                 {
                   "Interested in collaborating? Have suggestions or complaints? We'd love to hear from you!"
                 }
@@ -704,26 +777,29 @@ export function Profile() {
         <Section
           title="Settings"
           footer={
-            <Text color={Color.zinc[500]}>
+            <Text
+              modifiers={[
+                foregroundStyle({ type: "color", color: Color.zinc[500] }),
+              ]}
+            >
               {`Version ${Application.nativeApplicationVersion}`}
             </Text>
           }
         >
           <LabeledContent label="Show Onboarding">
-            <Switch
-              value={!settings.isOnboarded}
-              onValueChange={() =>
+            <Toggle
+              isOn={!settings.isOnboarded}
+              onIsOnChange={() => {
                 updateSettings({
                   isOnboarded: !(settings.isOnboarded ?? true),
-                })
-              }
+                });
+              }}
             />
           </LabeledContent>
           <LabeledContent label="Prompt Enhancement">
-            <Switch
-              key={settings.improvePrompt ? "on" : "off"}
-              value={settings.improvePrompt}
-              onValueChange={() => {
+            <Toggle
+              isOn={settings.improvePrompt}
+              onIsOnChange={() => {
                 const newValue = !settings.improvePrompt;
                 updateSettings({ improvePrompt: newValue });
 
