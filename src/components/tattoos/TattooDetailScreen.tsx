@@ -1,6 +1,5 @@
 import { ALBUM_NAME } from "@/lib/save-to-library";
 import Share from "@/patches/rn-share-re-export";
-import { GlassView } from "expo-glass-effect";
 import * as MediaLibrary from "expo-media-library";
 import { router, Stack } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -8,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  Pressable,
   StyleSheet,
   View,
 } from "react-native";
@@ -26,6 +26,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
   const [asset, setAsset] = useState<MediaLibrary.Asset | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showTabBarView, setShowTabBarView] = useState(false);
 
   const loadAsset = useCallback(async () => {
     try {
@@ -160,57 +161,49 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          unstable_headerLeftItems: () => [
-            {
-              type: "button",
-              label: "Close",
-              icon: {
-                name: "xmark",
-                type: "sfSymbol",
-              },
-              onPress: () => router.back(),
-              selected: false,
-            },
-          ],
-          unstable_headerRightItems: () => [
-            {
-              type: "button",
-              label: "Share",
-              icon: {
-                name: "square.and.arrow.up",
-                type: "sfSymbol",
-              },
-              onPress: handleSharePress,
-              selected: false,
-            },
-            {
-              type: "button",
-              label: "Delete",
-              icon: {
-                name: "trash.fill",
-                type: "sfSymbol",
-              },
-              onPress: handleDeletePress,
-              selected: false,
-            },
-          ],
-        }}
-      />
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button onPress={() => router.back()} icon={"xmark"} />
+      </Stack.Toolbar>
+
+      <Stack.Toolbar placement="bottom">
+        <Stack.Toolbar.Button
+          onPress={handleSharePress}
+          icon={"square.and.arrow.up"}
+        />
+        <Stack.Toolbar.Button
+          onPress={() => setShowTabBarView(!showTabBarView)}
+          icon={"info"}
+          hidden={showTabBarView}
+        />
+
+        <Stack.Toolbar.Spacer />
+
+        <Stack.Toolbar.View hidden={!showTabBarView}>
+          <Pressable
+            onPress={() => setShowTabBarView(!showTabBarView)}
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              width: 200,
+              height: 40,
+            }}
+          >
+            <Text type="sm" style={{}}>
+              {asset.width} x {asset.height} -{" "}
+              {new Date(asset.creationTime).toLocaleDateString()}
+            </Text>
+          </Pressable>
+        </Stack.Toolbar.View>
+
+        <Stack.Toolbar.Spacer />
+
+        <Stack.Toolbar.Button onPress={handleDeletePress} icon={"trash"} />
+      </Stack.Toolbar>
+
       <View style={styles.container}>
-        {/* Interactive Image */}
         <View style={styles.imageContainer}>
           <InteractiveImage uri={asset.uri} />
         </View>
-
-        {/* Info */}
-        <GlassView style={styles.infoContainer} glassEffectStyle="clear">
-          <Text type="sm" style={styles.infoSubtitle}>
-            {asset.width} × {asset.height} •{" "}
-            {new Date(asset.creationTime).toLocaleDateString()}
-          </Text>
-        </GlassView>
       </View>
     </>
   );
