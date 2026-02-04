@@ -66,22 +66,16 @@ export default function HomeScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          unstable_headerRightItems: (props) => [
-            {
-              type: "button",
-              label,
-              variant: "prominent",
-              tintColor: "yellow",
-              labelStyle: {
-                fontWeight: "bold",
-              },
-              onPress: action,
-            },
-          ],
-        }}
-      />
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          tintColor="yellow"
+          variant="prominent"
+          style={{ fontWeight: "bold" }}
+          onPress={action}
+        >
+          {label}
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
       <Home />
     </>
   );
