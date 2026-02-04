@@ -25,17 +25,17 @@ export function CelebrityTattoos() {
             imageStyle={{
               width: 160,
             }}
+            href={{
+              pathname: "/(tabs)/(home)/about/style",
+              params: {
+                style: category.id,
+              },
+            }}
             onPress={() => {
               customEvent("category_selected", {
                 categoryId: category.id,
                 categoryName: category.title,
                 section: "more_styles",
-              });
-              router.push({
-                pathname: "/(tabs)/(home)/about/style",
-                params: {
-                  style: category.id,
-                },
               });
             }}
           />

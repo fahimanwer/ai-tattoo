@@ -140,6 +140,12 @@ export default function AboutStyle() {
                     image: image,
                   };
 
+                  const imageUrl =
+                    typeof galleryItem.image === "object" &&
+                    "uri" in galleryItem.image
+                      ? galleryItem.image.uri
+                      : galleryItem.image;
+
                   return (
                     <VerticalCard
                       key={index}
@@ -148,24 +154,17 @@ export default function AboutStyle() {
                         width: 160,
                       }}
                       showOverlay={false}
+                      href={{
+                        pathname: "/(tabs)/(home)/about/image-preview",
+                        params: {
+                          imageUrl: imageUrl as string,
+                          styleId: currentStyle.id.toString(),
+                        },
+                      }}
                       onPress={() => {
                         customEvent("gallery_image_viewed", {
                           styleId: currentStyle.id,
                           imageIndex: index,
-                        });
-
-                        const imageUrl =
-                          typeof galleryItem.image === "object" &&
-                          "uri" in galleryItem.image
-                            ? galleryItem.image.uri
-                            : galleryItem.image;
-
-                        router.push({
-                          pathname: "/(tabs)/(home)/about/image-preview",
-                          params: {
-                            imageUrl: imageUrl as string,
-                            styleId: currentStyle.id.toString(),
-                          },
                         });
                       }}
                     />

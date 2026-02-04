@@ -25,17 +25,17 @@ export function Moods() {
             imageStyle={{
               width: 160,
             }}
+            href={{
+              pathname: "/(tabs)/(home)/about/style",
+              params: {
+                style: mood.id,
+              },
+            }}
             onPress={() => {
               customEvent("mood_selected", {
                 moodId: mood.id,
                 moodName: mood.title,
                 section: "moods",
-              });
-              router.push({
-                pathname: "/(tabs)/(home)/about/style",
-                params: {
-                  style: mood.id,
-                },
               });
             }}
           />

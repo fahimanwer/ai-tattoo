@@ -54,18 +54,6 @@ export function BodyPartsInspiration() {
       .filter((data) => data.images.length > 0);
   }, []);
 
-  const handleImagePress = (image: GalleryImage) => {
-    // Navigate to body part detail screen
-    router.push({
-      pathname: "/(tabs)/(home)/about/image-preview",
-      params: {
-        bodyPart: image.bodyPart,
-        imageUrl: image.uri,
-        title: getBodyPartDisplayName(image.bodyPart),
-      },
-    });
-  };
-
   // Convert GalleryImage to FeaturedTattoo format for VerticalCard
   const convertToVerticalCardFormat = (image: GalleryImage): FeaturedTattoo => {
     return {
@@ -104,7 +92,14 @@ export function BodyPartsInspiration() {
             renderItem={({ item: image }) => (
               <VerticalCard
                 style={convertToVerticalCardFormat(image)}
-                onPress={() => handleImagePress(image)}
+                href={{
+                  pathname: "/(tabs)/(home)/about/image-preview",
+                  params: {
+                    bodyPart: image.bodyPart,
+                    imageUrl: image.uri,
+                    title: getBodyPartDisplayName(image.bodyPart),
+                  },
+                }}
                 imageStyle={{
                   width: 160,
                 }}

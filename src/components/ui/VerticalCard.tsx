@@ -2,12 +2,13 @@ import { FeaturedTattoo } from "@/lib/featured-tattoos";
 import { BLURHASH } from "@/lib/image-cache";
 import { Text } from "@/src/components/ui/Text";
 import { Image } from "expo-image";
+import { Link, Href } from "expo-router";
 import * as MediaLibrary from "expo-media-library";
-import { PressableScale } from "pressto";
 import {
   Dimensions,
   ImageSourcePropType,
   ImageStyle,
+  Pressable,
   StyleProp,
   StyleSheet,
   View,
@@ -16,7 +17,8 @@ import {
 interface VerticalCardProps {
   style?: FeaturedTattoo;
   asset?: MediaLibrary.Asset;
-  onPress: (data: FeaturedTattoo | MediaLibrary.Asset) => void;
+  href: Href;
+  onPress?: () => void; // Optional analytics callback
   showOverlay?: boolean; // Controls visibility of title, description, and blur
   subtitle?: string; // Override subtitle from style object
   imageStyle?: StyleProp<ImageStyle>;
@@ -26,6 +28,7 @@ const IMAGE_WIDTH = Dimensions.get("window").width / 2 - 16;
 export function VerticalCard({
   style,
   asset,
+  href,
   onPress,
   showOverlay = true,
   subtitle,
@@ -48,29 +51,34 @@ export function VerticalCard({
   // Use specific blurhash from featured tattoo if available, otherwise use generic
   const blurhash = style?.image?.blurhash || BLURHASH;
 
+  // Flatten styles for Link.AppleZoom compatibility
+  const flattenedImageStyle = StyleSheet.flatten([
+    {
+      width: IMAGE_WIDTH,
+      height: 280,
+      borderRadius: 16,
+    },
+    imageStyle,
+  ]);
+
   return (
-    <>
-      <PressableScale
+    <Link href={href} asChild>
+      <Pressable
         key={asset?.id || style?.id}
-        onPress={() => onPress(data)}
         style={styles.styleContainer}
+        onPress={onPress}
       >
-        <Image
-          cachePolicy="memory-disk"
-          source={imageSource}
-          style={[
-            {
-              width: IMAGE_WIDTH,
-              height: 280,
-              borderRadius: 16,
-            },
-            imageStyle,
-          ]}
-          contentFit="cover"
-          contentPosition="center"
-          placeholder={{ blurhash }}
-          transition={1000}
-        />
+        <Link.AppleZoom>
+          <Image
+            cachePolicy="memory-disk"
+            source={imageSource}
+            style={flattenedImageStyle}
+            contentFit="cover"
+            contentPosition="center"
+            placeholder={{ blurhash }}
+            transition={1000}
+          />
+        </Link.AppleZoom>
         {showOverlay && (
           <View style={styles.blurViewContainer}>
             {subtitle && (
@@ -85,8 +93,8 @@ export function VerticalCard({
             )}
           </View>
         )}
-      </PressableScale>
-    </>
+      </Pressable>
+    </Link>
   );
 }
 

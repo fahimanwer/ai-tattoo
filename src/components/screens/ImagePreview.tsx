@@ -2,7 +2,7 @@ import { cacheImageFromUrl } from "@/lib/image-cache";
 import { InteractiveImage } from "@/src/components/ui/InteractiveImage";
 import { Text } from "@/src/components/ui/Text";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Link, router, Stack, useLocalSearchParams } from "expo-router";
 import { use, useState } from "react";
 import { Alert, Dimensions, StyleSheet, View } from "react-native";
 
@@ -104,9 +104,11 @@ export default function ImagePreview() {
       />
       <View style={styles.container}>
         {/* Interactive Image */}
-        <View style={styles.imageContainer}>
-          <InteractiveImage uri={params.imageUrl} />
-        </View>
+        <Link.AppleZoomTarget>
+          <View style={styles.imageContainer}>
+            <InteractiveImage uri={params.imageUrl} />
+          </View>
+        </Link.AppleZoomTarget>
       </View>
     </>
   );

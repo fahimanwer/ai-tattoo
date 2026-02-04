@@ -69,16 +69,6 @@ export default function BodyPartParallaxView({
     };
   });
 
-  const handleImagePress = (image: GalleryImage) => {
-    // Navigate to tattoo detail or generation screen
-    router.push({
-      pathname: "/(tabs)/(home)/about/style",
-      params: {
-        style: image.styleId,
-      },
-    });
-  };
-
   // Convert GalleryImage to FeaturedTattoo format for VerticalCard
   const convertToVerticalCardFormat = (image: GalleryImage): FeaturedTattoo => {
     return {
@@ -138,8 +128,13 @@ export default function BodyPartParallaxView({
               >
                 <VerticalCard
                   style={convertToVerticalCardFormat(image)}
-                  onPress={() => handleImagePress(image)}
-                  title={image.styleTitle}
+                  href={{
+                    pathname: "/(tabs)/(home)/about/style",
+                    params: {
+                      style: image.styleId,
+                    },
+                  }}
+                  subtitle={image.styleTitle}
                 />
               </View>
             ))}

@@ -24,17 +24,17 @@ export function GetInspiration() {
             imageStyle={{
               width: 160,
             }}
+            href={{
+              pathname: "/(tabs)/(home)/about/style",
+              params: {
+                style: style.id,
+              },
+            }}
             onPress={() => {
               customEvent("style_selected", {
                 styleId: style.id,
                 styleName: style.title,
                 section: "discover_styles",
-              });
-              router.push({
-                pathname: "/(tabs)/(home)/about/style",
-                params: {
-                  style: style.id,
-                },
               });
             }}
           />

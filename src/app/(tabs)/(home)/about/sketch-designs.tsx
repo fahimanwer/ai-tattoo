@@ -84,6 +84,12 @@ export default function SketchDesigns() {
                     image: image,
                   };
 
+                  const imageUrl =
+                    typeof galleryItem.image === "object" &&
+                    "uri" in galleryItem.image
+                      ? galleryItem.image.uri
+                      : galleryItem.image;
+
                   return (
                     <VerticalCard
                       key={index}
@@ -92,24 +98,17 @@ export default function SketchDesigns() {
                         width: 160,
                       }}
                       showOverlay={false}
+                      href={{
+                        pathname: "/(tabs)/(home)/about/image-preview",
+                        params: {
+                          imageUrl: imageUrl as string,
+                          styleId: selectedDesign.id.toString(),
+                        },
+                      }}
                       onPress={() => {
                         customEvent("gallery_image_viewed", {
                           styleId: selectedDesign.id,
                           imageIndex: index,
-                        });
-
-                        const imageUrl =
-                          typeof galleryItem.image === "object" &&
-                          "uri" in galleryItem.image
-                            ? galleryItem.image.uri
-                            : galleryItem.image;
-
-                        router.push({
-                          pathname: "/(tabs)/(home)/about/image-preview",
-                          params: {
-                            imageUrl: imageUrl as string,
-                            styleId: selectedDesign.id.toString(),
-                          },
                         });
                       }}
                     />
