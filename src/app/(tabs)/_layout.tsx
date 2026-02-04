@@ -1,57 +1,6 @@
-import { authClient } from "@/lib/auth-client";
-import { Tabs } from "expo-router";
-import { Platform } from "react-native";
-
-// Conditionally import NativeTabs only on native platforms
-let NativeTabs: any;
-
-if (Platform.OS !== "web") {
-  const nativeTabs = require("expo-router/unstable-native-tabs");
-  NativeTabs = nativeTabs.NativeTabs;
-}
+import { NativeTabs } from "expo-router/unstable-native-tabs";
 
 export default function TabLayout() {
-  const { data: session, isPending, isRefetching } = authClient.useSession();
-  const isAuthenticated =
-    session?.user !== undefined && !isPending && !isRefetching;
-
-  // Use standard Tabs for web
-  if (Platform.OS === "web") {
-    return (
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Tabs.Screen
-          name="home"
-          options={{
-            title: "Home",
-          }}
-        />
-        <Tabs.Screen
-          name="tattoos"
-          options={{
-            title: "My Tattoos",
-          }}
-        />
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: "Profile",
-          }}
-        />
-        <Tabs.Screen
-          name="index"
-          options={{
-            href: null,
-          }}
-        />
-      </Tabs>
-    );
-  }
-
-  // Use NativeTabs for iOS/Android
   return (
     <NativeTabs
       disableTransparentOnScrollEdge={true}
