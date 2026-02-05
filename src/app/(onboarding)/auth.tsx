@@ -91,16 +91,19 @@ export default function OnboardingAuth() {
             </Text>
           </View>
         ) : (
-          <AuthContent
-            title={from === "onboarding" ? "Welcome back!" : "One more step!"}
-            description={
-              from === "onboarding"
-                ? "Please sign in to continue your journey."
-                : "Please sign in to activate your subscription. This helps us track your subscription and provide you with the best experience."
-            }
-            onSuccess={handleSuccess}
-            style={{ marginBottom: bottom }}
-          />
+          <View style={{ flex: 1 }}>
+            <View style={{ flex: 1 }} />
+            <AuthContent
+              title={from === "onboarding" ? "Welcome back!" : "One more step!"}
+              description={
+                from === "onboarding"
+                  ? "Please sign in to continue your journey."
+                  : "Please sign in to activate your subscription. This helps us track your subscription and provide you with the best experience."
+              }
+              onSuccess={handleSuccess}
+              style={{ marginBottom: bottom }}
+            />
+          </View>
         )}
       </View>
     </>

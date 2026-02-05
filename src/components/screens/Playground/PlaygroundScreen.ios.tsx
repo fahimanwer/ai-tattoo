@@ -20,6 +20,7 @@ import {
   controlSize,
   disabled,
   font,
+  foregroundStyle,
   frame,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
@@ -354,8 +355,10 @@ export function PlaygroundScreen() {
                     modifiers={[frame({ height: 44, width: width - 64 })]}
                   >
                     <SwiftUIText
-                      color={"black"}
-                      modifiers={[font({ weight: "semibold", size: 16 })]}
+                      modifiers={[
+                        font({ weight: "semibold", size: 16 }),
+                        foregroundStyle("black"),
+                      ]}
                     >
                       Sign in
                     </SwiftUIText>

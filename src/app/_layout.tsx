@@ -138,7 +138,7 @@ function AppContent() {
         options={{
           presentation: "formSheet",
           sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.45],
+          sheetAllowedDetents: [0.41, 0.61],
           contentStyle: {
             backgroundColor: isLiquidGlassAvailable() ? "transparent" : "black",
           },
@@ -172,30 +172,30 @@ export default function RootLayout() {
           <QueryClientProvider client={queryClient}>
             <RevenueCatProvider>
               <SubscriptionProvider>
-                  <AccentColorProvider>
-                    <KeyboardProvider>
-                      <PressablesConfig
-                        globalHandlers={{
-                          onPress: () => {
-                            Haptics.selectionAsync();
-                          },
+                <AccentColorProvider>
+                  <KeyboardProvider>
+                    <PressablesConfig
+                      globalHandlers={{
+                        onPress: () => {
+                          Haptics.selectionAsync();
+                        },
+                      }}
+                      config={{ minScale: 0.97 }}
+                    >
+                      <PlaygroundProvider>
+                        <AppContent />
+                      </PlaygroundProvider>
+                      <Toaster
+                        style={{
+                          backgroundColor: "black",
+                          borderWidth: 1,
+                          borderColor: "#FFFFFF20",
                         }}
-                        config={{ minScale: 0.97 }}
-                      >
-                        <PlaygroundProvider>
-                          <AppContent />
-                        </PlaygroundProvider>
-                        <Toaster
-                          style={{
-                            backgroundColor: "black",
-                            borderWidth: 1,
-                            borderColor: "#FFFFFF20",
-                          }}
-                        />
-                      </PressablesConfig>
-                    </KeyboardProvider>
-                  </AccentColorProvider>
-                </SubscriptionProvider>
+                      />
+                    </PressablesConfig>
+                  </KeyboardProvider>
+                </AccentColorProvider>
+              </SubscriptionProvider>
             </RevenueCatProvider>
           </QueryClientProvider>
         </AppSettingsProvider>
