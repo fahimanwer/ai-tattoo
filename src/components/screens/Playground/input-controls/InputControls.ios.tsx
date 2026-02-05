@@ -191,7 +191,7 @@ export function InputControls({
         onSelectTryOn={handleTryOnSelect}
       />
       <View style={{ paddingHorizontal: 16 }}>
-        <Host matchContents ignoreSafeAreaKeyboardInsets>
+        <Host matchContents ignoreSafeArea="keyboard">
           <Namespace id={namespaceId}>
             <GlassEffectContainer>
               <HStack spacing={8} alignment="bottom">

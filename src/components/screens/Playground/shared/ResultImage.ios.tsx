@@ -131,11 +131,8 @@ export function ResultImage({
 
   return (
     <View style={styles.container}>
-      <Host ignoreSafeAreaKeyboardInsets matchContents>
-        <ContextMenu
-          activationMethod="longPress"
-          modifiers={[menuActionDismissBehavior("enabled")]}
-        >
+      <Host ignoreSafeArea="all" matchContents>
+        <ContextMenu modifiers={[menuActionDismissBehavior("enabled")]}>
           <ContextMenu.Items>
             <Button
               label="Copy"
@@ -180,7 +177,7 @@ export function ResultImage({
       {onRemove && (
         <Host
           style={styles.closeButtonWrapper}
-          ignoreSafeAreaKeyboardInsets
+          ignoreSafeArea="all"
           matchContents
         >
           <HStack

@@ -74,7 +74,7 @@ export function MinimalTextFieldTest({
         paddingHorizontal: 16,
       }}
     >
-      <Host matchContents ignoreSafeAreaKeyboardInsets>
+      <Host matchContents ignoreSafeArea="keyboard">
         <VStack
           modifiers={[
             glassEffect({
