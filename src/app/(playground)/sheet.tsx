@@ -517,11 +517,7 @@ export default function Sheet() {
                 action: "prompt_history",
                 hasActiveImage,
               });
-              Alert.alert(
-                "Prompt history feature coming soon",
-                "This feature is coming soon. Please check back later.",
-                [{ text: "OK", style: "default", isPreferred: true }]
-              );
+              router.push("/(playground)/prompt-history" as any);
             }}
           />
           <OptionRow
