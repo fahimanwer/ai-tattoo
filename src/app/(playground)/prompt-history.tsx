@@ -8,7 +8,7 @@ import {
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
-import { router, Stack } from "expo-router";
+import { Color as NativeColor, router, Stack } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
 import { use, useCallback, useState } from "react";
@@ -16,9 +16,8 @@ import { Alert, FlatList, StyleSheet, View } from "react-native";
 
 export default function PromptHistory() {
   const { setPrompt, focusInput } = use(PlaygroundContext);
-  const [history, setHistory] = useState<PromptHistoryEntry[]>(
-    getPromptHistory
-  );
+  const [history, setHistory] =
+    useState<PromptHistoryEntry[]>(getPromptHistory);
 
   function handleDismiss() {
     router.back();
@@ -91,33 +90,19 @@ export default function PromptHistory() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: "Prompt History",
-          unstable_headerLeftItems: () => [
-            {
-              type: "button",
-              label: "Close",
-              icon: {
-                name: "xmark",
-                type: "sfSymbol",
-              },
-              onPress: handleDismiss,
-            },
-          ],
-          unstable_headerRightItems: () =>
-            hasHistory
-              ? [
-                  {
-                    type: "button",
-                    label: "Clear All",
-                    tintColor: "red",
-                    onPress: handleClearAll,
-                  },
-                ]
-              : [],
-        }}
-      />
+      <Stack.Screen.Title>Prompt History</Stack.Screen.Title>
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button onPress={handleDismiss} icon={"xmark"} />
+      </Stack.Toolbar>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          tintColor={NativeColor.ios.systemRed}
+          onPress={handleClearAll}
+          hidden={!hasHistory}
+        >
+          Clear All
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
       {hasHistory ? (
         <FlatList
           data={history}

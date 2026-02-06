@@ -250,7 +250,7 @@ export function InputControls({
                     ),
                   ]}
                 >
-                  <HStack alignment="bottom">
+                  <HStack alignment="bottom" spacing={-6}>
                     <TextField
                       ref={textFieldRef}
                       defaultValue={prompt}
@@ -261,7 +261,7 @@ export function InputControls({
                       // NOTE: Don't use autoFocus prop - it causes focus flicker
                       // because the native focus happens during the navigation transition.
                       // Instead, we use useFocusEffect + programmatic focus after transition.
-                      modifiers={[padding({ vertical: 12, horizontal: 16 })]}
+                      modifiers={[padding({ vertical: 12, horizontal: 10 })]}
                       onChangeText={onChangeText}
                       onSubmit={handleSubmit}
                     />
@@ -270,16 +270,14 @@ export function InputControls({
                         textFieldRef.current?.blur();
                         router.push("/(playground)/prompt-history");
                       }}
-                      modifiers={[
-                        buttonStyle("borderless"),
-                        tint("#555555"),
-                      ]}
+                      modifiers={[buttonStyle("borderless"), tint("#555555")]}
                     >
                       <Image
                         systemName="clock.arrow.circlepath"
                         size={14}
                         modifiers={[
                           padding({ vertical: 12, horizontal: 8 }),
+                          tint("white"),
                         ]}
                       />
                     </SwiftUIButton>
