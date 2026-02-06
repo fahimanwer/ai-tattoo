@@ -13,6 +13,7 @@ import {
   TextToImageInput,
   TextToImageResponse,
 } from "@/lib/nano";
+import { addPromptToHistory } from "@/lib/prompt-history";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import Share from "@/patches/rn-share-re-export";
 import {
@@ -266,6 +267,9 @@ export function PlaygroundProvider({
 
     const isTextToImage = !activeImageGroup || activeImageGroup.length === 0;
 
+    if (prompt.trim().length > 0) {
+      addPromptToHistory(prompt);
+    }
     setPrompt("");
     Keyboard.dismiss();
 

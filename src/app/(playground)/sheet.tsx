@@ -12,6 +12,7 @@ import {
   buttonStyle,
   controlSize,
   font,
+  foregroundStyle,
   frame,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
@@ -214,8 +215,10 @@ export default function Sheet() {
                 modifiers={[frame({ height: 44, width: width - 64 })]}
               >
                 <SwiftUIText
-                  color={"black"}
-                  modifiers={[font({ weight: "semibold", size: 16 })]}
+                  modifiers={[
+                    font({ weight: "semibold", size: 16 }),
+                    foregroundStyle("black"),
+                  ]}
                 >
                   Continue
                 </SwiftUIText>
@@ -243,8 +246,10 @@ export default function Sheet() {
                 modifiers={[frame({ height: 44, width: width - 64 })]}
               >
                 <SwiftUIText
-                  color={"black"}
-                  modifiers={[font({ weight: "semibold", size: 16 })]}
+                  modifiers={[
+                    font({ weight: "semibold", size: 16 }),
+                    foregroundStyle("black"),
+                  ]}
                 >
                   Open Settings
                 </SwiftUIText>
@@ -517,11 +522,7 @@ export default function Sheet() {
                 action: "prompt_history",
                 hasActiveImage,
               });
-              Alert.alert(
-                "Prompt history feature coming soon",
-                "This feature is coming soon. Please check back later.",
-                [{ text: "OK", style: "default", isPreferred: true }]
-              );
+              router.push("/(playground)/prompt-history" as any);
             }}
           />
           <OptionRow

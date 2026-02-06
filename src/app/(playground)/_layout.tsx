@@ -53,6 +53,20 @@ export default function PlaygroundLayout() {
           sheetAllowedDetents: [0.7],
         }}
       />
+      <Stack.Screen
+        name="prompt-history"
+        options={{
+          presentation: "formSheet",
+          headerTransparent: isGlassEffectAPIAvailable() ? true : false,
+          contentStyle: {
+            backgroundColor: isGlassEffectAPIAvailable()
+              ? "transparent"
+              : "black",
+          },
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.7],
+        }}
+      />
     </Stack>
   );
 }
