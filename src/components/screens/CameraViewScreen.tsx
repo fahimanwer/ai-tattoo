@@ -179,6 +179,17 @@ export function CameraViewScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
+      {/* Grid toggle button - top left */}
+      {!photoBase64 && (
+        <View style={[styles.gridButtonContainer, { top: top + 16 }]}>
+          <CameraControlButton
+            onPress={() => setShowGrid((prev) => !prev)}
+            icon="grid"
+            color={showGrid ? Color.yellow[500] : "white"}
+          />
+        </View>
+      )}
+
       {/* Only render camera when screen is focused */}
       {photoBase64 && (
         <View style={{ flex: 1 }}>
@@ -259,17 +270,10 @@ export function CameraViewScreen() {
             color={Color.red[500]}
           />
         ) : (
-          <View style={{ flexDirection: "row", gap: 12 }}>
-            <CameraControlButton
-              onPress={() => setShowGrid((prev) => !prev)}
-              icon="grid"
-              color={showGrid ? Color.yellow[500] : "white"}
-            />
-            <CameraControlButton
-              onPress={toggleCameraFacing}
-              icon="arrow.trianglehead.2.clockwise.rotate.90.camera"
-            />
-          </View>
+          <CameraControlButton
+            onPress={toggleCameraFacing}
+            icon="arrow.trianglehead.2.clockwise.rotate.90.camera"
+          />
         )}
       </Animated.View>
 
@@ -342,6 +346,11 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "center",
     marginTop: 8,
+  },
+  gridButtonContainer: {
+    position: "absolute",
+    left: 16,
+    zIndex: 10,
   },
   gridOverlay: {
     ...StyleSheet.absoluteFillObject,
