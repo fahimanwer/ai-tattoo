@@ -1,7 +1,9 @@
 import { authClient } from "@/lib/auth-client";
-import { fetchUserUsage, type UsageResponse } from "@/lib/nano";
+import { api } from "@/lib/nano";
+import type { UsageResponse } from "@/lib/nano";
 import { FREE_TIER_LIMIT, type PlanTier } from "@/src/constants/plan-limits";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "convex/react";
+import { useEffect, useState } from "react";
 import Purchases from "react-native-purchases";
 
 /**
@@ -9,6 +11,7 @@ import Purchases from "react-native-purchases";
  *
  * This consolidated hook provides all usage-related data and utilities.
  * It replaces the previous useUsage and useUsageLimit hooks.
+ * Now uses Convex reactive queries instead of @tanstack/react-query.
  */
 
 export interface UsageLimitResult {
@@ -41,47 +44,39 @@ export interface UsageLimitResult {
 }
 
 /**
- * Query Configuration
- */
-const USAGE_QUERY_CONFIG = {
-  staleTime: 5 * 60 * 1000, // 5 minutes - data doesn't change often
-  gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache
-  retry: (failureCount: number, error: any) => {
-    // Don't retry on 405 Method Not Allowed errors
-    if (error?.status === 405) {
-      console.warn("⚠️ API endpoint not properly deployed - skipping retries");
-      return false;
-    }
-    return failureCount < 1; // Retry twice for other errors
-  },
-  retryDelay: (attemptIndex: number) =>
-    Math.min(1000 * 2 ** attemptIndex, 5000),
-};
-
-/**
  * Main hook for usage limits and subscription data
+ * Uses Convex reactive query for real-time updates.
  */
 export const useUsageLimit = (): UsageLimitResult => {
   const { data: session } = authClient.useSession();
   const isAuthenticated = session?.user !== undefined;
 
-  const { data, isLoading, error, refetch } = useQuery<UsageResponse>({
-    queryKey: ["user", "usage"],
-    enabled: isAuthenticated,
-    queryFn: async () => {
-      // Get RevenueCat user ID for accurate usage lookup
-      // This handles the case where purchases were made before authentication
-      try {
-        const customerInfo = await Purchases.getCustomerInfo();
-        const revenuecatUserId = customerInfo.originalAppUserId;
-        return fetchUserUsage(revenuecatUserId);
-      } catch {
-        // Fallback to fetching without RC ID (backwards compatibility)
-        return fetchUserUsage();
-      }
-    },
-    ...USAGE_QUERY_CONFIG,
-  });
+  // Get RevenueCat user ID for the Convex query
+  const [revenuecatUserId, setRevenuecatUserId] = useState<string | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      Purchases.getCustomerInfo()
+        .then((info) => setRevenuecatUserId(info.originalAppUserId))
+        .catch(() => setRevenuecatUserId(undefined));
+    }
+  }, [isAuthenticated]);
+
+  // Convex reactive query - auto-updates when data changes
+  const data = useQuery(
+    api.usage.getUserUsage,
+    isAuthenticated ? { revenuecatUserId } : "skip"
+  );
+
+  const isLoading = isAuthenticated && data === undefined;
+
+  // Stub refetch - Convex queries are reactive and auto-update
+  const refetch = async () => {
+    // Convex queries are reactive, no manual refetch needed.
+    // This is kept for API compatibility.
+  };
 
   // For unauthenticated users, return free tier defaults immediately
   if (!isAuthenticated) {
@@ -99,7 +94,7 @@ export const useUsageLimit = (): UsageLimitResult => {
       planFeatures: [],
       limitMessage: "Sign in to track your usage",
       usagePercentage: 0,
-      isLoading: false, // ✅ Not loading for unauthenticated users
+      isLoading: false,
       error: null,
       refetch,
       data: undefined,
@@ -123,7 +118,7 @@ export const useUsageLimit = (): UsageLimitResult => {
       limitMessage: "Loading...",
       usagePercentage: 0,
       isLoading: true,
-      error: error as Error | null,
+      error: null,
       refetch,
       data: undefined,
     };

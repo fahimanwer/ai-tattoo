@@ -1,6 +1,7 @@
 import { authClient } from "@/lib/auth-client";
-import { syncSubscription } from "@/lib/nano";
+import { api } from "@/lib/nano";
 import { getLastSubscription } from "@/src/context/SubscriptionContext";
+import { useMutation } from "convex/react";
 import { useEffect, useState } from "react";
 import { SubscriptionTier, useSubscription } from "./useSubscription";
 import { useUsageLimit } from "./useUsageLimit";
@@ -64,6 +65,9 @@ export function useUserData(): UserData {
   const [user, setUser] = useState<any>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
+
+  // Convex mutation for syncing subscription
+  const syncSubscriptionMutation = useMutation(api.subscription.syncSubscription);
 
   // Get usage data from consolidated hook
   const {
@@ -171,7 +175,7 @@ export function useUserData(): UserData {
             (sub: any) => sub.isActive
           ) as any;
 
-          const syncResult = await syncSubscription({
+          const syncResult = await syncSubscriptionMutation({
             revenuecatUserId: restoredInfo.originalAppUserId,
             activeEntitlements,
             hasActiveSubscription,

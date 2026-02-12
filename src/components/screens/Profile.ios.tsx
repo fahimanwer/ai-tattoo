@@ -1,5 +1,5 @@
 import { authClient } from "@/lib/auth-client";
-import { NANOBANANA, NANOBANANA_PRO } from "@/server-utils/constants";
+import { NANOBANANA, NANOBANANA_PRO } from "@/convex/geminiUtils";
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { getLastSubscription } from "@/src/context/SubscriptionContext";

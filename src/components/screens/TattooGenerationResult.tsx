@@ -1,14 +1,13 @@
-import { ApiError } from "@/lib/api-client";
 import { assetToBase64, urlToBase64 } from "@/lib/base64-utils";
 import { BLURHASH } from "@/lib/image-cache";
-import { textAndImageToImage } from "@/lib/nano";
+import { api } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
 import { Button } from "@/src/components/ui/Button";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { useTattooCreation } from "@/src/context/TattooCreationContext";
 import { useSubscription } from "@/src/hooks/useSubscription";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAction } from "convex/react";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -35,96 +34,109 @@ export function TattooGenerationResult() {
   } = useTattooCreation();
 
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { refreshSubscriptionStatus } = useSubscription();
   const [hasBeenSaved, setHasBeenSaved] = useState(false);
 
-  // Mutation for generating tattoo
-  const mutation = useMutation({
-    mutationFn: async () => {
-      let bodyImage: string;
-      let tattooImage: string;
+  // Convex action for generating tattoo
+  const textAndImageToImage = useAction(api.generation.textAndImageToImage);
 
-      // Get body image base64
-      if (isUsingCustomImage) {
-        if (!customUserImage?.base64) {
-          throw new Error("Custom user image not ready");
-        }
-        bodyImage = customUserImage.base64;
-      } else {
-        if (!selectedBodyPartVariant || !selectedBodyPartCategory) {
-          throw new Error("No body part selected");
-        }
-        bodyImage = await urlToBase64(selectedBodyPartVariant);
-      }
+  // Manual state management since useAction doesn't provide isPending/isSuccess/isError
+  const [generationState, setGenerationState] = useState<{
+    status: "idle" | "pending" | "success" | "error";
+    data: { imageData: string } | null;
+    error: Error | null;
+  }>({ status: "idle", data: null, error: null });
 
-      // Get tattoo image base64
-      if (isUsingExistingTattoo) {
-        if (!existingTattooImage?.base64) {
-          throw new Error("Existing tattoo image not ready");
-        }
-        tattooImage = existingTattooImage.base64;
-      } else {
-        if (!selectedTattooImage) {
-          throw new Error("No tattoo image selected");
-        }
-        if (typeof selectedTattooImage === "number") {
-          tattooImage = await assetToBase64(selectedTattooImage);
-        } else if (
-          typeof selectedTattooImage === "object" &&
-          "uri" in selectedTattooImage &&
-          selectedTattooImage.uri
-        ) {
-          tattooImage = await urlToBase64(selectedTattooImage.uri);
+  const mutation = {
+    isPending: generationState.status === "pending",
+    isSuccess: generationState.status === "success",
+    isError: generationState.status === "error",
+    data: generationState.data,
+    error: generationState.error,
+    mutate: async () => {
+      setGenerationState({ status: "pending", data: null, error: null });
+      try {
+        let bodyImage: string;
+        let tattooImage: string;
+
+        // Get body image base64
+        if (isUsingCustomImage) {
+          if (!customUserImage?.base64) {
+            throw new Error("Custom user image not ready");
+          }
+          bodyImage = customUserImage.base64;
         } else {
-          throw new Error("Invalid tattoo image source");
+          if (!selectedBodyPartVariant || !selectedBodyPartCategory) {
+            throw new Error("No body part selected");
+          }
+          bodyImage = await urlToBase64(selectedBodyPartVariant);
         }
-      }
 
-      const colorPrompt =
-        options.colorOption === "blackwhite"
-          ? " The tattoo design should be rendered in black and white ink only, with no color elements in the tattoo itself. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic."
-          : " The tattoo design should maintain its original colors and vibrancy. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic.";
+        // Get tattoo image base64
+        if (isUsingExistingTattoo) {
+          if (!existingTattooImage?.base64) {
+            throw new Error("Existing tattoo image not ready");
+          }
+          tattooImage = existingTattooImage.base64;
+        } else {
+          if (!selectedTattooImage) {
+            throw new Error("No tattoo image selected");
+          }
+          if (typeof selectedTattooImage === "number") {
+            tattooImage = await assetToBase64(selectedTattooImage);
+          } else if (
+            typeof selectedTattooImage === "object" &&
+            "uri" in selectedTattooImage &&
+            selectedTattooImage.uri
+          ) {
+            tattooImage = await urlToBase64(selectedTattooImage.uri);
+          } else {
+            throw new Error("Invalid tattoo image source");
+          }
+        }
 
-      const customInstructionsPrompt = customInstructions?.trim()
-        ? ` Additional instructions: ${customInstructions.trim()}`
-        : "";
+        const colorPrompt =
+          options.colorOption === "blackwhite"
+            ? " The tattoo design should be rendered in black and white ink only, with no color elements in the tattoo itself. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic."
+            : " The tattoo design should maintain its original colors and vibrancy. The skin tone and natural skin coloring from the original body part photo must remain completely unchanged and realistic.";
 
-      const prompt =
-        MIX_TWO_PHOTOS_PROMPT + colorPrompt + customInstructionsPrompt;
+        const customInstructionsPrompt = customInstructions?.trim()
+          ? ` Additional instructions: ${customInstructions.trim()}`
+          : "";
 
-      // Get RevenueCat user ID for accurate usage tracking
-      let revenuecatUserId: string | undefined;
-      try {
-        const customerInfo = await Purchases.getCustomerInfo();
-        revenuecatUserId = customerInfo.originalAppUserId;
-      } catch {
-        // Continue without RC ID (backwards compatibility)
-      }
+        const prompt =
+          MIX_TWO_PHOTOS_PROMPT + colorPrompt + customInstructionsPrompt;
 
-      return textAndImageToImage({
-        prompt,
-        images_base64: [bodyImage, tattooImage],
-        revenuecatUserId,
-      });
-    },
-    onSuccess: async (data) => {
-      queryClient.invalidateQueries({ queryKey: ["user", "usage"] });
+        // Get RevenueCat user ID for accurate usage tracking
+        let revenuecatUserId: string | undefined;
+        try {
+          const customerInfo = await Purchases.getCustomerInfo();
+          revenuecatUserId = customerInfo.originalAppUserId;
+        } catch {
+          // Continue without RC ID (backwards compatibility)
+        }
 
-      try {
-        await refreshSubscriptionStatus();
+        const result = await textAndImageToImage({
+          prompt,
+          images_base64: [bodyImage, tattooImage],
+          revenuecatUserId,
+        });
+
+        setGenerationState({ status: "success", data: result, error: null });
+
+        // Usage data auto-updates via Convex reactive queries
+        try {
+          await refreshSubscriptionStatus();
+        } catch (error) {
+          console.warn("Failed to refresh subscription status:", error);
+        }
       } catch (error) {
-        console.warn("Failed to refresh subscription status:", error);
+        const err = error instanceof Error ? error : new Error(String(error));
+        console.error("AI generation failed:", err);
+        setGenerationState({ status: "error", data: null, error: err });
       }
     },
-    onError: (error) => {
-      if (error instanceof ApiError) {
-        console.error("AI generation failed:", error.message, error.details);
-      } else {
-        console.error("AI generation failed:", error);
-      }
-    },
-  });
+  };
 
   // Start generation when component mounts
   useEffect(() => {

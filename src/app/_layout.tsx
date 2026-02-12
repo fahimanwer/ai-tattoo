@@ -1,4 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ConvexReactClient, ConvexProvider } from "convex/react";
+import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { Stack } from "expo-router";
 import { ActivityIndicator, Platform, View } from "react-native";
 import {
@@ -155,6 +158,11 @@ function AppContent() {
 
 const queryClient = new QueryClient();
 
+const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
+  expectAuth: true,
+  unsavedChangesWarning: false,
+});
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -168,37 +176,41 @@ export default function RootLayout() {
           },
         }}
       >
-        <AppSettingsProvider>
-          <QueryClientProvider client={queryClient}>
-            <RevenueCatProvider>
-              <SubscriptionProvider>
-                <AccentColorProvider>
-                  <KeyboardProvider>
-                    <PressablesConfig
-                      globalHandlers={{
-                        onPress: () => {
-                          Haptics.selectionAsync();
-                        },
-                      }}
-                      config={{ minScale: 0.97 }}
-                    >
-                      <PlaygroundProvider>
-                        <AppContent />
-                      </PlaygroundProvider>
-                      <Toaster
-                        style={{
-                          backgroundColor: "black",
-                          borderWidth: 1,
-                          borderColor: "#FFFFFF20",
+        <ConvexProvider client={convex}>
+          <ConvexBetterAuthProvider client={convex} authClient={authClient}>
+            <AppSettingsProvider>
+            <QueryClientProvider client={queryClient}>
+              <RevenueCatProvider>
+                <SubscriptionProvider>
+                  <AccentColorProvider>
+                    <KeyboardProvider>
+                      <PressablesConfig
+                        globalHandlers={{
+                          onPress: () => {
+                            Haptics.selectionAsync();
+                          },
                         }}
-                      />
-                    </PressablesConfig>
-                  </KeyboardProvider>
-                </AccentColorProvider>
-              </SubscriptionProvider>
-            </RevenueCatProvider>
-          </QueryClientProvider>
-        </AppSettingsProvider>
+                        config={{ minScale: 0.97 }}
+                      >
+                        <PlaygroundProvider>
+                          <AppContent />
+                        </PlaygroundProvider>
+                        <Toaster
+                          style={{
+                            backgroundColor: "black",
+                            borderWidth: 1,
+                            borderColor: "#FFFFFF20",
+                          }}
+                        />
+                      </PressablesConfig>
+                    </KeyboardProvider>
+                  </AccentColorProvider>
+                </SubscriptionProvider>
+              </RevenueCatProvider>
+            </QueryClientProvider>
+            </AppSettingsProvider>
+          </ConvexBetterAuthProvider>
+        </ConvexProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );

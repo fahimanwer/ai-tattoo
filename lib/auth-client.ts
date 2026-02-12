@@ -1,13 +1,13 @@
 import { expoClient } from "@better-auth/expo/client";
 import { createAuthClient } from "better-auth/react";
+import { convexClient } from "@convex-dev/better-auth/client/plugins";
 import * as SecureStore from "expo-secure-store";
 
 const getBaseURL = () => {
-  if (!process.env.EXPO_PUBLIC_BASE_URL) {
-    throw new Error("EXPO_PUBLIC_BASE_URL is not set");
+  if (!process.env.EXPO_PUBLIC_CONVEX_SITE_URL) {
+    throw new Error("EXPO_PUBLIC_CONVEX_SITE_URL is not set");
   }
-
-  return process.env.EXPO_PUBLIC_BASE_URL;
+  return process.env.EXPO_PUBLIC_CONVEX_SITE_URL;
 };
 
 export const authClient = createAuthClient({
@@ -19,20 +19,17 @@ export const authClient = createAuthClient({
       storagePrefix: "aitattoo",
       storage: SecureStore,
     }),
+    convexClient(),
   ],
   fetchOptions: {
     onRequest: (context) => {
-      console.log("🌐 Auth request:", context.url, context.method || "GET");
+      console.log("Auth request:", context.url, context.method || "GET");
     },
     onResponse: (context) => {
-      console.log(
-        "🌐 Auth response:",
-        context.response.status,
-        context.response.statusText
-      );
+      console.log("Auth response:", context.response.status, context.response.statusText);
     },
     onError: (context) => {
-      console.log("🌐 Auth error:", context.error);
+      console.log("Auth error:", context.error);
     },
   },
 });
