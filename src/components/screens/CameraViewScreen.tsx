@@ -33,6 +33,7 @@ export function CameraViewScreen() {
   const { top } = useSafeAreaInsets();
   const ref = useRef<CameraView>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
+  const [showGrid, setShowGrid] = useState(false);
   const isFocused = useIsFocused();
   const [shouldRenderCamera, setShouldRenderCamera] = useState(isFocused);
   const unmountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -178,6 +179,17 @@ export function CameraViewScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
+      {/* Grid toggle button - top left */}
+      {!photoBase64 && (
+        <View style={[styles.gridButtonContainer, { top: top + 16 }]}>
+          <CameraControlButton
+            onPress={() => setShowGrid((prev) => !prev)}
+            icon="grid"
+            color={showGrid ? Color.yellow[500] : "white"}
+          />
+        </View>
+      )}
+
       {/* Only render camera when screen is focused */}
       {photoBase64 && (
         <View style={{ flex: 1 }}>
@@ -191,17 +203,20 @@ export function CameraViewScreen() {
       )}
 
       {shouldRenderCamera && !photoBase64 && (
-        <AnimatedCameraView
-          entering={FadeIn.duration(500)}
-          exiting={FadeOut.duration(500)}
-          mirror={facing === "front"}
-          onCameraReady={() => {
-            setIsCameraReady(true);
-          }}
-          style={{ flex: 1 }}
-          facing={facing}
-          ref={ref}
-        />
+        <View style={{ flex: 1 }}>
+          <AnimatedCameraView
+            entering={FadeIn.duration(500)}
+            exiting={FadeOut.duration(500)}
+            mirror={facing === "front"}
+            onCameraReady={() => {
+              setIsCameraReady(true);
+            }}
+            style={{ flex: 1 }}
+            facing={facing}
+            ref={ref}
+          />
+          {showGrid && <GridOverlay />}
+        </View>
       )}
 
       {!isCameraReady || (!shouldRenderCamera && <View style={{ flex: 1 }} />)}
@@ -268,6 +283,19 @@ export function CameraViewScreen() {
   );
 }
 
+const GridOverlay = () => {
+  return (
+    <View style={styles.gridOverlay}>
+      {/* Vertical lines */}
+      <View style={[styles.gridLine, styles.gridLineVertical, { left: "33.33%" }]} />
+      <View style={[styles.gridLine, styles.gridLineVertical, { left: "66.66%" }]} />
+      {/* Horizontal lines */}
+      <View style={[styles.gridLine, styles.gridLineHorizontal, { top: "33.33%" }]} />
+      <View style={[styles.gridLine, styles.gridLineHorizontal, { top: "66.66%" }]} />
+    </View>
+  );
+};
+
 const CameraControlButton = ({
   onPress,
   icon,
@@ -318,5 +346,26 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "center",
     marginTop: 8,
+  },
+  gridButtonContainer: {
+    position: "absolute",
+    left: 16,
+    zIndex: 10,
+  },
+  gridOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    pointerEvents: "none",
+  },
+  gridLine: {
+    position: "absolute",
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
+  },
+  gridLineVertical: {
+    width: 1,
+    height: "100%",
+  },
+  gridLineHorizontal: {
+    height: 1,
+    width: "100%",
   },
 });
