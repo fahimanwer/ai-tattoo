@@ -16,9 +16,6 @@ export default function HomeLayout() {
         options={{
           title: "Profile",
           headerLargeTitle: true,
-          headerStyle: {
-            backgroundColor: "transparent",
-          },
         }}
       />
     </Stack>
