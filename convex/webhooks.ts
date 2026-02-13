@@ -1,9 +1,15 @@
 import { internalMutation } from "./_generated/server";
+import type { MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import {
+  getLimitForProduct,
+  getMonthlyLimit,
+  entitlementToTier,
+} from "./planLimits";
 
 // Product ID to entitlement mapping
 const PRODUCT_ENTITLEMENT_MAP: Record<string, string> = {
-  // Legacy products (keep for existing subscribers)
+  // Legacy products
   main_ai_tattoo_starter: "Starter",
   main_ai_tattoo_plus: "Plus",
   main_ai_tattoo_pro: "Pro",
@@ -15,65 +21,34 @@ const PRODUCT_ENTITLEMENT_MAP: Record<string, string> = {
   monthly: "Premium",
 };
 
-// Product ID to generation limit mapping
-const PRODUCT_LIMITS: Record<string, number> = {
-  main_ai_tattoo_starter: 75,
-  main_ai_tattoo_plus: 200,
-  main_ai_tattoo_pro: 600,
-  inkigo_weekly: 35,
-  inkigo_monthly: 80,
-  // Test store products
-  weekly: 35,
-  monthly: 80,
-};
-
-// Tier-based monthly limits (fallback)
-const TIER_LIMITS: Record<string, number> = {
-  free: 1,
-  starter: 75,
-  plus: 200,
-  pro: 600,
-  premium: 80,
-};
+// Default period: 30 days in ms
+const DEFAULT_PERIOD_MS = 30 * 24 * 60 * 60 * 1000;
 
 function getEntitlementFromProductId(productId: string): string | null {
   return PRODUCT_ENTITLEMENT_MAP[productId] || null;
 }
 
-function entitlementToTier(entitlement: string): string {
-  const normalized = entitlement.toLowerCase();
-  if (normalized === "premium") return "premium";
-  if (normalized === "starter") return "starter";
-  if (normalized === "plus") return "plus";
-  if (normalized === "pro") return "pro";
-  return "free";
-}
-
 function getLimitForEvent(productId: string, entitlementId: string): number {
-  const productLimit = PRODUCT_LIMITS[productId];
-  if (productLimit !== undefined) {
+  const productLimit = getLimitForProduct(productId);
+  if (productLimit !== null) {
     return productLimit;
   }
   const tier = entitlementToTier(entitlementId);
-  return TIER_LIMITS[tier] ?? 1;
+  return getMonthlyLimit(tier);
 }
 
-// Default period: 30 days in ms
-const DEFAULT_PERIOD_MS = 30 * 24 * 60 * 60 * 1000;
-
 /**
- * Expire all non-free usage records for a given revenuecatUserId
- * that haven't already expired. Sets periodEnd to the given timestamp.
+ * Expire all non-free usage records for a given revenuecatUserId.
  */
 async function expireNonFreeRecords(
-  ctx: any,
+  ctx: { db: MutationCtx["db"] },
   revenuecatUserId: string,
   expireAt: number,
   onlyActive: boolean
 ) {
   const records = await ctx.db
     .query("usage")
-    .withIndex("by_revenuecatUserId", (q: any) =>
+    .withIndex("by_revenuecatUserId", (q) =>
       q.eq("revenuecatUserId", revenuecatUserId)
     )
     .collect();
@@ -89,11 +64,10 @@ async function expireNonFreeRecords(
 }
 
 /**
- * Upsert a usage record. Looks for existing record matching
- * userId + entitlement + periodStart. If found, patches it; otherwise inserts.
+ * Upsert a usage record.
  */
 async function upsertUsageRecord(
-  ctx: any,
+  ctx: { db: MutationCtx["db"] },
   data: {
     userId: string;
     entitlement: string;
@@ -104,13 +78,12 @@ async function upsertUsageRecord(
     revenuecatUserId: string;
   }
 ) {
-  // Look for existing record with same userId, entitlement, and periodStart
   const existing = await ctx.db
     .query("usage")
-    .withIndex("by_userId_entitlement", (q: any) =>
+    .withIndex("by_userId_entitlement", (q) =>
       q.eq("userId", data.userId).eq("entitlement", data.entitlement)
     )
-    .filter((q: any) => q.eq(q.field("periodStart"), data.periodStart))
+    .filter((q) => q.eq(q.field("periodStart"), data.periodStart))
     .first();
 
   if (existing) {
@@ -125,18 +98,31 @@ async function upsertUsageRecord(
   }
 }
 
+// ---- Event types ----
+
+interface PurchaseEvent {
+  app_user_id: string;
+  original_app_user_id: string;
+  entitlement_ids: string[];
+  product_id: string;
+  purchased_at_ms: number;
+  expiration_at_ms?: number;
+}
+
+interface ProductChangeEvent {
+  app_user_id: string;
+  original_app_user_id: string;
+  product_id: string;
+  new_product_id?: string;
+  purchased_at_ms: number;
+  expiration_at_ms?: number;
+}
+
 // ---- Handlers ----
 
 async function handleInitialPurchase(
-  ctx: any,
-  event: {
-    app_user_id: string;
-    original_app_user_id: string;
-    entitlement_ids: string[];
-    product_id: string;
-    purchased_at_ms: number;
-    expiration_at_ms?: number;
-  }
+  ctx: { db: MutationCtx["db"] },
+  event: PurchaseEvent
 ) {
   const userId = event.app_user_id;
   const revenuecatUserId = event.original_app_user_id;
@@ -148,24 +134,14 @@ async function handleInitialPurchase(
   }
 
   const now = Date.now();
-
-  // Expire non-free records that aren't already expired
-  const expireCount = await expireNonFreeRecords(
-    ctx,
-    revenuecatUserId,
-    now,
-    true
-  );
+  const expireCount = await expireNonFreeRecords(ctx, revenuecatUserId, now, true);
   if (expireCount > 0) {
-    console.log(
-      `[RC WEBHOOK] Expired ${expireCount} non-free records for user ${userId}`
-    );
+    console.log(`[RC WEBHOOK] Expired ${expireCount} non-free records for user ${userId}`);
   }
 
   for (const entitlementId of entitlementIds) {
     const periodStart = event.purchased_at_ms || now;
-    const periodEnd =
-      event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
+    const periodEnd = event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
     const limit = getLimitForEvent(event.product_id, entitlementId);
 
     console.log(`[RC WEBHOOK] Creating new usage record:`, {
@@ -187,15 +163,8 @@ async function handleInitialPurchase(
 }
 
 async function handleRenewal(
-  ctx: any,
-  event: {
-    app_user_id: string;
-    original_app_user_id: string;
-    entitlement_ids: string[];
-    product_id: string;
-    purchased_at_ms: number;
-    expiration_at_ms?: number;
-  }
+  ctx: { db: MutationCtx["db"] },
+  event: PurchaseEvent
 ) {
   const userId = event.app_user_id;
   const revenuecatUserId = event.original_app_user_id;
@@ -208,24 +177,20 @@ async function handleRenewal(
 
   const now = Date.now();
   const periodStart = event.purchased_at_ms || now;
-  const periodEnd =
-    event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
+  const periodEnd = event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
 
-  // Check if this webhook is for a period in the past (out-of-order webhook)
   if (periodEnd < now) {
-    console.warn(
-      "[RC WEBHOOK] SKIPPING: Renewal period already expired (out-of-order webhook)"
-    );
+    console.warn("[RC WEBHOOK] SKIPPING: Renewal period already expired");
     return;
   }
 
-  // Check for newer records (out-of-order webhook protection)
+  // Out-of-order webhook protection
   const newerRecord = await ctx.db
     .query("usage")
-    .withIndex("by_revenuecatUserId", (q: any) =>
+    .withIndex("by_revenuecatUserId", (q) =>
       q.eq("revenuecatUserId", revenuecatUserId)
     )
-    .filter((q: any) =>
+    .filter((q) =>
       q.and(
         q.neq(q.field("entitlement"), "free"),
         q.gt(q.field("periodStart"), periodStart)
@@ -234,28 +199,17 @@ async function handleRenewal(
     .first();
 
   if (newerRecord) {
-    console.warn(
-      "[RC WEBHOOK] SKIPPING: Already have a newer period (out-of-order webhook)"
-    );
+    console.warn("[RC WEBHOOK] SKIPPING: Already have a newer period");
     return;
   }
 
-  // Expire non-free records that aren't already expired
-  const expireCount = await expireNonFreeRecords(
-    ctx,
-    revenuecatUserId,
-    now,
-    true
-  );
+  const expireCount = await expireNonFreeRecords(ctx, revenuecatUserId, now, true);
   if (expireCount > 0) {
-    console.log(
-      `[RC WEBHOOK] Expired ${expireCount} non-free records for user ${userId}`
-    );
+    console.log(`[RC WEBHOOK] Expired ${expireCount} non-free records for user ${userId}`);
   }
 
   for (const entitlementId of entitlementIds) {
     const limit = getLimitForEvent(event.product_id, entitlementId);
-
     await upsertUsageRecord(ctx, {
       userId,
       entitlement: entitlementId,
@@ -268,89 +222,36 @@ async function handleRenewal(
   }
 }
 
-async function handleCancellation(event: { app_user_id: string; expiration_at_ms?: number }) {
-  console.log(
-    `[RC WEBHOOK] CANCELLATION: Subscription cancelled for user ${event.app_user_id}. Expiration: ${
-      event.expiration_at_ms
-        ? new Date(event.expiration_at_ms).toISOString()
-        : "immediate"
-    }`
-  );
-  // User retains access until expiration - no DB changes needed
-}
-
-async function handleUncancellation(event: { app_user_id: string }) {
-  console.log(
-    `[RC WEBHOOK] UNCANCELLATION: Subscription uncancelled for user ${event.app_user_id}`
-  );
-}
-
-async function handleBillingIssue(event: {
-  app_user_id: string;
-  grace_period_expiration_at_ms?: number;
-}) {
-  console.log(
-    `[RC WEBHOOK] BILLING_ISSUE: Billing issue for user ${event.app_user_id}. Grace period ends: ${
-      event.grace_period_expiration_at_ms
-        ? new Date(event.grace_period_expiration_at_ms).toISOString()
-        : "N/A"
-    }`
-  );
-}
-
 async function handleProductChange(
-  ctx: any,
-  event: {
-    app_user_id: string;
-    original_app_user_id: string;
-    product_id: string;
-    new_product_id?: string;
-    purchased_at_ms: number;
-    expiration_at_ms?: number;
-  }
+  ctx: { db: MutationCtx["db"] },
+  event: ProductChangeEvent
 ) {
   const userId = event.app_user_id;
   const revenuecatUserId = event.original_app_user_id;
   const newProductId = event.new_product_id;
 
   if (!newProductId) {
-    console.error("[RC WEBHOOK] PRODUCT_CHANGE: Missing new_product_id field");
+    console.error("[RC WEBHOOK] PRODUCT_CHANGE: Missing new_product_id");
     return;
   }
 
   const newEntitlement = getEntitlementFromProductId(newProductId);
   if (!newEntitlement) {
-    console.error(
-      `[RC WEBHOOK] PRODUCT_CHANGE: Unknown product ID: ${newProductId}`
-    );
+    console.error(`[RC WEBHOOK] PRODUCT_CHANGE: Unknown product: ${newProductId}`);
     return;
   }
 
-  console.log(
-    `[RC WEBHOOK] PRODUCT_CHANGE: ${event.product_id} -> ${newProductId} (${newEntitlement}) for user ${userId}`
-  );
+  console.log(`[RC WEBHOOK] PRODUCT_CHANGE: ${event.product_id} -> ${newProductId}`);
 
   const now = Date.now();
-
-  // Expire non-free records that aren't already expired
-  const expireCount = await expireNonFreeRecords(
-    ctx,
-    revenuecatUserId,
-    now,
-    true
-  );
+  const expireCount = await expireNonFreeRecords(ctx, revenuecatUserId, now, true);
   if (expireCount > 0) {
-    console.log(
-      `[RC WEBHOOK] Expired ${expireCount} non-free records before creating new ones`
-    );
+    console.log(`[RC WEBHOOK] Expired ${expireCount} non-free records`);
   }
 
-  // Use new_product_id for the limit
-  const productId = newProductId;
   const periodStart = event.purchased_at_ms;
-  const periodEnd =
-    event.expiration_at_ms || Date.now() + DEFAULT_PERIOD_MS;
-  const limit = getLimitForEvent(productId, newEntitlement);
+  const periodEnd = event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
+  const limit = getLimitForEvent(newProductId, newEntitlement);
 
   await upsertUsageRecord(ctx, {
     userId,
@@ -364,82 +265,33 @@ async function handleProductChange(
 }
 
 async function handleExpiration(
-  ctx: any,
-  event: {
-    app_user_id: string;
-    original_app_user_id: string;
-    expiration_at_ms?: number;
-  }
+  ctx: { db: MutationCtx["db"] },
+  event: { app_user_id: string; original_app_user_id: string; expiration_at_ms?: number }
 ) {
-  const userId = event.app_user_id;
-  const revenuecatUserId = event.original_app_user_id;
   const expirationDate = event.expiration_at_ms || Date.now();
+  console.log(`[RC WEBHOOK] EXPIRATION: for user ${event.app_user_id}`);
 
-  console.log(
-    `[RC WEBHOOK] EXPIRATION: Subscription expired for user ${userId}`
-  );
-
-  // Close ALL non-free usage periods for this user (regardless of period dates)
-  const count = await expireNonFreeRecords(
-    ctx,
-    revenuecatUserId,
-    expirationDate,
-    false
-  );
-  console.log(
-    `[RC WEBHOOK] Closed ${count} non-free usage period(s) for user ${userId}`
-  );
-}
-
-async function handleSubscriptionPaused(event: {
-  app_user_id: string;
-  auto_resume_at_ms?: number;
-}) {
-  console.log(
-    `[RC WEBHOOK] SUBSCRIPTION_PAUSED: for user ${event.app_user_id}. Auto-resume: ${
-      event.auto_resume_at_ms
-        ? new Date(event.auto_resume_at_ms).toISOString()
-        : "N/A"
-    }`
-  );
-}
-
-async function handleSubscriptionResumed(event: { app_user_id: string }) {
-  console.log(
-    `[RC WEBHOOK] SUBSCRIPTION_RESUMED: for user ${event.app_user_id}`
-  );
-}
-
-async function handleRefund(event: { app_user_id: string }) {
-  console.log(`[RC WEBHOOK] REFUND: Refund processed for user ${event.app_user_id}`);
+  const count = await expireNonFreeRecords(ctx, event.original_app_user_id, expirationDate, false);
+  console.log(`[RC WEBHOOK] Closed ${count} non-free usage period(s)`);
 }
 
 async function handleTransfer(
-  ctx: any,
-  event: {
-    transferred_from: string[];
-    transferred_to: string[];
-    id: string;
-  }
+  ctx: { db: MutationCtx["db"] },
+  event: { transferred_from: string[]; transferred_to: string[] }
 ) {
   const newUserId = event.transferred_to?.[0];
   const originalUserId = event.transferred_from?.[0];
 
   if (!newUserId || !originalUserId) {
-    console.error(
-      "[RC WEBHOOK] TRANSFER: new user or original user to transfer from is missing"
-    );
+    console.error("[RC WEBHOOK] TRANSFER: Missing user IDs");
     return;
   }
 
-  // Find all records that match any of the transferred_from IDs
   const allUpdated: string[] = [];
   for (const fromId of event.transferred_from) {
     const records = await ctx.db
       .query("usage")
-      .withIndex("by_revenuecatUserId", (q: any) =>
-        q.eq("revenuecatUserId", fromId)
-      )
+      .withIndex("by_revenuecatUserId", (q) => q.eq("revenuecatUserId", fromId))
       .collect();
 
     for (const record of records) {
@@ -448,26 +300,7 @@ async function handleTransfer(
     }
   }
 
-  console.log(
-    `[RC WEBHOOK] TRANSFER: Updated ${allUpdated.length} records from ${originalUserId} to ${newUserId}`
-  );
-}
-
-async function handleNonRenewingPurchase(
-  ctx: any,
-  event: {
-    app_user_id: string;
-    original_app_user_id: string;
-    entitlement_ids: string[];
-    product_id: string;
-    purchased_at_ms: number;
-    expiration_at_ms?: number;
-  }
-) {
-  console.log(
-    `[RC WEBHOOK] NON_RENEWING_PURCHASE: for user ${event.app_user_id}`
-  );
-  await handleInitialPurchase(ctx, event);
+  console.log(`[RC WEBHOOK] TRANSFER: Updated ${allUpdated.length} records`);
 }
 
 // ---- Main internal mutation ----
@@ -481,22 +314,21 @@ export const processRevenueCatEvent = internalMutation({
     entitlementIds: v.optional(v.array(v.string())),
     productId: v.optional(v.string()),
     newProductId: v.optional(v.string()),
-    purchasedAtMs: v.optional(v.float64()),
-    expirationAtMs: v.optional(v.float64()),
-    gracePeriodExpirationAtMs: v.optional(v.float64()),
-    autoResumeAtMs: v.optional(v.float64()),
-    // Transfer-specific fields
+    purchasedAtMs: v.optional(v.number()),
+    expirationAtMs: v.optional(v.number()),
+    gracePeriodExpirationAtMs: v.optional(v.number()),
+    autoResumeAtMs: v.optional(v.number()),
     transferredFrom: v.optional(v.array(v.string())),
     transferredTo: v.optional(v.array(v.string())),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const eventType = args.eventType;
-
     console.log(`[RC WEBHOOK] Processing event: ${eventType}`);
 
     if (eventType === "TEST") {
       console.log("[RC WEBHOOK] Skipping test event");
-      return;
+      return null;
     }
 
     const baseEvent = {
@@ -507,8 +339,6 @@ export const processRevenueCatEvent = internalMutation({
       new_product_id: args.newProductId,
       purchased_at_ms: args.purchasedAtMs || Date.now(),
       expiration_at_ms: args.expirationAtMs,
-      grace_period_expiration_at_ms: args.gracePeriodExpirationAtMs,
-      auto_resume_at_ms: args.autoResumeAtMs,
     };
 
     switch (eventType) {
@@ -519,45 +349,48 @@ export const processRevenueCatEvent = internalMutation({
         await handleRenewal(ctx, baseEvent);
         break;
       case "CANCELLATION":
-        await handleCancellation(baseEvent);
+        console.log(`[RC WEBHOOK] CANCELLATION: for user ${args.appUserId}`);
         break;
       case "UNCANCELLATION":
-        await handleUncancellation(baseEvent);
+        console.log(`[RC WEBHOOK] UNCANCELLATION: for user ${args.appUserId}`);
         break;
       case "BILLING_ISSUE":
-        await handleBillingIssue(baseEvent);
+        console.log(`[RC WEBHOOK] BILLING_ISSUE: for user ${args.appUserId}`);
         break;
       case "PRODUCT_CHANGE":
         await handleProductChange(ctx, baseEvent);
         break;
       case "EXPIRATION":
-        await handleExpiration(ctx, baseEvent);
+        await handleExpiration(ctx, {
+          app_user_id: args.appUserId,
+          original_app_user_id: args.originalAppUserId,
+          expiration_at_ms: args.expirationAtMs,
+        });
         break;
       case "SUBSCRIPTION_PAUSED":
-        await handleSubscriptionPaused(baseEvent);
+        console.log(`[RC WEBHOOK] SUBSCRIPTION_PAUSED: for user ${args.appUserId}`);
         break;
       case "SUBSCRIPTION_RESUMED":
-        await handleSubscriptionResumed(baseEvent);
+        console.log(`[RC WEBHOOK] SUBSCRIPTION_RESUMED: for user ${args.appUserId}`);
         break;
       case "REFUND":
-        await handleRefund(baseEvent);
+        console.log(`[RC WEBHOOK] REFUND: for user ${args.appUserId}`);
         break;
       case "TRANSFER":
         await handleTransfer(ctx, {
           transferred_from: args.transferredFrom || [],
           transferred_to: args.transferredTo || [],
-          id: args.eventId,
         });
         break;
       case "NON_RENEWING_PURCHASE":
-        await handleNonRenewingPurchase(ctx, baseEvent);
+        console.log(`[RC WEBHOOK] NON_RENEWING_PURCHASE: for user ${args.appUserId}`);
+        await handleInitialPurchase(ctx, baseEvent);
         break;
       default:
         console.log(`[RC WEBHOOK] Unhandled event type: ${eventType}`);
     }
 
-    console.log(
-      `[RC WEBHOOK] Successfully processed ${eventType} event for user ${args.appUserId}`
-    );
+    console.log(`[RC WEBHOOK] Successfully processed ${eventType} for user ${args.appUserId}`);
+    return null;
   },
 });

@@ -1,8 +1,7 @@
 <absolute_constraints>
 ## RULE 0 (HIGHEST PRIORITY): Model Selection for Subagents
 
-Never use explore subagent.
-We are using bun not npm
+YOU MUST USE BUN not npm
 
 Please keep each file length under 500 lines, if its more break it into more logical files this is a must.
 

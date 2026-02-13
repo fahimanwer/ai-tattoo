@@ -6,10 +6,9 @@ import {
 } from "@/lib/image-cache";
 import { clog } from "@/lib/log";
 import {
-  textAndImageToImage,
+  api,
   TextAndImageToImageInput,
   TextAndImageToImageResponse,
-  textToImage,
   TextToImageInput,
   TextToImageResponse,
 } from "@/lib/nano";
@@ -21,6 +20,7 @@ import {
   UseMutationResult,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useAction } from "convex/react";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import * as StoreReview from "expo-store-review";
@@ -108,6 +108,10 @@ export function PlaygroundProvider({
   // Hooks
   const queryClient = useQueryClient();
   const { settings, updateSettings } = React.use(AppSettingsContext);
+  const textToImageAction = useAction(api.generation.textToImage);
+  const textAndImageToImageAction = useAction(
+    api.generation.textAndImageToImage
+  );
   const [prompt, setPromptState] = React.useState("");
   const [sessionGenerations, setSessionGenerations] = React.useState<
     string[][]
@@ -143,7 +147,6 @@ export function PlaygroundProvider({
     mutationFn: async ({
       prompt,
       improvePrompt = settings.improvePrompt ?? true,
-      signal,
     }: TextToImageInput & { signal?: AbortSignal }) => {
       // Get RevenueCat user ID for accurate usage tracking
       let revenuecatUserId: string | undefined;
@@ -154,14 +157,11 @@ export function PlaygroundProvider({
         // Continue without RC ID (backwards compatibility)
       }
 
-      return textToImage(
-        {
-          prompt,
-          improvePrompt,
-          revenuecatUserId,
-        },
-        signal
-      );
+      return textToImageAction({
+        prompt,
+        improvePrompt,
+        revenuecatUserId,
+      });
     },
     onSuccess: async (data) => {
       if (data?.imageData) {
@@ -205,7 +205,6 @@ export function PlaygroundProvider({
       prompt,
       images_base64,
       improvePrompt,
-      signal,
     }: TextAndImageToImageInput & { signal?: AbortSignal }) => {
       // Get RevenueCat user ID for accurate usage tracking
       let revenuecatUserId: string | undefined;
@@ -216,15 +215,12 @@ export function PlaygroundProvider({
         // Continue without RC ID (backwards compatibility)
       }
 
-      return textAndImageToImage(
-        {
-          prompt,
-          images_base64,
-          improvePrompt,
-          revenuecatUserId,
-        },
-        signal
-      );
+      return textAndImageToImageAction({
+        prompt,
+        images_base64,
+        improvePrompt,
+        revenuecatUserId,
+      });
     },
     onSuccess: async (data) => {
       if (data?.imageData) {

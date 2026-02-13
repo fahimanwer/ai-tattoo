@@ -1,5 +1,3 @@
-import { action } from "./_generated/server";
-import { v } from "convex/values";
 import { getOpenRouterApiKey } from "./geminiUtils";
 
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
@@ -63,71 +61,6 @@ GENERAL RULES:
 5. Ensure all content is appropriate and safe for tattoo generation
 6. Output ONLY the improved prompt text - no explanations, no quotes, no markdown, no prefixes like "Improved prompt:"`;
 }
-
-/**
- * Improves a tattoo prompt using OpenRouter GPT-4o-mini.
- * Falls back to the original prompt on any error.
- */
-export const improvePrompt = action({
-  args: {
-    prompt: v.string(),
-    hasExistingImage: v.optional(v.boolean()),
-  },
-  returns: v.object({ improvedPrompt: v.string() }),
-  handler: async (_ctx, args) => {
-    const { prompt, hasExistingImage = false } = args;
-
-    console.log("prompt: Original prompt", prompt);
-    console.log("prompt: Has existing image", hasExistingImage);
-
-    const OPENROUTER_API_KEY = getOpenRouterApiKey();
-
-    if (!OPENROUTER_API_KEY) {
-      console.log("prompt: OPENROUTER_API_KEY not set, returning original prompt");
-      return { improvedPrompt: prompt };
-    }
-
-    try {
-      const response = await fetch(OPENROUTER_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "openai/gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: buildSystemPrompt(hasExistingImage),
-            },
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          temperature: 0.7,
-          max_tokens: 200,
-        }),
-      });
-
-      if (!response.ok) {
-        console.log("prompt: OpenRouter API error", { status: response.status });
-        return { improvedPrompt: prompt };
-      }
-
-      const data = await response.json();
-      const improvedPrompt =
-        data.choices?.[0]?.message?.content?.trim() || prompt;
-
-      console.log("prompt: Improved prompt", improvedPrompt);
-      return { improvedPrompt };
-    } catch (error) {
-      console.log("prompt: Error improving prompt, using original", { error });
-      return { improvedPrompt: prompt };
-    }
-  },
-});
 
 /**
  * Internal helper function to improve a prompt (callable from other actions).

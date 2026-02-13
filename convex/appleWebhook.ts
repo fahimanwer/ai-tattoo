@@ -211,6 +211,7 @@ export const processAppleWebhook = internalAction({
     rawBody: v.string(),
     signature: v.optional(v.string()),
   },
+  returns: v.null(),
   handler: async (_ctx, args) => {
     const secret = process.env.APPLE_WEBHOOK_SECRET;
     if (!secret) {
@@ -226,7 +227,7 @@ export const processAppleWebhook = internalAction({
     const webhookUrl = process.env.SLACK_WEBHOOK_URL;
     if (!webhookUrl) {
       console.warn("[APPLE WEBHOOK] SLACK_WEBHOOK_URL not configured");
-      return;
+      return null;
     }
 
     const payload: AppleWebhookPayload = JSON.parse(args.rawBody);
@@ -273,5 +274,6 @@ export const processAppleWebhook = internalAction({
 
     await sendSlackNotification(webhookUrl, config, oldState, newState);
     console.log("[APPLE WEBHOOK] Webhook processed successfully");
+    return null;
   },
 });

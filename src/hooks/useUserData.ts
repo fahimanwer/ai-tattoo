@@ -160,41 +160,41 @@ export function useUserData(): UserData {
     // This also restores purchases internally
     const restoredInfo = await loginToRevenueCat(userId);
 
-    // If we have active entitlements, sync with server to ensure usage record exists
-    if (restoredInfo) {
-      const activeEntitlements = Object.keys(restoredInfo.entitlements.active);
-      const lastSub = getLastSubscription(restoredInfo);
+    // Always sync with server to ensure a usage record exists
+    // (creates free-tier record if no paid subscription)
+    try {
+      const activeEntitlements = restoredInfo
+        ? Object.keys(restoredInfo.entitlements.active)
+        : [];
+      const lastSub = restoredInfo
+        ? getLastSubscription(restoredInfo)
+        : null;
       const hasActiveSubscription = lastSub?.isActive === true;
 
-      if (hasActiveSubscription && activeEntitlements.length > 0) {
-        console.log("🔄 Syncing subscription with server...");
-        try {
-          // Get the most recent active subscription for period info
-          const allSubs = restoredInfo.subscriptionsByProductIdentifier || {};
-          const activeSub = Object.values(allSubs).find(
-            (sub: any) => sub.isActive
-          ) as any;
+      // Get the most recent active subscription for period info
+      const allSubs = restoredInfo?.subscriptionsByProductIdentifier || {};
+      const activeSub = Object.values(allSubs).find(
+        (sub: any) => sub.isActive
+      ) as any;
 
-          const syncResult = await syncSubscriptionMutation({
-            revenuecatUserId: restoredInfo.originalAppUserId,
-            activeEntitlements,
-            hasActiveSubscription,
-            subscriptionInfo: activeSub
-              ? {
-                  productIdentifier: activeSub.productIdentifier || null,
-                  expiresDate: activeSub.expiresDate || null,
-                  purchaseDate: activeSub.purchaseDate || null,
-                }
-              : undefined,
-          });
+      const syncResult = await syncSubscriptionMutation({
+        revenuecatUserId: restoredInfo?.originalAppUserId || userId,
+        activeEntitlements,
+        hasActiveSubscription,
+        subscriptionInfo: activeSub
+          ? {
+              productIdentifier: activeSub.productIdentifier || null,
+              expiresDate: activeSub.expiresDate || null,
+              purchaseDate: activeSub.purchaseDate || null,
+            }
+          : undefined,
+      });
 
-          console.log("✅ Server sync result:", syncResult);
-        } catch (syncError) {
-          console.error("⚠️ Failed to sync with server:", syncError);
-          // Don't fail the whole flow if sync fails - the user can still use the app
-          // The sync is just to ensure usage tracking works correctly
-        }
-      }
+      console.log("✅ Server sync result:", syncResult);
+    } catch (syncError) {
+      console.error("⚠️ Failed to sync with server:", syncError);
+      // Don't fail the whole flow if sync fails - the user can still use the app
+      // The ensureUsageRecord safety net in generation will handle it
     }
 
     // Refresh server-side usage data

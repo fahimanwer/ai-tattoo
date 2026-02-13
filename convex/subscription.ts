@@ -1,21 +1,36 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 import {
+  FREE_TIER_LIMIT,
   getLimitForProduct,
   getMonthlyLimit,
   type PlanTier,
 } from "./planLimits";
 
+const syncResultValidator = v.object({
+  success: v.boolean(),
+  message: v.string(),
+  synced: v.boolean(),
+  existingRecord: v.optional(
+    v.object({
+      entitlement: v.string(),
+      count: v.number(),
+      limit: v.number(),
+    })
+  ),
+  record: v.optional(
+    v.object({
+      entitlement: v.string(),
+      count: v.number(),
+      limit: v.number(),
+      periodStart: v.string(),
+      periodEnd: v.string(),
+    })
+  ),
+});
+
 /**
  * Sync the client's RevenueCat subscription status with the server.
- * Call this after:
- * - Purchases.logIn() + Purchases.restorePurchases()
- * - Any time the RC customer info changes
- *
- * This handles the case where the user's RC anonymous ID changes after login,
- * but they still have valid entitlements from a previous purchase.
- *
- * Ported from src/app/api/user/sync-subscription+api.ts
  */
 export const syncSubscription = mutation({
   args: {
@@ -30,6 +45,7 @@ export const syncSubscription = mutation({
       })
     ),
   },
+  returns: syncResultValidator,
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -44,28 +60,62 @@ export const syncSubscription = mutation({
       subscriptionInfo,
     } = args;
 
-    // If user doesn't have an active subscription, nothing to sync
+    // If user doesn't have an active subscription, ensure free tier record exists
     if (!hasActiveSubscription || activeEntitlements.length === 0) {
+      // Check if a free record already exists
+      const existingFree = await ctx.db
+        .query("usage")
+        .withIndex("by_userId_entitlement", (q) =>
+          q.eq("userId", userId).eq("entitlement", "free")
+        )
+        .first();
+
+      if (!existingFree) {
+        const now = Date.now();
+        const nowDate = new Date();
+        const periodStart = new Date(
+          nowDate.getFullYear(),
+          nowDate.getMonth(),
+          1
+        ).getTime();
+        const periodEnd = new Date(
+          nowDate.getFullYear(),
+          nowDate.getMonth() + 1,
+          0,
+          23,
+          59,
+          59
+        ).getTime();
+
+        await ctx.db.insert("usage", {
+          userId,
+          revenuecatUserId,
+          entitlement: "free",
+          count: 0,
+          limit: FREE_TIER_LIMIT,
+          periodStart,
+          periodEnd,
+        });
+      }
+
       return {
         success: true,
-        message: "No active subscription to sync",
-        synced: false,
+        message: "Free tier record ensured",
+        synced: true,
       };
     }
 
     const now = Date.now();
-    const searchWindow = now + 5 * 60 * 1000; // 5 minutes ahead
 
-    // Check for existing records by revenuecatUserId
+    // Check for existing records by revenuecatUserId (using new periodEnd index)
     const existingByRcId = await ctx.db
       .query("usage")
-      .withIndex("by_revenuecatUserId", (q) =>
-        q.eq("revenuecatUserId", revenuecatUserId)
+      .withIndex("by_revenuecatUserId_periodEnd", (q) =>
+        q.eq("revenuecatUserId", revenuecatUserId).gte("periodEnd", now)
       )
       .filter((q) =>
         q.and(
-          q.lte(q.field("periodStart"), searchWindow),
-          q.gte(q.field("periodEnd"), now),
+          q.lte(q.field("periodStart"), now + 5 * 60 * 1000),
           q.neq(q.field("entitlement"), "free")
         )
       )
@@ -75,11 +125,12 @@ export const syncSubscription = mutation({
     // Check for existing records by userId
     const existingByUserId = await ctx.db
       .query("usage")
-      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .withIndex("by_userId_periodEnd", (q) =>
+        q.eq("userId", userId).gte("periodEnd", now)
+      )
       .filter((q) =>
         q.and(
-          q.lte(q.field("periodStart"), searchWindow),
-          q.gte(q.field("periodEnd"), now),
+          q.lte(q.field("periodStart"), now + 5 * 60 * 1000),
           q.neq(q.field("entitlement"), "free")
         )
       )
@@ -100,7 +151,7 @@ export const syncSubscription = mutation({
       };
     }
 
-    // If we found a record by userId but not RC ID, update it to include the new RC ID
+    // If we found a record by userId but not RC ID, update it
     if (existingByUserId) {
       await ctx.db.patch(existingByUserId._id, {
         revenuecatUserId,
@@ -118,9 +169,7 @@ export const syncSubscription = mutation({
       };
     }
 
-    // No existing record found, need to create one
     // Determine the entitlement tier from the active entitlements
-    // Priority: pro > premium > plus > starter
     let entitlement: PlanTier = "free";
     if (activeEntitlements.includes("Pro")) {
       entitlement = "pro";
@@ -140,7 +189,7 @@ export const syncSubscription = mutation({
       };
     }
 
-    // Calculate period dates from subscription info (stored as epoch ms)
+    // Calculate period dates
     let periodStart: number;
     let periodEnd: number;
 
@@ -148,18 +197,17 @@ export const syncSubscription = mutation({
       periodStart = new Date(subscriptionInfo.purchaseDate).getTime();
       periodEnd = new Date(subscriptionInfo.expiresDate).getTime();
     } else {
-      // Default to current time + 1 week
       periodStart = now;
       periodEnd = now + 7 * 24 * 60 * 60 * 1000;
     }
 
-    // Get the limit - use product-specific limit if available
+    // Get the limit
     const productLimit = subscriptionInfo?.productIdentifier
       ? getLimitForProduct(subscriptionInfo.productIdentifier)
       : null;
     const limit = productLimit ?? getMonthlyLimit(entitlement);
 
-    // Manual upsert: check if a record already exists with same userId + entitlement + periodStart
+    // Upsert: check if a record already exists with same userId + entitlement
     const existingRecord = await ctx.db
       .query("usage")
       .withIndex("by_userId_entitlement", (q) =>
@@ -169,7 +217,6 @@ export const syncSubscription = mutation({
       .first();
 
     if (existingRecord) {
-      // Update existing record with RC ID
       await ctx.db.patch(existingRecord._id, {
         revenuecatUserId,
       });

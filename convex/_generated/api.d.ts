@@ -15,6 +15,7 @@ import type * as geminiUtils from "../geminiUtils.js";
 import type * as generation from "../generation.js";
 import type * as generations from "../generations.js";
 import type * as http from "../http.js";
+import type * as imageValidation from "../imageValidation.js";
 import type * as planLimits from "../planLimits.js";
 import type * as prompt from "../prompt.js";
 import type * as subscription from "../subscription.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   generation: typeof generation;
   generations: typeof generations;
   http: typeof http;
+  imageValidation: typeof imageValidation;
   planLimits: typeof planLimits;
   prompt: typeof prompt;
   subscription: typeof subscription;

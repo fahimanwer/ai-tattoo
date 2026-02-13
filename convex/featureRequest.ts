@@ -7,6 +7,7 @@ export const submitFeatureRequest = internalAction({
     userId: v.optional(v.string()),
     userEmail: v.optional(v.string()),
   },
+  returns: v.null(),
   handler: async (_ctx, args) => {
     const { message, userId, userEmail } = args;
 
@@ -74,5 +75,6 @@ export const submitFeatureRequest = internalAction({
     }
 
     console.log("[FEATURE REQUEST] Feature request sent to Slack");
+    return null;
   },
 });

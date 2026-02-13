@@ -1,7 +1,7 @@
 import { action, internalMutation } from "./_generated/server";
-import { v } from "convex/values";
+import type { ActionCtx } from "./_generated/server";
+import { v, ConvexError } from "convex/values";
 import { internal } from "./_generated/api";
-import { ConvexError } from "convex/values";
 import {
   GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
   getGeminiApiKey,
@@ -26,6 +26,7 @@ export const saveGenerationRecord = internalMutation({
       v.literal("text_and_image_to_image")
     ),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.insert("generations", {
       userId: args.userId,
@@ -34,6 +35,7 @@ export const saveGenerationRecord = internalMutation({
       generationType: args.generationType,
       createdAt: Date.now(),
     });
+    return null;
   },
 });
 
@@ -42,7 +44,7 @@ export const saveGenerationRecord = internalMutation({
  * Called after successful Gemini generation to enable multi-device sync.
  */
 async function storeGenerationInCloud(
-  ctx: any,
+  ctx: ActionCtx,
   imageData: string,
   userId: string,
   prompt: string,
@@ -96,13 +98,19 @@ export const textToImage = action({
       email: identity.email,
     });
 
+    // Ensure usage record exists (auto-provisions free tier if missing)
+    await ctx.runMutation(internal.usage.ensureUsageRecord, {
+      userId,
+      revenuecatUserId,
+    });
+
     // Check usage limits
     const usageCheck = await ctx.runQuery(internal.usage.checkUsage, {
       userId,
       revenuecatUserId,
     });
 
-    if (!usageCheck.canGenerate) {
+    if (!usageCheck.success) {
       throw new ConvexError(
         usageCheck.error || "Generation limit reached. Please upgrade your plan."
       );
@@ -157,8 +165,7 @@ export const textToImage = action({
 
     // Increment usage after successful generation
     await ctx.runMutation(internal.usage.incrementUsage, {
-      userId,
-      usageId: usageCheck.usageId!,
+      usageId: usageCheck.usage!._id,
     });
 
     // Store in Convex file storage for multi-device sync
@@ -205,13 +212,19 @@ export const textAndImageToImage = action({
       email: identity.email,
     });
 
+    // Ensure usage record exists (auto-provisions free tier if missing)
+    await ctx.runMutation(internal.usage.ensureUsageRecord, {
+      userId,
+      revenuecatUserId,
+    });
+
     // Check usage limits
     const usageCheck = await ctx.runQuery(internal.usage.checkUsage, {
       userId,
       revenuecatUserId,
     });
 
-    if (!usageCheck.canGenerate) {
+    if (!usageCheck.success) {
       throw new ConvexError(
         usageCheck.error || "Generation limit reached. Please upgrade your plan."
       );
@@ -276,8 +289,7 @@ export const textAndImageToImage = action({
 
     // Increment usage after successful generation
     await ctx.runMutation(internal.usage.incrementUsage, {
-      userId,
-      usageId: usageCheck.usageId!,
+      usageId: usageCheck.usage!._id,
     });
 
     // Store in Convex file storage for multi-device sync

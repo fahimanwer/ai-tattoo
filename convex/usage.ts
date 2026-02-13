@@ -1,6 +1,8 @@
 import { query, internalQuery, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
+import type { QueryCtx, MutationCtx } from "./_generated/server";
 import {
+  FREE_TIER_LIMIT,
   entitlementToTier,
   getMonthlyLimit,
   getPlanConfig,
@@ -8,109 +10,150 @@ import {
 } from "./planLimits";
 
 // ============================================================================
-// Internal: getCurrentUserEntitlement
+// Helper: find active paid usage record
 // ============================================================================
 
-/**
- * Get the current active entitlement for a user.
- * Returns the highest tier entitlement that is currently active.
- *
- * Ported from lib/entitlement-utils.ts
- */
-export const getCurrentUserEntitlement = internalQuery({
-  args: {
-    userId: v.string(),
-    revenuecatUserId: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    const { userId, revenuecatUserId } = args;
-    const now = Date.now();
-    const searchWindow = now + 5 * 60 * 1000; // 5 minutes ahead
+async function findActivePaidRecord(
+  ctx: { db: QueryCtx["db"] | MutationCtx["db"] },
+  userId: string,
+  revenuecatUserId: string | undefined,
+  now: number
+) {
+  let paidUsage = null;
 
-    // Try to find paid tier records by revenuecatUserId first, then by userId
-    let paidUsage = null;
-
-    if (revenuecatUserId) {
-      // Search by revenuecatUserId - active paid period
-      paidUsage = await ctx.db
-        .query("usage")
-        .withIndex("by_revenuecatUserId", (q) =>
-          q.eq("revenuecatUserId", revenuecatUserId)
+  if (revenuecatUserId) {
+    paidUsage = await ctx.db
+      .query("usage")
+      .withIndex("by_revenuecatUserId_periodEnd", (q) =>
+        q.eq("revenuecatUserId", revenuecatUserId).gte("periodEnd", now)
+      )
+      .filter((q) =>
+        q.and(
+          q.lte(q.field("periodStart"), now + 5 * 60 * 1000),
+          q.neq(q.field("entitlement"), "free")
         )
-        .filter((q) =>
-          q.and(
-            q.lte(q.field("periodStart"), searchWindow),
-            q.gte(q.field("periodEnd"), now),
-            q.neq(q.field("entitlement"), "free")
-          )
+      )
+      .order("desc")
+      .first();
+  }
+
+  if (!paidUsage) {
+    paidUsage = await ctx.db
+      .query("usage")
+      .withIndex("by_userId_periodEnd", (q) =>
+        q.eq("userId", userId).gte("periodEnd", now)
+      )
+      .filter((q) =>
+        q.and(
+          q.lte(q.field("periodStart"), now + 5 * 60 * 1000),
+          q.neq(q.field("entitlement"), "free")
         )
-        .order("desc")
-        .first();
-    }
+      )
+      .order("desc")
+      .first();
+  }
 
-    if (!paidUsage) {
-      // Fallback: search by userId
-      paidUsage = await ctx.db
-        .query("usage")
-        .withIndex("by_userId", (q) => q.eq("userId", userId))
-        .filter((q) =>
-          q.and(
-            q.lte(q.field("periodStart"), searchWindow),
-            q.gte(q.field("periodEnd"), now),
-            q.neq(q.field("entitlement"), "free")
-          )
-        )
-        .order("desc")
-        .first();
-    }
+  return paidUsage;
+}
 
-    if (paidUsage) {
-      switch (paidUsage.entitlement.toLowerCase()) {
-        case "premium":
-          return "Premium";
-        case "pro":
-          return "Pro";
-        case "plus":
-          return "Plus";
-        case "starter":
-          return "Starter";
-        default:
-          return paidUsage.entitlement;
-      }
-    }
+// ============================================================================
+// Helper: find free tier record
+// ============================================================================
 
-    // No paid tier, check for free tier
-    let freeUsage = null;
+async function findFreeRecord(
+  ctx: { db: QueryCtx["db"] | MutationCtx["db"] },
+  userId: string,
+  revenuecatUserId: string | undefined
+) {
+  let freeUsage = null;
 
-    if (revenuecatUserId) {
-      freeUsage = await ctx.db
-        .query("usage")
-        .withIndex("by_revenuecatUserId_entitlement", (q) =>
-          q.eq("revenuecatUserId", revenuecatUserId).eq("entitlement", "free")
-        )
-        .first();
-    }
+  if (revenuecatUserId) {
+    freeUsage = await ctx.db
+      .query("usage")
+      .withIndex("by_revenuecatUserId_entitlement", (q) =>
+        q.eq("revenuecatUserId", revenuecatUserId).eq("entitlement", "free")
+      )
+      .first();
+  }
 
-    if (!freeUsage) {
-      freeUsage = await ctx.db
-        .query("usage")
-        .withIndex("by_userId_entitlement", (q) =>
-          q.eq("userId", userId).eq("entitlement", "free")
-        )
-        .first();
-    }
+  if (!freeUsage) {
+    freeUsage = await ctx.db
+      .query("usage")
+      .withIndex("by_userId_entitlement", (q) =>
+        q.eq("userId", userId).eq("entitlement", "free")
+      )
+      .first();
+  }
 
-    if (freeUsage) {
-      return "free";
-    }
+  return freeUsage;
+}
 
+// ============================================================================
+// Helper: determine entitlement string from paid record
+// ============================================================================
+
+function entitlementDisplayName(entitlement: string): string {
+  switch (entitlement.toLowerCase()) {
+    case "premium":
+      return "Premium";
+    case "pro":
+      return "Pro";
+    case "plus":
+      return "Plus";
+    case "starter":
+      return "Starter";
+    default:
+      return entitlement;
+  }
+}
+
+// ============================================================================
+// Helper: inline entitlement lookup (avoids calling another query from a query)
+// ============================================================================
+
+async function getCurrentUserEntitlementHelper(
+  ctx: { db: QueryCtx["db"] | MutationCtx["db"] },
+  userId: string,
+  revenuecatUserId?: string
+): Promise<string> {
+  const now = Date.now();
+
+  const paidUsage = await findActivePaidRecord(
+    ctx,
+    userId,
+    revenuecatUserId,
+    now
+  );
+  if (paidUsage) {
+    return entitlementDisplayName(paidUsage.entitlement);
+  }
+
+  const freeUsage = await findFreeRecord(ctx, userId, revenuecatUserId);
+  if (freeUsage) {
     return "free";
-  },
-});
+  }
+
+  return "free";
+}
 
 // ============================================================================
 // Public: getUserUsage (reactive query - replaces POST /api/user/usage)
 // ============================================================================
+
+const usageResponseValidator = v.object({
+  used: v.number(),
+  limit: v.number(),
+  remaining: v.number(),
+  periodStart: v.string(),
+  periodEnd: v.string(),
+  isLimitReached: v.boolean(),
+  subscriptionTier: v.string(),
+  planInfo: v.object({
+    displayName: v.string(),
+    color: v.string(),
+    features: v.array(v.string()),
+  }),
+});
 
 /**
  * Get usage info for the current authenticated user.
@@ -120,6 +163,7 @@ export const getUserUsage = query({
   args: {
     revenuecatUserId: v.optional(v.string()),
   },
+  returns: usageResponseValidator,
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -128,65 +172,18 @@ export const getUserUsage = query({
 
     const userId = identity.subject;
     const { revenuecatUserId } = args;
-
     const now = Date.now();
-    const searchWindow = now + 5 * 60 * 1000; // 5 minutes ahead
 
     // Find free tier record (one-time credits, ignore period dates)
-    let freeRecord = null;
-
-    if (revenuecatUserId) {
-      freeRecord = await ctx.db
-        .query("usage")
-        .withIndex("by_revenuecatUserId_entitlement", (q) =>
-          q.eq("revenuecatUserId", revenuecatUserId).eq("entitlement", "free")
-        )
-        .first();
-    }
-
-    if (!freeRecord) {
-      freeRecord = await ctx.db
-        .query("usage")
-        .withIndex("by_userId_entitlement", (q) =>
-          q.eq("userId", userId).eq("entitlement", "free")
-        )
-        .first();
-    }
+    const freeRecord = await findFreeRecord(ctx, userId, revenuecatUserId);
 
     // Find active paid tier records
-    let paidRecord = null;
-
-    if (revenuecatUserId) {
-      paidRecord = await ctx.db
-        .query("usage")
-        .withIndex("by_revenuecatUserId", (q) =>
-          q.eq("revenuecatUserId", revenuecatUserId)
-        )
-        .filter((q) =>
-          q.and(
-            q.lte(q.field("periodStart"), searchWindow),
-            q.gte(q.field("periodEnd"), now),
-            q.neq(q.field("entitlement"), "free")
-          )
-        )
-        .order("desc")
-        .first();
-    }
-
-    if (!paidRecord) {
-      paidRecord = await ctx.db
-        .query("usage")
-        .withIndex("by_userId", (q) => q.eq("userId", userId))
-        .filter((q) =>
-          q.and(
-            q.lte(q.field("periodStart"), searchWindow),
-            q.gte(q.field("periodEnd"), now),
-            q.neq(q.field("entitlement"), "free")
-          )
-        )
-        .order("desc")
-        .first();
-    }
+    const paidRecord = await findActivePaidRecord(
+      ctx,
+      userId,
+      revenuecatUserId,
+      now
+    );
 
     // Priority: paid tier > free tier
     const activePeriodRecord = paidRecord || freeRecord || null;
@@ -212,7 +209,6 @@ export const getUserUsage = query({
       periodStart = activePeriodRecord.periodStart;
       periodEnd = activePeriodRecord.periodEnd;
     } else {
-      // No record found - use placeholder dates
       const nowDate = new Date();
       periodStart = new Date(
         nowDate.getFullYear(),
@@ -250,21 +246,41 @@ export const getUserUsage = query({
 // Internal: checkUsage (used by generation actions before generating)
 // ============================================================================
 
+const checkUsageResultValidator = v.union(
+  v.object({
+    success: v.literal(false),
+    error: v.string(),
+    message: v.string(),
+  }),
+  v.object({
+    success: v.literal(true),
+    usage: v.object({
+      _id: v.id("usage"),
+      userId: v.string(),
+      entitlement: v.string(),
+      count: v.number(),
+      limit: v.number(),
+      periodStart: v.number(),
+      periodEnd: v.number(),
+      revenuecatUserId: v.string(),
+    }),
+    isFreeTier: v.boolean(),
+  })
+);
+
 /**
  * Check if a user can generate. Returns the usage record if valid,
  * or an error status if not.
- *
- * Ported from server-utils/generation-utils.ts checkUserUsage()
  */
 export const checkUsage = internalQuery({
   args: {
     userId: v.string(),
     revenuecatUserId: v.optional(v.string()),
   },
+  returns: checkUsageResultValidator,
   handler: async (ctx, args) => {
     const { userId, revenuecatUserId } = args;
     const now = Date.now();
-    const searchWindow = now + 5 * 60 * 1000;
 
     // Determine the user's current entitlement
     const entitlement = await getCurrentUserEntitlementHelper(
@@ -279,54 +295,10 @@ export const checkUsage = internalQuery({
 
     if (isFreeTier) {
       // For free tier, ignore period dates (one-time credits)
-      if (revenuecatUserId) {
-        usage = await ctx.db
-          .query("usage")
-          .withIndex("by_revenuecatUserId_entitlement", (q) =>
-            q
-              .eq("revenuecatUserId", revenuecatUserId)
-              .eq("entitlement", "free")
-          )
-          .first();
-      }
-      if (!usage) {
-        usage = await ctx.db
-          .query("usage")
-          .withIndex("by_userId_entitlement", (q) =>
-            q.eq("userId", userId).eq("entitlement", "free")
-          )
-          .first();
-      }
+      usage = await findFreeRecord(ctx, userId, revenuecatUserId);
     } else {
       // For paid tiers, check active period
-      if (revenuecatUserId) {
-        usage = await ctx.db
-          .query("usage")
-          .withIndex("by_revenuecatUserId", (q) =>
-            q.eq("revenuecatUserId", revenuecatUserId)
-          )
-          .filter((q) =>
-            q.and(
-              q.lte(q.field("periodStart"), searchWindow),
-              q.gte(q.field("periodEnd"), now)
-            )
-          )
-          .order("desc")
-          .first();
-      }
-      if (!usage) {
-        usage = await ctx.db
-          .query("usage")
-          .withIndex("by_userId", (q) => q.eq("userId", userId))
-          .filter((q) =>
-            q.and(
-              q.lte(q.field("periodStart"), searchWindow),
-              q.gte(q.field("periodEnd"), now)
-            )
-          )
-          .order("desc")
-          .first();
-      }
+      usage = await findActivePaidRecord(ctx, userId, revenuecatUserId, now);
     }
 
     if (!usage) {
@@ -369,13 +341,12 @@ export const checkUsage = internalQuery({
 
 /**
  * Increments the usage count after a successful generation.
- *
- * Ported from server-utils/generation-utils.ts incrementUsage()
  */
 export const incrementUsage = internalMutation({
   args: {
     usageId: v.id("usage"),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const usage = await ctx.db.get(args.usageId);
     if (!usage) {
@@ -385,93 +356,69 @@ export const incrementUsage = internalMutation({
     await ctx.db.patch(args.usageId, {
       count: usage.count + 1,
     });
+    return null;
   },
 });
 
 // ============================================================================
-// Helper: inline entitlement lookup (avoids calling another query from a query)
+// Internal: ensureUsageRecord (auto-provisions free tier if no record exists)
 // ============================================================================
 
-async function getCurrentUserEntitlementHelper(
-  ctx: { db: any },
-  userId: string,
-  revenuecatUserId?: string
-): Promise<string> {
-  const now = Date.now();
-  const searchWindow = now + 5 * 60 * 1000;
+/**
+ * Ensures a usage record exists for the given user.
+ * If no record (paid or free) exists, creates a free-tier record.
+ * Idempotent — safe to call multiple times.
+ */
+export const ensureUsageRecord = internalMutation({
+  args: {
+    userId: v.string(),
+    revenuecatUserId: v.optional(v.string()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { userId, revenuecatUserId } = args;
+    const now = Date.now();
 
-  let paidUsage = null;
+    // Check for existing paid record
+    const paidRecord = await findActivePaidRecord(
+      ctx,
+      userId,
+      revenuecatUserId,
+      now
+    );
+    if (paidRecord) return null;
 
-  if (revenuecatUserId) {
-    paidUsage = await ctx.db
-      .query("usage")
-      .withIndex("by_revenuecatUserId", (q: any) =>
-        q.eq("revenuecatUserId", revenuecatUserId)
-      )
-      .filter((q: any) =>
-        q.and(
-          q.lte(q.field("periodStart"), searchWindow),
-          q.gte(q.field("periodEnd"), now),
-          q.neq(q.field("entitlement"), "free")
-        )
-      )
-      .order("desc")
-      .first();
-  }
+    // Check for existing free record
+    const freeRecord = await findFreeRecord(ctx, userId, revenuecatUserId);
+    if (freeRecord) return null;
 
-  if (!paidUsage) {
-    paidUsage = await ctx.db
-      .query("usage")
-      .withIndex("by_userId", (q: any) => q.eq("userId", userId))
-      .filter((q: any) =>
-        q.and(
-          q.lte(q.field("periodStart"), searchWindow),
-          q.gte(q.field("periodEnd"), now),
-          q.neq(q.field("entitlement"), "free")
-        )
-      )
-      .order("desc")
-      .first();
-  }
+    // No record at all — create a free-tier record
+    const nowDate = new Date();
+    const periodStart = new Date(
+      nowDate.getFullYear(),
+      nowDate.getMonth(),
+      1
+    ).getTime();
+    const periodEnd = new Date(
+      nowDate.getFullYear(),
+      nowDate.getMonth() + 1,
+      0,
+      23,
+      59,
+      59
+    ).getTime();
 
-  if (paidUsage) {
-    switch (paidUsage.entitlement.toLowerCase()) {
-      case "premium":
-        return "Premium";
-      case "pro":
-        return "Pro";
-      case "plus":
-        return "Plus";
-      case "starter":
-        return "Starter";
-      default:
-        return paidUsage.entitlement;
-    }
-  }
+    await ctx.db.insert("usage", {
+      userId,
+      entitlement: "free",
+      count: 0,
+      limit: FREE_TIER_LIMIT,
+      periodStart,
+      periodEnd,
+      revenuecatUserId: revenuecatUserId || userId,
+    });
 
-  let freeUsage = null;
-
-  if (revenuecatUserId) {
-    freeUsage = await ctx.db
-      .query("usage")
-      .withIndex("by_revenuecatUserId_entitlement", (q: any) =>
-        q.eq("revenuecatUserId", revenuecatUserId).eq("entitlement", "free")
-      )
-      .first();
-  }
-
-  if (!freeUsage) {
-    freeUsage = await ctx.db
-      .query("usage")
-      .withIndex("by_userId_entitlement", (q: any) =>
-        q.eq("userId", userId).eq("entitlement", "free")
-      )
-      .first();
-  }
-
-  if (freeUsage) {
-    return "free";
-  }
-
-  return "free";
-}
+    console.log("usage: auto-provisioned free-tier record", { userId });
+    return null;
+  },
+});
