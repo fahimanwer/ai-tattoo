@@ -63,9 +63,14 @@ const configureRevenueCat = () => {
       isRevenueCatConfigured = true;
       return true;
     } else if (Platform.OS === "android") {
-      // await Purchases.configure({
-      //   apiKey: "android-api-key",
-      // });
+      if (!process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY) {
+        console.error("❌ RevenueCat Google API key is not set");
+        return false;
+      }
+
+      Purchases.configure({
+        apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY,
+      });
       console.log("✅ RevenueCat configured for Android");
       isRevenueCatConfigured = true;
       return true;
@@ -83,11 +88,11 @@ function RevenueCatProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isConfigured) {
       const success = configureRevenueCat();
-      setIsConfigured(success || Platform.OS !== "ios"); // Allow render on Android or if config failed
+      setIsConfigured(success);
     }
   }, [isConfigured]);
 
-  if (!isConfigured && Platform.OS === "ios") {
+  if (!isConfigured) {
     return (
       <View
         style={{

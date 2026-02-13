@@ -7,7 +7,7 @@ import { Image } from "expo-image";
 import { Link, Stack, useRouter } from "expo-router";
 import { PressableScale } from "pressto";
 import { use, useEffect, useMemo, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, Platform, StyleSheet, View } from "react-native";
 import Purchases, {
   PACKAGE_TYPE,
   PurchasesOffering,
@@ -341,42 +341,43 @@ export function Paywall() {
       <Stack.Screen
         options={{
           title: "",
-          unstable_headerRightItems: () => [
-            {
-              type: "custom",
-              hidesSharedBackground: true,
-              element: (
-                <>
-                  {showCloseButton && (
-                    <PressableScale
-                      onPress={() => {
-                        if (isPurchasing) return;
+          headerRight: () =>
+            showCloseButton ? (
+              <PressableScale
+                onPress={() => {
+                  if (isPurchasing) return;
 
-                        if (isOnboardingFlow) {
-                          // Complete onboarding when skipping paywall
-                          setIsOnboarded(true);
-                          router.replace("/(tabs)/(home)");
-                          return;
-                        }
+                  if (isOnboardingFlow) {
+                    setIsOnboarded(true);
+                    router.replace("/(tabs)/(home)");
+                    return;
+                  }
 
-                        if (router.canGoBack()) {
-                          router.back();
-                          return;
-                        }
-                        router.replace("/(tabs)/(home)");
-                      }}
-                    >
-                      <Icon
-                        symbol="xmark"
-                        size="md"
-                        color={Color.grayscale[800]}
-                      />
-                    </PressableScale>
-                  )}
-                </>
-              ),
-            },
-          ],
+                  if (router.canGoBack()) {
+                    router.back();
+                    return;
+                  }
+                  router.replace("/(tabs)/(home)");
+                }}
+                style={styles.closeButton}
+              >
+                {Platform.OS === "ios" ? (
+                  <Icon
+                    symbol="xmark"
+                    size="md"
+                    color={Color.grayscale[800]}
+                  />
+                ) : (
+                  <Text
+                    type="base"
+                    weight="bold"
+                    style={{ color: Color.grayscale[800] }}
+                  >
+                    ✕
+                  </Text>
+                )}
+              </PressableScale>
+            ) : null,
         }}
       />
 
@@ -544,6 +545,14 @@ export function Paywall() {
   );
 }
 const styles = StyleSheet.create({
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Color.grayscale[200],
+    alignItems: "center",
+    justifyContent: "center",
+  },
   container: {
     flex: 1,
     padding: 16,
