@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as featureRequest from "../featureRequest.js";
 import type * as geminiUtils from "../geminiUtils.js";
 import type * as generation from "../generation.js";
+import type * as generations from "../generations.js";
 import type * as http from "../http.js";
 import type * as planLimits from "../planLimits.js";
 import type * as prompt from "../prompt.js";
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   featureRequest: typeof featureRequest;
   geminiUtils: typeof geminiUtils;
   generation: typeof generation;
+  generations: typeof generations;
   http: typeof http;
   planLimits: typeof planLimits;
   prompt: typeof prompt;

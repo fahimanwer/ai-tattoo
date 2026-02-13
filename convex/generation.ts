@@ -1,4 +1,4 @@
-import { action } from "./_generated/server";
+import { action, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { ConvexError } from "convex/values";
@@ -12,6 +12,64 @@ import {
   createGeminiErrorObject,
 } from "./geminiUtils";
 import { improvePromptHelper } from "./prompt";
+
+/**
+ * Internal mutation to save a generation record after storing the image.
+ */
+export const saveGenerationRecord = internalMutation({
+  args: {
+    userId: v.string(),
+    storageId: v.id("_storage"),
+    prompt: v.string(),
+    generationType: v.union(
+      v.literal("text_to_image"),
+      v.literal("text_and_image_to_image")
+    ),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("generations", {
+      userId: args.userId,
+      storageId: args.storageId,
+      prompt: args.prompt,
+      generationType: args.generationType,
+      createdAt: Date.now(),
+    });
+  },
+});
+
+/**
+ * Store a base64 image in Convex file storage and save the generation record.
+ * Called after successful Gemini generation to enable multi-device sync.
+ */
+async function storeGenerationInCloud(
+  ctx: any,
+  imageData: string,
+  userId: string,
+  prompt: string,
+  generationType: "text_to_image" | "text_and_image_to_image"
+) {
+  try {
+    const binaryString = atob(imageData);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const blob = new Blob([bytes], { type: "image/png" });
+    const storageId = await ctx.storage.store(blob);
+
+    await ctx.runMutation(internal.generation.saveGenerationRecord, {
+      userId,
+      storageId,
+      prompt,
+      generationType,
+    });
+
+    console.log("generation: stored in cloud storage", { storageId });
+  } catch (error) {
+    // Don't fail the generation if cloud storage fails
+    console.error("generation: failed to store in cloud", error);
+  }
+}
 
 /**
  * Generate a tattoo image from a text prompt using Gemini.
@@ -102,6 +160,15 @@ export const textToImage = action({
       userId,
       usageId: usageCheck.usageId!,
     });
+
+    // Store in Convex file storage for multi-device sync
+    await storeGenerationInCloud(
+      ctx,
+      result.imageData,
+      userId,
+      improvedPrompt,
+      "text_to_image"
+    );
 
     return { imageData: result.imageData };
   },
@@ -212,6 +279,15 @@ export const textAndImageToImage = action({
       userId,
       usageId: usageCheck.usageId!,
     });
+
+    // Store in Convex file storage for multi-device sync
+    await storeGenerationInCloud(
+      ctx,
+      result.imageData,
+      userId,
+      improvedPrompt,
+      "text_and_image_to_image"
+    );
 
     return { imageData: result.imageData };
   },

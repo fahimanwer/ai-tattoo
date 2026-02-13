@@ -12,6 +12,7 @@ const getBaseURL = () => {
 
 export const authClient = createAuthClient({
   baseURL: getBaseURL(),
+  basePath: "/http/api/auth",
   disableDefaultFetchPlugins: true,
   plugins: [
     expoClient({

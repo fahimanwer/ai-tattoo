@@ -16,4 +16,17 @@ export default defineSchema({
     .index("by_userId_entitlement", ["userId", "entitlement"])
     .index("by_revenuecatUserId_entitlement", ["revenuecatUserId", "entitlement"])
     .index("by_userId_periodStart", ["userId", "periodStart"]),
+
+  generations: defineTable({
+    userId: v.string(),
+    storageId: v.id("_storage"),
+    prompt: v.string(),
+    generationType: v.union(
+      v.literal("text_to_image"),
+      v.literal("text_and_image_to_image")
+    ),
+    createdAt: v.float64(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_createdAt", ["userId", "createdAt"]),
 });
