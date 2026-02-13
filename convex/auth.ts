@@ -39,7 +39,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
         prompt: "select_account",
       },
       apple: {
-        clientId: "dev.codewithbeto.aitattoo",
+        clientId: "com.fahimanwer.tattooai",
       },
     },
     plugins: [

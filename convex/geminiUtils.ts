@@ -20,8 +20,8 @@ export function getGeminiApiKey(): string {
   return process.env.GEMINI_API_KEY || "";
 }
 
-export function getOpenAIApiKey(): string {
-  return process.env.OPENAI_API_KEY || "";
+export function getOpenRouterApiKey(): string {
+  return process.env.OPENROUTER_API_KEY || "";
 }
 
 // ============================================================================
@@ -443,18 +443,18 @@ export function toGeminiImageParts(
 // Image Validation
 // ============================================================================
 
-const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 /**
- * Validates that images don't contain animals using GPT-4o-mini Vision API
+ * Validates that images don't contain animals using OpenRouter GPT-4o-mini Vision API
  */
 export async function validateNoAnimals(
   images_base64: string[]
 ): Promise<{ valid: true } | { valid: false; error: string }> {
-  const OPENAI_API_KEY = getOpenAIApiKey();
+  const OPENROUTER_API_KEY = getOpenRouterApiKey();
 
-  if (!OPENAI_API_KEY) {
-    console.log("geminiUtils: OPENAI_API_KEY not set, skipping animal validation");
+  if (!OPENROUTER_API_KEY) {
+    console.log("geminiUtils: OPENROUTER_API_KEY not set, skipping animal validation");
     return { valid: true };
   }
 
@@ -462,14 +462,14 @@ export async function validateNoAnimals(
     const { mime_type, data } = extractMimeAndData(imageBase64);
 
     try {
-      const response = await fetch(OPENAI_API_URL, {
+      const response = await fetch(OPENROUTER_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
+          model: "openai/gpt-4o-mini",
           messages: [
             {
               role: "user",
@@ -490,7 +490,7 @@ export async function validateNoAnimals(
       });
 
       if (!response.ok) {
-        console.log("geminiUtils: OpenAI API error during animal validation", {
+        console.log("geminiUtils: OpenRouter API error during animal validation", {
           status: response.status,
         });
         continue;
@@ -522,11 +522,11 @@ export async function validateNoAnimals(
 export async function validateHumanBodyParts(
   images_base64: string[]
 ): Promise<{ valid: true } | { valid: false; error: string }> {
-  const OPENAI_API_KEY = getOpenAIApiKey();
+  const OPENROUTER_API_KEY = getOpenRouterApiKey();
 
-  if (!OPENAI_API_KEY) {
+  if (!OPENROUTER_API_KEY) {
     console.log(
-      "geminiUtils: OPENAI_API_KEY not set, skipping human body validation"
+      "geminiUtils: OPENROUTER_API_KEY not set, skipping human body validation"
     );
     return { valid: true };
   }
@@ -535,14 +535,14 @@ export async function validateHumanBodyParts(
     const { mime_type, data } = extractMimeAndData(imageBase64);
 
     try {
-      const response = await fetch(OPENAI_API_URL, {
+      const response = await fetch(OPENROUTER_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
+          model: "openai/gpt-4o-mini",
           messages: [
             {
               role: "user",
@@ -564,7 +564,7 @@ export async function validateHumanBodyParts(
 
       if (!response.ok) {
         console.log(
-          "geminiUtils: OpenAI API error during human body validation",
+          "geminiUtils: OpenRouter API error during human body validation",
           { status: response.status }
         );
         continue;

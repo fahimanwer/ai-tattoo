@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "dev.codewithbeto.aitattoo",
+      "bundleIdentifier": "com.fahimanwer.tattooai",
       "icon": "./assets/InkigoIcon.icon",
       "usesAppleSignIn": true,
       "infoPlist": {
@@ -21,14 +21,13 @@
           "tiktoksharesdk"
         ]
       },
-      "appleTeamId": "T2A8YY9YDW",
       "entitlements": {
-        "com.apple.security.application-groups": ["group.codewithbeto.aitattoo"]
+        "com.apple.security.application-groups": ["group.fahimanwer.tattooai"]
       }
     },
     "android": {
       "edgeToEdgeEnabled": true,
-      "package": "dev.codewithbeto.aitattoo",
+      "package": "com.fahimanwer.tattooai",
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA",

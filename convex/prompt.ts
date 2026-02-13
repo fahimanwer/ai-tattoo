@@ -1,8 +1,8 @@
 import { action } from "./_generated/server";
 import { v } from "convex/values";
-import { getOpenAIApiKey } from "./geminiUtils";
+import { getOpenRouterApiKey } from "./geminiUtils";
 
-const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 /**
  * Builds the system prompt for tattoo prompt enhancement.
@@ -65,7 +65,7 @@ GENERAL RULES:
 }
 
 /**
- * Improves a tattoo prompt using OpenAI GPT-4o-mini.
+ * Improves a tattoo prompt using OpenRouter GPT-4o-mini.
  * Falls back to the original prompt on any error.
  */
 export const improvePrompt = action({
@@ -80,22 +80,22 @@ export const improvePrompt = action({
     console.log("prompt: Original prompt", prompt);
     console.log("prompt: Has existing image", hasExistingImage);
 
-    const OPENAI_API_KEY = getOpenAIApiKey();
+    const OPENROUTER_API_KEY = getOpenRouterApiKey();
 
-    if (!OPENAI_API_KEY) {
-      console.log("prompt: OPENAI_API_KEY not set, returning original prompt");
+    if (!OPENROUTER_API_KEY) {
+      console.log("prompt: OPENROUTER_API_KEY not set, returning original prompt");
       return { improvedPrompt: prompt };
     }
 
     try {
-      const response = await fetch(OPENAI_API_URL, {
+      const response = await fetch(OPENROUTER_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
+          model: "openai/gpt-4o-mini",
           messages: [
             {
               role: "system",
@@ -112,7 +112,7 @@ export const improvePrompt = action({
       });
 
       if (!response.ok) {
-        console.log("prompt: OpenAI API error", { status: response.status });
+        console.log("prompt: OpenRouter API error", { status: response.status });
         return { improvedPrompt: prompt };
       }
 
@@ -142,22 +142,22 @@ export async function improvePromptHelper(
     return prompt;
   }
 
-  const OPENAI_API_KEY = getOpenAIApiKey();
+  const OPENROUTER_API_KEY = getOpenRouterApiKey();
 
-  if (!OPENAI_API_KEY) {
-    console.log("prompt: OPENAI_API_KEY not set, returning original prompt");
+  if (!OPENROUTER_API_KEY) {
+    console.log("prompt: OPENROUTER_API_KEY not set, returning original prompt");
     return prompt;
   }
 
   try {
-    const response = await fetch(OPENAI_API_URL, {
+    const response = await fetch(OPENROUTER_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "openai/gpt-4o-mini",
         messages: [
           {
             role: "system",
@@ -174,7 +174,7 @@ export async function improvePromptHelper(
     });
 
     if (!response.ok) {
-      console.log("prompt: OpenAI API error during internal improve", {
+      console.log("prompt: OpenRouter API error during internal improve", {
         status: response.status,
       });
       return prompt;
