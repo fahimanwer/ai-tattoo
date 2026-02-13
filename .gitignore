@@ -42,6 +42,7 @@ app-example/
 
 # Android
 android/
+!ASO/android/
 
 # iOS
 /ios/
