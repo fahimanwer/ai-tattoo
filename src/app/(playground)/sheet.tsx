@@ -58,6 +58,7 @@ export default function Sheet() {
   const { isDark } = useTheme();
   const fg = useThemeColor("foreground");
   const muted = useThemeColor("muted");
+  const iconColor = isDark ? Color.zinc[300] : Color.zinc[700];
 
   // Check if user has a tattoo/image already selected
   const hasActiveImage = activeGenerationUris.length > 0;
@@ -222,7 +223,7 @@ export default function Sheet() {
                 <SwiftUIText
                   modifiers={[
                     font({ weight: "semibold", size: 16 }),
-                    foregroundStyle("black"),
+                    foregroundStyle("white"),
                   ]}
                 >
                   Continue
@@ -253,7 +254,7 @@ export default function Sheet() {
                 <SwiftUIText
                   modifiers={[
                     font({ weight: "semibold", size: 16 }),
-                    foregroundStyle("black"),
+                    foregroundStyle("white"),
                   ]}
                 >
                   Open Settings
@@ -293,7 +294,7 @@ export default function Sheet() {
       >
         {/* Camera button */}
         <PressableScale onPress={handleCameraPress} style={[styles.cameraButton, { backgroundColor: isDark ? Color.zinc[800] : Color.zinc[100] }]}>
-          <SymbolView name="camera.fill" size={32} tintColor={fg} />
+          <SymbolView name="camera.fill" size={32} tintColor={iconColor} />
         </PressableScale>
 
         {/* Recent photos */}
@@ -381,7 +382,7 @@ export default function Sheet() {
         {/* Image Picker Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text type="sm" weight="medium" style={{ paddingHorizontal: 16 }}>
+            <Text type="sm" weight="medium" style={{ paddingHorizontal: 16, color: fg }}>
               Recent Photos
             </Text>
             <Activity mode={maxSelection === 1 ? "visible" : "hidden"}>
@@ -559,14 +560,15 @@ function OptionRow({ icon, title, description, onPress }: OptionRowProps) {
   const { isDark } = useTheme();
   const fg = useThemeColor("foreground");
   const muted = useThemeColor("muted");
+  const iconColor = isDark ? Color.zinc[300] : Color.zinc[700];
 
   return (
     <PressableScale onPress={onPress} style={styles.optionRow} hitSlop={16}>
       <View style={[styles.optionIconContainer, { backgroundColor: isDark ? Color.zinc[800] : Color.zinc[100] }]}>
-        <SymbolView name={icon as any} size={24} tintColor={fg} />
+        <SymbolView name={icon as any} size={24} tintColor={iconColor} />
       </View>
       <View style={styles.optionContent}>
-        <Text weight="medium">{title}</Text>
+        <Text weight="medium" style={{ color: fg }}>{title}</Text>
         <Text type="xs" style={[styles.optionDescription, { color: muted }]}>
           {description}
         </Text>
@@ -625,7 +627,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   selectionBadgeText: {
-    color: Color.zinc[900],
+    color: "white",
     fontSize: 12,
     fontWeight: "700",
   },

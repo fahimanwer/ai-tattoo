@@ -289,16 +289,12 @@ export function InputControls({
                 <SwiftUIButton
                   onPress={handleSubmit}
                   modifiers={[
-                    tint(prompt.length > 0 ? "#3563E9" : "gray"),
+                    tint(isDark ? "white" : "black"),
                     buttonStyle(
-                      isLiquidGlassAvailable() ? "glassProminent" : "bordered"
+                      isLiquidGlassAvailable() ? "glass" : "bordered"
                     ),
                     background(
-                      isLiquidGlassAvailable()
-                        ? "transparent"
-                        : prompt.length > 0
-                        ? "#3563E9"
-                        : (isDark ? "#333333" : "#E5E5E5")
+                      isLiquidGlassAvailable() ? "transparent" : (isDark ? "#000000" : "#F5F5F7")
                     ),
                     clipShape("circle"),
                     disabled(isSubmitDisabled || prompt.length === 0),
@@ -307,7 +303,6 @@ export function InputControls({
                   <Image
                     systemName={"arrow.up"}
                     size={16}
-                    color={prompt.length > 0 ? "black" : (isDark ? undefined : "black")}
                     modifiers={[padding({ vertical: 6, horizontal: 2 })]}
                   />
                 </SwiftUIButton>
