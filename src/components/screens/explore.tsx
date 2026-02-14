@@ -16,9 +16,11 @@ import { Image } from "expo-image";
 import { router, Stack } from "expo-router";
 import { PressableScale } from "pressto";
 import { useCallback, useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { customEvent } from "vexo-analytics";
+import { ScreenHeader } from "../ui/ScreenHeader";
 
 export function ExploreScreen() {
   const {
@@ -78,7 +80,9 @@ export function ExploreScreen() {
 
   const ListHeader = useMemo(
     () => (
-      <View style={styles.listHeader}>
+      <View>
+        <ScreenHeader title={headerTitle} />
+        <View style={styles.listHeader}>
         {filterMode === "body part" ? (
           <Animated.View key="body-part" entering={FadeIn} exiting={FadeOut}>
             <BodyPartFilter
@@ -101,9 +105,11 @@ export function ExploreScreen() {
             />
           </Animated.View>
         )}
+        </View>
       </View>
     ),
     [
+      headerTitle,
       filterMode,
       selectedBodyPart,
       setSelectedBodyPart,

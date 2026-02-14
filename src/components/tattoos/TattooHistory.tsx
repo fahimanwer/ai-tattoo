@@ -14,6 +14,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Linking, StyleSheet, View } from "react-native";
 import { toast } from "sonner-native";
 import { Button } from "../ui/Button";
+import { ScreenHeader } from "../ui/ScreenHeader";
 import { Text } from "../ui/Text";
 
 export function TattooHistory() {
@@ -262,7 +263,12 @@ export function TattooHistory() {
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       ListEmptyComponent={renderEmpty}
-      ListHeaderComponent={renderHeader}
+      ListHeaderComponent={
+        <>
+          <ScreenHeader title="My Tattoos" />
+          {renderHeader()}
+        </>
+      }
       recycleItems
     />
   );

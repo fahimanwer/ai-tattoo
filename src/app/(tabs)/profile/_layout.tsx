@@ -1,5 +1,6 @@
 import { useLargeHeaderOptions } from "@/src/constants/navigation-options";
 import { Stack } from "expo-router";
+import { Platform } from "react-native";
 
 export default function HomeLayout() {
   const largeHeaderOptions = useLargeHeaderOptions();
@@ -16,6 +17,7 @@ export default function HomeLayout() {
         options={{
           title: "Profile",
           headerLargeTitle: true,
+          headerShown: Platform.OS === "ios",
         }}
       />
     </Stack>

@@ -24,6 +24,7 @@ import {
   SettingsToggleRow,
 } from "./profile/ProfileComponents";
 import { type ThemeMode, useTheme } from "@/src/context/ThemeContext";
+import { ScreenHeader } from "../ui/ScreenHeader";
 
 export function Profile() {
   const {
@@ -64,11 +65,13 @@ export function Profile() {
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 40 }}
+      contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40, gap: 20 }}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
       }
     >
+      <ScreenHeader title="Profile" />
+
       {/* Sign-in prompt */}
       {!isAuthenticated && (
         <SectionCard>

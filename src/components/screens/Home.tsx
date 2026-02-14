@@ -6,6 +6,7 @@ import { useThemeColor } from "heroui-native";
 import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
+import { ScreenHeader } from "../ui/ScreenHeader";
 import { CelebrityTattoos } from "../home/CelebrityTattoos";
 import { DiscoverSketchDesigns } from "../home/DiscoverSketchDesigns";
 import { GetInspiration } from "../home/GetInspiration";
@@ -38,6 +39,7 @@ export function Home() {
       }
       showsVerticalScrollIndicator={false}
     >
+      <ScreenHeader title="Inkigo AI" />
       <Animated.View
         style={styles.section}
         entering={FadeIn.duration(800).delay(100).springify()}
