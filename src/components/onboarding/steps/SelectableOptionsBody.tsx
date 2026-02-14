@@ -218,7 +218,10 @@ function SelectableOption({
           </View>
         )}
 
-        <Text weight="medium" style={isChip ? undefined : { flex: 1 }}>
+        <Text
+          weight="medium"
+          style={isChip ? { color: "white" } : { flex: 1, color: "white" }}
+        >
           {option.label}
         </Text>
       </AnimatedPressableScale>

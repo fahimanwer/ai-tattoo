@@ -66,7 +66,7 @@ export function SketchDesignCard({
             <Text
               type="sm"
               weight="bold"
-              style={styles.description}
+              style={[styles.description, { color: "white" }]}
               numberOfLines={1}
             >
               {subtitle}

@@ -1,6 +1,6 @@
 import { Colors } from "@/src/constants/Colors";
 import { useAccentColor } from "@/src/hooks/useAccentColor";
-import { useColorScheme } from "@/src/hooks/useColorScheme";
+import { useTheme } from "@/src/context/ThemeContext";
 import {
   ColorConfig,
   getColorValue,
@@ -213,11 +213,12 @@ export function Badge({
   style,
   symbol,
 }: BadgeProps) {
-  const colorScheme = useColorScheme();
+  const { isDark } = useTheme();
+  const colorScheme = isDark ? "dark" : "light";
   const { accentHex } = useAccentColor();
 
   const variantConfig = useMemo(() => {
-    const scheme = (colorScheme ?? "light") as "light" | "dark";
+    const scheme = colorScheme;
     if (color) {
       const variants = generateVariantConfig(color, scheme);
       return variants[variant];

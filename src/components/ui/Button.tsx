@@ -1,6 +1,6 @@
 import { Colors } from "@/src/constants/Colors";
 import { useAccentColor } from "@/src/hooks/useAccentColor";
-import { useColorScheme } from "@/src/hooks/useColorScheme";
+import { useTheme } from "@/src/context/ThemeContext";
 import {
   ColorConfig,
   getColorValue,
@@ -310,7 +310,8 @@ export function Button({
   hapticStyle = "light",
   confirmationAlert,
 }: ButtonProps) {
-  const colorScheme = useColorScheme();
+  const { isDark } = useTheme();
+  const colorScheme = isDark ? "dark" : "light";
   const spinValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

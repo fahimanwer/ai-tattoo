@@ -60,10 +60,12 @@ export function AuthContent({
           overflow: "hidden",
         }}
       >
-        <Text type="3xl" weight="bold">
+        <Text type="3xl" weight="bold" style={{ color: "white" }}>
           {title}
         </Text>
-        <Text type="default">{description}</Text>
+        <Text type="default" style={{ color: "white" }}>
+          {description}
+        </Text>
 
         {/* Easter egg: visible when users expand the sheet */}
         <Animated.View
@@ -89,10 +91,13 @@ export function AuthContent({
               style={{ width: 80, height: 80 }}
             />
           </View>
-          <Text type="default" weight="semibold">
+          <Text type="default" weight="semibold" style={{ color: "white" }}>
             Ink-ognito mode
           </Text>
-          <Text type="sm" style={{ opacity: 0.6, textAlign: "center" }}>
+          <Text
+            type="sm"
+            style={{ opacity: 0.6, textAlign: "center", color: "white" }}
+          >
             Your designs stay with you, not with us.
           </Text>
         </Animated.View>
@@ -132,11 +137,15 @@ export function AuthContent({
             textAlign: "center",
             opacity: 0.5,
             lineHeight: 20,
+            color: "white",
           }}
         >
           By continuing you agree to our{" "}
           <Link href="/terms-of-service" asChild>
-            <Text type="sm" style={{ textDecorationLine: "underline" }}>
+            <Text
+              type="sm"
+              style={{ textDecorationLine: "underline", color: "white" }}
+            >
               Terms of Service
             </Text>
           </Link>

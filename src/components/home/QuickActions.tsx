@@ -77,7 +77,9 @@ function Item({ item }: { item: (typeof actions)[0] }) {
     >
       <Image source={item.image} style={styles.image} contentFit="cover" />
       <View style={styles.textContainer}>
-        <Text weight="bold">{item.title}</Text>
+        <Text weight="bold" style={{ color: "white" }}>
+          {item.title}
+        </Text>
         <Text type="caption" style={styles.description}>
           {item.description}
         </Text>

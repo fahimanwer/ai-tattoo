@@ -9,11 +9,11 @@ import {
 import { useVideoPlayer, VideoView } from "expo-video";
 import {
   StyleSheet,
-  useColorScheme,
   View,
   type ColorValue,
   type DimensionValue,
 } from "react-native";
+import { useTheme } from "@/src/context/ThemeContext";
 
 export interface VideoOptions {
   loop?: boolean;
@@ -70,7 +70,7 @@ export default function LinearGradientImageBlur({
   contentPosition = "top",
   imageHeight = "100%",
 }: LinearGradientImageBlurProps) {
-  const isDarkMode = useColorScheme() === "dark";
+  const { isDark: isDarkMode } = useTheme();
 
   const selectedColors = isDarkMode
     ? gradientColors.dark

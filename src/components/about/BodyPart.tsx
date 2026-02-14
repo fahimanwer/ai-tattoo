@@ -105,10 +105,14 @@ export default function BodyPartParallaxView({
         </Animated.View>
         <View style={styles.headerContainer}>
           <View style={styles.headerContent}>
-            <Text type="4xl" weight="bold">
+            <Text type="4xl" weight="bold" style={{ color: "white" }}>
               {title || getBodyPartDisplayName(bodyPart)}
             </Text>
-            <Text type="default" weight="normal" style={{ opacity: 0.7 }}>
+            <Text
+              type="default"
+              weight="normal"
+              style={{ opacity: 0.7, color: "white" }}
+            >
               {filteredImages.length} tattoo designs
             </Text>
           </View>
