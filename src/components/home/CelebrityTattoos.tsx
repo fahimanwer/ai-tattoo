@@ -3,16 +3,18 @@ import { Text } from "@/src/components/ui/Text";
 import { VerticalCard } from "@/src/components/ui/VerticalCard";
 import { LegendList } from "@legendapp/list";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { customEvent } from "vexo-analytics";
 
 export function CelebrityTattoos() {
+  const { t } = useTranslation();
   const categoriesData = [...tattooCategories];
 
   return (
     <View style={{ flex: 1, gap: 16 }}>
       <Text type="subtitle" weight="bold" style={{ paddingHorizontal: 16 }}>
-        More styles
+        {t('home.moreStyles')}
       </Text>
       <LegendList
         horizontal

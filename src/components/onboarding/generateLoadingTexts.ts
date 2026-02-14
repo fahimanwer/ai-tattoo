@@ -1,3 +1,4 @@
+import i18n from '@/src/lib/i18n';
 import type { OnboardingAnswers } from "./onboardingTypes";
 
 /**
@@ -44,22 +45,22 @@ export function generateLoadingTexts(answers: OnboardingAnswers): string[] {
 
   // Message 1: Personal acknowledgment - makes them feel heard
   if (userName) {
-    messages.push(`Understanding ${userName}'s vision`);
+    messages.push(i18n.t('onboarding.loading.understandingVision', { name: userName }));
   } else {
-    messages.push("Understanding your vision");
+    messages.push(i18n.t('onboarding.loading.understandingVisionDefault'));
   }
 
   // Message 2: Personalization - shows we're tailoring to their choices
   if (styles && styles.length > 0 && styles[0] !== "not_sure") {
-    messages.push("Tailoring designs to your style");
+    messages.push(i18n.t('onboarding.loading.tailoringDesigns'));
   } else if (goal === "cover_up") {
-    messages.push("Setting up cover-up tools");
+    messages.push(i18n.t('onboarding.loading.settingUpCoverUp'));
   } else {
-    messages.push("Personalizing your experience");
+    messages.push(i18n.t('onboarding.loading.personalizingExperience'));
   }
 
   // Message 3: Excitement/readiness - builds anticipation
-  messages.push("Preparing your design studio");
+  messages.push(i18n.t('onboarding.loading.preparingStudio'));
 
   // --- Commented out lower-impact messages ---
   // if (location && location.length > 0 && messages.length < 2) {
@@ -75,10 +76,10 @@ export function generateLoadingTexts(answers: OnboardingAnswers): string[] {
   //   messages.push("Applying your aesthetic choices");
   // }
 
-  messages.push("Configuring your workspace");
+  messages.push(i18n.t('onboarding.loading.configuringWorkspace'));
   // "Setting up your dashboard" - too generic
   // "Preparing your workspace" - redundant with "design studio"
-  messages.push("Applying your preferences");
+  messages.push(i18n.t('onboarding.loading.applyingPreferences'));
   // --- End commented out ---
 
   // Return exactly 3 high-impact messages

@@ -4,6 +4,7 @@ import { useThemeColor } from "heroui-native";
 import { PressableScale } from "pressto";
 import { Activity } from "react";
 import { Linking, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 /**
@@ -32,7 +33,7 @@ interface PlaygroundErrorProps {
   onDismiss?: () => void;
   /**
    * Support email address for contact support link
-   * @default "support@inkigo.app"
+   * @default "contact@fahimanwer.com"
    */
   supportEmail?: string;
 }
@@ -71,8 +72,9 @@ export function PlaygroundError({
   errorType,
   errorMessage,
   onDismiss,
-  supportEmail = "beto@codewithbeto.dev",
+  supportEmail = "contact@fahimanwer.com",
 }: PlaygroundErrorProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const fg = useThemeColor("foreground");
   const muted = useThemeColor("muted");
@@ -106,15 +108,13 @@ export function PlaygroundError({
               weight="semibold"
               style={{ textAlign: "center", color: fg }}
             >
-              Keep creating without limits
+              {t('playground.error.keepCreating')}
             </Text>
             <Text
               type="sm"
               style={{ color: muted, textAlign: "center" }}
             >
-              {
-                "You've reached your current generation limit. Upgrade now to explore variations, refine designs, and keep creating without waiting."
-              }
+              {t('playground.error.limitReachedFree')}
             </Text>
             <PressableScale onPress={handleUpgrade}>
               <Text
@@ -122,7 +122,7 @@ export function PlaygroundError({
                 weight="semibold"
                 style={{ color: "#3563E9" }}
               >
-                Unlock unlimited designs →
+                {t('playground.error.unlockUnlimited')}
               </Text>
             </PressableScale>
           </View>
@@ -138,15 +138,13 @@ export function PlaygroundError({
               weight="semibold"
               style={{ textAlign: "center", color: fg }}
             >
-              {"You've reached your limit for this period"}
+              {t('playground.error.limitReachedSubscribed')}
             </Text>
             <Text
               type="sm"
               style={{ color: muted, textAlign: "center" }}
             >
-              {
-                "Your plan's generation limit has been reached. Your limit will reset at the start of your next billing period."
-              }
+              {t('playground.error.limitReachedSubscribedDesc')}
             </Text>
             <View style={{ gap: 8, alignItems: "center" }}>
               <PressableScale onPress={onDismiss}>
@@ -155,7 +153,7 @@ export function PlaygroundError({
                   weight="medium"
                   style={{ color: fg }}
                 >
-                  Try again later
+                  {t('playground.error.tryAgainLater')}
                 </Text>
               </PressableScale>
               <PressableScale onPress={handleContactSupport}>
@@ -166,7 +164,7 @@ export function PlaygroundError({
                     textDecorationLine: "underline",
                   }}
                 >
-                  Contact support
+                  {t('playground.error.contactSupport')}
                 </Text>
               </PressableScale>
             </View>
@@ -181,17 +179,17 @@ export function PlaygroundError({
               weight="semibold"
               style={{ textAlign: "center", color: fg }}
             >
-              Something went wrong
+              {t('common.somethingWentWrong')}
             </Text>
             <Text
               type="sm"
               style={{ color: muted, textAlign: "center" }}
             >
-              {errorMessage || "An unexpected error occurred"}
+              {errorMessage || t('common.unexpectedError')}
             </Text>
             <PressableScale onPress={onDismiss}>
               <Text type="default" weight="medium" style={{ color: "#3563E9" }}>
-                Try again
+                {t('common.tryAgain')}
               </Text>
             </PressableScale>
           </View>

@@ -4,6 +4,7 @@ import { useTheme } from "@/src/context/ThemeContext";
 import { useUserData } from "@/src/hooks/useUserData";
 import { useThemeColor } from "heroui-native";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { ScreenHeader } from "../ui/ScreenHeader";
@@ -14,6 +15,7 @@ import { Moods } from "../home/Moods";
 import { QuickActions } from "../home/QuickActions";
 
 export function Home() {
+  const { t } = useTranslation();
   const { refresh } = useUserData();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { isDark } = useTheme();
@@ -39,7 +41,7 @@ export function Home() {
       }
       showsVerticalScrollIndicator={false}
     >
-      <ScreenHeader title="Inkigo AI" />
+      <ScreenHeader title={t('navigation.appName')} />
       <Animated.View
         style={styles.section}
         entering={FadeIn.duration(800).delay(100).springify()}

@@ -12,6 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Activity, use, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AppState,
   AppStateStatus,
@@ -44,6 +45,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function OnboardingV2() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -59,7 +61,7 @@ export default function OnboardingV2() {
   const currentStep = ONBOARDING_STEPS[currentIndex] ?? ONBOARDING_STEPS[0];
   const isLastStep = currentIndex >= ONBOARDING_STEPS.length - 1;
   const canAdvance = isStepComplete(currentStep, answers);
-  const ctaLabel = currentStep.cta ?? "Continue";
+  const ctaLabel = currentStep.cta ?? t('common.continue');
   const canGoBack = currentIndex < 11 && currentIndex !== 0; // Prevents going back after reviews step
 
   // Play entrance haptic on first mount and track first step
@@ -247,7 +249,7 @@ export default function OnboardingV2() {
                         animated: true,
                       });
                     },
-                    label: "Back",
+                    label: t('common.back'),
                     icon: {
                       name: "chevron.left",
                       type: "sfSymbol",
@@ -444,13 +446,11 @@ export default function OnboardingV2() {
               lineHeight: 34,
             }}
           >
-            {currentStep?.kind === "congratulations" && answers["user-name"]
-              ? `Welcome aboard, ${answers["user-name"]}!`
-              : // : currentStep?.id === "user-description" && answers["user-name"]
-              // ? `${answers["user-name"]}, which best describes you?`
-              currentStep?.id === "feature-tryon" && answers["user-name"]
-              ? `Welcome ${answers["user-name"]}`
-              : currentStep?.title}
+            {currentStep.kind === "congratulations" && answers["user-name"]
+              ? t('onboarding.congratulations.welcomeAboard', { name: answers["user-name"] })
+              : currentStep.id === "feature-tryon" && answers["user-name"]
+              ? t('onboarding.congratulations.welcomeName', { name: answers["user-name"] })
+              : currentStep.title ? t(currentStep.title) : ''}
           </Text>
           <Text
             type="xl"
@@ -462,7 +462,7 @@ export default function OnboardingV2() {
               paddingHorizontal: 16,
             }}
           >
-            {currentStep?.description}
+            {currentStep?.description ? t(currentStep.description) : undefined}
           </Text>
         </Animated.View>
 

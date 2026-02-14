@@ -43,7 +43,7 @@ export default function PrivacyPolicyScreen() {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, dynamicStyles.sectionTitle]}>1. Information We Collect</Text>
           <Text style={[styles.paragraph, dynamicStyles.paragraph]}>
-            When you use Inkigo, we may collect the following information:
+            When you use Tattoo Design AI, we may collect the following information:
           </Text>
           <Text style={[styles.bulletPoint, dynamicStyles.bulletPoint]}>
             • Photos you upload for tattoo preview
@@ -247,7 +247,7 @@ export default function PrivacyPolicyScreen() {
             If you have any questions about this Privacy Policy or our data
             practices, please contact us at:
           </Text>
-          <Text style={styles.contactInfo}>Email: beto@codewithbeto.dev</Text>
+          <Text style={styles.contactInfo}>Email: contact@fahimanwer.com</Text>
         </View>
       </View>
     </ScrollView>

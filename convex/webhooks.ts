@@ -14,8 +14,8 @@ const PRODUCT_ENTITLEMENT_MAP: Record<string, string> = {
   main_ai_tattoo_plus: "Plus",
   main_ai_tattoo_pro: "Pro",
   // New premium products (v2 pricing)
-  inkigo_weekly: "Premium",
-  inkigo_monthly: "Premium",
+  tattoodesignai_weekly: "Premium",
+  tattoodesignai_monthly: "Premium",
   // Test store products
   weekly: "Premium",
   monthly: "Premium",

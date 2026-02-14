@@ -3,6 +3,7 @@ import { Button, ContextMenu, Host, Image } from "@expo/ui/swift-ui";
 import { fixedSize, frame, padding } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
 import { Platform, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { PressableScale } from "pressto";
 
 type FilterMode = "body part" | "styles";
@@ -18,6 +19,8 @@ export function FilterContextMenu({
   onFilterModeChange,
   onBodyPartReset,
 }: FilterContextMenuProps) {
+  const { t } = useTranslation();
+
   if (Platform.OS !== "ios") {
     // Fallback for non-iOS platforms - use a simple PressableScale
     return (
@@ -31,7 +34,7 @@ export function FilterContextMenu({
         }}
       >
         <UIText type="default" style={styles.contextMenuTrigger}>
-          {filterMode === "styles" ? "Styles" : "Body part"} ▼
+          {filterMode === "styles" ? t('explore.styles') : t('explore.bodyPart')} ▼
         </UIText>
       </PressableScale>
     );
@@ -54,7 +57,7 @@ export function FilterContextMenu({
               onBodyPartReset();
             }}
           >
-            Body part
+            {t('explore.bodyPart')}
           </Button>
           <Button
             systemImage="paintbrush.fill"
@@ -64,7 +67,7 @@ export function FilterContextMenu({
               onBodyPartReset();
             }}
           >
-            Styles
+            {t('explore.styles')}
           </Button>
         </ContextMenu.Items>
         <ContextMenu.Trigger>

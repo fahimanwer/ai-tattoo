@@ -1,5 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dimensions, FlatList, LayoutChangeEvent, View } from "react-native";
 import {
   useDerivedValue,
@@ -21,41 +22,21 @@ type ReviewsStepBodyProps = {
   onReady?: () => void;
 };
 
-const reviews: Review[] = [
-  {
-    stars: 5,
-    title: "Amazing app!",
-    review:
-      "App works, looks and feels great! Impressed by how well it applied the tattoo, taking accurate lighting and shadowing into account.",
-    createdAt: new Date("2025-11-19"),
-    author: "Jacob C.",
-  },
-  {
-    stars: 5,
-    title: "Actually useful",
-    review:
-      "The tattoo designs are clean and detailed. Some images take a bit longer to generate, but overall it's one of the best AI tattoo apps out there.",
-    createdAt: new Date("2024-12-16"),
-    author: "Alexrays1",
-  },
-  {
-    stars: 5,
-    title: "I love this",
-    review: "Highly recommended 🫵🏼",
-    createdAt: new Date("2025-11-18"),
-    author: "Antoniozam01",
-  },
+const REVIEW_DATES = [
+  new Date("2025-11-19"),
+  new Date("2024-12-16"),
+  new Date("2025-11-18"),
 ];
 
 // Goal: Make the user feel like we are building something for them
 // Disable everything during this time
-const FINAL_MESSAGE = "Your tattoo journey starts now";
 
 export function ReviewsStepBody({
   step,
   answers = {},
   onReady,
 }: ReviewsStepBodyProps) {
+  const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [progressBarWidth, setProgressBarWidth] = useState(0);
@@ -64,6 +45,31 @@ export function ReviewsStepBody({
 
   // Keep callback ref up to date
   onReadyRef.current = onReady;
+
+  // Build translated reviews
+  const reviews: Review[] = useMemo(() => [
+    {
+      stars: 5,
+      title: t('onboarding.reviews.review1Title'),
+      review: t('onboarding.reviews.review1Body'),
+      createdAt: REVIEW_DATES[0],
+      author: t('onboarding.reviews.review1Author'),
+    },
+    {
+      stars: 5,
+      title: t('onboarding.reviews.review2Title'),
+      review: t('onboarding.reviews.review2Body'),
+      createdAt: REVIEW_DATES[1],
+      author: t('onboarding.reviews.review2Author'),
+    },
+    {
+      stars: 5,
+      title: t('onboarding.reviews.review3Title'),
+      review: t('onboarding.reviews.review3Body'),
+      createdAt: REVIEW_DATES[2],
+      author: t('onboarding.reviews.review3Author'),
+    },
+  ], [t]);
 
   // Generate personalized loading messages
   const loadingTexts = useMemo(() => generateLoadingTexts(answers), [answers]);
@@ -130,7 +136,7 @@ export function ReviewsStepBody({
   }, [index, isLoading]);
 
   // Determine which text to show
-  const displayText = isLoading ? loadingTexts[index] : FINAL_MESSAGE;
+  const displayText = isLoading ? loadingTexts[index] : t('onboarding.loading.journeyStartsNow');
 
   return (
     <View style={{ flex: 1 }}>

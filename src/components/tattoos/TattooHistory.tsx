@@ -14,12 +14,14 @@ import { useThemeColor } from "heroui-native";
 import { PressableScale } from "pressto";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Linking, Platform, StyleSheet, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner-native";
 import { Button } from "../ui/Button";
 import { ScreenHeader } from "../ui/ScreenHeader";
 import { Text } from "../ui/Text";
 
 export function TattooHistory() {
+  const { t } = useTranslation();
   const [tattoos, setTattoos] = useState<MediaLibrary.Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRestoring, setIsRestoring] = useState(false);
@@ -60,12 +62,12 @@ export function TattooHistory() {
   const handleRestore = useCallback(async () => {
     try {
       setIsRestoring(true);
-      toast("Restoring from cloud...", { duration: 2000 });
+      toast(t('tattoos.restoringFromCloud'), { duration: 2000 });
 
       const generations = await getRestoreData();
 
       if (!generations || generations.length === 0) {
-        toast("No cloud generations found", { duration: 2000 });
+        toast(t('tattoos.noCloudGenerations'), { duration: 2000 });
         return;
       }
 
@@ -92,7 +94,7 @@ export function TattooHistory() {
         }
       }
 
-      toast.success(`Restored ${restored} of ${generations.length} tattoos`, {
+      toast.success(t('tattoos.restoredCount', { restored, total: generations.length }), {
         duration: 3000,
       });
 
@@ -100,7 +102,7 @@ export function TattooHistory() {
       await loadTattoos();
     } catch (error) {
       console.error("Restore failed:", error);
-      Alert.alert("Restore Failed", "Unable to restore from cloud. Please try again.");
+      Alert.alert(t('tattoos.restoreFailedTitle'), t('tattoos.restoreFailedMessage'));
     } finally {
       setIsRestoring(false);
     }
@@ -119,7 +121,7 @@ export function TattooHistory() {
       return (
         <View style={styles.emptyContainer}>
           <ActivityIndicator size="large" />
-          <Text style={styles.emptyDescription}>Loading tattoos...</Text>
+          <Text style={styles.emptyDescription}>{t('tattoos.loading')}</Text>
         </View>
       );
     }
@@ -133,15 +135,14 @@ export function TattooHistory() {
             <Ionicons name={getIoniconName("photo.fill.on.rectangle.fill")} size={60} color={foreground} />
           )}
           <Text type="lg" weight="semibold" style={styles.emptyTitle}>
-            Let&apos;s Get Started
+            {t('permissions.photoAccessTitle')}
           </Text>
           <Text style={[styles.emptyDescription, { color: muted }]}>
-            We need access to your photo library so you can view and save your
-            tattoos.
+            {t('permissions.photoLibraryNeeded')}
           </Text>
           <Button
             onPress={requestPermission}
-            title="Continue"
+            title={t('common.continue')}
             variant="link"
             color="blue"
           />
@@ -158,15 +159,14 @@ export function TattooHistory() {
             <Ionicons name={getIoniconName("exclamationmark.triangle.fill")} size={60} color={foreground} />
           )}
           <Text type="lg" weight="semibold" style={styles.emptyTitle}>
-            Photo Access Needed
+            {t('permissions.photoAccessDeniedTitle')}
           </Text>
           <Text style={[styles.emptyDescription, { color: muted }]}>
-            This feature requires access to your photo library to view and save
-            your tattoos. You can manage photo access in your device settings.
+            {t('permissions.photoAccessDeniedDescription')}
           </Text>
           <Button
             onPress={() => Linking.openURL("app-settings:")}
-            title="Open Settings"
+            title={t('common.openSettings')}
             variant="link"
             color="blue"
           />
@@ -182,10 +182,10 @@ export function TattooHistory() {
           <Ionicons name={getIoniconName("photo.fill.on.rectangle.fill")} size={60} />
         )}
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
-          No tattoos saved yet
+          {t('tattoos.emptyTitle')}
         </Text>
         <Text style={[styles.emptyDescription, { color: muted }]}>
-          Create and save your first tattoo design! Swipe down to refresh.
+          {t('tattoos.emptyDescription')}
         </Text>
         {showRestoreBanner && (
           <View style={styles.restoreBanner}>
@@ -195,10 +195,10 @@ export function TattooHistory() {
               <Ionicons name={getIoniconName("icloud.and.arrow.down")} size={24} color={foreground} />
             )}
             <Text type="sm" style={styles.restoreText}>
-              {cloudCount} tattoo{cloudCount !== 1 ? "s" : ""} found in cloud
+              {t('tattoos.cloudFound', { count: cloudCount })}
             </Text>
             <Button
-              title={isRestoring ? "Restoring..." : "Restore"}
+              title={isRestoring ? t('tattoos.restoring') : t('tattoos.restore')}
               variant="link"
               color="blue"
               onPress={handleRestore}
@@ -230,10 +230,10 @@ export function TattooHistory() {
           <Ionicons name={getIoniconName("icloud.and.arrow.down")} size={20} color={foreground} />
         )}
         <Text type="sm" style={styles.restoreText}>
-          {cloudCount} in cloud
+          {t('tattoos.cloudCount', { count: cloudCount })}
         </Text>
         <Button
-          title={isRestoring ? "Restoring..." : "Restore"}
+          title={isRestoring ? t('tattoos.restoring') : t('tattoos.restore')}
           variant="link"
           color="blue"
           onPress={handleRestore}
@@ -279,7 +279,7 @@ export function TattooHistory() {
       ListEmptyComponent={renderEmpty}
       ListHeaderComponent={
         <>
-          <ScreenHeader title="My Tattoos" />
+          <ScreenHeader title={t('tattoos.title')} />
           {renderHeader()}
         </>
       }

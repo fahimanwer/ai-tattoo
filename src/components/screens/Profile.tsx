@@ -7,26 +7,39 @@ import {
 } from "heroui-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Application from "expo-application";
-import React from "react";
+import React, { useState } from "react";
 import {
   Alert,
   Linking,
+  Pressable,
   RefreshControl,
   ScrollView,
   Text,
   View,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useProfileData } from "./profile/useProfileData";
 import {
   ActionRow,
+  LanguagePickerModal,
   ProfileRow,
   SectionCard,
   SettingsToggleRow,
 } from "./profile/ProfileComponents";
 import { type ThemeMode, useTheme } from "@/src/context/ThemeContext";
 import { ScreenHeader } from "../ui/ScreenHeader";
+import { useLanguage, AUTO_LANGUAGE } from "@/src/hooks/useLanguage";
 
 export function Profile() {
+  const { t } = useTranslation();
+  const [languageModalOpen, setLanguageModalOpen] = useState(false);
+  const {
+    selectedLanguage,
+    currentLanguageName,
+    isAutoDetect,
+    availableLanguages,
+    changeLanguage: handleLanguageChange,
+  } = useLanguage();
   const {
     user,
     settings,
@@ -70,7 +83,7 @@ export function Profile() {
         <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
       }
     >
-      <ScreenHeader title="Profile" />
+      <ScreenHeader title={t('profile.title')} />
 
       {/* Sign-in prompt */}
       {!isAuthenticated && (
@@ -92,11 +105,10 @@ export function Profile() {
               <Ionicons name="person-outline" size={28} color={muted} />
             </View>
             <Text style={{ color: fg, fontSize: 17, fontWeight: "600" }}>
-              Not signed in
+              {t('profile.notSignedIn')}
             </Text>
             <Text style={{ color: muted, fontSize: 14, textAlign: "center" }}>
-              Sign in to access your account details, subscription info, and
-              personalized features
+              {t('profile.signInPrompt')}
             </Text>
             <Button
               variant="primary"
@@ -108,7 +120,7 @@ export function Profile() {
               }
               style={{ marginTop: 8, width: "100%" }}
             >
-              <Button.Label>Sign In</Button.Label>
+              <Button.Label>{t('auth.signIn')}</Button.Label>
             </Button>
           </View>
         </SectionCard>
@@ -116,16 +128,16 @@ export function Profile() {
 
       {/* Account Section */}
       {isAuthenticated && (
-        <SectionCard title="Account">
-          <ProfileRow label="Name" value={displayName} />
+        <SectionCard title={t('profile.account')}>
+          <ProfileRow label={t('profile.name')} value={displayName} />
           <Separator />
-          <ProfileRow label="Email" value={user?.email ?? ""} />
+          <ProfileRow label={t('profile.email')} value={user?.email ?? ""} />
           <Separator />
-          <ProfileRow label="Model" value={modelDisplayName} />
+          <ProfileRow label={t('profile.model')} value={modelDisplayName} />
           {memberSince && (
             <>
               <Separator />
-              <ProfileRow label="Member Since" value={memberSince} valueColor={muted} />
+              <ProfileRow label={t('profile.memberSince')} value={memberSince} valueColor={muted} />
             </>
           )}
         </SectionCard>
@@ -134,10 +146,10 @@ export function Profile() {
       {/* Plan Section */}
       {isAuthenticated && (hasActiveSubscription || hasActiveUsagePeriod) && (
         <SectionCard
-          title={hasActiveSubscription ? "Plan" : "Active Usage Period"}
+          title={hasActiveSubscription ? t('profile.plan') : t('profile.activeUsagePeriod')}
           footer={
             remaining === 0
-              ? "You've reached your generation limit. Upgrade to continue."
+              ? t('profile.limitReachedFooter')
               : undefined
           }
         >
@@ -149,7 +161,7 @@ export function Profile() {
               paddingVertical: 12,
             }}
           >
-            <Text style={{ color: muted, fontSize: 15 }}>Current Plan</Text>
+            <Text style={{ color: muted, fontSize: 15 }}>{t('profile.currentPlan')}</Text>
             <Chip variant="primary" size="sm">
               <Chip.Label style={{ fontWeight: "700" }}>
                 {planBadge.name}
@@ -161,32 +173,32 @@ export function Profile() {
             <Accordion.Item value="plan-details">
               <Accordion.Trigger>
                 <Text style={{ color: fg, fontSize: 15, flex: 1 }}>
-                  Plan Details
+                  {t('profile.planDetails')}
                 </Text>
                 <Accordion.Indicator />
               </Accordion.Trigger>
               <Accordion.Content>
                 <View style={{ gap: 4 }}>
                   <ProfileRow
-                    label="Status"
+                    label={t('profile.status')}
                     value={
                       lastSubscription?.unsubscribeDetectedAt
-                        ? "Cancelled (Active)"
+                        ? t('profile.cancelledActive')
                         : getStatusDisplay().text
                     }
                     valueColor={getStatusDisplay().color}
                   />
                   {lastSubscription?.expiresDate && (
                     <ProfileRow
-                      label={lastSubscription?.willRenew ? "Renews On" : "Expires On"}
+                      label={lastSubscription?.willRenew ? t('profile.renewsOn') : t('profile.expiresOn')}
                       value={new Date(lastSubscription.expiresDate).toLocaleDateString()}
                     />
                   )}
                   {lastSubscription?.daysRemaining != null &&
                     lastSubscription.daysRemaining > 0 && (
                       <ProfileRow
-                        label="Days Remaining"
-                        value={`${lastSubscription.daysRemaining} days`}
+                        label={t('profile.daysRemaining')}
+                        value={t('profile.daysValue', { count: lastSubscription.daysRemaining })}
                         valueColor={
                           lastSubscription.daysRemaining <= 3 ? "#f59e0b" : "#10b981"
                         }
@@ -194,13 +206,13 @@ export function Profile() {
                     )}
                   {lastSubscription?.price && (
                     <ProfileRow
-                      label="Price"
+                      label={t('profile.price')}
                       value={`${lastSubscription.price.currency} $${lastSubscription.price.amount}`}
                     />
                   )}
                   <ProfileRow
-                    label="Billing Period"
-                    value={`${periodStart ? new Date(periodStart).toLocaleDateString() : "N/A"} - ${periodEnd ? new Date(periodEnd).toLocaleDateString() : "N/A"}`}
+                    label={t('profile.billingPeriod')}
+                    value={`${periodStart ? new Date(periodStart).toLocaleDateString() : t('profile.na')} - ${periodEnd ? new Date(periodEnd).toLocaleDateString() : t('profile.na')}`}
                   />
                 </View>
               </Accordion.Content>
@@ -214,7 +226,7 @@ export function Profile() {
               style={{ width: "100%" }}
             >
               <Button.Label>
-                {hasActiveSubscription ? "Manage Plan" : "Upgrade Plan"}
+                {hasActiveSubscription ? t('profile.managePlan') : t('profile.upgradePlan')}
               </Button.Label>
             </Button>
           </View>
@@ -226,15 +238,15 @@ export function Profile() {
         !hasActiveSubscription &&
         !hasActiveUsagePeriod &&
         lastSubscription && (
-          <SectionCard title="We Miss You!">
+          <SectionCard title={t('profile.weMissYou')}>
             <ProfileRow
-              label="Previous Plan"
-              value={lastSubscription.productName || "Unknown"}
+              label={t('profile.previousPlan')}
+              value={lastSubscription.productName || t('profile.unknown')}
               valueColor={planColor}
             />
             <Separator />
             <ProfileRow
-              label="Status"
+              label={t('profile.status')}
               value={getStatusDisplay().text}
               valueColor={getStatusDisplay().color}
             />
@@ -245,7 +257,7 @@ export function Profile() {
                 onPress={() => router.push("/(paywall)")}
                 style={{ width: "100%" }}
               >
-                <Button.Label>Come Back & Create</Button.Label>
+                <Button.Label>{t('profile.comeBackAndCreate')}</Button.Label>
               </Button>
             </View>
           </SectionCard>
@@ -257,22 +269,20 @@ export function Profile() {
           <Accordion.Item value="enjoying">
             <Accordion.Trigger>
               <Text style={{ color: fg, fontSize: 15, flex: 1 }}>
-                Enjoying the app?
+                {t('profile.enjoyingApp')}
               </Text>
               <Accordion.Indicator />
             </Accordion.Trigger>
             <Accordion.Content>
               <View style={{ gap: 12, paddingVertical: 8 }}>
                 <Text style={{ color: muted, fontSize: 14, lineHeight: 20 }}>
-                  If you're enjoying Inkigo, a review helps other tattoo lovers
-                  discover us. You can also reach out anytime with feedback or
-                  feature ideas.
+                  {t('profile.enjoyingAppDescription')}
                 </Text>
                 <Button variant="secondary" onPress={handleRateApp}>
-                  <Button.Label>Rate on Play Store</Button.Label>
+                  <Button.Label>{t('profile.rateOnPlayStore')}</Button.Label>
                 </Button>
                 <Button variant="ghost" onPress={handleSendFeedback}>
-                  <Button.Label>Send Feedback</Button.Label>
+                  <Button.Label>{t('profile.sendFeedback')}</Button.Label>
                 </Button>
               </View>
             </Accordion.Content>
@@ -286,18 +296,17 @@ export function Profile() {
           <Accordion.Item value="artist">
             <Accordion.Trigger>
               <Text style={{ color: fg, fontSize: 15, flex: 1 }}>
-                Are you an artist?
+                {t('profile.areYouArtist')}
               </Text>
               <Accordion.Indicator />
             </Accordion.Trigger>
             <Accordion.Content>
               <View style={{ gap: 12, paddingVertical: 8 }}>
                 <Text style={{ color: muted, fontSize: 14, lineHeight: 20 }}>
-                  Interested in collaborating? Have suggestions or complaints?
-                  We'd love to hear from you!
+                  {t('profile.artistDescription')}
                 </Text>
                 <Button variant="secondary" onPress={handleArtistContact}>
-                  <Button.Label>Write to Us</Button.Label>
+                  <Button.Label>{t('profile.writeToUs')}</Button.Label>
                 </Button>
               </View>
             </Accordion.Content>
@@ -306,53 +315,53 @@ export function Profile() {
       </SectionCard>
 
       {/* Support & Feedback */}
-      <SectionCard title="Support & Feedback">
-        <ActionRow title="Rate App" icon="star-outline" onPress={handleRateApp} />
+      <SectionCard title={t('profile.supportAndFeedback')}>
+        <ActionRow title={t('profile.rateApp')} icon="star-outline" onPress={handleRateApp} />
         <Separator />
         <ActionRow
-          title="Share with Friends"
+          title={t('profile.shareWithFriends')}
           icon="share-outline"
           onPress={handleShareApp}
         />
         <Separator />
         <ActionRow
-          title="Contact Support"
+          title={t('profile.contactSupport')}
           icon="mail-outline"
           onPress={handleContactSupport}
         />
       </SectionCard>
 
       {/* Follow Us */}
-      <SectionCard title="Follow Us">
+      <SectionCard title={t('profile.followUs')}>
         <ActionRow
-          title="inkigo.ai"
+          title="fahimanwer.com"
           icon="globe-outline"
-          onPress={() => Linking.openURL("https://inkigo.ai")}
+          onPress={() => Linking.openURL("https://fahimanwer.com")}
+        />
+        <Separator />
+        <ActionRow
+          title="Facebook"
+          icon="logo-facebook"
+          onPress={() => Linking.openURL("https://www.facebook.com/profile.php?id=61574104086111")}
         />
         <Separator />
         <ActionRow
           title="Instagram"
           icon="logo-instagram"
-          onPress={() => Linking.openURL("https://www.instagram.com/inkigoapp")}
+          onPress={() => Linking.openURL("https://www.instagram.com/thewe.cc/")}
         />
         <Separator />
         <ActionRow
           title="TikTok"
           icon="logo-tiktok"
-          onPress={() => Linking.openURL("https://www.tiktok.com/@inkigoapp")}
-        />
-        <Separator />
-        <ActionRow
-          title="X"
-          icon="logo-twitter"
-          onPress={() => Linking.openURL("https://x.com/inkigoapp")}
+          onPress={() => Linking.openURL("https://www.tiktok.com/")}
         />
       </SectionCard>
 
       {/* Settings */}
       <SectionCard
-        title="Settings"
-        footer={`Version ${Application.nativeApplicationVersion}`}
+        title={t('profile.settings')}
+        footer={`${t('profile.version')} ${Application.nativeApplicationVersion}`}
       >
         <View
           style={{
@@ -370,7 +379,7 @@ export function Profile() {
             }}
           >
             <Ionicons name="contrast-outline" size={20} color={muted} />
-            <Text style={{ color: fg, fontSize: 15 }}>Appearance</Text>
+            <Text style={{ color: fg, fontSize: 15 }}>{t('profile.appearance')}</Text>
           </View>
           <View style={{ flexDirection: "row", gap: 6 }}>
             {(["light", "dark", "system"] as ThemeMode[]).map((m) => (
@@ -382,20 +391,32 @@ export function Profile() {
               >
                 <Chip.Label
                   style={{
-                    textTransform: "capitalize",
                     fontWeight: themeMode === m ? "600" : "400",
                   }}
                 >
-                  {m}
+                  {t(`profile.${m}`)}
                 </Chip.Label>
               </Chip>
             ))}
           </View>
         </View>
         <Separator />
+        <Pressable onPress={() => setLanguageModalOpen(true)} style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 10 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <Ionicons name="language-outline" size={20} color={muted} />
+            <Text style={{ color: fg, fontSize: 15 }}>{t('profile.language')}</Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <Text style={{ color: muted, fontSize: 14 }}>
+              {isAutoDetect ? t('profile.languageAuto') : currentLanguageName}
+            </Text>
+            <Ionicons name="chevron-forward" size={16} color={muted} />
+          </View>
+        </Pressable>
+        <Separator />
         <SettingsToggleRow
           icon="refresh-outline"
-          title="Show Onboarding"
+          title={t('profile.showOnboarding')}
           isSelected={!settings.isOnboarded}
           onSelectedChange={() =>
             updateSettings({ isOnboarded: !(settings.isOnboarded ?? true) })
@@ -404,16 +425,16 @@ export function Profile() {
         <Separator />
         <SettingsToggleRow
           icon="sparkles-outline"
-          title="Prompt Enhancement"
+          title={t('profile.promptEnhancement')}
           isSelected={settings.improvePrompt}
           onSelectedChange={() => {
             const newValue = !settings.improvePrompt;
             updateSettings({ improvePrompt: newValue });
             if (!newValue) {
               Alert.alert(
-                "Prompt Enhancement Disabled",
-                "Results may vary without enhancement. Turn it back on anytime.",
-                [{ text: "OK" }]
+                t('profile.promptEnhancementDisabledTitle'),
+                t('profile.promptEnhancementDisabledMessage'),
+                [{ text: t('common.ok') }]
               );
             }
           }}
@@ -421,15 +442,15 @@ export function Profile() {
       </SectionCard>
 
       {/* Legal */}
-      <SectionCard title="Legal">
+      <SectionCard title={t('profile.legal')}>
         <ActionRow
-          title="Privacy Policy"
+          title={t('profile.privacyPolicy')}
           icon="shield-outline"
           onPress={handlePrivacyPolicy}
         />
         <Separator />
         <ActionRow
-          title="Terms of Service"
+          title={t('profile.termsOfService')}
           icon="document-text-outline"
           onPress={handleTermsOfService}
         />
@@ -438,15 +459,15 @@ export function Profile() {
       {/* Sign Out */}
       {isAuthenticated && (
         <Button variant="danger" onPress={handleSignOut} style={{ width: "100%" }}>
-          <Button.Label>Log Out</Button.Label>
+          <Button.Label>{t('profile.logOut')}</Button.Label>
         </Button>
       )}
 
       {/* Delete Account */}
       {isAuthenticated && (
         <SectionCard
-          title="Danger Zone"
-          footer="Deleting your account is permanent. This does NOT cancel active subscriptions."
+          title={t('profile.dangerZone')}
+          footer={t('profile.dangerZoneFooter')}
         >
           <View style={{ paddingVertical: 8 }}>
             <Button
@@ -454,11 +475,20 @@ export function Profile() {
               onPress={handleDeleteAccount}
               style={{ width: "100%" }}
             >
-              <Button.Label>Delete Account</Button.Label>
+              <Button.Label>{t('profile.deleteAccount')}</Button.Label>
             </Button>
           </View>
         </SectionCard>
       )}
+      {/* Language Picker Modal */}
+      <LanguagePickerModal
+        isOpen={languageModalOpen}
+        onOpenChange={setLanguageModalOpen}
+        selectedLanguage={selectedLanguage}
+        availableLanguages={availableLanguages}
+        autoLanguageCode={AUTO_LANGUAGE}
+        onSelectLanguage={handleLanguageChange}
+      />
     </ScrollView>
   );
 }

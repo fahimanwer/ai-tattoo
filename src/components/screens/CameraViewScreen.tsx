@@ -23,6 +23,7 @@ import { use, useEffect, useRef, useState } from "react";
 import { Linking, Platform, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
 
@@ -30,6 +31,7 @@ const AnimatedCameraView = Animated.createAnimatedComponent(CameraView);
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 export function CameraViewScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [facing, setFacing] = useState<CameraType>("back");
   const [photoBase64, setPhotoBase64] = useState<string | null>(null);
@@ -89,14 +91,14 @@ export function CameraViewScreen() {
           <Ionicons name="camera" size={60} color={foreground} />
         )}
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
-          Let&apos;s Get Started
+          {t('permissions.cameraAccessTitle')}
         </Text>
         <Text style={[styles.emptyDescription, { color: muted }]}>
-          We need access to your camera to take photos.
+          {t('permissions.cameraAccessDescription')}
         </Text>
         <Button
           onPress={requestPermission}
-          title="Continue"
+          title={t('common.continue')}
           variant="link"
           color="blue"
         />
@@ -126,15 +128,14 @@ export function CameraViewScreen() {
           <Ionicons name="warning" size={60} color={foreground} />
         )}
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
-          Camera Access Needed
+          {t('permissions.cameraAccessDeniedTitle')}
         </Text>
         <Text style={[styles.emptyDescription, { color: muted }]}>
-          This feature requires access to your camera. You can manage camera
-          access in your device settings.
+          {t('permissions.cameraAccessDeniedDescription')}
         </Text>
         <Button
           onPress={() => Linking.openURL("app-settings:")}
-          title="Open Settings"
+          title={t('common.openSettings')}
           variant="link"
           color="blue"
         />

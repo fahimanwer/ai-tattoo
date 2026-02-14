@@ -18,7 +18,7 @@ The onboarding flow is designed as a **single-shot conversion funnel** - this is
 #### **Step 1: Before/After Visual Demo** (`before-after`)
 
 - **Purpose**: Immediate value demonstration
-- **Title**: "Inkigo AI Tattoos"
+- **Title**: "Tattoo Design AI"
 - **Description**: "Preview your tattoo before committing."
 - **Why**: Visual proof of concept - shows the core value proposition instantly
 - **Personalization**: None (universal appeal)
@@ -43,7 +43,7 @@ The onboarding flow is designed as a **single-shot conversion funnel** - this is
 
 - **Purpose**: Transition from demo to personalization
 - **Title**: "Welcome" (or "Welcome [Name]" if provided)
-- **Description**: "Let's tailor your Inkigo experience now."
+- **Description**: "Let's tailor your Tattoo Design AI experience now."
 - **Why**: Sets expectation that personalization is coming
 - **Personalization**: Title includes name if provided
 - **Conversion Impact**: Medium - sets stage for personalization

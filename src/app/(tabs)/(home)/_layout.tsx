@@ -18,7 +18,7 @@ export default function ProfileLayout() {
       <Stack.Screen
         name="index"
         options={{
-          title: "Inkigo AI",
+          title: "Tattoo Design AI",
           headerLargeTitle: true,
           headerShown: Platform.OS === "ios",
         }}

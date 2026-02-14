@@ -6,6 +6,7 @@ import { useThemeColor } from "heroui-native";
 import { router, Stack } from "expo-router";
 import { useState } from "react";
 import { Linking, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner-native";
 import { customEvent } from "vexo-analytics";
 
@@ -15,6 +16,7 @@ export default function FeatureRequest() {
   const { data: session } = authClient.useSession();
   const user = session?.user;
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const fg = useThemeColor("foreground");
   const muted = useThemeColor("muted");
 
@@ -49,7 +51,7 @@ export default function FeatureRequest() {
         throw new Error("Failed to submit feature request");
       }
 
-      toast.success("Feature request sent! Thank you for your feedback.", {
+      toast.success(t('featureRequest.successToast'), {
         dismissible: true,
         duration: 2000,
       });
@@ -57,7 +59,7 @@ export default function FeatureRequest() {
       router.back();
     } catch (error) {
       console.error("Error submitting feature request:", error);
-      toast.error("Failed to send feature request. Please try again.", {
+      toast.error(t('featureRequest.errorToast'), {
         dismissible: true,
         duration: 2000,
       });
@@ -70,11 +72,11 @@ export default function FeatureRequest() {
 
   const handleContactSupport = async () => {
     try {
-      const subject = "Inkigo AI Feature Request Help";
+      const subject = t('emails.featureRequest.subject');
       const userInfo = user
         ? `User ID: ${user.id}\nEmail: ${user.email}`
-        : "(Not signed in)";
-      const body = `Hi,\n\nI need help with submitting a feature request.\n\n${userInfo}\n\nDescription:\n[Please describe your issue here]\n\nThanks!`;
+        : t('auth.notSignedIn');
+      const body = t('emails.featureRequest.body', { userInfo });
       const mailtoUrl = `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(
         subject
       )}&body=${encodeURIComponent(body)}`;
@@ -88,11 +90,11 @@ export default function FeatureRequest() {
     <>
       <Stack.Screen
         options={{
-          title: "Share Your Ideas",
+          title: t('featureRequest.title'),
           unstable_headerLeftItems: () => [
             {
               type: "button",
-              label: "Cancel",
+              label: t('common.cancel'),
               icon: {
                 name: "xmark",
                 type: "sfSymbol",
@@ -103,7 +105,7 @@ export default function FeatureRequest() {
           unstable_headerRightItems: () => [
             {
               type: "button",
-              label: "Send",
+              label: t('common.send'),
               variant: canSubmit ? "prominent" : "plain",
               tintColor: canSubmit ? "#3563E9" : undefined,
               disabled: !canSubmit,
@@ -128,7 +130,7 @@ export default function FeatureRequest() {
                 borderColor: isDark ? Color.zinc[800] : Color.zinc[200],
               },
             ]}
-            placeholder="Ideas to improve your experience..."
+            placeholder={t('featureRequest.placeholder')}
             placeholderTextColor={muted}
             value={message}
             onChangeText={setMessage}
@@ -139,13 +141,13 @@ export default function FeatureRequest() {
             editable={!isSubmitting}
           />
           <Text type="xs" style={[styles.contactText, { color: muted }]}>
-            Need help?{" "}
+            {t('featureRequest.needHelp')}{" "}
             <Text
               type="xs"
               style={[styles.contactLink, { color: muted }]}
               onPress={handleContactSupport}
             >
-              Contact us
+              {t('featureRequest.contactUs')}
             </Text>
           </Text>
         </View>

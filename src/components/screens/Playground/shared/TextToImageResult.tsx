@@ -14,6 +14,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { Activity, use, useEffect, useState } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AnimatedText } from "./AnimatedText";
 import { getPlaygroundErrorType, PlaygroundError } from "./PlaygroundError";
@@ -28,6 +29,7 @@ export function TextToImageResult({
   mutation,
   lastGenerationUris,
 }: TextToImageResultProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const { removeImageFromActiveGroup, handleTattooGeneration, blurInput } =
     use(PlaygroundContext);
@@ -128,7 +130,7 @@ export function TextToImageResult({
             mode={lastGenerationUris.length === 2 ? "visible" : "hidden"}
           >
             <OnboardingButton
-              title="Preview Tattoo on Body"
+              title={t('playground.previewOnBody')}
               onPress={handleTattooGeneration}
               // controlSizeProp=""
               fullWidth={false}
@@ -148,7 +150,7 @@ export function TextToImageResult({
               weight="medium"
               style={{ color: isDark ? Color.zinc[400] : Color.zinc[500], textAlign: "center" }}
             >
-              1 image selected - add one more to combine
+              {t('playground.imageSelectedCombine')}
             </Text>
           </Activity>
         </Animated.View>
@@ -157,7 +159,7 @@ export function TextToImageResult({
       <Activity mode={lastGenerationUris.length === 0 ? "visible" : "hidden"}>
         <AnimatedText
           style={{ flex: 0.3 }}
-          text="Describe your tattoo or choose a suggestion below"
+          text={t('playground.describeTattoo')}
           color={isDark ? Color.blue[400] : "#3563E9"}
           colorDark={isDark ? Color.blue[900] : Color.blue[200]}
         />
@@ -171,24 +173,25 @@ function LoadingChangingText({
 }: {
   lastGenerationUris: string[];
 }) {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const hasImages = lastGenerationUris.length > 0;
   const firstMessage = hasImages
-    ? "Updating your tattoo..."
-    : "Starting new tattoo...";
+    ? t('playground.loadingMessages.updatingTattoo')
+    : t('playground.loadingMessages.startingNew');
   const messages = [
     firstMessage,
-    "Tattoo machine is warming up...",
-    "Summoning the ink spirits...",
-    "Drawing inspiration from the universe...",
-    "Almost done brewing your masterpiece...",
-    "Adding a sprinkle of creativity...",
-    "Perfecting every pixel of your tattoo...",
-    "Injecting creativity into your skin...",
-    "Mixing the perfect shade of awesome...",
-    "Sharpening virtual needles...",
-    "Calibrating your tattoo vibes...",
-    "Consulting the tattoo oracle...",
+    t('playground.loadingMessages.warmingUp'),
+    t('playground.loadingMessages.summoningSpirits'),
+    t('playground.loadingMessages.drawingInspiration'),
+    t('playground.loadingMessages.brewingMasterpiece'),
+    t('playground.loadingMessages.sprinkleCreativity'),
+    t('playground.loadingMessages.perfectingPixels'),
+    t('playground.loadingMessages.injectingCreativity'),
+    t('playground.loadingMessages.mixingShade'),
+    t('playground.loadingMessages.sharpeningNeedles'),
+    t('playground.loadingMessages.calibratingVibes'),
+    t('playground.loadingMessages.consultingOracle'),
   ];
 
   const [index, setIndex] = useState(0);

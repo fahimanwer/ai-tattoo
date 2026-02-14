@@ -16,6 +16,7 @@ import {
 import * as Haptics from "expo-haptics";
 import { Activity, useState } from "react";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 interface PlanSectionProps {
   planBadge: { name: string; color: string; icon?: string };
@@ -68,28 +69,28 @@ export function PlanSection({
 }: PlanSectionProps) {
   const [isPlanDetailsExpanded, setIsPlanDetailsExpanded] = useState(false);
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <Section
       title={
         hasActiveSubscription
           ? lastSubscription?.unsubscribeDetectedAt
-            ? "Active Until Expiration"
-            : "Plan"
-          : "Active Usage Period"
+            ? t('profile.activeUntilExpiration')
+            : t('profile.plan')
+          : t('profile.activeUsagePeriod')
       }
       footer={
         <Activity mode={remaining === 0 ? "visible" : "hidden"}>
           <Text
             modifiers={[foregroundStyle({ type: "color", color: "orange" })]}
           >
-            You&apos;ve reached your AI tattoo generation limit for this plan.
-            Upgrade to continue creating tattoos or contact us.
+            {t('profile.limitReachedFooterLong')}
           </Text>
         </Activity>
       }
     >
-      <LabeledContent label="Plan">
+      <LabeledContent label={t('profile.plan')}>
         <HStack spacing={6}>
           <Label systemImage={planBadge.icon ?? "star"} />
           <Text
@@ -103,7 +104,7 @@ export function PlanSection({
         </HStack>
       </LabeledContent>
       <FormButton
-        title={hasActiveSubscription ? "Manage Plan" : "Upgrade Plan"}
+        title={hasActiveSubscription ? t('profile.managePlan') : t('profile.upgradePlan')}
         systemImage={hasActiveSubscription ? "creditcard.fill" : "star.fill"}
         onPress={() => router.push("/(paywall)")}
         color={hasActiveSubscription ? "white" : "#3563E9"}
@@ -111,10 +112,10 @@ export function PlanSection({
       <DisclosureGroup
         isExpanded={isPlanDetailsExpanded}
         onIsExpandedChange={setIsPlanDetailsExpanded}
-        label="Plan Details"
+        label={t('profile.planDetails')}
         modifiers={[tint("white")]}
       >
-        <LabeledContent label="Plan">
+        <LabeledContent label={t('profile.plan')}>
           <Text
             modifiers={[
               font({ weight: "bold" }),
@@ -122,8 +123,8 @@ export function PlanSection({
             ]}
           >
             {hasActiveSubscription && lastSubscription
-              ? lastSubscription.productName || "Unknown"
-              : "Free"}
+              ? lastSubscription.productName || t('profile.unknown')
+              : t('profile.free')}
           </Text>
         </LabeledContent>
         <Activity
@@ -131,7 +132,7 @@ export function PlanSection({
             hasActiveSubscription && lastSubscription ? "visible" : "hidden"
           }
         >
-          <LabeledContent label="Status">
+          <LabeledContent label={t('profile.status')}>
             <Text
               modifiers={[
                 font({ weight: "bold" }),
@@ -142,7 +143,7 @@ export function PlanSection({
               ]}
             >
               {lastSubscription?.unsubscribeDetectedAt
-                ? "Cancelled (Active Until Expiration)"
+                ? t('profile.cancelledActiveUntilExpiration')
                 : getStatusDisplay().text}
             </Text>
           </LabeledContent>
@@ -157,10 +158,10 @@ export function PlanSection({
           <LabeledContent
             label={
               lastSubscription?.unsubscribeDetectedAt
-                ? "Access Ends On"
+                ? t('profile.accessEndsOn')
                 : lastSubscription?.willRenew
-                  ? "Renews On"
-                  : "Expires On"
+                  ? t('profile.renewsOn')
+                  : t('profile.expiresOn')
             }
           >
             <Text
@@ -188,7 +189,7 @@ export function PlanSection({
               : "hidden"
           }
         >
-          <LabeledContent label="Days Remaining">
+          <LabeledContent label={t('profile.daysRemaining')}>
             <Text
               modifiers={[
                 font({ weight: "bold" }),
@@ -201,7 +202,7 @@ export function PlanSection({
                 }),
               ]}
             >
-              {`${lastSubscription?.daysRemaining ?? 0} days`}
+              {t('profile.daysValue', { count: lastSubscription?.daysRemaining ?? 0 })}
             </Text>
           </LabeledContent>
         </Activity>
@@ -210,7 +211,7 @@ export function PlanSection({
             hasActiveSubscription && lastSubscription ? "visible" : "hidden"
           }
         >
-          <LabeledContent label="Auto-Renew">
+          <LabeledContent label={t('profile.autoRenew')}>
             <Text
               modifiers={[
                 foregroundStyle({
@@ -221,7 +222,7 @@ export function PlanSection({
                 }),
               ]}
             >
-              {lastSubscription?.willRenew ? "On" : "Off"}
+              {lastSubscription?.willRenew ? t('common.on') : t('common.off')}
             </Text>
           </LabeledContent>
         </Activity>
@@ -232,7 +233,7 @@ export function PlanSection({
               : "hidden"
           }
         >
-          <LabeledContent label="Cancelled At">
+          <LabeledContent label={t('profile.cancelledAt')}>
             <Text
               modifiers={[
                 font({ weight: "bold" }),
@@ -261,7 +262,7 @@ export function PlanSection({
               : "hidden"
           }
         >
-          <LabeledContent label="Price">
+          <LabeledContent label={t('profile.price')}>
             <Text>
               {lastSubscription?.price
                 ? `${lastSubscription.price.currency} $${lastSubscription.price.amount}`
@@ -269,14 +270,14 @@ export function PlanSection({
             </Text>
           </LabeledContent>
         </Activity>
-        <LabeledContent label="Billing Period">
+        <LabeledContent label={t('profile.billingPeriod')}>
           <Text>
             {`${
               periodStart
                 ? new Date(periodStart).toLocaleDateString()
-                : "N/A"
+                : t('profile.na')
             } - ${
-              periodEnd ? new Date(periodEnd).toLocaleDateString() : "N/A"
+              periodEnd ? new Date(periodEnd).toLocaleDateString() : t('profile.na')
             }`}
           </Text>
         </LabeledContent>
@@ -296,33 +297,32 @@ export function WeMissYouSection({
   "planColor" | "lastSubscription" | "getStatusDisplay" | "isRefreshing" | "handleRefresh"
 >) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <Section
-      title="We Miss You!"
+      title={t('profile.weMissYou')}
       footer={
         <Text
           modifiers={[
             foregroundStyle({ type: "color", color: Color.zinc[400] }),
           ]}
         >
-          {
-            "Ready to create more amazing tattoos? Come back and let's design something incredible together."
-          }
+          {t('profile.weMissYouFooter')}
         </Text>
       }
     >
-      <LabeledContent label="Previous Plan">
+      <LabeledContent label={t('profile.previousPlan')}>
         <Text
           modifiers={[
             font({ weight: "bold" }),
             foregroundStyle({ type: "color", color: planColor }),
           ]}
         >
-          {lastSubscription?.productName || "Unknown"}
+          {lastSubscription?.productName || t('profile.unknown')}
         </Text>
       </LabeledContent>
-      <LabeledContent label="Status">
+      <LabeledContent label={t('profile.status')}>
         <Text
           modifiers={[
             font({ weight: "bold" }),
@@ -336,7 +336,7 @@ export function WeMissYouSection({
         </Text>
       </LabeledContent>
       <Activity mode={lastSubscription?.expiresDate ? "visible" : "hidden"}>
-        <LabeledContent label="Expired On">
+        <LabeledContent label={t('profile.expiredOn')}>
           <Text>
             {lastSubscription?.expiresDate
               ? new Date(lastSubscription.expiresDate).toLocaleDateString()
@@ -345,13 +345,13 @@ export function WeMissYouSection({
         </LabeledContent>
       </Activity>
       <FormButton
-        title="Come Back & Create"
+        title={t('profile.comeBackAndCreate')}
         systemImage="sparkles"
         onPress={() => router.push("/(paywall)")}
         color="#3563E9"
       />
       <FormButton
-        title={isRefreshing ? "Refreshing..." : "Refresh data"}
+        title={isRefreshing ? t('profile.refreshing') : t('profile.refreshData')}
         systemImage="arrow.clockwise"
         onPress={handleRefresh}
       />

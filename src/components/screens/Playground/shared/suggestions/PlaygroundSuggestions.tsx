@@ -2,6 +2,7 @@ import { featuredTattoos } from "@/lib/featured-tattoos";
 import { Text } from "@/src/components/ui/Text";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import { useTheme } from "@/src/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 import { Chip } from "heroui-native";
 import { LegendList } from "@legendapp/list";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
@@ -24,15 +25,15 @@ import {
 } from "./PlaygroundSuggestions.types";
 
 // Generate suggestions from featured tattoos
-function generateSuggestions(): Suggestion[] {
+function generateSuggestions(t: (key: string, options?: Record<string, string>) => string): Suggestion[] {
   const suggestions: Suggestion[] = [];
 
   for (const tattoo of featuredTattoos) {
     // Add a simple text suggestion for the style
     suggestions.push({
       type: "text",
-      label: `Create a ${tattoo.title} tattoo`,
-      prompt: `Create a ${tattoo.title} style tattoo`,
+      label: t('playground.createTattoo', { title: tattoo.title }),
+      prompt: t('playground.createStyleTattoo', { title: tattoo.title }),
     });
 
     // Add a "Try on" suggestion with a random gallery image
@@ -42,7 +43,7 @@ function generateSuggestions(): Suggestion[] {
       if (randomImage.uri) {
         suggestions.push({
           type: "tryOn",
-          label: `Try ${tattoo.title} style`,
+          label: t('playground.tryStyle', { title: tattoo.title }),
           styleName: tattoo.title,
           imageUri: randomImage.uri,
           thumbnailUri: randomImage.uri,
@@ -69,6 +70,7 @@ export function PlaygroundSuggestions({
   const list2Ref = useRef<any>(null);
   const isScrollingRef = useRef<1 | 2 | null>(null);
   const { activeMutation } = use(PlaygroundContext);
+  const { t } = useTranslation();
 
   // Hide suggestions if the active mutation is pending or visible is false
   const shouldShowSuggestions = React.useMemo(() => {
@@ -77,7 +79,7 @@ export function PlaygroundSuggestions({
 
   // Generate suggestions once and memoize, split into two rows
   const { row1, row2 } = React.useMemo(() => {
-    const all = generateSuggestions();
+    const all = generateSuggestions(t);
     const mid = Math.ceil(all.length / 2);
     return {
       row1: all.slice(0, mid),

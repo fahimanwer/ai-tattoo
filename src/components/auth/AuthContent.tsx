@@ -6,6 +6,7 @@ import { Text } from "@/src/components/ui/Text";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View, ViewStyle } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,13 +27,16 @@ export interface AuthContentProps {
  * Handles the UI and auth flow, while the parent route controls presentation.
  */
 export function AuthContent({
-  title = "Welcome back!",
-  description = "Please choose your preferred sign in method",
+  title,
+  description,
   onSuccess,
   style,
 }: AuthContentProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
+  const displayTitle = title ?? t('auth.welcomeBack');
+  const displayDescription = description ?? t('auth.signInDescription');
 
   // Easter egg: pick a random tattoo for curious users who expand the sheet
   const randomTattoo = useMemo(() => {
@@ -61,10 +65,10 @@ export function AuthContent({
         }}
       >
         <Text type="3xl" weight="bold">
-          {title}
+          {displayTitle}
         </Text>
         <Text type="default">
-          {description}
+          {displayDescription}
         </Text>
 
         {/* Easter egg: visible when users expand the sheet */}
@@ -92,13 +96,13 @@ export function AuthContent({
             />
           </View>
           <Text type="default" weight="semibold">
-            Ink-ognito mode
+            {t('auth.inkognitoMode')}
           </Text>
           <Text
             type="sm"
             style={{ opacity: 0.6, textAlign: "center" }}
           >
-            Your designs stay with you, not with us.
+            {t('auth.inkognitoDescription')}
           </Text>
         </Animated.View>
       </View>
@@ -139,13 +143,13 @@ export function AuthContent({
             lineHeight: 20,
           }}
         >
-          By continuing you agree to our{" "}
+          {t('auth.byContinuingAgree')}
           <Link href="/terms-of-service" asChild>
             <Text
               type="sm"
               style={{ textDecorationLine: "underline" }}
             >
-              Terms of Service
+              {t('auth.termsOfService')}
             </Text>
           </Link>
         </Text>

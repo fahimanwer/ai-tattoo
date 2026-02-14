@@ -1,8 +1,8 @@
-# Inkigo → Self-Hosted Convex Migration Plan
+# Tattoo Design AI → Self-Hosted Convex Migration Plan
 
 ## Overview
 
-Migrate Inkigo (AI tattoo generator) from Prisma + Expo API Routes to self-hosted Convex with BetterAuth, deployed on Hetzner via Coolify.
+Migrate Tattoo Design AI (AI tattoo generator) from Prisma + Expo API Routes to self-hosted Convex with BetterAuth, deployed on Hetzner via Coolify.
 
 ---
 
@@ -235,7 +235,7 @@ services:
       POSTGRES_URL: postgresql://convex:<secret>@postgres:5432/convex
       CONVEX_CLOUD_ORIGIN: https://convex.yourdomain.com
       CONVEX_SITE_ORIGIN: https://convex-site.yourdomain.com
-      INSTANCE_NAME: inkigo
+      INSTANCE_NAME: tattoodesignai
       INSTANCE_SECRET: <generated>
     ports:
       - "3210:3210"  # WebSocket + REST

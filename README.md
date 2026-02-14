@@ -1,10 +1,10 @@
-# 🐉 Inkigo | AI Tattoo Generator & Try On
+# Tattoo Design AI | AI Tattoo Generator & Try On
 
 <img width="1920" height="400" alt="AI Tattoo Cover" src="https://github.com/user-attachments/assets/291f931a-d6a4-4440-a4cc-42655da23231" />
 
 Preview virtual tattoos on your body with AI – arm, leg, face & more.
 
-Try on tattoos instantly with AI! Upload a photo of your arm, leg, or face and see how any tattoo design looks on your skin. Choose from thousands of designs or upload your own. Inkigo AI Tattoo Try On makes tattoo preview easy, realistic, and fun.
+Try on tattoos instantly with AI! Upload a photo of your arm, leg, or face and see how any tattoo design looks on your skin. Choose from thousands of designs or upload your own. Tattoo Design AI makes tattoo preview easy, realistic, and fun.
 
 ## 🚀 Getting Started
 

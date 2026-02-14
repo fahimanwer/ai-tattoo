@@ -1,6 +1,7 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Activity, use, useEffect, useRef } from "react";
 import { Alert, StyleSheet, useWindowDimensions, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { authClient } from "@/lib/auth-client";
 import { playgroundEntranceHaptic } from "@/lib/haptics-patterns.ios";
@@ -35,6 +36,7 @@ import { SessionHistoryList } from "./session-history/SessionHistoryList";
 import { TextToImageResult } from "./shared/TextToImageResult";
 
 export function PlaygroundScreen() {
+  const { t } = useTranslation();
   const { data: session, isPending, isRefetching } = authClient.useSession();
   const isAuthenticated = session?.user !== undefined;
   const isLoading = isPending || isRefetching;
@@ -143,14 +145,14 @@ export function PlaygroundScreen() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: "Inkigo AI",
+          headerTitle: t('playground.title'),
           headerShadowVisible: false,
           gestureEnabled: false,
           unstable_headerLeftItems: (props) => [
             {
               type: "button",
               variant: "plain",
-              label: "Close",
+              label: t('common.close'),
               icon: {
                 name: "xmark",
                 type: "sfSymbol",
@@ -158,12 +160,12 @@ export function PlaygroundScreen() {
               onPress: () => {
                 if (activeMutation.isPending) {
                   Alert.alert(
-                    "Cancel Generation?",
-                    "You're about to cancel the current generation. This will remove the current generation and start a new session.",
+                    t('playground.cancelGenerationTitle'),
+                    t('playground.cancelGenerationMessage'),
                     [
-                      { text: "Cancel", style: "cancel" },
+                      { text: t('common.cancel'), style: "cancel" },
                       {
-                        text: "Cancel Generation",
+                        text: t('playground.cancelGeneration'),
                         style: "destructive",
                         isPreferred: true,
                         onPress: () => {
@@ -181,12 +183,12 @@ export function PlaygroundScreen() {
 
                 if (sessionGenerations.length > 0) {
                   Alert.alert(
-                    "Clear Everything?",
-                    "You're about to clear this session. This will remove all generated tattoos. Save anything you want to keep before continuing.",
+                    t('playground.clearEverythingTitle'),
+                    t('playground.clearEverythingMessage'),
                     [
-                      { text: "Cancel", style: "cancel" },
+                      { text: t('common.cancel'), style: "cancel" },
                       {
-                        text: "Clear Everything",
+                        text: t('playground.clearEverything'),
                         style: "destructive",
                         isPreferred: true,
                         onPress: () => {
@@ -216,7 +218,7 @@ export function PlaygroundScreen() {
               return [
                 {
                   type: "button" as const,
-                  label: "Upgrade",
+                  label: t('common.upgrade'),
                   variant: "prominent" as const,
                   tintColor: "#3563E9",
                   labelStyle: {
@@ -234,7 +236,7 @@ export function PlaygroundScreen() {
             return [
               {
                 type: "button",
-                label: "Share",
+                label: t('common.share'),
                 icon: {
                   name: "square.and.arrow.up",
                   type: "sfSymbol",
@@ -252,7 +254,7 @@ export function PlaygroundScreen() {
               },
               {
                 type: "button",
-                label: "Save",
+                label: t('common.save'),
                 variant: "prominent",
                 tintColor: "#3563E9",
                 labelStyle: {
@@ -318,7 +320,7 @@ export function PlaygroundScreen() {
                   letterSpacing: 0,
                 }}
               >
-                Please sign in to continue and get your tattoo created!
+                {t('auth.signInToContinue')}
               </Text>
               <Text
                 type="sm"
@@ -330,8 +332,7 @@ export function PlaygroundScreen() {
                   opacity: 0.8,
                 }}
               >
-                By signing in, we can keep track of your free tattoo generations
-                and ensure your account is set up properly.
+                {t('auth.signInBenefit')}
               </Text>
               <Host matchContents useViewportSizeMeasurement>
                 <SwiftUIButton
@@ -362,7 +363,7 @@ export function PlaygroundScreen() {
                         foregroundStyle("black"),
                       ]}
                     >
-                      Sign in
+                      {t('auth.signIn')}
                     </SwiftUIText>
                   </HStack>
                 </SwiftUIButton>

@@ -1,6 +1,7 @@
 import { Text } from "@/src/components/ui/Text";
 import { Link } from "expo-router";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Animated, {
   Easing,
   FadeIn,
@@ -28,6 +29,7 @@ export function OnboardingCTA({
   loading = false,
   onPress,
 }: OnboardingCTAProps) {
+  const { t } = useTranslation();
   const { bottom } = useSafeAreaInsets();
   const signInVisible = useSharedValue(showSignIn ? 1 : 0);
 
@@ -82,10 +84,10 @@ export function OnboardingCTA({
             lineHeight: 20,
           }}
         >
-          Already have an account?{" "}
+          {t('onboarding.alreadyHaveAccount')}
           <Link href="/(onboarding)/auth?from=onboarding" asChild>
             <Text type="sm" weight="bold">
-              Sign In
+              {t('onboarding.signIn')}
             </Text>
           </Link>
         </Text>

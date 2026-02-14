@@ -81,8 +81,8 @@ export const PRODUCT_LIMITS: Record<string, number> = {
   main_ai_tattoo_starter: 75,
   main_ai_tattoo_plus: 200,
   main_ai_tattoo_pro: 600,
-  inkigo_weekly: 35,
-  inkigo_monthly: 80,
+  tattoodesignai_weekly: 35,
+  tattoodesignai_monthly: 80,
   // Test store products
   weekly: 35,
   monthly: 80,

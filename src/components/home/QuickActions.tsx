@@ -4,6 +4,7 @@ import { useTheme } from "@/src/context/ThemeContext";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { PressableScale } from "pressto";
+import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { customEvent } from "vexo-analytics";
 
@@ -13,16 +14,18 @@ type QuickActionType =
   | "blend_tattoo"
   | "remove_tattoo";
 
-const actions: {
-  title: string;
-  description: string;
+type QuickActionDef = {
+  titleKey: string;
+  descriptionKey: string;
   image: { uri: string };
   actionType: QuickActionType;
   action: () => void;
-}[] = [
+};
+
+const actionDefs: QuickActionDef[] = [
   {
-    title: "Generate from Idea",
-    description: "Create a tattoo from your imagination",
+    titleKey: "home.generateFromIdea",
+    descriptionKey: "home.generateFromIdeaDesc",
     image: {
       uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/1-generate-idea.avif",
     },
@@ -32,8 +35,8 @@ const actions: {
     },
   },
   {
-    title: "See It On Your Skin",
-    description: "Take a photo and preview the tattoo",
+    titleKey: "home.seeItOnSkin",
+    descriptionKey: "home.seeItOnSkinDesc",
     image: {
       uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/2-see-skin.avif",
     },
@@ -43,8 +46,8 @@ const actions: {
     },
   },
   {
-    title: "Blend Tattoo",
-    description: "Upload an existing tattoo and modify it",
+    titleKey: "home.blendTattoo",
+    descriptionKey: "home.blendTattooDesc",
     image: {
       uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/3-edit-tattoo.avif",
     },
@@ -54,8 +57,8 @@ const actions: {
     },
   },
   {
-    title: "Remove Tattoo",
-    description: "Remove an existing tattoo from the skin",
+    titleKey: "home.removeTattoo",
+    descriptionKey: "home.removeTattooDesc",
     image: {
       uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/4-remove.avif",
     },
@@ -66,7 +69,7 @@ const actions: {
   },
 ];
 
-function Item({ item }: { item: (typeof actions)[0] }) {
+function Item({ item, title, description }: { item: QuickActionDef; title: string; description: string }) {
   const { isDark } = useTheme();
   return (
     <View
@@ -78,10 +81,10 @@ function Item({ item }: { item: (typeof actions)[0] }) {
       <Image source={item.image} style={styles.image} contentFit="cover" />
       <View style={styles.textContainer}>
         <Text weight="bold" style={{ color: "white" }}>
-          {item.title}
+          {title}
         </Text>
         <Text type="caption" style={styles.description}>
-          {item.description}
+          {description}
         </Text>
       </View>
     </View>
@@ -89,6 +92,7 @@ function Item({ item }: { item: (typeof actions)[0] }) {
 }
 
 export function QuickActions() {
+  const { t } = useTranslation();
   return (
     <View style={{ flex: 1, gap: 16 }}>
       <ScrollView
@@ -96,7 +100,7 @@ export function QuickActions() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16 }}
       >
-        {actions.map((action, index) => (
+        {actionDefs.map((action, index) => (
           <PressableScale
             key={index}
             onPress={() => {
@@ -106,7 +110,7 @@ export function QuickActions() {
               action.action();
             }}
           >
-            <Item item={action} />
+            <Item item={action} title={t(action.titleKey)} description={t(action.descriptionKey)} />
           </PressableScale>
         ))}
       </ScrollView>

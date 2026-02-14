@@ -34,6 +34,53 @@ Assistant: I'll add error handling to the authenticate function.
 NEVER guess file paths, function signatures, API parameters, or implementation details.
 ALWAYS verify by reading the actual code or documentation first.
 
+## RULE 3: Internationalization (i18n) - No Hardcoded Strings
+
+NEVER hardcode user-facing text. All UI text MUST use translation keys via `useTranslation()`.
+
+```typescript
+// CORRECT: Use translation hook
+const { t } = useTranslation();
+<Text>{t('profile.upgradeTitle')}</Text>
+
+// INCORRECT: Hardcoded string - NEVER DO THIS
+<Text>Upgrade to Pro</Text>
+```
+
+### Translation File Structure
+
+Location: `src/translations/locales/`
+
+| Namespace | Purpose | Example Keys |
+|-----------|---------|--------------|
+| common | General UI (loading, error, cancel, confirm) |
+| profile | Profile screen (credits, upgrade, settings) |
+| home | Home screen (explore, generate) |
+| onboarding | Onboarding/paywall (welcome, subscribe) |
+| camera | Camera/playground (capture, retake) |
+| alerts | Alert messages (success, errorOccurred) |
+| settings | Settings screen (language, appearance) |
+
+### Adding New Strings
+
+1. Add key to English file first: `src/translations/locales/en.ts`
+2. Add same key to ALL other locale files
+3. Use interpolation for dynamic values: `t('credits.remaining', { count: 5 })`
+
+### RTL Support
+
+RTL languages (Arabic, Hebrew, Persian, Urdu) require direction-aware styles:
+
+```typescript
+import { I18nManager } from 'react-native';
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+  }
+});
+```
+
 </absolute_constraints>
 
 # SYSTEM ROLE & BEHAVIORAL PROTOCOLS

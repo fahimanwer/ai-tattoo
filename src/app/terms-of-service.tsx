@@ -46,7 +46,7 @@ export default function TermsOfServiceScreen() {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, dynamicStyles.sectionTitle]}>1. Acceptance of Terms</Text>
           <Text style={[styles.paragraph, dynamicStyles.paragraph]}>
-            By accessing and using Inkigo (&quot;the Service&quot;), you accept
+            By accessing and using Tattoo Design AI (&quot;the Service&quot;), you accept
             and agree to be bound by the terms and provision of this agreement.
             If you do not agree to abide by the above, please do not use this
             service.
@@ -56,7 +56,7 @@ export default function TermsOfServiceScreen() {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, dynamicStyles.sectionTitle]}>2. Description of Service</Text>
           <Text style={[styles.paragraph, dynamicStyles.paragraph]}>
-            Inkigo is a virtual tattoo preview application that uses artificial
+            Tattoo Design AI is a virtual tattoo preview application that uses artificial
             intelligence to simulate how tattoo designs would appear on your
             body. The service includes:
           </Text>
@@ -438,7 +438,7 @@ export default function TermsOfServiceScreen() {
             If you have any questions about these Terms of Service, please
             contact us at:
           </Text>
-          <Text style={styles.contactInfo}>Email: beto@codewithbeto.dev</Text>
+          <Text style={styles.contactInfo}>Email: contact@fahimanwer.com</Text>
         </View>
       </View>
     </ScrollView>

@@ -3,6 +3,7 @@ import CoreHaptics from "@/modules/native-core-haptics";
 import { Color } from "@/src/constants/TWPalette";
 import { PressableScale } from "pressto";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, {
   FadeIn,
@@ -147,6 +148,7 @@ function SelectableOption({
   variant,
   timing,
 }: SelectableOptionProps) {
+  const { t } = useTranslation();
   const progress = useSharedValue(isSelected ? 1 : 0);
   const isChip = variant === "chips";
 
@@ -222,7 +224,7 @@ function SelectableOption({
           weight="medium"
           style={isChip ? { color: "white" } : { flex: 1, color: "white" }}
         >
-          {option.label}
+          {t(option.label)}
         </Text>
       </AnimatedPressableScale>
     </Animated.View>

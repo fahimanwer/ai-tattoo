@@ -3,6 +3,7 @@ import * as NativeCoreHaptics from "@/modules/native-core-haptics";
 import { useTheme } from "@/src/context/ThemeContext";
 import * as Haptics from "expo-haptics";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, { type CSSAnimationKeyframes } from "react-native-reanimated";
 import { Input } from "../../ui/Input";
@@ -57,6 +58,7 @@ export function TextStepBody({
   onChange,
   onSubmit,
 }: TextStepBodyProps) {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
 
   useEffect(() => {
@@ -84,7 +86,7 @@ export function TextStepBody({
           onChangeText={onChange}
           maxLength={25}
           textContentType="name"
-          placeholder={step.placeholder}
+          placeholder={step.placeholder ? t(step.placeholder) : undefined}
           size="lg"
           variant="subtle"
           radius="full"

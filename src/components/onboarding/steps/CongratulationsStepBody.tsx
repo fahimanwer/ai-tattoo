@@ -4,6 +4,7 @@ import { useTheme } from "@/src/context/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SymbolView } from "expo-symbols";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { Text } from "../../ui/Text";
@@ -16,6 +17,8 @@ type CongratulationsStepBodyProps = {
   step: CongratulationsStep;
   answers?: OnboardingAnswers;
 };
+
+type TFunction = (key: string, options?: Record<string, unknown>) => string;
 
 type Feature = {
   icon: string;
@@ -54,7 +57,7 @@ function getArrayValue(
 /**
  * Generate personalized features based on user's answers
  */
-function generateFeatures(answers: OnboardingAnswers): Feature[] {
+function generateFeatures(answers: OnboardingAnswers, t: TFunction): Feature[] {
   const goals = getArrayValue(answers, "goal");
   const userType = getArrayValue(answers, "user-description");
   const timeframe = getStringValue(answers, "timeframe");
@@ -67,24 +70,24 @@ function generateFeatures(answers: OnboardingAnswers): Feature[] {
   if (goals?.includes("try_on")) {
     features.push({
       icon: "camera.viewfinder",
-      title: "Try-On Technology",
-      description: "See tattoos on your skin before committing",
+      title: t('onboarding.congratulations.tryOnTechnology'),
+      description: t('onboarding.congratulations.tryOnTechnologyDesc'),
     });
   }
 
   if (goals?.includes("generate")) {
     features.push({
       icon: "wand.and.stars",
-      title: "AI Tattoo Generator",
-      description: "Create unique designs from your ideas",
+      title: t('onboarding.congratulations.aiTattooGenerator'),
+      description: t('onboarding.congratulations.aiTattooGeneratorDesc'),
     });
   }
 
   if (goals?.includes("cover_up")) {
     features.push({
       icon: "arrow.triangle.2.circlepath",
-      title: "Cover-Up Assistant",
-      description: "Transform existing tattoos into new art",
+      title: t('onboarding.congratulations.coverUpAssistant'),
+      description: t('onboarding.congratulations.coverUpAssistantDesc'),
     });
   }
 
@@ -92,8 +95,8 @@ function generateFeatures(answers: OnboardingAnswers): Feature[] {
   if (userType?.includes("artist")) {
     features.push({
       icon: "paintbrush.pointed.fill",
-      title: "Artist Tools",
-      description: "Show clients designs on their body instantly",
+      title: t('onboarding.congratulations.artistTools'),
+      description: t('onboarding.congratulations.artistToolsDesc'),
     });
   }
 
@@ -101,8 +104,8 @@ function generateFeatures(answers: OnboardingAnswers): Feature[] {
   if (locations && locations.length > 0 && !locations.includes("not_sure")) {
     features.push({
       icon: "figure.stand",
-      title: "Precise Placement",
-      description: `Perfect sizing for your ${locations[0]} tattoo`,
+      title: t('onboarding.congratulations.precisePlacement'),
+      description: t('onboarding.congratulations.precisePlacementDesc', { location: locations[0] }),
     });
   }
 
@@ -110,8 +113,8 @@ function generateFeatures(answers: OnboardingAnswers): Feature[] {
   if (styles && styles.length > 0 && !styles.includes("not_sure")) {
     features.push({
       icon: "sparkles",
-      title: "Style-Matched Designs",
-      description: `Curated ${styles[0]} tattoo inspiration`,
+      title: t('onboarding.congratulations.styleMatchedDesigns'),
+      description: t('onboarding.congratulations.styleMatchedDesignsDesc', { style: styles[0] }),
     });
   }
 
@@ -119,8 +122,8 @@ function generateFeatures(answers: OnboardingAnswers): Feature[] {
   if (timeframe === "this_week" || timeframe === "this_month") {
     features.push({
       icon: "clock.fill",
-      title: "Ready When You Are",
-      description: "Start designing today, ink tomorrow",
+      title: t('onboarding.congratulations.readyWhenYouAre'),
+      description: t('onboarding.congratulations.readyWhenYouAreDesc'),
     });
   }
 
@@ -128,18 +131,18 @@ function generateFeatures(answers: OnboardingAnswers): Feature[] {
   const defaultFeatures: Feature[] = [
     {
       icon: "camera.viewfinder",
-      title: "Realistic Try-On",
-      description: "See exactly how it will look on you",
+      title: t('onboarding.congratulations.realisticTryOn'),
+      description: t('onboarding.congratulations.realisticTryOnDesc'),
     },
     {
       icon: "square.and.arrow.down",
-      title: "Save & Share",
-      description: "Keep your favorites and share with your artist",
+      title: t('onboarding.congratulations.saveAndShare'),
+      description: t('onboarding.congratulations.saveAndShareDesc'),
     },
     {
       icon: "wand.and.stars",
-      title: "AI Design Studio",
-      description: "Generate unique tattoo designs instantly",
+      title: t('onboarding.congratulations.aiDesignStudio'),
+      description: t('onboarding.congratulations.aiDesignStudioDesc'),
     },
   ];
 
@@ -158,59 +161,60 @@ function generateFeatures(answers: OnboardingAnswers): Feature[] {
 /**
  * Generate personalized greeting based on user type
  */
-function getPersonalizedGreeting(answers: OnboardingAnswers): string {
+function getPersonalizedGreeting(answers: OnboardingAnswers, t: TFunction): string {
   const userType = getArrayValue(answers, "user-description");
   const goals = getArrayValue(answers, "goal");
 
   if (userType?.includes("artist")) {
-    return "Your new client experience tool is ready";
+    return t('onboarding.congratulations.greetingArtist');
   }
 
   if (goals?.includes("cover_up")) {
-    return "Ready to transform your tattoo";
+    return t('onboarding.congratulations.greetingCoverUp');
   }
 
   if (goals?.includes("generate")) {
-    return "Your AI design studio awaits";
+    return t('onboarding.congratulations.greetingGenerate');
   }
 
-  return "Your tattoo journey begins now";
+  return t('onboarding.congratulations.greetingDefault');
 }
 
 /**
  * Generate personalized urgency message based on user type and goals
  */
-function getUrgencyMessage(answers: OnboardingAnswers): string {
+function getUrgencyMessage(answers: OnboardingAnswers, t: TFunction): string {
   const userType = getArrayValue(answers, "user-description");
   const goals = getArrayValue(answers, "goal");
 
   // Artist-specific message
   if (userType?.includes("artist")) {
-    return "Show clients real previews instantly.";
+    return t('onboarding.congratulations.urgencyArtist');
   }
 
   // Cover-up focused message
   if (goals?.includes("cover_up")) {
-    return "Fix your tattoo with confidence.";
+    return t('onboarding.congratulations.urgencyCoverUp');
   }
 
   // Try-on focused message
   if (goals?.includes("try_on")) {
-    return "Try your tattoo on before you commit.";
+    return t('onboarding.congratulations.urgencyTryOn');
   }
 
   // Default: Value + emotion (works for everyone)
-  return "Unlimited designs. Zero regret.";
+  return t('onboarding.congratulations.urgencyDefault');
 }
 
 export function CongratulationsStepBody({
   step,
   answers = {},
 }: CongratulationsStepBodyProps) {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
-  const features = useMemo(() => generateFeatures(answers), [answers]);
-  const greeting = useMemo(() => getPersonalizedGreeting(answers), [answers]);
-  const urgencyMessage = useMemo(() => getUrgencyMessage(answers), [answers]);
+  const features = useMemo(() => generateFeatures(answers, t), [answers, t]);
+  const greeting = useMemo(() => getPersonalizedGreeting(answers, t), [answers, t]);
+  const urgencyMessage = useMemo(() => getUrgencyMessage(answers, t), [answers, t]);
 
   return (
     <View style={styles.container}>

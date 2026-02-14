@@ -19,6 +19,7 @@ import { useCallback, useMemo } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { customEvent } from "vexo-analytics";
 import { ScreenHeader } from "../ui/ScreenHeader";
 
@@ -32,6 +33,7 @@ export function ExploreScreen() {
     selectedMood,
     setSelectedMood,
   } = useExploreFilter();
+  const { t } = useTranslation();
 
   const allImages = useMemo(() => {
     if (filterMode === "styles") {
@@ -73,10 +75,10 @@ export function ExploreScreen() {
   }, []);
 
   const headerTitle = useMemo(() => {
-    if (filterMode === "styles") return "Explore by styles";
-    if (filterMode === "moods") return "Explore by moods";
-    return "Explore by body part";
-  }, [filterMode]);
+    if (filterMode === "styles") return t('explore.byStyles');
+    if (filterMode === "moods") return t('explore.byMoods');
+    return t('explore.byBodyPart');
+  }, [filterMode, t]);
 
   const ListHeader = useMemo(
     () => (

@@ -12,6 +12,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Purchases from "react-native-purchases";
 import { AnimatedText } from "./Playground/shared/AnimatedText";
 
@@ -33,6 +34,7 @@ export function TattooGenerationResult() {
     setCurrentStep,
   } = useTattooCreation();
 
+  const { t } = useTranslation();
   const router = useRouter();
   const { refreshSubscriptionStatus } = useSubscription();
   const [hasBeenSaved, setHasBeenSaved] = useState(false);
@@ -157,11 +159,11 @@ export function TattooGenerationResult() {
         setHasBeenSaved(true);
 
         Alert.alert(
-          "Saved!",
-          "Your tattoo design has been saved to your photo gallery.",
+          t('generation.savedTitle'),
+          t('generation.savedMessage'),
           [
             {
-              text: "View in gallery",
+              text: t('generation.viewInGallery'),
               style: "default",
               onPress: () => {
                 resetTattooCreation();
@@ -170,11 +172,11 @@ export function TattooGenerationResult() {
                 router.replace("/(tabs)/tattoos");
               },
             },
-            { text: "Back", style: "cancel" },
+            { text: t('common.back'), style: "cancel" },
           ]
         );
       } catch (error) {
-        Alert.alert("Error", "Unable to save image. Please try again.");
+        Alert.alert(t('common.error'), t('generation.unableToSave'));
         console.error("Error saving to library:", error);
       }
     }
@@ -184,12 +186,12 @@ export function TattooGenerationResult() {
     // If the tattoo hasn't been saved, show confirmation alert with save option
     if (!hasBeenSaved) {
       Alert.alert(
-        "Generate Another?",
-        "You haven't saved this tattoo yet. Would you like to save it before continuing?",
+        t('generation.generateAnotherTitle'),
+        t('generation.generateAnotherMessage'),
         [
-          { text: "Cancel", style: "cancel" },
+          { text: t('common.cancel'), style: "cancel" },
           {
-            text: "Continue Without Saving",
+            text: t('generation.continueWithoutSaving'),
             style: "destructive",
             onPress: () => {
               resetTattooCreation();
@@ -198,7 +200,7 @@ export function TattooGenerationResult() {
             },
           },
           {
-            text: "Save and Continue",
+            text: t('generation.saveAndContinue'),
             style: "default",
             onPress: async () => {
               // Save the tattoo first
@@ -214,8 +216,8 @@ export function TattooGenerationResult() {
                   router.replace("/(tabs)/(home)");
                 } catch (error) {
                   Alert.alert(
-                    "Error",
-                    "Unable to save image. Please try again."
+                    t('common.error'),
+                    t('generation.unableToSave')
                   );
                   console.error("Error saving to library:", error);
                 }
@@ -240,12 +242,12 @@ export function TattooGenerationResult() {
 
   const handleCancelGeneration = useCallback(() => {
     Alert.alert(
-      "Cancel Generation?",
-      "Your tattoo is still being generated. If you cancel now, this generation will still count towards your usage limit. Are you sure you want to cancel?",
+      t('generation.cancelGenerationTitle'),
+      t('generation.cancelGenerationMessage'),
       [
-        { text: "Keep Generating", style: "cancel", isPreferred: true },
+        { text: t('generation.keepGenerating'), style: "cancel", isPreferred: true },
         {
-          text: "Cancel",
+          text: t('common.cancel'),
           style: "destructive",
           onPress: () => {
             // Reset all state
@@ -271,13 +273,13 @@ export function TattooGenerationResult() {
         }}
       >
         <AnimatedText
-          text="Applying your tattoo design..."
+          text={t('generation.applyingDesign')}
           color={Color.orange[400]}
           colorDark={Color.orange[700]}
           style={{ flex: 0 }}
         />
         <Button
-          title="Cancel"
+          title={t('common.cancel')}
           variant="link"
           color="red"
           onPress={handleCancelGeneration}
@@ -292,21 +294,21 @@ export function TattooGenerationResult() {
       <View style={styles.errorContainer}>
         <Text type="subtitle" weight="bold" style={styles.errorTitle}>
           {mutation.error?.message?.startsWith("Validation Error:")
-            ? "❌ Invalid Request"
-            : "⚠️ Generation Failed"}
+            ? t('generation.invalidRequest')
+            : t('generation.generationFailed')}
         </Text>
         <Text style={styles.errorMessage}>
-          {mutation.error?.message || "Failed to generate tattoo design"}
+          {mutation.error?.message || t('generation.failedToGenerate')}
         </Text>
         <Button
-          title="Try Again"
+          title={t('common.tryAgain')}
           variant="outline"
           color="orange"
           onPress={() => mutation.mutate()}
           style={{ marginTop: 12 }}
         />
         <Button
-          title="Start Over"
+          title={t('generation.startOver')}
           variant="solid"
           color="white"
           onPress={handleGenerateAnother}
@@ -327,10 +329,10 @@ export function TattooGenerationResult() {
       >
         <View style={styles.resultHeader}>
           <Text type="title" weight="bold" style={styles.resultTitle}>
-            Your Tattoo is Ready!
+            {t('generation.tattooReady')}
           </Text>
           <Text type="default" style={styles.resultSubtitle}>
-            This is how your design would look applied
+            {t('generation.tattooReadyDescription')}
           </Text>
         </View>
 
@@ -352,7 +354,7 @@ export function TattooGenerationResult() {
               symbol="square.and.arrow.down"
               variant="solid"
               color="white"
-              title="Save to Gallery"
+              title={t('generation.saveToGallery')}
               onPress={handleSaveToLibrary}
               style={styles.primaryButton}
               haptic
@@ -362,7 +364,7 @@ export function TattooGenerationResult() {
               symbol="arrow.clockwise"
               variant="outline"
               color="white"
-              title="Generate Another"
+              title={t('generation.generateAnother')}
               onPress={handleGenerateAnother}
               style={styles.secondaryButton}
               radius="full"

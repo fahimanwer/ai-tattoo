@@ -3,14 +3,16 @@ import { SketchDesignCard } from "@/src/components/ui/SketchDesignCard";
 import { Text } from "@/src/components/ui/Text";
 import { LegendList } from "@legendapp/list";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { customEvent } from "vexo-analytics";
 
 export function DiscoverSketchDesigns() {
+  const { t } = useTranslation();
   return (
     <View style={{ flex: 1, gap: 16 }}>
       <Text type="subtitle" weight="bold" style={{ paddingHorizontal: 16 }}>
-        Discover sketch designs
+        {t('home.discoverSketches')}
       </Text>
       <LegendList
         horizontal

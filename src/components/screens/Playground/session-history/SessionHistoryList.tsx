@@ -1,6 +1,7 @@
 import { deleteCachedImage } from "@/lib/image-cache";
+import { LegendList } from "@legendapp/list";
 import * as Haptics from "expo-haptics";
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
 import { SessionHistoryItem } from "./SessionHistoryItem";
 
 export interface SessionHistoryListProps {
@@ -33,12 +34,12 @@ export function SessionHistoryList({
 
   return (
     <View>
-      <FlatList
+      <LegendList
         data={sessionGenerations}
         renderItem={({ item: imageGroup, index }) => (
           <SessionHistoryItem
-            uri={imageGroup[0]} // Show first image of the group
-            secondUri={imageGroup[1]} // Show second image if exists
+            uri={imageGroup[0]}
+            secondUri={imageGroup[1]}
             imageCount={imageGroup.length}
             onSave={() => handleSave(imageGroup[0])}
             onShare={() => handleShare(imageGroup[0])}
@@ -47,31 +48,20 @@ export function SessionHistoryList({
               setActiveGenerationIndex(() => index);
             }}
             onDelete={async () => {
-              // Delete all cached images in this group from the file system
               for (const uri of imageGroup) {
                 await deleteCachedImage(uri);
               }
-
-              // Remove the group from the session array using functional update
-              // to ensure we're working with the latest state
-              // Use imageGroup reference to find the correct item to delete
               setSessionGenerations((prev) =>
                 prev.filter((group) => group !== imageGroup)
               );
-
-              // Update active index if needed
               setActiveGenerationIndex((prevActiveIndex) => {
                 if (prevActiveIndex === undefined) return undefined;
-
-                // Find the current index of the item we're deleting
                 const deletedIndex = sessionGenerations.indexOf(imageGroup);
-
                 if (prevActiveIndex === deletedIndex) {
                   return undefined;
                 } else if (prevActiveIndex > deletedIndex) {
                   return prevActiveIndex - 1;
                 }
-
                 return prevActiveIndex;
               });
             }}
@@ -85,22 +75,9 @@ export function SessionHistoryList({
           paddingHorizontal: 16,
           gap: 8,
         }}
-        // // Performance optimizations
-        getItemLayout={(_, index) => ({
-          length: 50,
-          offset: 50 * index + 16 * index, // item width + gap
-          index,
-        })}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={10}
-        windowSize={5}
-        initialNumToRender={10}
-        ListFooterComponentStyle={{
-          justifyContent: "center",
-        }}
+        estimatedItemSize={50}
         horizontal
-        alwaysBounceVertical={false}
-        showsVerticalScrollIndicator={false}
+        recycleItems
       />
     </View>
   );

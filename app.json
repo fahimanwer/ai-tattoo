@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Inkigo",
+    "name": "Tattoo Design",
     "slug": "ai-tattoo",
     "version": "1.3.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.fahimanwer.tattooai",
-      "icon": "./assets/InkigoIcon.icon",
+      "icon": "./assets/AppIcon.icon",
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,

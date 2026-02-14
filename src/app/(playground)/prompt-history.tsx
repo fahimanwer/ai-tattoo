@@ -17,12 +17,14 @@ import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
 import { use, useCallback, useState } from "react";
 import { Alert, FlatList, Platform, StyleSheet, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 export default function PromptHistory() {
   const { setPrompt, focusInput } = use(PlaygroundContext);
   const [history, setHistory] =
     useState<PromptHistoryEntry[]>(getPromptHistory);
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const fg = useThemeColor("foreground");
   const muted = useThemeColor("muted");
 
@@ -32,12 +34,12 @@ export default function PromptHistory() {
 
   function handleClearAll() {
     Alert.alert(
-      "Clear Prompt History",
-      "Are you sure you want to delete all saved prompts?",
+      t('promptHistory.clearAllTitle'),
+      t('promptHistory.clearAllMessage'),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t('common.cancel'), style: "cancel" },
         {
-          text: "Clear All",
+          text: t('promptHistory.clearAll'),
           style: "destructive",
           onPress: () => {
             clearPromptHistory();
@@ -65,10 +67,10 @@ export default function PromptHistory() {
         style={[styles.row, { borderBottomColor: isDark ? Color.zinc[800] : Color.zinc[200] }]}
         onPress={() => handleSelectPrompt(item.text)}
         onLongPress={() => {
-          Alert.alert("Delete Prompt", "Remove this prompt from history?", [
-            { text: "Cancel", style: "cancel" },
+          Alert.alert(t('promptHistory.deletePromptTitle'), t('promptHistory.deletePromptMessage'), [
+            { text: t('common.cancel'), style: "cancel" },
             {
-              text: "Delete",
+              text: t('common.delete'),
               style: "destructive",
               onPress: () => handleDeletePrompt(item.id),
             },
@@ -97,7 +99,7 @@ export default function PromptHistory() {
 
   return (
     <>
-      <Stack.Screen.Title>Prompt History</Stack.Screen.Title>
+      <Stack.Screen.Title>{t('promptHistory.title')}</Stack.Screen.Title>
       <Stack.Toolbar placement="left">
         <Stack.Toolbar.Button onPress={handleDismiss} icon={"xmark"} />
       </Stack.Toolbar>
@@ -107,7 +109,7 @@ export default function PromptHistory() {
           onPress={handleClearAll}
           hidden={!hasHistory}
         >
-          Clear All
+          {t('promptHistory.clearAll')}
         </Stack.Toolbar.Button>
       </Stack.Toolbar>
       {hasHistory ? (
@@ -126,10 +128,10 @@ export default function PromptHistory() {
             <Ionicons name={getIoniconName("clock.arrow.circlepath")} size={48} color={muted} />
           )}
           <Text type="lg" weight="medium" style={[styles.emptyTitle, { color: muted }]}>
-            No prompts yet
+            {t('promptHistory.emptyTitle')}
           </Text>
           <Text type="sm" style={[styles.emptySubtitle, { color: muted }]}>
-            Your prompts will appear here after you generate a tattoo
+            {t('promptHistory.emptyDescription')}
           </Text>
         </View>
       )}

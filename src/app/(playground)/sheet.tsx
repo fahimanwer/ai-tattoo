@@ -36,6 +36,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { customEvent } from "vexo-analytics";
 
 const RECENT_PHOTOS_LIMIT = 20;
@@ -47,6 +48,7 @@ interface SelectedImage {
 }
 
 export default function Sheet() {
+  const { t } = useTranslation();
   const {
     addImagesToSession,
     pickImageFromGallery,
@@ -208,7 +210,7 @@ export default function Sheet() {
       return (
         <View style={styles.permissionContainer}>
           <Text type="sm" style={[styles.permissionText, { color: muted }]}>
-            We need access to your photos to add images
+            {t('permissions.photoAccessDescription')}
           </Text>
           <Host matchContents useViewportSizeMeasurement>
             <SwiftUIButton
@@ -229,7 +231,7 @@ export default function Sheet() {
                     foregroundStyle("white"),
                   ]}
                 >
-                  Continue
+                  {t('common.continue')}
                 </SwiftUIText>
               </HStack>
             </SwiftUIButton>
@@ -260,13 +262,13 @@ export default function Sheet() {
                     foregroundStyle("white"),
                   ]}
                 >
-                  Open Settings
+                  {t('common.openSettings')}
                 </SwiftUIText>
               </HStack>
             </SwiftUIButton>
           </Host>
           <Text type="xs" style={[styles.permissionText, { color: muted }]}>
-            We need access to your photos to add images
+            {t('permissions.photoAccessDescription')}
           </Text>
         </View>
       );
@@ -342,7 +344,7 @@ export default function Sheet() {
           unstable_headerLeftItems: () => [
             {
               type: "button",
-              label: "Close",
+              label: t('common.close'),
               icon: {
                 name: "xmark",
                 type: "sfSymbol",
@@ -354,7 +356,7 @@ export default function Sheet() {
             const items: any[] = [
               {
                 type: "button",
-                label: "All Photos",
+                label: t('sheet.allPhotos'),
                 icon: {
                   name: "photo.on.rectangle.angled",
                   type: "sfSymbol",
@@ -367,9 +369,7 @@ export default function Sheet() {
                 type: "button",
                 variant: "prominent",
                 tintColor: "#3563E9",
-                label: `Add ${selectionCount} photo${
-                  selectionCount > 1 ? "s" : ""
-                }`,
+                label: t('sheet.addPhotos', { count: selectionCount }),
                 onPress: handleAddPhotos,
               });
             }
@@ -390,11 +390,11 @@ export default function Sheet() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text type="sm" weight="medium" style={{ paddingHorizontal: 16, color: fg }}>
-              Recent Photos
+              {t('sheet.recentPhotos')}
             </Text>
             <Activity mode={maxSelection === 1 ? "visible" : "hidden"}>
               <Text type="xs" style={[styles.sectionSubtitle, { color: muted }]}>
-                Select 1 more to combine
+                {t('sheet.selectOneMore')}
               </Text>
             </Activity>
           </View>
@@ -405,11 +405,11 @@ export default function Sheet() {
         <View style={styles.optionsSection}>
           <OptionRow
             icon="person.crop.rectangle"
-            title="Try On"
+            title={t('sheet.tryOn')}
             description={
               hasActiveImage
-                ? "Add a photo of your body to preview"
-                : "Select a tattoo first, then add your photo"
+                ? t('sheet.tryOnDescriptionWithTattoo')
+                : t('sheet.tryOnDescriptionNoTattoo')
             }
             onPress={() => {
               customEvent("sheet_action_pressed", {
@@ -419,17 +419,17 @@ export default function Sheet() {
               if (hasActiveImage) {
                 // User has a tattoo selected, offer to add body photo
                 Alert.alert(
-                  "Add Your Photo",
-                  "How would you like to add a photo of where you want the tattoo?",
+                  t('sheet.addYourPhoto'),
+                  t('sheet.addPhotoQuestion'),
                   [
                     {
-                      text: "Take Photo",
+                      text: t('sheet.takePhoto'),
                       onPress: () => {
                         router.replace("/(playground)/camera-view");
                       },
                     },
                     {
-                      text: "Choose from Library",
+                      text: t('sheet.chooseFromLibrary'),
                       onPress: async () => {
                         const success = await pickImageFromGallery();
                         if (success) {
@@ -438,7 +438,7 @@ export default function Sheet() {
                       },
                     },
                     {
-                      text: "Cancel",
+                      text: t('common.cancel'),
                       style: "cancel",
                     },
                   ]
@@ -446,11 +446,11 @@ export default function Sheet() {
               } else {
                 // No tattoo selected, guide user to create one first
                 Alert.alert(
-                  "Create a Tattoo First",
-                  "To try on a tattoo, you'll need to:\n\n1. Generate or select a tattoo design\n2. Then add a photo of your body\n\nWe'll combine them to show how it looks!",
+                  t('sheet.createTattooFirst'),
+                  t('sheet.createTattooFirstMessage'),
                   [
                     {
-                      text: "Create Tattoo",
+                      text: t('sheet.createTattoo'),
                       style: "default",
                       isPreferred: true,
                       onPress: () => {
@@ -461,7 +461,7 @@ export default function Sheet() {
                       },
                     },
                     {
-                      text: "Cancel",
+                      text: t('common.cancel'),
                       style: "cancel",
                     },
                   ]
@@ -471,8 +471,8 @@ export default function Sheet() {
           />
           <OptionRow
             icon="wand.and.stars"
-            title="Create New Tattoo"
-            description="Describe your tattoo idea and we'll generate it"
+            title={t('sheet.createNewTattoo')}
+            description={t('sheet.createNewTattooDescription')}
             onPress={() => {
               customEvent("sheet_action_pressed", {
                 action: "create_new",
@@ -488,8 +488,8 @@ export default function Sheet() {
           />
           <OptionRow
             icon="lightbulb.max"
-            title="Tattoo Cover-Up Idea"
-            description="Generate an idea to cover up an existing tattoo using a photo as reference"
+            title={t('sheet.tattooCoverUp')}
+            description={t('sheet.tattooCoverUpDescription')}
             onPress={async () => {
               customEvent("sheet_action_pressed", {
                 action: "cover_up_idea",
@@ -508,8 +508,8 @@ export default function Sheet() {
           />
           <OptionRow
             icon="eraser.line.dashed"
-            title="Remove Tattoo"
-            description="Remove an existing tattoo from the photo"
+            title={t('sheet.removeTattoo')}
+            description={t('sheet.removeTattooDescription')}
             onPress={async () => {
               customEvent("sheet_action_pressed", {
                 action: "remove_tattoo",
@@ -528,8 +528,8 @@ export default function Sheet() {
           />
           <OptionRow
             icon="clock.arrow.circlepath"
-            title="Prompt History"
-            description="View your previous prompts"
+            title={t('sheet.promptHistory')}
+            description={t('sheet.promptHistoryDescription')}
             onPress={() => {
               customEvent("sheet_action_pressed", {
                 action: "prompt_history",
@@ -540,8 +540,8 @@ export default function Sheet() {
           />
           <OptionRow
             icon="lightbulb"
-            title="Request a Feature"
-            description="Tell us what you'd like Inkigo to support next"
+            title={t('sheet.requestFeature')}
+            description={t('sheet.requestFeatureDescription')}
             onPress={() => {
               customEvent("sheet_action_pressed", {
                 action: "feature_request",

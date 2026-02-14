@@ -1,6 +1,7 @@
 import { cacheImageFromUrl } from "@/lib/image-cache";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import { useTheme } from "@/src/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import {
   GlassEffectContainer,
@@ -56,6 +57,7 @@ export function InputControls({
   const { isLimitReached, subscriptionTier } = useUsageLimit();
   const isFreeTier = subscriptionTier === "free";
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   const namespaceId = useId();
   const textFieldRef = useRef<TextFieldRef>(null);
@@ -150,11 +152,11 @@ export function InputControls({
 
       // Show alert to explain what happened and prompt them to select their image
       Alert.alert(
-        `Try on ${styleName}`,
-        "Take a photo of your body part to see how this tattoo looks on you!",
+        t('playground.tryOnTitle', { style: styleName }),
+        t('playground.tryOnMessage'),
         [
           {
-            text: "Choose Photo",
+            text: t('playground.choosePhoto'),
             style: "default",
             onPress: () => {
               textFieldRef.current?.blur();
@@ -163,7 +165,7 @@ export function InputControls({
             isPreferred: true,
           },
           {
-            text: "Later",
+            text: t('playground.later'),
             style: "cancel",
           },
         ]
@@ -256,7 +258,7 @@ export function InputControls({
                     <TextField
                       ref={textFieldRef}
                       defaultValue={prompt}
-                      placeholder="Enter text"
+                      placeholder={t('playground.enterText')}
                       multiline
                       allowNewlines
                       numberOfLines={5}

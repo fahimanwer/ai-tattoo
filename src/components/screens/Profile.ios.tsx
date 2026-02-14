@@ -29,9 +29,11 @@ import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { Activity, useState } from "react";
 import { Alert, Linking } from "react-native";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner-native";
 import { useProfileData } from "./profile/useProfileData";
 import { PlanSection, WeMissYouSection } from "./profile/PlanSection.ios";
+import { useLanguage, AUTO_LANGUAGE } from "@/src/hooks/useLanguage";
 
 function FormButton({
   title,
@@ -58,6 +60,12 @@ function FormButton({
 }
 
 export function Profile() {
+  const { t } = useTranslation();
+  const {
+    selectedLanguage,
+    availableLanguages,
+    changeLanguage: handleLanguageChange,
+  } = useLanguage();
   const {
     user,
     settings,
@@ -101,12 +109,12 @@ export function Profile() {
           <Section>
             <VStack>
               <ContentUnavailableView
-                title="Not signed in"
-                description="Sign in to access your account details, subscription info, and personalized features"
+                title={t('profile.notSignedIn')}
+                description={t('profile.signInPrompt')}
                 systemImage="person.crop.circle.badge.exclamationmark"
               />
               <Button
-                label="Sign in"
+                label={t('auth.signIn')}
                 modifiers={[
                   buttonStyle("borderedProminent"),
                   tint("#3563E9"),
@@ -127,30 +135,30 @@ export function Profile() {
         {/* Account section */}
         <Activity mode={isAuthenticated ? "visible" : "hidden"}>
           <Section
-            title="Account"
+            title={t('profile.account')}
             footer={
               <Text
                 modifiers={[
                   onTapGesture(async () => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                     await Clipboard.setStringAsync(user?.id ?? "");
-                    toast.success("User ID copied to clipboard");
+                    toast.success(t('profile.userId') + " copied");
                   }),
                 ]}
-              >{`User ID: ${user?.id}`}</Text>
+              >{`${t('profile.userId')}: ${user?.id}`}</Text>
             }
           >
-            <LabeledContent label="Name">
+            <LabeledContent label={t('profile.name')}>
               <Text>{displayName}</Text>
             </LabeledContent>
-            <LabeledContent label="Email">
+            <LabeledContent label={t('profile.email')}>
               <Text>{user?.email ?? ""}</Text>
             </LabeledContent>
-            <LabeledContent label="Model">
+            <LabeledContent label={t('profile.model')}>
               <Text>{modelDisplayName}</Text>
             </LabeledContent>
             <Activity mode={memberSince ? "visible" : "hidden"}>
-              <LabeledContent label="Member Since">
+              <LabeledContent label={t('profile.memberSince')}>
                 <Text
                   modifiers={[
                     foregroundStyle({ type: "color", color: isDark ? Color.zinc[400] : Color.zinc[500] }),
@@ -214,7 +222,7 @@ export function Profile() {
                   foregroundStyle({ type: "color", color: isDark ? Color.zinc[400] : Color.zinc[500] }),
                 ]}
               >
-                Your feedback helps us improve the app for everyone.
+                {t('profile.enjoyingAppDescription')}
               </Text>
             ) : null
           }
@@ -222,35 +230,26 @@ export function Profile() {
           <DisclosureGroup
             isExpanded={isSecretExpanded}
             onIsExpandedChange={setIsSecretExpanded}
-            label="Enjoying the app?"
+            label={t('profile.enjoyingApp')}
             modifiers={[tint("#3563E9")]}
           >
             <VStack spacing={16} alignment="leading">
               <Text
                 modifiers={[
-                  foregroundStyle({ type: "color", color: isDark ? Color.zinc[300] : Color.zinc[600] }),
-                ]}
-              >
-                {"We'd love to hear from you!"}
-              </Text>
-              <Text
-                modifiers={[
                   foregroundStyle({ type: "color", color: isDark ? Color.zinc[400] : Color.zinc[500] }),
                 ]}
               >
-                {
-                  "If you're enjoying Inkigo, a review on the App Store helps other tattoo lovers discover us. You can also reach out anytime with feedback or feature ideas."
-                }
+                {t('profile.enjoyingAppDescription')}
               </Text>
             </VStack>
             <FormButton
-              title="Rate on App Store"
+              title={t('profile.rateOnAppStore')}
               systemImage="star.fill"
               onPress={handleRateApp}
               color={"#3563E9"}
             />
             <FormButton
-              title="Send Feedback"
+              title={t('profile.sendFeedback')}
               systemImage="envelope.fill"
               onPress={handleSendFeedback}
               color={Color.zinc[500]}
@@ -263,7 +262,7 @@ export function Profile() {
           <DisclosureGroup
             isExpanded={isArtistExpanded}
             onIsExpandedChange={setIsArtistExpanded}
-            label="Are you an artist?"
+            label={t('profile.areYouArtist')}
             modifiers={[tint("#3563E9")]}
           >
             <VStack spacing={16} alignment="leading">
@@ -272,13 +271,11 @@ export function Profile() {
                   foregroundStyle({ type: "color", color: isDark ? Color.zinc[300] : Color.zinc[600] }),
                 ]}
               >
-                {
-                  "Interested in collaborating? Have suggestions or complaints? We'd love to hear from you!"
-                }
+                {t('profile.artistDescription')}
               </Text>
             </VStack>
             <FormButton
-              title="Write to Us"
+              title={t('profile.writeToUs')}
               systemImage="envelope.fill"
               onPress={handleArtistContact}
               color={Color.blue[500]}
@@ -287,46 +284,59 @@ export function Profile() {
         </Section>
 
         {/* Support & Feedback */}
-        <Section title="Support & Feedback">
-          <FormButton title="Rate App" systemImage="star.fill" onPress={handleRateApp} />
-          <FormButton title="Share with Friends" systemImage="square.and.arrow.up.fill" onPress={handleShareApp} />
-          <FormButton title="Contact Support" systemImage="envelope.fill" onPress={handleContactSupport} />
+        <Section title={t('profile.supportAndFeedback')}>
+          <FormButton title={t('profile.rateApp')} systemImage="star.fill" onPress={handleRateApp} />
+          <FormButton title={t('profile.shareWithFriends')} systemImage="square.and.arrow.up.fill" onPress={handleShareApp} />
+          <FormButton title={t('profile.contactSupport')} systemImage="envelope.fill" onPress={handleContactSupport} />
         </Section>
 
         {/* Follow Us */}
-        <Section title="Follow Us">
-          <FormButton title="inkigo.ai" systemImage="globe" onPress={() => Linking.openURL("https://inkigo.ai")} />
-          <FormButton title="Instagram" systemImage="camera.fill" onPress={() => Linking.openURL("https://www.instagram.com/inkigoapp")} />
-          <FormButton title="TikTok" systemImage="video.fill" onPress={() => Linking.openURL("https://www.tiktok.com/@inkigoapp")} />
-          <FormButton title="X" systemImage="bubble.left.fill" onPress={() => Linking.openURL("https://x.com/inkigoapp")} />
+        <Section title={t('profile.followUs')}>
+          <FormButton title="fahimanwer.com" systemImage="globe" onPress={() => Linking.openURL("https://fahimanwer.com")} />
+          <FormButton title="Facebook" systemImage="person.2.fill" onPress={() => Linking.openURL("https://www.facebook.com/profile.php?id=61574104086111")} />
+          <FormButton title="Instagram" systemImage="camera.fill" onPress={() => Linking.openURL("https://www.instagram.com/thewe.cc/")} />
+          <FormButton title="TikTok" systemImage="video.fill" onPress={() => Linking.openURL("https://www.tiktok.com/")} />
         </Section>
 
         {/* Settings */}
         <Section
-          title="Settings"
+          title={t('profile.settings')}
           footer={
             <Text modifiers={[foregroundStyle({ type: "color", color: Color.zinc[500] })]}>
-              {`Version ${Application.nativeApplicationVersion}`}
+              {`${t('profile.version')} ${Application.nativeApplicationVersion}`}
             </Text>
           }
         >
           <Picker
-            label="Appearance"
+            label={t('profile.appearance')}
             selection={themeMode}
             onSelectionChange={(v) => setThemeMode(v as ThemeMode)}
             modifiers={[pickerStyle("segmented")]}
           >
-            <Text modifiers={[tag("light")]}>Light</Text>
-            <Text modifiers={[tag("dark")]}>Dark</Text>
-            <Text modifiers={[tag("system")]}>System</Text>
+            <Text modifiers={[tag("light")]}>{t('profile.light')}</Text>
+            <Text modifiers={[tag("dark")]}>{t('profile.dark')}</Text>
+            <Text modifiers={[tag("system")]}>{t('profile.system')}</Text>
           </Picker>
-          <LabeledContent label="Show Onboarding">
+          <Picker
+            label={t('profile.language')}
+            selection={selectedLanguage}
+            onSelectionChange={(v) => handleLanguageChange(v as string)}
+            modifiers={[pickerStyle("menu")]}
+          >
+            <Text modifiers={[tag(AUTO_LANGUAGE)]}>{t('profile.languageAuto')}</Text>
+            {availableLanguages.map((lang) => (
+              <Text key={lang.code} modifiers={[tag(lang.code)]}>
+                {lang.nativeName}
+              </Text>
+            ))}
+          </Picker>
+          <LabeledContent label={t('profile.showOnboarding')}>
             <Toggle
               isOn={!settings.isOnboarded}
               onIsOnChange={() => updateSettings({ isOnboarded: !(settings.isOnboarded ?? true) })}
             />
           </LabeledContent>
-          <LabeledContent label="Prompt Enhancement">
+          <LabeledContent label={t('profile.promptEnhancement')}>
             <Toggle
               isOn={settings.improvePrompt}
               onIsOnChange={() => {
@@ -334,9 +344,9 @@ export function Profile() {
                 updateSettings({ improvePrompt: newValue });
                 if (!newValue) {
                   Alert.alert(
-                    "Prompt Enhancement Disabled",
-                    "We enhance your prompts to create better tattoo designs. With this off, you have full control but results may vary.\n\nYou can turn it back on anytime.",
-                    [{ text: "OK" }]
+                    t('profile.promptEnhancementDisabledTitle'),
+                    t('profile.promptEnhancementDisabledMessage'),
+                    [{ text: t('common.ok') }]
                   );
                 }
               }}
@@ -345,30 +355,30 @@ export function Profile() {
         </Section>
 
         {/* Legal */}
-        <Section title="Legal">
-          <FormButton title="Privacy Policy" systemImage="hand.raised.fill" onPress={handlePrivacyPolicy} />
-          <FormButton title="Terms of Service" systemImage="doc.text.fill" onPress={handleTermsOfService} />
+        <Section title={t('profile.legal')}>
+          <FormButton title={t('profile.privacyPolicy')} systemImage="hand.raised.fill" onPress={handlePrivacyPolicy} />
+          <FormButton title={t('profile.termsOfService')} systemImage="doc.text.fill" onPress={handleTermsOfService} />
         </Section>
 
         {/* Log out */}
         <Activity mode={isAuthenticated ? "visible" : "hidden"}>
           <Section>
-            <FormButton title="Log out" systemImage="rectangle.portrait.and.arrow.right.fill" onPress={handleSignOut} />
+            <FormButton title={t('profile.logOut')} systemImage="rectangle.portrait.and.arrow.right.fill" onPress={handleSignOut} />
           </Section>
         </Activity>
 
         {/* Danger Zone */}
         <Activity mode={isAuthenticated ? "visible" : "hidden"}>
           <Section
-            title="Danger Zone"
+            title={t('profile.dangerZone')}
             footer={
               <Text>
-                Deleting your account is permanent and cannot be undone. All your data, tattoos, and history will be lost forever. This does NOT cancel active subscriptions — cancel in Settings → Apple ID → Subscriptions first.
+                {t('profile.dangerZoneFooter')}
               </Text>
             }
           >
             <FormButton
-              title="Delete Account"
+              title={t('profile.deleteAccount')}
               systemImage="exclamationmark.triangle.fill"
               color={Color.zinc[500]}
               onPress={handleDeleteAccount}

@@ -12,6 +12,13 @@ import { Toaster } from "sonner-native";
 import { HeroUINativeProvider } from "heroui-native";
 import "../../global.css";
 
+// i18n initialization (side-effect import — must be before any component renders)
+import "@/src/lib/i18n";
+import { initializeRTL, getCurrentLanguage } from "@/src/lib/i18n";
+
+// Initialize RTL layout before React renders (I18nManager.forceRTL requires restart)
+initializeRTL(getCurrentLanguage());
+
 // Native imports
 import { AccentColorProvider } from "@/src/hooks/useAccentColor";
 import { ThemeProvider } from "@react-navigation/native";

@@ -1,5 +1,6 @@
 import { Color } from "@/src/constants/TWPalette";
 import { useTheme } from "@/src/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { Text } from "../../ui/Text";
@@ -18,17 +19,17 @@ const REVIEW_ANIMATION_CONFIG = {
   fadeDuration: 350,
 };
 
-function formatDate(date: Date): string {
+function formatDate(date: Date, t: (key: string, options?: Record<string, unknown>) => string): string {
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - date.getTime());
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
-  return `${Math.floor(diffDays / 365)} years ago`;
+  if (diffDays === 0) return t('onboarding.time.today');
+  if (diffDays === 1) return t('onboarding.time.yesterday');
+  if (diffDays < 7) return t('onboarding.time.daysAgo', { count: diffDays });
+  if (diffDays < 30) return t('onboarding.time.weeksAgo', { count: Math.floor(diffDays / 7) });
+  if (diffDays < 365) return t('onboarding.time.monthsAgo', { count: Math.floor(diffDays / 30) });
+  return t('onboarding.time.yearsAgo', { count: Math.floor(diffDays / 365) });
 }
 
 interface ReviewItemProps {
@@ -37,6 +38,7 @@ interface ReviewItemProps {
 }
 
 export function ReviewItem({ review, index }: ReviewItemProps) {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const enteringDelay =
     REVIEW_ANIMATION_CONFIG.initialDelay +
@@ -87,7 +89,7 @@ export function ReviewItem({ review, index }: ReviewItemProps) {
 
         {/* Date */}
         <Text style={{ color: Color.grayscale[600], fontSize: 12 }}>
-          {formatDate(review.createdAt)}
+          {formatDate(review.createdAt, t)}
         </Text>
       </View>
 
