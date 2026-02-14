@@ -37,6 +37,8 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
         clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
         prompt: "select_account",
+        redirectURI:
+          "https://backend-aitattoo.ashuthefire.com/http/api/auth/callback/google",
       },
       apple: {
         clientId: "com.fahimanwer.tattooai",
