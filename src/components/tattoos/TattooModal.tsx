@@ -36,7 +36,7 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
 
     try {
       await Share.open({
-        message: "https://cwb.sh/inkigo-ios?r=app",
+        message: "https://fahimanwer.com/tattooai",
         url: `data:image/png;base64,${tattoo.imageData}`,
       });
     } catch (error) {

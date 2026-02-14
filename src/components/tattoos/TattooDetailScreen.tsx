@@ -13,6 +13,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { customEvent } from "vexo-analytics";
 import { Button } from "../ui/Button";
 import { HeaderButton } from "../ui/HeaderButtons/HeaderButton";
@@ -31,6 +32,7 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
   const [showTabBarView, setShowTabBarView] = useState(false);
   const { isDark } = useTheme();
   const foreground = useThemeColor("foreground");
+  const { t } = useTranslation();
 
   const loadAsset = useCallback(async () => {
     try {
@@ -77,12 +79,12 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
       const fileUri = assetInfo.localUri || assetInfo.uri;
 
       if (!fileUri) {
-        Alert.alert("Error", "Unable to access the image file.");
+        Alert.alert(t('common.error'), t('tattoos.imageAccessError'));
         return;
       }
 
       await Share.open({
-        message: "https://cwb.sh/inkigo-ios?r=app",
+        message: "https://fahimanwer.com/tattooai",
         url: fileUri,
       });
 
@@ -91,7 +93,7 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
       });
     } catch (error) {
       console.error("Error sharing:", error);
-      Alert.alert("Error", "Unable to share the image. Please try again.");
+      Alert.alert(t('common.error'), t('tattoos.shareError'));
     }
   };
 
@@ -99,15 +101,15 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
     if (!asset) return;
 
     Alert.alert(
-      "Delete Tattoo",
-      "Are you sure you want to delete this tattoo design? This action cannot be undone.",
+      t('tattoos.deleteTitle'),
+      t('tattoos.deleteMessage'),
       [
         {
-          text: "Cancel",
+          text: t('common.cancel'),
           style: "cancel",
         },
         {
-          text: "Delete",
+          text: t('common.delete'),
           style: "destructive",
           onPress: async () => {
             try {
@@ -117,8 +119,8 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
             } catch (error) {
               console.error("Error deleting asset:", error);
               Alert.alert(
-                "Error",
-                "Unable to delete the image. Please try again."
+                t('common.error'),
+                t('tattoos.deleteError')
               );
             }
           },
@@ -160,10 +162,10 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
       >
         <View style={styles.errorContainer}>
           <Text type="lg" weight="bold" style={{ color: foreground }}>
-            Tattoo not found
+            {t('tattoos.tattooNotFound')}
           </Text>
           <Button
-            title="Back to home"
+            title={t('tattoos.backToHome')}
             onPress={() => router.back()}
             variant="link"
             color="blue"

@@ -9,8 +9,10 @@ import { useUserData } from "@/src/hooks/useUserData";
 import { useRouter } from "expo-router";
 import { use, useMemo, useState } from "react";
 import { Alert, Linking, Share } from "react-native";
+import { useTranslation } from "react-i18next";
 
 export function useProfileData() {
+  const { t } = useTranslation();
   const { user, refresh } = useUserData();
   const { settings, updateSettings } = use(AppSettingsContext);
   const { refreshSubscriptionStatus, customerInfo } = useSubscription();
@@ -41,16 +43,16 @@ export function useProfileData() {
   }, [periodStart, periodEnd]);
 
   const getStatusDisplay = () => {
-    if (!lastSubscription) return { text: "No subscription", color: "#9ca3af" };
+    if (!lastSubscription) return { text: t('profile.noSubscription'), color: "#9ca3af" };
     switch (lastSubscription.status) {
       case "active":
-        return { text: "Active", color: "#10b981" };
+        return { text: t('profile.active'), color: "#10b981" };
       case "expired":
-        return { text: "Expired", color: "#ef4444" };
+        return { text: t('profile.expired'), color: "#ef4444" };
       case "cancelled":
-        return { text: "Cancelled", color: "#f59e0b" };
+        return { text: t('profile.cancelled'), color: "#f59e0b" };
       default:
-        return { text: "Unknown", color: "#9ca3af" };
+        return { text: t('profile.unknown'), color: "#9ca3af" };
     }
   };
 
@@ -64,13 +66,13 @@ export function useProfileData() {
   };
 
   const handleContactSupport = async () => {
-    const subject = "Inkigo AI App Support Request";
+    const subject = t('emails.support.subject');
     const userInfo = user
       ? `User ID: ${user.id}\nEmail: ${user.email}`
-      : "(Not signed in)";
-    const body = `Hi,\n\nI need help with the Inkigo app.\n\n${userInfo}\n\nDescription:\n[Please describe your issue here]\n\nThanks!`;
+      : t('auth.notSignedIn');
+    const body = t('emails.support.body', { userInfo });
     await Linking.openURL(
-      `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      `mailto:contact@fahimanwer.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     );
   };
 
@@ -81,27 +83,27 @@ export function useProfileData() {
 
   const handleShareApp = () =>
     Share.share({
-      message: "Check out Inkigo AI \n",
-      url: "https://cwb.sh/inkigo-ios?r=app",
+      message: t('profile.shareMessage'),
+      url: "https://fahimanwer.com/tattooai",
     });
 
   const handleArtistContact = async () => {
-    const subject = "Are you an artist? - Inkigo AI";
+    const subject = t('emails.artist.subject');
     const userInfo = user
       ? `My account email: ${user.email}\nMy user ID: ${user.id}`
-      : "(Not signed in)";
-    const body = `Hi!\n\nI'm interested in collaborating or have suggestions/complaints.\n\n${userInfo}\n\n[Please share your suggestions, complaints, or tell us about yourself as an artist]\n\nThanks!`;
+      : t('auth.notSignedIn');
+    const body = t('emails.artist.body', { userInfo });
     await Linking.openURL(
-      `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      `mailto:contact@fahimanwer.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     );
   };
 
   const handleSendFeedback = async () => {
-    const subject = "Inkigo Feedback";
-    const userInfo = user ? `\n\nAccount: ${user.email}` : "";
-    const body = `Hi!\n\nI have some feedback about Inkigo:\n\n[Your feedback here]${userInfo}\n\nThanks!`;
+    const subject = t('emails.feedback.subject');
+    const userInfo = user ? t('emails.accountInfo', { email: user.email }) : "";
+    const body = t('emails.feedback.body', { userInfo });
     await Linking.openURL(
-      `mailto:beto@codewithbeto.dev?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      `mailto:contact@fahimanwer.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     );
   };
 
@@ -115,12 +117,12 @@ export function useProfileData() {
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      "Delete Account",
-      "Are you sure? This cannot be undone. Note: this does NOT cancel active subscriptions.",
+      t('profile.deleteAccountConfirmTitle'),
+      t('profile.deleteAccountConfirmMessage'),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t('common.cancel'), style: "cancel" },
         {
-          text: "Delete",
+          text: t('common.delete'),
           style: "destructive",
           onPress: async () => {
             router.dismissAll();
@@ -142,7 +144,7 @@ export function useProfileData() {
   const planBadge = useMemo(() => {
     if (hasActiveSubscription && lastSubscription) {
       const name = lastSubscription.productName || "Pro";
-      if (name.toLowerCase().includes("inkigo_"))
+      if (name.toLowerCase().includes("tattoodesignai_"))
         return { name: "Premium", color: "#3563E9" };
       if (name.toLowerCase().includes("plus"))
         return { name: "Plus", color: Color.green[500] };
@@ -161,7 +163,7 @@ export function useProfileData() {
   const isAuthenticated = !!user;
   const displayName = user?.name?.includes("@")
     ? user.name.slice(0, user.name.indexOf("@"))
-    : user?.name || "Unknown User";
+    : user?.name || t('profile.unknownUser');
 
   return {
     user,

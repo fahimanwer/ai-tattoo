@@ -28,6 +28,7 @@ import * as React from "react";
 import { Alert, Keyboard, Linking } from "react-native";
 import Purchases from "react-native-purchases";
 import { toast } from "sonner-native";
+import { useTranslation } from "react-i18next";
 import { customEvent } from "vexo-analytics";
 import { AppSettingsContext } from "./AppSettings";
 
@@ -106,6 +107,7 @@ export function PlaygroundProvider({
   children: React.ReactNode;
 }) {
   // Hooks
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { settings, updateSettings } = React.use(AppSettingsContext);
   const textToImageAction = useAction(api.generation.textToImage);
@@ -325,7 +327,7 @@ export function PlaygroundProvider({
     try {
       const shareResult = await Share.open({
         url: fileUri,
-        message: "https://cwb.sh/inkigo-ios?r=app",
+        message: "https://fahimanwer.com/tattooai",
       });
 
       if (shareResult.dismissedAction) {
@@ -339,7 +341,7 @@ export function PlaygroundProvider({
       console.error("Error sharing:", error);
       // User cancelled or error occurred
       if ((error as any)?.message !== "User did not share") {
-        toast.error("Failed to share image", {
+        toast.error(t('playground.shareError'), {
           dismissible: true,
         });
       }
@@ -360,12 +362,12 @@ export function PlaygroundProvider({
         if (!requestResult.granted) {
           // Permission denied - show alert with option to open settings
           Alert.alert(
-            "Photo Access Needed",
-            "To save images to your gallery, we need access to your photos. You can enable this in Settings.",
+            t('playground.photoAccessTitle'),
+            t('playground.photoAccessMessage'),
             [
-              { text: "Cancel", style: "cancel" },
+              { text: t('common.cancel'), style: "cancel" },
               {
-                text: "Open Settings",
+                text: t('common.openSettings'),
                 style: "default",
                 onPress: () => {
                   Linking.openURL("app-settings:");
@@ -385,7 +387,7 @@ export function PlaygroundProvider({
         source: "playground",
       });
 
-      toast.success("Image saved to gallery!", {
+      toast.success(t('playground.imageSaved'), {
         dismissible: true,
         duration: 1_000,
       });
@@ -407,7 +409,7 @@ export function PlaygroundProvider({
       }
     } catch (error) {
       console.error("Error saving image:", error);
-      toast.error("Failed to save image. Please try again.", {
+      toast.error(t('playground.imageSaveFailed'), {
         dismissible: true,
         duration: 2_000,
       });
@@ -417,12 +419,12 @@ export function PlaygroundProvider({
   function handleReset() {
     if (sessionGenerations.length === 0) return;
     Alert.alert(
-      "Reset Session?",
-      "Are you sure you want to reset the session? This will clear all generated tattoos and start a new session.",
+      t('playground.resetSessionTitle'),
+      t('playground.resetSessionMessage'),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t('common.cancel'), style: "cancel" },
         {
-          text: "Reset",
+          text: t('playground.resetButton'),
           style: "default",
           isPreferred: true,
           onPress: async () => {
@@ -485,7 +487,7 @@ export function PlaygroundProvider({
           }
 
           if (fileUris.length === 0) {
-            Alert.alert("Error", "Failed to get image data");
+            Alert.alert(t('common.error'), t('playground.imageDataError'));
             return false;
           }
 
@@ -516,7 +518,7 @@ export function PlaygroundProvider({
         return false;
       } catch (error) {
         console.error("Error picking image:", error);
-        Alert.alert("Error", "Failed to pick image from gallery");
+        Alert.alert(t('common.error'), t('playground.pickImageError'));
         return false;
       }
     },
