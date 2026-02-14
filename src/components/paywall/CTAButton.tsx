@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "../ui/Button";
 
 interface CTAButtonProps {
@@ -13,9 +14,11 @@ export function CTAButton({
   loading = false,
   disabled = false,
 }: CTAButtonProps) {
+  const { t } = useTranslation();
+
   return (
     <Button
-      title={loading ? "Processing..." : title}
+      title={loading ? t('common.processing') : title}
       onPress={onPress}
       loading={loading}
       disabled={disabled}

@@ -1,6 +1,7 @@
 import { Color } from "@/src/constants/TWPalette";
 import { useTheme } from "@/src/context/ThemeContext";
 import { PressableScale } from "pressto";
+import { useTranslation } from "react-i18next";
 import { Activity, useEffect, useState } from "react";
 import { View } from "react-native";
 import { PurchasesPackage } from "react-native-purchases";
@@ -22,7 +23,7 @@ type OfferingCardProps = {
   isCurrentPlan?: boolean;
   isSelected?: boolean;
   disabled?: boolean;
-  term: "Week" | "Month";
+  term: string;
   discountBadge?: string;
 };
 
@@ -39,6 +40,7 @@ export function OfferingCard({
   discountBadge,
 }: OfferingCardProps) {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const progress = useSharedValue(isSelected ? 1 : 0);
 
@@ -140,7 +142,7 @@ export function OfferingCard({
 
       {/* Weekly price */}
       <Text type="sm">
-        {product.pricePerWeekString?.replace(/\s/g, "")}/Week
+        {product.pricePerWeekString?.replace(/\s/g, "")}{t('paywall.perWeek')}
       </Text>
 
       <Activity mode={discountBadge ? "visible" : "hidden"}>
@@ -176,7 +178,7 @@ export function OfferingCard({
           }}
         >
           <Text weight="semibold" type="xs" style={{ color: "white" }}>
-            CURRENT
+            {t('paywall.current')}
           </Text>
         </View>
       </Activity>

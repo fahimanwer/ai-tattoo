@@ -5,6 +5,7 @@ import ParallaxScrollView from "@/src/components/about/ParallaxScrollView";
 import { Button } from "@/src/components/ui/Button";
 import { VerticalCard } from "@/src/components/ui/VerticalCard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import {
   ImageSourcePropType,
@@ -41,6 +42,8 @@ export default function AboutStyle() {
     ? "category"
     : "style";
 
+  const { t } = useTranslation();
+
   // Track style detail view
   useEffect(() => {
     if (currentStyle) {
@@ -56,11 +59,11 @@ export default function AboutStyle() {
     <>
       <Stack.Screen
         options={{
-          title: currentStyle?.title || "Style",
+          title: currentStyle?.title || t('common.style'),
           unstable_headerRightItems: () => [
             {
               type: "button",
-              label: "Use Tattoo",
+              label: t('imagePreview.useTattoo'),
               icon: {
                 name: "plus",
                 type: "sfSymbol",
@@ -99,7 +102,7 @@ export default function AboutStyle() {
         }
       >
         <Button
-          title="Read More"
+          title={t('common.readMore')}
           variant="link"
           color="white"
           style={{

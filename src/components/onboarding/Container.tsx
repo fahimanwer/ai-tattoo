@@ -2,6 +2,7 @@ import { Text } from "@/src/components/ui/Text";
 import { useTheme } from "@/src/context/ThemeContext";
 
 import { Link, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 import {
   onboardingEntranceHaptic,
@@ -25,28 +26,10 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { customEvent } from "vexo-analytics";
 import { Button } from "../ui/Button";
 
-const ONBOARDING_VIDEOS = [
-  {
-    title: "Generate Tattoos Instantly",
-    description:
-      "Type a few words and instantly generate unique tattoo designs.",
-    video:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding2.mov",
-  },
-  {
-    title: "Personalize Your Design",
-    description:
-      "Adjust colors, layout, and style to make the tattoo perfectly yours.",
-    video:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding22.mov",
-  },
-  {
-    title: "Preview on Your Skin",
-    description:
-      "Preview any tattoo on your skin — adjust size and placement instantly.",
-    video:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding2222.mov",
-  },
+const ONBOARDING_VIDEO_URLS = [
+  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding2.mov",
+  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding22.mov",
+  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding2222.mov",
 ];
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -54,6 +37,13 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 export default function Container() {
   const router = useRouter();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
+
+  const slideTexts = useMemo(() => [
+    { title: t('onboarding.containerTitle1'), description: t('onboarding.containerDesc1') },
+    { title: t('onboarding.containerTitle2'), description: t('onboarding.containerDesc2') },
+    { title: t('onboarding.containerTitle3'), description: t('onboarding.containerDesc3') },
+  ], [t]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPausedIndicator, setShowPausedIndicator] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -65,18 +55,18 @@ export default function Container() {
   const stepsViewed = useRef<Set<number>>(new Set([0])); // Track which steps were viewed
 
   // Create three video players
-  const player1 = useVideoPlayer(ONBOARDING_VIDEOS[0].video, (player) => {
+  const player1 = useVideoPlayer(ONBOARDING_VIDEO_URLS[0], (player) => {
     player.loop = false;
     player.playbackRate = 1.5;
     player.play();
   });
 
-  const player2 = useVideoPlayer(ONBOARDING_VIDEOS[1].video, (player) => {
+  const player2 = useVideoPlayer(ONBOARDING_VIDEO_URLS[1], (player) => {
     player.loop = false;
     player.playbackRate = 1.5;
   });
 
-  const player3 = useVideoPlayer(ONBOARDING_VIDEOS[2].video, (player) => {
+  const player3 = useVideoPlayer(ONBOARDING_VIDEO_URLS[2], (player) => {
     player.loop = false;
     player.playbackRate = 1.5;
   });
@@ -121,7 +111,7 @@ export default function Container() {
       // Track first step view
       customEvent("onboarding_step_viewed", {
         step: 1,
-        stepTitle: ONBOARDING_VIDEOS[0].title,
+        stepTitle: slideTexts[0].title,
       });
     }
   }, []);
@@ -192,7 +182,7 @@ export default function Container() {
     if (
       index !== currentIndex &&
       index >= 0 &&
-      index < ONBOARDING_VIDEOS.length
+      index < ONBOARDING_VIDEO_URLS.length
     ) {
       setCurrentIndex(index);
       // Play swipe haptic when changing steps
@@ -203,7 +193,7 @@ export default function Container() {
         stepsViewed.current.add(index);
         customEvent("onboarding_step_viewed", {
           step: index + 1,
-          stepTitle: ONBOARDING_VIDEOS[index].title,
+          stepTitle: slideTexts[index].title,
         });
       }
     }
@@ -260,7 +250,7 @@ export default function Container() {
           snapToAlignment="center"
           style={styles.scrollView}
         >
-          {ONBOARDING_VIDEOS.map((_, index) => (
+          {ONBOARDING_VIDEO_URLS.map((_, index) => (
             <View key={index} style={{ width: SCREEN_WIDTH, height: "100%" }}>
               <VideoView
                 style={styles.videoView}
@@ -290,7 +280,7 @@ export default function Container() {
                     ]}
                   >
                     <Text type="xl" weight="semibold" style={{ color: "#fff" }}>
-                      Paused
+                      {t('onboarding.paused')}
                     </Text>
                   </View>
                 </Animated.View>
@@ -318,7 +308,7 @@ export default function Container() {
             style={styles.paginationContainer}
             pointerEvents="none"
           >
-            {ONBOARDING_VIDEOS.map((_, index) => (
+            {ONBOARDING_VIDEO_URLS.map((_, index) => (
               <View
                 key={index}
                 style={[
@@ -358,7 +348,7 @@ export default function Container() {
               style={{ width: "100%" }}
             >
               <Text type="3xl" weight="bold" style={{ textAlign: "center" }}>
-                {ONBOARDING_VIDEOS[currentIndex].title}
+                {slideTexts[currentIndex].title}
               </Text>
               <Text
                 type="xl"
@@ -366,7 +356,7 @@ export default function Container() {
                   { opacity: 0.6, textAlign: "center", marginTop: 12 } as any
                 }
               >
-                {ONBOARDING_VIDEOS[currentIndex].description}
+                {slideTexts[currentIndex].description}
               </Text>
             </Animated.View>
 
@@ -376,7 +366,7 @@ export default function Container() {
               pointerEvents="auto"
             >
               <Button
-                title={currentIndex === 2 ? "Continue" : "Next"}
+                title={currentIndex === 2 ? t('common.continue') : t('common.next')}
                 color="white"
                 variant="solid"
                 size="md"
@@ -402,7 +392,7 @@ export default function Container() {
                       stepsViewed.current.add(nextIndex);
                       customEvent("onboarding_step_viewed", {
                         step: nextIndex + 1,
-                        stepTitle: ONBOARDING_VIDEOS[nextIndex].title,
+                        stepTitle: slideTexts[nextIndex].title,
                       });
                     }
 
@@ -446,10 +436,10 @@ export default function Container() {
               pointerEvents="auto"
             >
               <Text type="sm" style={styles.termsText}>
-                By continuing you agree to our{" "}
+                {t('auth.byContinuingAgree')}{" "}
                 <Link href="/terms-of-service" asChild>
                   <Text type="sm" style={styles.linkText}>
-                    Terms of Service
+                    {t('auth.termsOfService')}
                   </Text>
                 </Link>
               </Text>

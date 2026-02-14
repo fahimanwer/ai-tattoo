@@ -6,6 +6,7 @@ import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import { useThemeColor } from "heroui-native";
 import { Link, router, Stack, useLocalSearchParams } from "expo-router";
 import { PressableScale } from "pressto";
+import { useTranslation } from "react-i18next";
 import { use, useState } from "react";
 import {
   ActivityIndicator,
@@ -35,6 +36,7 @@ export default function ImagePreview() {
   const { isDark } = useTheme();
   const foreground = useThemeColor("foreground");
   const { top } = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const handleUseTattoo = async () => {
     setIsLoading(true);
@@ -74,7 +76,7 @@ export default function ImagePreview() {
       router.dismissTo("/(playground)");
     } catch (error) {
       console.error("Error using tattoo:", error);
-      Alert.alert("Error", "Failed to use this tattoo. Please try again.");
+      Alert.alert(t('common.error'), t('imagePreview.useTattooError'));
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +91,7 @@ export default function ImagePreview() {
         ]}
       >
         <Text type="lg" weight="bold" style={{ color: foreground }}>
-          Image not found
+          {t('imagePreview.imageNotFound')}
         </Text>
       </View>
     );
@@ -114,7 +116,7 @@ export default function ImagePreview() {
                   {
                     labelStyle: { fontWeight: "bold" },
                     type: "button",
-                    label: isLoading ? "Loading..." : "Use Tattoo",
+                    label: isLoading ? t('common.loading') : t('imagePreview.useTattoo'),
                     onPress: handleUseTattoo,
                     variant: "prominent",
                     tintColor: "#3563E9",
@@ -154,7 +156,7 @@ export default function ImagePreview() {
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Text weight="bold" type="sm" style={styles.useTattooLabel}>
-                Use Tattoo
+                {t('imagePreview.useTattoo')}
               </Text>
             )}
           </PressableScale>

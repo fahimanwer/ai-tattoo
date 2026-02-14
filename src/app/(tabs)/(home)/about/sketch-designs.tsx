@@ -5,6 +5,7 @@ import { NotFound } from "@/src/components/screens/notFound";
 import { Button } from "@/src/components/ui/Button";
 import { VerticalCard } from "@/src/components/ui/VerticalCard";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import {
   ImageSourcePropType,
   ScrollView,
@@ -16,6 +17,7 @@ import { customEvent } from "vexo-analytics";
 export default function SketchDesigns() {
   const { design } = useLocalSearchParams<{ design: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const selectedDesign = getSketchDesignByStyleId(parseInt(design || "0", 10));
 
@@ -44,7 +46,7 @@ export default function SketchDesigns() {
         imageBlurhash={coverImageBlurhash}
       >
         <Button
-          title="Read More"
+          title={t('common.readMore')}
           variant="link"
           color="white"
           style={{

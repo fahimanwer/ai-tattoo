@@ -1,4 +1,5 @@
 import {
+  BottomSheet,
   ControlField,
   Description,
   Label,
@@ -7,9 +8,13 @@ import {
   useThemeColor,
 } from "heroui-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import * as Haptics from "expo-haptics";
 import React from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "@/src/context/ThemeContext";
+import type { LanguageOption } from "@/src/hooks/useLanguage";
 
 export function ProfileRow({
   label,
@@ -153,5 +158,77 @@ export function ActionRow({
         )}
       </View>
     </PressableFeedback>
+  );
+}
+
+export function LanguagePickerModal({
+  isOpen,
+  onOpenChange,
+  selectedLanguage,
+  availableLanguages,
+  autoLanguageCode,
+  onSelectLanguage,
+}: {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  selectedLanguage: string;
+  availableLanguages: LanguageOption[];
+  autoLanguageCode: string;
+  onSelectLanguage: (code: string) => void;
+}) {
+  const { t } = useTranslation();
+  const fg = useThemeColor("foreground");
+  const muted = useThemeColor("muted");
+  const { isDark } = useTheme();
+
+  type LangItem = { code: string; nativeName: string; name: string };
+  const data: LangItem[] = [
+    { code: autoLanguageCode, nativeName: t('profile.languageAuto'), name: '' },
+    ...availableLanguages,
+  ];
+
+  return (
+    <BottomSheet isOpen={isOpen} onOpenChange={onOpenChange}>
+      <BottomSheet.Portal>
+        <BottomSheet.Overlay />
+        <BottomSheet.Content snapPoints={["70%"]}>
+          <View style={{ paddingHorizontal: 20, paddingBottom: 8 }}>
+            <BottomSheet.Title>{t('profile.language')}</BottomSheet.Title>
+          </View>
+          <BottomSheetScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}>
+            {data.map((item) => {
+              const isSelected = item.code === selectedLanguage;
+              return (
+                <Pressable
+                  key={item.code}
+                  onPress={() => {
+                    onSelectLanguage(item.code);
+                    onOpenChange(false);
+                  }}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingVertical: 14,
+                    borderBottomWidth: 0.5,
+                    borderBottomColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+                  }}
+                >
+                  <View style={{ gap: 2 }}>
+                    <Text style={{ color: fg, fontSize: 16, fontWeight: isSelected ? "600" : "400" }}>
+                      {item.nativeName}
+                    </Text>
+                    {item.name ? (
+                      <Text style={{ color: muted, fontSize: 13 }}>{item.name}</Text>
+                    ) : null}
+                  </View>
+                  {isSelected && <Ionicons name="checkmark" size={20} color="#3563E9" />}
+                </Pressable>
+              );
+            })}
+          </BottomSheetScrollView>
+        </BottomSheet.Content>
+      </BottomSheet.Portal>
+    </BottomSheet>
   );
 }

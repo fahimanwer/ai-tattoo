@@ -16,6 +16,7 @@ import Purchases, {
 } from "react-native-purchases";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
+import { useTranslation } from "react-i18next";
 import { customEvent } from "vexo-analytics";
 import type { OnboardingAnswers } from "../onboarding/onboardingTypes";
 import { CTAButton } from "../paywall/CTAButton";
@@ -45,39 +46,18 @@ function getArrayValue(
 /**
  * Generate personalized paywall headline based on user's onboarding answers
  */
-function getPersonalizedHeadline(
+function getPersonalizedHeadlineKey(
   answers: OnboardingAnswers | undefined
 ): string {
   const userType = getArrayValue(answers, "user-description");
   const goals = getArrayValue(answers, "goal");
 
-  // Artist-specific headline
-  if (userType?.includes("artist")) {
-    return "Show clients their tattoo before you ink";
-  }
-
-  // Cover-up focused headline
-  if (goals?.includes("cover_up")) {
-    return "Transform your tattoo with confidence";
-  }
-
-  // Try-on focused headline
-  if (goals?.includes("try_on")) {
-    return "See your tattoo before you commit";
-  }
-
-  // Generate/design focused headline
-  if (goals?.includes("generate")) {
-    return "Design the tattoo you've always wanted";
-  }
-
-  // Browsing/inspiration focused
-  if (goals?.includes("browse")) {
-    return "Find your perfect tattoo design";
-  }
-
-  // Default: Strong, universal headline
-  return "Design the tattoo you've always wanted";
+  if (userType?.includes("artist")) return "paywall.headlineArtist";
+  if (goals?.includes("cover_up")) return "paywall.headlineCoverUp";
+  if (goals?.includes("try_on")) return "paywall.headlineTryOn";
+  if (goals?.includes("generate")) return "paywall.headlineDesign";
+  if (goals?.includes("browse")) return "paywall.headlineBrowse";
+  return "paywall.headlineDesign";
 }
 
 export function Paywall() {
@@ -101,11 +81,14 @@ export function Paywall() {
   // Detect if we're in the onboarding flow (user hasn't completed onboarding yet)
   const isOnboardingFlow = !settings.isOnboarded;
 
+  const { t } = useTranslation();
+
   // Personalized headline based on onboarding answers
-  const headline = useMemo(
-    () => getPersonalizedHeadline(settings.onboardingAnswers),
+  const headlineKey = useMemo(
+    () => getPersonalizedHeadlineKey(settings.onboardingAnswers),
     [settings.onboardingAnswers]
   );
+  const headline = t(headlineKey);
 
   // Check if user is authenticated
   const { data: session } = authClient.useSession();
@@ -155,11 +138,11 @@ export function Paywall() {
           await syncAfterAuth(session.user.id);
           // Already authenticated: complete onboarding directly
           Alert.alert(
-            "Success!",
-            "Your subscription is now active. Enjoy unlimited tattoo designs!",
+            t('paywall.successTitle'),
+            t('paywall.subscriptionActiveMessage'),
             [
               {
-                text: "Continue",
+                text: t('common.continue'),
                 onPress: () => {
                   router.dismiss();
                   setIsOnboarded(true);
@@ -172,11 +155,11 @@ export function Paywall() {
           // Not authenticated: require sign-in to link purchase
           // The auth screen will call syncAfterAuth after sign-in
           Alert.alert(
-            "Almost there!",
-            "Create an account to activate your subscription and start designing.",
+            t('paywall.almostThereTitle'),
+            t('paywall.createAccountMessage'),
             [
               {
-                text: "Continue",
+                text: t('common.continue'),
                 onPress: () => {
                   // Dismiss paywall, then replace onboarding with auth screen
                   // Using replace unmounts the onboarding Container (stops videos/haptics)
@@ -197,14 +180,14 @@ export function Paywall() {
         }
         // Normal flow
         Alert.alert(
-          "Success!",
-          "Your subscription is now active. Enjoy unlimited tattoo designs!",
+          t('paywall.successTitle'),
+          t('paywall.subscriptionActiveMessage'),
           [
             {
-              text: "OK",
+              text: t('common.ok'),
               onPress: async () => {
                 router.dismissTo("/(playground)");
-                toast.success("Subscription activated!");
+                toast.success(t('paywall.subscriptionActivated'));
               },
             },
           ]
@@ -226,9 +209,9 @@ export function Paywall() {
       });
 
       Alert.alert(
-        "Purchase Failed",
-        error.message || "Unable to complete purchase. Please try again.",
-        [{ text: "OK" }]
+        t('paywall.purchaseFailedTitle'),
+        error.message || t('paywall.purchaseFailedMessage'),
+        [{ text: t('common.ok') }]
       );
     } finally {
       fetchProducts();
@@ -269,11 +252,11 @@ export function Paywall() {
             await syncAfterAuth(session.user.id);
             // Already authenticated: complete onboarding directly
             Alert.alert(
-              "Purchase Restored!",
-              "Your subscription is now active.",
+              t('paywall.purchaseRestoredTitle'),
+              t('paywall.subscriptionNowActive'),
               [
                 {
-                  text: "Continue",
+                  text: t('common.continue'),
                   onPress: () => {
                     router.dismiss();
                     setTimeout(() => {
@@ -288,11 +271,11 @@ export function Paywall() {
             // Not authenticated: require sign-in to link restored purchase
             // The auth screen will call syncAfterAuth after sign-in
             Alert.alert(
-              "Purchase Found!",
-              "Create an account to activate your subscription and start designing.",
+              t('paywall.purchaseFoundTitle'),
+              t('paywall.createAccountMessage'),
               [
                 {
-                  text: "Continue",
+                  text: t('common.continue'),
                   onPress: () => {
                     // Dismiss paywall, then replace onboarding with auth screen
                     // Using replace unmounts the onboarding Container (stops videos/haptics)
@@ -313,15 +296,15 @@ export function Paywall() {
           }
           fetchProducts();
           // Normal flow
-          Alert.alert("Success!", "Your purchases have been restored.", [
-            { text: "OK", onPress: () => router.dismissAll() },
+          Alert.alert(t('paywall.successTitle'), t('paywall.purchasesRestoredMessage'), [
+            { text: t('common.ok'), onPress: () => router.dismissAll() },
           ]);
         }
       } else {
         Alert.alert(
-          "No Purchases Found",
-          "No previous purchases were found to restore.",
-          [{ text: "OK" }]
+          t('paywall.noPurchasesFoundTitle'),
+          t('paywall.noPurchasesFoundMessage'),
+          [{ text: t('common.ok') }]
         );
       }
     } catch (e) {
@@ -331,9 +314,9 @@ export function Paywall() {
         hasActivePurchases: false,
       });
       Alert.alert(
-        "Error Restoring Purchases",
-        "Unable to restore purchases. Please try again.",
-        [{ text: "OK" }]
+        t('paywall.errorRestoringTitle'),
+        t('paywall.errorRestoringMessage'),
+        [{ text: t('common.ok') }]
       );
     }
   };
@@ -447,28 +430,26 @@ export function Paywall() {
               color: isDark ? Color.grayscale[700] : Color.grayscale[500],
             }}
           >
-            Explore tattoo ideas, refine designs through endless variations, try
-            them on any body part, and export high-quality results with
-            confidence.
+            {t('paywall.subtitle')}
           </Text>
 
           {defaultOffering && weeklyPackage && monthlyPackage ? (
             <>
               <View style={{ flexDirection: "column", gap: 12 }}>
                 <OfferingCard
-                  title="Monthly"
-                  term="Month"
+                  title={t('paywall.monthly')}
+                  term={t('paywall.month')}
                   package={monthlyPackage}
                   onPress={() => setSelectedPeriod("monthly")}
                   isSelected={selectedPeriod === "monthly"}
                   isCurrentPlan={customerInfo?.activeSubscriptions?.includes(
                     monthlyPackage.product.identifier
                   )}
-                  discountBadge="Save 50%"
+                  discountBadge={t('paywall.saveBadge', { percent: '50' })}
                 />
                 <OfferingCard
-                  title="Weekly"
-                  term="Week"
+                  title={t('paywall.weekly')}
+                  term={t('paywall.week')}
                   package={weeklyPackage}
                   onPress={() => setSelectedPeriod("weekly")}
                   isSelected={selectedPeriod === "weekly"}
@@ -480,7 +461,7 @@ export function Paywall() {
 
               {/* CTA Button */}
               <CTAButton
-                title="Continue"
+                title={t('paywall.continueButton')}
                 onPress={() => {
                   if (selectedPackage) {
                     handlePurchase(selectedPackage);
@@ -492,7 +473,7 @@ export function Paywall() {
           ) : (
             <View style={styles.loadingContainer}>
               <Text type="base" style={styles.loadingText}>
-                Loading plans…
+                {t('paywall.loadingPlans')}
               </Text>
             </View>
           )}
@@ -515,7 +496,7 @@ export function Paywall() {
               }}
               weight="medium"
             >
-              Restore Subscription
+              {t('paywall.restoreSubscription')}
             </Text>
           </PressableScale>
 
@@ -535,7 +516,7 @@ export function Paywall() {
                   color: Color.grayscale[400],
                 }}
               >
-                Terms of Service
+                {t('profile.termsOfService')}
               </Text>
             </Link>
             <Text type="xs" style={{ color: Color.grayscale[400] }}>
@@ -548,7 +529,7 @@ export function Paywall() {
                   color: Color.grayscale[400],
                 }}
               >
-                Privacy Policy
+                {t('profile.privacyPolicy')}
               </Text>
             </Link>
           </View>
@@ -556,7 +537,7 @@ export function Paywall() {
             type="xs"
             style={{ textAlign: "center", color: Color.grayscale[400] }}
           >
-            AI design generation includes fair-use limits.
+            {t('paywall.fairUseNote')}
           </Text>
         </View>
       </View>

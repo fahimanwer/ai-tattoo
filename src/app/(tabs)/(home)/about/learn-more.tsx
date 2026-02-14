@@ -6,6 +6,7 @@ import { NotFound } from "@/src/components/screens/notFound";
 import { Button } from "@/src/components/ui/Button";
 import { Text } from "@/src/components/ui/Text";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 
 export default function LearnMore() {
@@ -33,6 +34,7 @@ export default function LearnMore() {
     selectedMood || selectedCategory || selectedStyle || selectedSketchDesign;
 
   const router = useRouter();
+  const { t } = useTranslation();
 
   if (!currentStyle) {
     return <NotFound />;
@@ -49,7 +51,7 @@ export default function LearnMore() {
         <Text type="default">{currentStyle.description}</Text>
 
         <Button
-          title="Create Tattoo"
+          title={t('common.createTattoo')}
           variant="solid"
           color="white"
           onPress={() =>
@@ -59,7 +61,7 @@ export default function LearnMore() {
           }
         />
         <Button
-          title="Back"
+          title={t('common.back')}
           onPress={() => router.back()}
           variant="link"
           color="white"
