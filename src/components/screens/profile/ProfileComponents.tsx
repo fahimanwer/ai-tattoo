@@ -97,7 +97,11 @@ export function SettingsToggleRow({
   const muted = useThemeColor("muted");
 
   return (
-    <ControlField isSelected={isSelected} onSelectedChange={onSelectedChange}>
+    <ControlField
+      isSelected={isSelected}
+      onSelectedChange={onSelectedChange}
+      style={{ paddingVertical: 10 }}
+    >
       <Ionicons name={icon} size={20} color={muted} />
       <View style={{ flex: 1 }}>
         <Label>{title}</Label>
