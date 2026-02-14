@@ -47,8 +47,11 @@ export const TAB_BAR = {
   INACTIVE_FLEX: 1,
 } as const;
 
-// --- Colors (dark theme adaptation of Figma design) ---
-export const TAB_COLORS = {
+// --- Colors ---
+import { useTheme } from "@/src/context/ThemeContext";
+import { useMemo } from "react";
+
+const DARK_COLORS = {
   barBackground: Color.zinc[900], // #18181b
   inactiveCircle: Color.zinc[800], // #27272a
   inactiveIcon: Color.zinc[400], // #a1a1aa
@@ -59,6 +62,38 @@ export const TAB_COLORS = {
   fabIcon: "#FFFFFF",
   fabShadow: "rgba(59,130,246,0.35)",
 } as const;
+
+const LIGHT_COLORS = {
+  barBackground: "#FFFFFF",
+  inactiveCircle: Color.zinc[100], // #f4f4f5
+  inactiveIcon: Color.zinc[500], // #71717a
+  activePill: Color.zinc[900], // #18181b
+  activeIcon: "#FFFFFF",
+  activeLabel: "#FFFFFF",
+  fabBackground: Color.blue[500], // #3b82f6
+  fabIcon: "#FFFFFF",
+  fabShadow: "rgba(59,130,246,0.25)",
+} as const;
+
+export interface TabColors {
+  barBackground: string;
+  inactiveCircle: string;
+  inactiveIcon: string;
+  activePill: string;
+  activeIcon: string;
+  activeLabel: string;
+  fabBackground: string;
+  fabIcon: string;
+  fabShadow: string;
+}
+
+// Static fallback for non-hook contexts
+export const TAB_COLORS: TabColors = DARK_COLORS;
+
+export function useTabColors(): TabColors {
+  const { isDark } = useTheme();
+  return useMemo(() => (isDark ? DARK_COLORS : LIGHT_COLORS), [isDark]);
+}
 
 // --- Animation ---
 export const TAB_SPRING = {

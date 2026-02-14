@@ -1,7 +1,9 @@
 import { cacheImageFromUrl } from "@/lib/image-cache";
 import { InteractiveImage } from "@/src/components/ui/InteractiveImage";
 import { Text } from "@/src/components/ui/Text";
+import { useTheme } from "@/src/context/ThemeContext";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { useThemeColor } from "heroui-native";
 import { Link, router, Stack, useLocalSearchParams } from "expo-router";
 import { use, useState } from "react";
 import { Alert, Dimensions, StyleSheet, View } from "react-native";
@@ -21,6 +23,8 @@ export default function ImagePreview() {
     sessionGenerations,
   } = use(PlaygroundContext);
   const [isLoading, setIsLoading] = useState(false);
+  const { isDark } = useTheme();
+  const foreground = useThemeColor("foreground");
 
   const handleUseTattoo = async () => {
     setIsLoading(true);
@@ -68,8 +72,13 @@ export default function ImagePreview() {
 
   if (!params.imageUrl) {
     return (
-      <View style={styles.errorContainer}>
-        <Text type="lg" weight="bold" style={styles.errorText}>
+      <View
+        style={[
+          styles.errorContainer,
+          { backgroundColor: isDark ? "#000" : "#F5F5F7" },
+        ]}
+      >
+        <Text type="lg" weight="bold" style={{ color: foreground }}>
           Image not found
         </Text>
       </View>
@@ -96,13 +105,18 @@ export default function ImagePreview() {
               label: isLoading ? "Loading..." : "Use Tattoo",
               onPress: handleUseTattoo,
               variant: "prominent",
-              tintColor: "yellow",
+              tintColor: "#3563E9",
               disabled: isLoading,
             },
           ],
         }}
       />
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: isDark ? "#000" : "#F5F5F7" },
+        ]}
+      >
         {/* Interactive Image */}
         <Link.AppleZoomTarget>
           <View style={styles.imageContainer}>
@@ -117,7 +131,6 @@ export default function ImagePreview() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
   },
   imageContainer: {
     flex: 1,
@@ -138,9 +151,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#000",
-  },
-  errorText: {
-    color: "white",
   },
 });

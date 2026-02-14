@@ -3,7 +3,6 @@ import {
   Button,
   Chip,
   Separator,
-  Switch,
   useThemeColor,
 } from "heroui-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -18,7 +17,13 @@ import {
   View,
 } from "react-native";
 import { useProfileData } from "./profile/useProfileData";
-import { ActionRow, ProfileRow, SectionCard } from "./profile/ProfileComponents";
+import {
+  ActionRow,
+  ProfileRow,
+  SectionCard,
+  SettingsToggleRow,
+} from "./profile/ProfileComponents";
+import { type ThemeMode, useTheme } from "@/src/context/ThemeContext";
 
 export function Profile() {
   const {
@@ -54,6 +59,7 @@ export function Profile() {
 
   const muted = useThemeColor("muted");
   const fg = useThemeColor("foreground");
+  const { mode: themeMode, setMode: setThemeMode, isDark } = useTheme();
 
   return (
     <ScrollView
@@ -72,7 +78,9 @@ export function Profile() {
                 width: 64,
                 height: 64,
                 borderRadius: 32,
-                backgroundColor: "rgba(255,255,255,0.08)",
+                backgroundColor: isDark
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(0,0,0,0.05)",
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: 4,
@@ -348,48 +356,65 @@ export function Profile() {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            paddingVertical: 8,
+            paddingVertical: 10,
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <Ionicons name="refresh-outline" size={20} color={muted} />
-            <Text style={{ color: fg, fontSize: 15 }}>Show Onboarding</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            <Ionicons name="contrast-outline" size={20} color={muted} />
+            <Text style={{ color: fg, fontSize: 15 }}>Appearance</Text>
           </View>
-          <Switch
-            isSelected={!settings.isOnboarded}
-            onSelectedChange={() =>
-              updateSettings({ isOnboarded: !(settings.isOnboarded ?? true) })
-            }
-          />
+          <View style={{ flexDirection: "row", gap: 6 }}>
+            {(["light", "dark", "system"] as ThemeMode[]).map((m) => (
+              <Chip
+                key={m}
+                variant={themeMode === m ? "primary" : "secondary"}
+                size="sm"
+                onPress={() => setThemeMode(m)}
+              >
+                <Chip.Label
+                  style={{
+                    textTransform: "capitalize",
+                    fontWeight: themeMode === m ? "600" : "400",
+                  }}
+                >
+                  {m}
+                </Chip.Label>
+              </Chip>
+            ))}
+          </View>
         </View>
         <Separator />
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingVertical: 8,
+        <SettingsToggleRow
+          icon="refresh-outline"
+          title="Show Onboarding"
+          isSelected={!settings.isOnboarded}
+          onSelectedChange={() =>
+            updateSettings({ isOnboarded: !(settings.isOnboarded ?? true) })
+          }
+        />
+        <Separator />
+        <SettingsToggleRow
+          icon="sparkles-outline"
+          title="Prompt Enhancement"
+          isSelected={settings.improvePrompt}
+          onSelectedChange={() => {
+            const newValue = !settings.improvePrompt;
+            updateSettings({ improvePrompt: newValue });
+            if (!newValue) {
+              Alert.alert(
+                "Prompt Enhancement Disabled",
+                "Results may vary without enhancement. Turn it back on anytime.",
+                [{ text: "OK" }]
+              );
+            }
           }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <Ionicons name="sparkles-outline" size={20} color={muted} />
-            <Text style={{ color: fg, fontSize: 15 }}>Prompt Enhancement</Text>
-          </View>
-          <Switch
-            isSelected={settings.improvePrompt}
-            onSelectedChange={() => {
-              const newValue = !settings.improvePrompt;
-              updateSettings({ improvePrompt: newValue });
-              if (!newValue) {
-                Alert.alert(
-                  "Prompt Enhancement Disabled",
-                  "Results may vary without enhancement. Turn it back on anytime.",
-                  [{ text: "OK" }]
-                );
-              }
-            }}
-          />
-        </View>
+        />
       </SectionCard>
 
       {/* Legal */}

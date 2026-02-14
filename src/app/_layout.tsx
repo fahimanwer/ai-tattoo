@@ -9,11 +9,15 @@ import {
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 import { Toaster } from "sonner-native";
+import { HeroUINativeProvider } from "heroui-native";
+import "../../global.css";
 
 // Native imports
 import { AccentColorProvider } from "@/src/hooks/useAccentColor";
-import { DarkTheme, ThemeProvider } from "@react-navigation/native";
+import { ThemeProvider } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { AppThemeProvider, useTheme } from "@/src/context/ThemeContext";
+import { StatusBar } from "expo-status-bar";
 
 import {
   AppSettingsContext,
@@ -99,10 +103,9 @@ function RevenueCatProvider({ children }: { children: React.ReactNode }) {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#000",
         }}
       >
-        <ActivityIndicator size="large" color="#fff" />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -114,6 +117,7 @@ function AppContent() {
   const {
     settings: { isOnboarded },
   } = use(AppSettingsContext);
+  const { isDark } = useTheme();
 
   return (
     <Stack
@@ -148,7 +152,11 @@ function AppContent() {
           sheetGrabberVisible: true,
           sheetAllowedDetents: [0.41, 0.61],
           contentStyle: {
-            backgroundColor: isLiquidGlassAvailable() ? "transparent" : "black",
+            backgroundColor: isLiquidGlassAvailable()
+              ? "transparent"
+              : isDark
+                ? "black"
+                : "white",
           },
         }}
       />
@@ -168,22 +176,15 @@ const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
   unsavedChangesWarning: false,
 });
 
-export default function RootLayout() {
+function ThemedApp() {
+  const { navigationTheme, isDark } = useTheme();
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider
-        value={{
-          ...DarkTheme,
-          colors: {
-            ...DarkTheme.colors,
-            background: "#000000",
-            card: "#000000",
-          },
-        }}
-      >
-        <ConvexProvider client={convex}>
-          <ConvexBetterAuthProvider client={convex} authClient={authClient}>
-            <AppSettingsProvider>
+    <ThemeProvider value={navigationTheme}>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <ConvexProvider client={convex}>
+        <ConvexBetterAuthProvider client={convex} authClient={authClient}>
+          <AppSettingsProvider>
             <QueryClientProvider client={queryClient}>
               <RevenueCatProvider>
                 <SubscriptionProvider>
@@ -202,9 +203,9 @@ export default function RootLayout() {
                         </PlaygroundProvider>
                         <Toaster
                           style={{
-                            backgroundColor: "black",
+                            backgroundColor: isDark ? "black" : "white",
                             borderWidth: 1,
-                            borderColor: "#FFFFFF20",
+                            borderColor: isDark ? "#FFFFFF20" : "#00000010",
                           }}
                         />
                       </PressablesConfig>
@@ -213,10 +214,23 @@ export default function RootLayout() {
                 </SubscriptionProvider>
               </RevenueCatProvider>
             </QueryClientProvider>
-            </AppSettingsProvider>
-          </ConvexBetterAuthProvider>
-        </ConvexProvider>
-      </ThemeProvider>
+          </AppSettingsProvider>
+        </ConvexBetterAuthProvider>
+      </ConvexProvider>
+    </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <HeroUINativeProvider
+        config={{ toast: false, devInfo: { stylingPrinciples: false } }}
+      >
+        <AppThemeProvider>
+          <ThemedApp />
+        </AppThemeProvider>
+      </HeroUINativeProvider>
     </GestureHandlerRootView>
   );
 }

@@ -40,7 +40,7 @@ export function CTAButton({
           buttonStyle(
             isLiquidGlassAvailable() ? "glassProminent" : "borderedProminent"
           ),
-          tint("yellow"),
+          tint("blue"),
           controlSize("large"),
           disabled(buttonDisabled),
         ]}
@@ -54,7 +54,7 @@ export function CTAButton({
           title={loading ? "Processing..." : title}
           modifiers={[
             frame({ width: width - 64 }),
-            foregroundStyle("black"),
+            foregroundStyle("white"),
             font({ weight: "bold" }),
           ]}
         />

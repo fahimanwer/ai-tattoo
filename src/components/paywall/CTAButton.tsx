@@ -20,7 +20,7 @@ export function CTAButton({
       loading={loading}
       disabled={disabled}
       variant="solid"
-      color="yellow"
+      color="blue"
       size="lg"
       radius="lg"
       haptic

@@ -1,5 +1,6 @@
 import { inputFocusFanfareHaptic } from "@/lib/haptics-patterns.ios";
 import * as NativeCoreHaptics from "@/modules/native-core-haptics";
+import { useTheme } from "@/src/context/ThemeContext";
 import * as Haptics from "expo-haptics";
 import { useEffect } from "react";
 import { View } from "react-native";
@@ -14,7 +15,7 @@ type TextStepBodyProps = {
   onSubmit?: () => void;
 };
 
-const glowIn: CSSAnimationKeyframes = {
+const glowInDark: CSSAnimationKeyframes = {
   from: {
     boxShadow: "0 0 0 0 rgba(255, 255, 255, 0)",
   },
@@ -23,12 +24,30 @@ const glowIn: CSSAnimationKeyframes = {
   },
 };
 
-const glowOut: CSSAnimationKeyframes = {
+const glowOutDark: CSSAnimationKeyframes = {
   from: {
     boxShadow: "0 0 32px 4px rgba(255, 255, 255, 0.35)",
   },
   to: {
     boxShadow: "0 0 0 0 rgba(255, 255, 255, 0)",
+  },
+};
+
+const glowInLight: CSSAnimationKeyframes = {
+  from: {
+    boxShadow: "0 0 0 0 rgba(53, 99, 233, 0)",
+  },
+  to: {
+    boxShadow: "0 0 32px 4px rgba(53, 99, 233, 0.4)",
+  },
+};
+
+const glowOutLight: CSSAnimationKeyframes = {
+  from: {
+    boxShadow: "0 0 32px 4px rgba(53, 99, 233, 0.3)",
+  },
+  to: {
+    boxShadow: "0 0 0 0 rgba(53, 99, 233, 0)",
   },
 };
 
@@ -38,9 +57,14 @@ export function TextStepBody({
   onChange,
   onSubmit,
 }: TextStepBodyProps) {
+  const { isDark } = useTheme();
+
   useEffect(() => {
     NativeCoreHaptics.default.playPattern(inputFocusFanfareHaptic);
   }, []);
+
+  const glowIn = isDark ? glowInDark : glowInLight;
+  const glowOut = isDark ? glowOutDark : glowOutLight;
 
   return (
     <View style={{ paddingTop: 46, width: "100%", paddingHorizontal: 32 }}>
@@ -56,7 +80,7 @@ export function TextStepBody({
         <Input
           autoFocus
           value={value}
-          cursorColor={"yellow"}
+          cursorColor={"#3563E9"}
           onChangeText={onChange}
           maxLength={25}
           textContentType="name"
@@ -66,7 +90,7 @@ export function TextStepBody({
           radius="full"
           color="neutral"
           style={{
-            color: "white",
+            color: isDark ? "white" : "black",
           }}
           onSubmitEditing={() => {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

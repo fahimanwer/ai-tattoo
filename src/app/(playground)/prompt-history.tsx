@@ -8,6 +8,8 @@ import {
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { useTheme } from "@/src/context/ThemeContext";
+import { useThemeColor } from "heroui-native";
 import { Color as NativeColor, router, Stack } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
@@ -18,6 +20,9 @@ export default function PromptHistory() {
   const { setPrompt, focusInput } = use(PlaygroundContext);
   const [history, setHistory] =
     useState<PromptHistoryEntry[]>(getPromptHistory);
+  const { isDark } = useTheme();
+  const fg = useThemeColor("foreground");
+  const muted = useThemeColor("muted");
 
   function handleDismiss() {
     router.back();
@@ -55,7 +60,7 @@ export default function PromptHistory() {
   const renderItem = useCallback(
     ({ item }: { item: PromptHistoryEntry }) => (
       <PressableScale
-        style={styles.row}
+        style={[styles.row, { borderBottomColor: isDark ? Color.zinc[800] : Color.zinc[200] }]}
         onPress={() => handleSelectPrompt(item.text)}
         onLongPress={() => {
           Alert.alert("Delete Prompt", "Remove this prompt from history?", [
@@ -69,21 +74,21 @@ export default function PromptHistory() {
         }}
       >
         <View style={styles.rowContent}>
-          <Text numberOfLines={2} style={styles.promptText}>
+          <Text numberOfLines={2} style={[styles.promptText, { color: fg }]}>
             {item.text}
           </Text>
-          <Text type="xs" style={styles.timestamp}>
+          <Text type="xs" style={[styles.timestamp, { color: muted }]}>
             {formatRelativeTime(item.timestamp)}
           </Text>
         </View>
         <SymbolView
           name="chevron.right"
           size={14}
-          tintColor={Color.zinc[600]}
+          tintColor={muted}
         />
       </PressableScale>
     ),
-    []
+    [isDark, fg, muted]
   );
 
   const hasHistory = history.length > 0;
@@ -116,12 +121,12 @@ export default function PromptHistory() {
           <SymbolView
             name="clock.arrow.circlepath"
             size={48}
-            tintColor={Color.zinc[600]}
+            tintColor={muted}
           />
-          <Text type="lg" weight="medium" style={styles.emptyTitle}>
+          <Text type="lg" weight="medium" style={[styles.emptyTitle, { color: muted }]}>
             No prompts yet
           </Text>
-          <Text type="sm" style={styles.emptySubtitle}>
+          <Text type="sm" style={[styles.emptySubtitle, { color: muted }]}>
             Your prompts will appear here after you generate a tattoo
           </Text>
         </View>
@@ -142,20 +147,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     gap: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Color.zinc[800],
   },
   rowContent: {
     flex: 1,
     gap: 4,
   },
   promptText: {
-    color: "white",
     fontSize: 15,
     lineHeight: 20,
   },
-  timestamp: {
-    color: Color.zinc[400],
-  },
+  timestamp: {},
   emptyState: {
     flex: 1,
     alignItems: "center",
@@ -164,11 +165,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   emptyTitle: {
-    color: Color.zinc[400],
     marginTop: 4,
   },
   emptySubtitle: {
-    color: Color.zinc[500],
     textAlign: "center",
   },
 });

@@ -1,4 +1,5 @@
 import { Text } from "@/src/components/ui/Text";
+import { useTheme } from "@/src/context/ThemeContext";
 
 import { Link, useRouter } from "expo-router";
 
@@ -52,6 +53,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function Container() {
   const router = useRouter();
+  const { isDark } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPausedIndicator, setShowPausedIndicator] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -277,7 +279,16 @@ export default function Container() {
                   style={styles.pausedIndicator}
                   pointerEvents="none"
                 >
-                  <View style={styles.pausedIndicatorBg}>
+                  <View
+                    style={[
+                      styles.pausedIndicatorBg,
+                      {
+                        backgroundColor: isDark
+                          ? "rgba(0, 0, 0, 0.7)"
+                          : "rgba(0, 0, 0, 0.5)",
+                      },
+                    ]}
+                  >
                     <Text type="xl" weight="semibold" style={{ color: "#fff" }}>
                       Paused
                     </Text>
@@ -289,7 +300,17 @@ export default function Container() {
         </ScrollView>
       </Animated.View>
 
-      <View style={styles.container} pointerEvents="box-none">
+      <View
+        style={[
+          styles.container,
+          {
+            experimental_backgroundImage: isDark
+              ? `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.8) 70%, #000000 100%)`
+              : `linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.85) 70%, #FFFFFF 100%)`,
+          },
+        ]}
+        pointerEvents="box-none"
+      >
         <View style={styles.contentContainer} pointerEvents="box-none">
           {/* Pagination Dots */}
           <Animated.View
@@ -301,8 +322,20 @@ export default function Container() {
               <View
                 key={index}
                 style={[
-                  styles.paginationDot,
-                  currentIndex === index && styles.paginationDotActive,
+                  {
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: isDark
+                      ? "rgba(255, 255, 255, 0.3)"
+                      : "rgba(0, 0, 0, 0.25)",
+                  },
+                  currentIndex === index && {
+                    backgroundColor: isDark
+                      ? "rgba(255, 255, 255, 1)"
+                      : "rgba(0, 0, 0, 0.8)",
+                    width: 24,
+                  },
                 ]}
               />
             ))}
@@ -445,8 +478,6 @@ const styles = StyleSheet.create({
   videoView: {
     width: SCREEN_WIDTH,
     height: "100%",
-
-    // marginTop: 35,
   },
 
   videoTapArea: {
@@ -467,7 +498,6 @@ const styles = StyleSheet.create({
   },
 
   pausedIndicatorBg: {
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 12,
@@ -478,7 +508,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: "relative",
-    experimental_backgroundImage: `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.8) 70%, #000000 100%)`,
     zIndex: 2,
   },
 
@@ -502,17 +531,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
-  },
-
-  paginationDotActive: {
-    backgroundColor: "rgba(255, 255, 255, 1)",
-    width: 24,
-  },
+  // Pagination dot styles are now inline (theme-aware)
 
   termsContainer: {
     marginTop: 24,

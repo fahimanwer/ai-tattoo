@@ -1,6 +1,7 @@
 import { authClient } from "@/lib/auth-client";
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useSubscription } from "@/src/hooks/useSubscription";
 import { useUserData } from "@/src/hooks/useUserData";
 import { Image } from "expo-image";
@@ -89,6 +90,7 @@ export function Paywall() {
   const router = useRouter();
   const { top } = useSafeAreaInsets();
   const { refresh, syncAfterAuth } = useUserData();
+  const { isDark } = useTheme();
 
   // Close button visibility logic
   const { settings, updateSettingsSync, setIsOnboarded } =
@@ -359,7 +361,14 @@ export function Paywall() {
                   }
                   router.replace("/(tabs)/(home)");
                 }}
-                style={styles.closeButton}
+                style={[
+                  styles.closeButton,
+                  {
+                    backgroundColor: isDark
+                      ? Color.grayscale[200]
+                      : Color.grayscale[100],
+                  },
+                ]}
               >
                 {Platform.OS === "ios" ? (
                   <Icon
@@ -388,7 +397,7 @@ export function Paywall() {
             StyleSheet.absoluteFill,
             {
               zIndex: 1,
-              experimental_backgroundImage: `linear-gradient(to bottom, transparent 0%, ${Color.grayscale[50]} 50%)`,
+              experimental_backgroundImage: `linear-gradient(to bottom, transparent 0%, ${isDark ? Color.grayscale[50] : "#FFFFFF"} 50%)`,
             },
           ]}
         />
@@ -420,13 +429,23 @@ export function Paywall() {
             gap: 16,
           }}
         >
-          <Text type="4xl" weight="bold" style={styles.heroTitle}>
+          <Text
+            type="4xl"
+            weight="bold"
+            style={[
+              styles.heroTitle,
+              { color: isDark ? Color.zinc[50] : Color.zinc[900] },
+            ]}
+          >
             {headline}
           </Text>
           <Text
             type="base"
             weight="medium"
-            style={{ textAlign: "center", color: Color.grayscale[700] }}
+            style={{
+              textAlign: "center",
+              color: isDark ? Color.grayscale[700] : Color.grayscale[500],
+            }}
           >
             Explore tattoo ideas, refine designs through endless variations, try
             them on any body part, and export high-quality results with
@@ -549,7 +568,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Color.grayscale[200],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -559,7 +577,6 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   heroTitle: {
-    color: Color.zinc[50],
     letterSpacing: -1,
     textAlign: "center",
   },
@@ -575,10 +592,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderBottomLeftRadius: 8,
-    backgroundColor: Color.yellow[400],
+    backgroundColor: Color.blue[500],
   },
   saveBadgeText: {
-    color: Color.grayscale[950],
+    color: "#FFFFFF",
     letterSpacing: 0.5,
   },
   featureRow: {
@@ -587,7 +604,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   featureIcon: {
-    color: Color.yellow[400],
+    color: Color.blue[500],
     fontSize: 14,
   },
   featureText: {

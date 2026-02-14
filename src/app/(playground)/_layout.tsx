@@ -1,13 +1,28 @@
+import { useTheme } from "@/src/context/ThemeContext";
 import { isGlassEffectAPIAvailable } from "expo-glass-effect";
 import { Stack } from "expo-router";
+import { Platform } from "react-native";
 
 export default function PlaygroundLayout() {
+  const isIOS = Platform.OS === "ios";
+  const isGlass = isGlassEffectAPIAvailable();
+  const { isDark } = useTheme();
+
+  const sheetBg = isGlass ? "transparent" : isDark ? "black" : "white";
+
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: "transparent" },
-        headerBlurEffect: isGlassEffectAPIAvailable() ? undefined : "dark",
-        headerTintColor: "white",
+        headerStyle: {
+          backgroundColor: isIOS
+            ? "transparent"
+            : isDark
+              ? "#000000"
+              : "#F5F5F7",
+        },
+        headerBlurEffect:
+          isIOS && !isGlass ? (isDark ? "dark" : "light") : undefined,
+        headerTintColor: isDark ? "white" : "black",
       }}
     >
       <Stack.Screen name="index" options={{ presentation: "card" }} />
@@ -23,12 +38,8 @@ export default function PlaygroundLayout() {
         options={{
           headerTitle: "Inkigo AI",
           presentation: "formSheet",
-          headerTransparent: isGlassEffectAPIAvailable() ? true : false,
-          contentStyle: {
-            backgroundColor: isGlassEffectAPIAvailable()
-              ? "transparent"
-              : "black",
-          },
+          headerTransparent: isGlass ? true : false,
+          contentStyle: { backgroundColor: sheetBg },
           sheetGrabberVisible: true,
           sheetAllowedDetents: [0.7],
         }}
@@ -43,12 +54,8 @@ export default function PlaygroundLayout() {
         name="feature-request"
         options={{
           presentation: "formSheet",
-          headerTransparent: isGlassEffectAPIAvailable() ? true : false,
-          contentStyle: {
-            backgroundColor: isGlassEffectAPIAvailable()
-              ? "transparent"
-              : "black",
-          },
+          headerTransparent: isGlass ? true : false,
+          contentStyle: { backgroundColor: sheetBg },
           sheetGrabberVisible: true,
           sheetAllowedDetents: [0.7],
         }}
@@ -57,12 +64,8 @@ export default function PlaygroundLayout() {
         name="prompt-history"
         options={{
           presentation: "formSheet",
-          headerTransparent: isGlassEffectAPIAvailable() ? true : false,
-          contentStyle: {
-            backgroundColor: isGlassEffectAPIAvailable()
-              ? "transparent"
-              : "black",
-          },
+          headerTransparent: isGlass ? true : false,
+          contentStyle: { backgroundColor: sheetBg },
           sheetGrabberVisible: true,
           sheetAllowedDetents: [0.7],
         }}

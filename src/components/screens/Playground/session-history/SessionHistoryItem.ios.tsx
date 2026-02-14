@@ -63,7 +63,7 @@ const SessionHistoryItemComponent = ({
                   height: 40,
                   borderRadius: 20,
                   borderWidth: 2,
-                  borderColor: isActive ? "yellow" : "transparent",
+                  borderColor: isActive ? "#3563E9" : "transparent",
                 }}
               />
               <Activity mode={secondUri ? "visible" : "hidden"}>
@@ -74,7 +74,7 @@ const SessionHistoryItemComponent = ({
                     height: 40,
                     borderRadius: 20,
                     borderWidth: 2,
-                    borderColor: isActive ? "yellow" : "transparent",
+                    borderColor: isActive ? "#3563E9" : "transparent",
                   }}
                 />
               </Activity>

@@ -1,12 +1,14 @@
 import { authClient } from "@/lib/auth-client";
 import { api } from "@/lib/nano";
 import { listAlbumAssets, saveBase64ToAlbum } from "@/lib/save-to-library";
+import { useTheme } from "@/src/context/ThemeContext";
 import { LegendList } from "@legendapp/list";
 import { useQuery, useAction } from "convex/react";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
+import { useThemeColor } from "heroui-native";
 import { PressableScale } from "pressto";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Linking, StyleSheet, View } from "react-native";
@@ -19,6 +21,9 @@ export function TattooHistory() {
   const [loading, setLoading] = useState(true);
   const [isRestoring, setIsRestoring] = useState(false);
   const [permission, requestPermission] = MediaLibrary.usePermissions();
+  const { isDark } = useTheme();
+  const foreground = useThemeColor("foreground");
+  const muted = useThemeColor("muted");
 
   const { data: session } = authClient.useSession();
   const cloudCount = useQuery(
@@ -122,12 +127,12 @@ export function TattooHistory() {
           <SymbolView
             name="photo.fill.on.rectangle.fill"
             size={60}
-            tintColor={"white"}
+            tintColor={foreground}
           />
           <Text type="lg" weight="semibold" style={styles.emptyTitle}>
             Let&apos;s Get Started
           </Text>
-          <Text style={styles.emptyDescription}>
+          <Text style={[styles.emptyDescription, { color: muted }]}>
             We need access to your photo library so you can view and save your
             tattoos.
           </Text>
@@ -135,7 +140,7 @@ export function TattooHistory() {
             onPress={requestPermission}
             title="Continue"
             variant="link"
-            color="yellow"
+            color="blue"
           />
         </View>
       );
@@ -147,12 +152,12 @@ export function TattooHistory() {
           <SymbolView
             name="exclamationmark.triangle.fill"
             size={60}
-            tintColor={"white"}
+            tintColor={foreground}
           />
           <Text type="lg" weight="semibold" style={styles.emptyTitle}>
             Photo Access Needed
           </Text>
-          <Text style={styles.emptyDescription}>
+          <Text style={[styles.emptyDescription, { color: muted }]}>
             This feature requires access to your photo library to view and save
             your tattoos. You can manage photo access in your device settings.
           </Text>
@@ -160,7 +165,7 @@ export function TattooHistory() {
             onPress={() => Linking.openURL("app-settings:")}
             title="Open Settings"
             variant="link"
-            color="yellow"
+            color="blue"
           />
         </View>
       );
@@ -172,19 +177,19 @@ export function TattooHistory() {
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
           No tattoos saved yet
         </Text>
-        <Text style={styles.emptyDescription}>
+        <Text style={[styles.emptyDescription, { color: muted }]}>
           Create and save your first tattoo design! Swipe down to refresh.
         </Text>
         {showRestoreBanner && (
           <View style={styles.restoreBanner}>
-            <SymbolView name="icloud.and.arrow.down" size={24} tintColor="white" />
+            <SymbolView name="icloud.and.arrow.down" size={24} tintColor={foreground} />
             <Text type="sm" style={styles.restoreText}>
               {cloudCount} tattoo{cloudCount !== 1 ? "s" : ""} found in cloud
             </Text>
             <Button
               title={isRestoring ? "Restoring..." : "Restore"}
               variant="link"
-              color="yellow"
+              color="blue"
               onPress={handleRestore}
               disabled={isRestoring}
             />
@@ -208,14 +213,14 @@ export function TattooHistory() {
 
     return (
       <View style={styles.restoreBanner}>
-        <SymbolView name="icloud.and.arrow.down" size={20} tintColor="white" />
+        <SymbolView name="icloud.and.arrow.down" size={20} tintColor={foreground} />
         <Text type="sm" style={styles.restoreText}>
           {cloudCount} in cloud
         </Text>
         <Button
           title={isRestoring ? "Restoring..." : "Restore"}
           variant="link"
-          color="yellow"
+          color="blue"
           onPress={handleRestore}
           disabled={isRestoring}
         />
@@ -297,7 +302,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   emptyDescription: {
-    color: "#666",
     textAlign: "center",
     marginTop: 8,
   },

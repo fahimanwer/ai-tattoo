@@ -1,3 +1,4 @@
+import { useTheme } from "@/src/context/ThemeContext";
 import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 import { useEffect, useMemo } from "react";
 import {
@@ -17,6 +18,7 @@ export function CircleProgress({
   size = 44,
   strokeWidth = 3,
 }: CircleProgressProps) {
+  const { isDark } = useTheme();
   const radius = (size - strokeWidth) / 2;
   const center = size / 2;
 
@@ -58,7 +60,7 @@ export function CircleProgress({
         path={backgroundPath}
         style="stroke"
         strokeWidth={strokeWidth}
-        color="rgba(255, 255, 255, 0.15)"
+        color={isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.1)"}
         strokeCap="round"
       />
       {/* Progress arc */}
@@ -66,7 +68,7 @@ export function CircleProgress({
         path={progressPath}
         style="stroke"
         strokeWidth={strokeWidth}
-        color="rgba(255, 255, 255, 1)"
+        color={isDark ? "rgba(255, 255, 255, 1)" : "#3563E9"}
         strokeCap="round"
       />
     </Canvas>

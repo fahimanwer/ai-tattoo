@@ -46,7 +46,7 @@ export function OnboardingButton({
           buttonStyle(
             isLiquidGlassAvailable() ? "glassProminent" : "borderedProminent"
           ),
-          tint(isLastStep ? "yellow" : "white"),
+          tint(isLastStep ? "#3563E9" : "white"),
           controlSize(controlSizeProp),
           disabled(buttonDisabled),
         ]}

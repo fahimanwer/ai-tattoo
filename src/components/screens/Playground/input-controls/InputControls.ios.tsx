@@ -1,5 +1,6 @@
 import { cacheImageFromUrl } from "@/lib/image-cache";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import {
   GlassEffectContainer,
@@ -54,6 +55,7 @@ export function InputControls({
     use(PlaygroundContext);
   const { isLimitReached, subscriptionTier } = useUsageLimit();
   const isFreeTier = subscriptionTier === "free";
+  const { isDark } = useTheme();
 
   const namespaceId = useId();
   const textFieldRef = useRef<TextFieldRef>(null);
@@ -201,12 +203,12 @@ export function InputControls({
                     router.push("/(playground)/sheet");
                   }}
                   modifiers={[
-                    tint("white"),
+                    tint(isDark ? "white" : "black"),
                     buttonStyle(
                       isLiquidGlassAvailable() ? "glass" : "bordered"
                     ),
                     background(
-                      isLiquidGlassAvailable() ? "transparent" : "#000000"
+                      isLiquidGlassAvailable() ? "transparent" : (isDark ? "#000000" : "#F5F5F7")
                     ),
                     clipShape("circle"),
                     disabled(isSheetDisabled),
@@ -233,7 +235,7 @@ export function InputControls({
                       cornerRadius: 20,
                     }),
                     background(
-                      isLiquidGlassAvailable() ? "transparent" : "black",
+                      isLiquidGlassAvailable() ? "transparent" : (isDark ? "black" : "#F5F5F7"),
                       shapes.roundedRectangle({
                         cornerRadius: 20,
                         roundedCornerStyle: "continuous",
@@ -270,14 +272,14 @@ export function InputControls({
                         textFieldRef.current?.blur();
                         router.push("/(playground)/prompt-history");
                       }}
-                      modifiers={[buttonStyle("borderless"), tint("#555555")]}
+                      modifiers={[buttonStyle("borderless"), tint(isDark ? "#555555" : "#999999")]}
                     >
                       <Image
                         systemName="clock.arrow.circlepath"
                         size={14}
                         modifiers={[
                           padding({ vertical: 12, horizontal: 8 }),
-                          tint("white"),
+                          tint(isDark ? "white" : "black"),
                         ]}
                       />
                     </SwiftUIButton>
@@ -287,7 +289,7 @@ export function InputControls({
                 <SwiftUIButton
                   onPress={handleSubmit}
                   modifiers={[
-                    tint(prompt.length > 0 ? "yellow" : "gray"),
+                    tint(prompt.length > 0 ? "#3563E9" : "gray"),
                     buttonStyle(
                       isLiquidGlassAvailable() ? "glassProminent" : "bordered"
                     ),
@@ -295,8 +297,8 @@ export function InputControls({
                       isLiquidGlassAvailable()
                         ? "transparent"
                         : prompt.length > 0
-                        ? "yellow"
-                        : "#333333"
+                        ? "#3563E9"
+                        : (isDark ? "#333333" : "#E5E5E5")
                     ),
                     clipShape("circle"),
                     disabled(isSubmitDisabled || prompt.length === 0),
@@ -305,7 +307,7 @@ export function InputControls({
                   <Image
                     systemName={"arrow.up"}
                     size={16}
-                    color={prompt.length > 0 ? "black" : undefined}
+                    color={prompt.length > 0 ? "black" : (isDark ? undefined : "black")}
                     modifiers={[padding({ vertical: 6, horizontal: 2 })]}
                   />
                 </SwiftUIButton>

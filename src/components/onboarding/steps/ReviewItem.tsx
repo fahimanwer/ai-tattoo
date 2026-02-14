@@ -1,4 +1,5 @@
 import { Color } from "@/src/constants/TWPalette";
+import { useTheme } from "@/src/context/ThemeContext";
 import { View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { Text } from "../../ui/Text";
@@ -36,6 +37,7 @@ interface ReviewItemProps {
 }
 
 export function ReviewItem({ review, index }: ReviewItemProps) {
+  const { isDark } = useTheme();
   const enteringDelay =
     REVIEW_ANIMATION_CONFIG.initialDelay +
     index * REVIEW_ANIMATION_CONFIG.staggerDelay;
@@ -48,9 +50,9 @@ export function ReviewItem({ review, index }: ReviewItemProps) {
       exiting={FadeOut.duration(200)}
       style={{
         borderWidth: 1,
-        borderColor: Color.grayscale[100],
+        borderColor: isDark ? Color.grayscale[100] : Color.grayscale[900],
         borderRadius: 16,
-        backgroundColor: "black",
+        backgroundColor: isDark ? "black" : "white",
         paddingHorizontal: 17,
         paddingVertical: 17,
         marginRight: 12,

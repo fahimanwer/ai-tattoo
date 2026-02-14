@@ -1,6 +1,9 @@
 import {
-  Card,
+  ControlField,
+  Description,
+  Label,
   PressableFeedback,
+  Surface,
   useThemeColor,
 } from "heroui-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -49,7 +52,7 @@ export function SectionCard({
   const muted = useThemeColor("muted");
 
   return (
-    <View style={{ gap: 4 }}>
+    <View style={{ gap: 6 }}>
       {title && (
         <Text
           style={{
@@ -59,23 +62,49 @@ export function SectionCard({
             textTransform: "uppercase",
             letterSpacing: 0.5,
             paddingHorizontal: 4,
-            marginBottom: 4,
           }}
         >
           {title}
         </Text>
       )}
-      <Card>
-        <Card.Body style={{ paddingHorizontal: 16 }}>{children}</Card.Body>
-      </Card>
+      <Surface className="px-4 py-3">
+        {children}
+      </Surface>
       {footer && (
         <Text
-          style={{ color: muted, fontSize: 12, paddingHorizontal: 4, marginTop: 4 }}
+          style={{ color: muted, fontSize: 12, paddingHorizontal: 4, marginTop: 2 }}
         >
           {footer}
         </Text>
       )}
     </View>
+  );
+}
+
+export function SettingsToggleRow({
+  icon,
+  title,
+  description,
+  isSelected,
+  onSelectedChange,
+}: {
+  icon: React.ComponentProps<typeof Ionicons>["name"];
+  title: string;
+  description?: string;
+  isSelected: boolean;
+  onSelectedChange: (value: boolean) => void;
+}) {
+  const muted = useThemeColor("muted");
+
+  return (
+    <ControlField isSelected={isSelected} onSelectedChange={onSelectedChange}>
+      <Ionicons name={icon} size={20} color={muted} />
+      <View style={{ flex: 1 }}>
+        <Label>{title}</Label>
+        {description && <Description>{description}</Description>}
+      </View>
+      <ControlField.Indicator />
+    </ControlField>
   );
 }
 

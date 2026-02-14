@@ -8,7 +8,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { TAB_BAR, TAB_SPRING } from "./tab-bar-constants";
+import { TAB_BAR, TAB_SPRING, useTabColors } from "./tab-bar-constants";
 import { TabBarBackground } from "./TabBarBackground";
 import { TabBarItem } from "./TabBarItem";
 import { CameraFAB } from "./CameraFAB";
@@ -49,6 +49,7 @@ export function CustomTabBar({
   const { bottom } = useSafeAreaInsets();
   const [barWidth, setBarWidth] = useState(0);
   const isCameraActive = state.routes[state.index]?.name === CAMERA_ROUTE;
+  const tabColors = useTabColors();
 
   const visibleRoutes = state.routes.filter((r) => r.name !== CAMERA_ROUTE);
   const cameraRoute = state.routes.find((r) => r.name === CAMERA_ROUTE);
@@ -86,6 +87,7 @@ export function CustomTabBar({
           routeName={route.name}
           label={label}
           isFocused={isFocused}
+          colors={tabColors}
           onPress={() => {
             const event = navigation.emit({
               type: "tabPress",

@@ -1,6 +1,6 @@
 import { Text } from "@/src/components/ui/Text";
-import { Color } from "@/src/constants/TWPalette";
 import { useRouter } from "expo-router";
+import { useThemeColor } from "heroui-native";
 import { PressableScale } from "pressto";
 import { Activity } from "react";
 import { Linking, View } from "react-native";
@@ -74,6 +74,8 @@ export function PlaygroundError({
   supportEmail = "beto@codewithbeto.dev",
 }: PlaygroundErrorProps) {
   const router = useRouter();
+  const fg = useThemeColor("foreground");
+  const muted = useThemeColor("muted");
 
   const handleUpgrade = () => {
     onDismiss?.();
@@ -102,13 +104,13 @@ export function PlaygroundError({
             <Text
               type="lg"
               weight="semibold"
-              style={{ textAlign: "center", color: Color.zinc[100] }}
+              style={{ textAlign: "center", color: fg }}
             >
               Keep creating without limits
             </Text>
             <Text
               type="sm"
-              style={{ color: Color.zinc[400], textAlign: "center" }}
+              style={{ color: muted, textAlign: "center" }}
             >
               {
                 "You've reached your current generation limit. Upgrade now to explore variations, refine designs, and keep creating without waiting."
@@ -118,7 +120,7 @@ export function PlaygroundError({
               <Text
                 type="default"
                 weight="semibold"
-                style={{ color: "yellow" }}
+                style={{ color: "#3563E9" }}
               >
                 Unlock unlimited designs →
               </Text>
@@ -134,13 +136,13 @@ export function PlaygroundError({
             <Text
               type="lg"
               weight="semibold"
-              style={{ textAlign: "center", color: Color.zinc[100] }}
+              style={{ textAlign: "center", color: fg }}
             >
               {"You've reached your limit for this period"}
             </Text>
             <Text
               type="sm"
-              style={{ color: Color.zinc[400], textAlign: "center" }}
+              style={{ color: muted, textAlign: "center" }}
             >
               {
                 "Your plan's generation limit has been reached. Your limit will reset at the start of your next billing period."
@@ -151,7 +153,7 @@ export function PlaygroundError({
                 <Text
                   type="default"
                   weight="medium"
-                  style={{ color: Color.zinc[300] }}
+                  style={{ color: fg }}
                 >
                   Try again later
                 </Text>
@@ -160,7 +162,7 @@ export function PlaygroundError({
                 <Text
                   type="sm"
                   style={{
-                    color: Color.zinc[500],
+                    color: muted,
                     textDecorationLine: "underline",
                   }}
                 >
@@ -177,18 +179,18 @@ export function PlaygroundError({
             <Text
               type="lg"
               weight="semibold"
-              style={{ textAlign: "center", color: Color.zinc[100] }}
+              style={{ textAlign: "center", color: fg }}
             >
               Something went wrong
             </Text>
             <Text
               type="sm"
-              style={{ color: Color.zinc[400], textAlign: "center" }}
+              style={{ color: muted, textAlign: "center" }}
             >
               {errorMessage || "An unexpected error occurred"}
             </Text>
             <PressableScale onPress={onDismiss}>
-              <Text type="default" weight="medium" style={{ color: "yellow" }}>
+              <Text type="default" weight="medium" style={{ color: "#3563E9" }}>
                 Try again
               </Text>
             </PressableScale>

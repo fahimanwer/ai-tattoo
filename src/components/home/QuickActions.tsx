@@ -1,5 +1,6 @@
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
+import { useTheme } from "@/src/context/ThemeContext";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { PressableScale } from "pressto";
@@ -66,8 +67,14 @@ const actions: {
 ];
 
 function Item({ item }: { item: (typeof actions)[0] }) {
+  const { isDark } = useTheme();
   return (
-    <View style={styles.item}>
+    <View
+      style={[
+        styles.item,
+        { borderColor: isDark ? Color.zinc[900] : Color.zinc[200] },
+      ]}
+    >
       <Image source={item.image} style={styles.image} contentFit="cover" />
       <View style={styles.textContainer}>
         <Text weight="bold">{item.title}</Text>
@@ -114,7 +121,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginRight: 16,
     borderWidth: 1,
-    borderColor: Color.zinc[900],
   },
   image: {
     position: "absolute",

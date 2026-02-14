@@ -1,3 +1,4 @@
+import { useTheme } from "@/src/context/ThemeContext";
 import { Canvas, RoundedRect, Shader, vec } from "@shopify/react-native-skia";
 import { useEffect, useState } from "react";
 import { LayoutChangeEvent, StyleSheet } from "react-native";
@@ -9,13 +10,15 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import { LAVA_LAMP_SOURCE } from "./shaders-root";
+import { LAVA_LAMP_DARK_SOURCE, LAVA_LAMP_LIGHT_SOURCE } from "./shaders-root";
 
 const BORDER_RADIUS = 16;
 
 export function LavaLamp() {
+  const { isDark } = useTheme();
   const [size, setSize] = useState({ width: 1, height: 1 });
   const time = useSharedValue(0);
+  const shaderSource = isDark ? LAVA_LAMP_DARK_SOURCE : LAVA_LAMP_LIGHT_SOURCE;
 
   useEffect(() => {
     time.value = withRepeat(
@@ -51,7 +54,7 @@ export function LavaLamp() {
           height={size.height}
           r={BORDER_RADIUS}
         >
-          <Shader source={LAVA_LAMP_SOURCE} uniforms={uniforms} />
+          <Shader source={shaderSource} uniforms={uniforms} />
         </RoundedRect>
       </Canvas>
     </Animated.View>

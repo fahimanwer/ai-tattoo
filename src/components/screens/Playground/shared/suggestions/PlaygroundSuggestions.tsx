@@ -1,8 +1,10 @@
 import { featuredTattoos } from "@/lib/featured-tattoos";
 import { Text } from "@/src/components/ui/Text";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { useTheme } from "@/src/context/ThemeContext";
+import { Chip } from "heroui-native";
 import { LegendList } from "@legendapp/list";
-import { GlassView } from "expo-glass-effect";
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { PressableScale } from "pressto";
 import React, { use, useRef } from "react";
@@ -10,6 +12,7 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   StyleSheet,
+  View,
 } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -173,6 +176,7 @@ function SuggestionChip({
   onSelectText: (prompt: string) => void;
   onSelectTryOn: (styleName: string, imageUri: string) => void;
 }) {
+  const { isDark } = useTheme();
   const handlePress = () => {
     if (suggestion.type === "text") {
       onSelectText(suggestion.prompt);
@@ -181,16 +185,53 @@ function SuggestionChip({
     }
   };
 
+  const useGlass = isLiquidGlassAvailable();
+
+  const chipBorderColor = isDark ? '#FFFFFF20' : '#00000015';
+  const chipTextColor = isDark ? '#FFFFFF90' : '#00000070';
+  const fallbackBg = isDark ? '#FFFFFF10' : '#00000008';
+  const fallbackBorderColor = isDark ? '#FFFFFF30' : '#00000015';
+
   if (suggestion.type === "tryOn") {
+    if (useGlass) {
+      return (
+        <PressableScale onPress={handlePress}>
+          <GlassView style={[styles.tryOnChip, { borderColor: chipBorderColor }]}>
+            <Image
+              source={{ uri: suggestion.thumbnailUri }}
+              style={styles.thumbnail}
+              contentFit="cover"
+            />
+            <Text type="sm" style={[styles.tryOnText, { color: chipTextColor }]}>
+              {suggestion.label}
+            </Text>
+          </GlassView>
+        </PressableScale>
+      );
+    }
+
+    // Non-glass fallback: HeroUI Chip with thumbnail
     return (
       <PressableScale onPress={handlePress}>
-        <GlassView style={styles.tryOnChip}>
+        <View style={[styles.fallbackTryOnChip, { borderColor: fallbackBorderColor, backgroundColor: fallbackBg }]}>
           <Image
             source={{ uri: suggestion.thumbnailUri }}
             style={styles.thumbnail}
             contentFit="cover"
           />
-          <Text type="sm" style={styles.tryOnText}>
+          <Text type="sm" style={[styles.tryOnText, { color: chipTextColor }]}>
+            {suggestion.label}
+          </Text>
+        </View>
+      </PressableScale>
+    );
+  }
+
+  if (useGlass) {
+    return (
+      <PressableScale onPress={handlePress}>
+        <GlassView style={[styles.textChip, { borderColor: chipBorderColor }]}>
+          <Text type="sm" style={[styles.textChipLabel, { color: chipTextColor }]}>
             {suggestion.label}
           </Text>
         </GlassView>
@@ -198,14 +239,16 @@ function SuggestionChip({
     );
   }
 
+  // Non-glass fallback: HeroUI Chip
   return (
-    <PressableScale onPress={handlePress}>
-      <GlassView style={styles.textChip}>
-        <Text type="sm" style={styles.textChipLabel}>
-          {suggestion.label}
-        </Text>
-      </GlassView>
-    </PressableScale>
+    <Chip
+      variant="secondary"
+      size="sm"
+      onPress={handlePress}
+      style={styles.fallbackChip}
+    >
+      <Chip.Label>{suggestion.label}</Chip.Label>
+    </Chip>
   );
 }
 
@@ -226,12 +269,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     height: 32,
     borderWidth: 1,
-    borderColor: "#FFFFFF20",
     borderRadius: 100,
   },
   textChipLabel: {
     textAlign: "center",
-    color: "#FFFFFF90",
   },
   tryOnChip: {
     flexDirection: "row",
@@ -240,7 +281,6 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     height: 32,
     borderWidth: 1,
-    borderColor: "#FFFFFF20",
     borderRadius: 100,
     gap: 8,
   },
@@ -249,7 +289,19 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
   },
-  tryOnText: {
-    color: "#FFFFFF90",
+  tryOnText: {},
+  fallbackChip: {
+    height: 32,
+    borderRadius: 100,
+  },
+  fallbackTryOnChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 4,
+    paddingRight: 12,
+    height: 32,
+    borderWidth: 1,
+    borderRadius: 100,
+    gap: 8,
   },
 });

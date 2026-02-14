@@ -24,7 +24,7 @@ export function OnboardingButton({
       loading={loading}
       disabled={disabled}
       variant="solid"
-      color={isLastStep ? "yellow" : "white"}
+      color={isLastStep ? "blue" : "white"}
       radius="lg"
       haptic
       hapticStyle="light"

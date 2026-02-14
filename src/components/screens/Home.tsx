@@ -1,6 +1,8 @@
 import { onboardingEntranceHaptic } from "@/lib/haptics-patterns.ios";
 import CoreHaptics from "@/modules/native-core-haptics";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useUserData } from "@/src/hooks/useUserData";
+import { useThemeColor } from "heroui-native";
 import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
@@ -13,6 +15,9 @@ import { QuickActions } from "../home/QuickActions";
 export function Home() {
   const { refresh } = useUserData();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const { isDark } = useTheme();
+  const foreground = useThemeColor("foreground");
+  const muted = useThemeColor("muted");
 
   // Play entrance haptic on first mount
   useEffect(() => {
@@ -47,6 +52,10 @@ export function Home() {
   );
 }
 
+// Dynamic styles that depend on theme - use these inline with isDark, foreground, muted
+// myTattoosButton: backgroundColor isDark ? '#1C1C1E' : '#F2F2F7', borderColor isDark ? '#2C2C2E' : '#E5E5EA'
+// myTattoosTitle: color foreground
+// myTattoosSubtitle: color muted
 const styles = StyleSheet.create({
   section: {
     marginTop: 12,
@@ -57,11 +66,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   myTattoosButton: {
-    backgroundColor: "#1C1C1E",
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#2C2C2E",
   },
   myTattoosContent: {
     flexDirection: "row",
@@ -72,12 +79,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   myTattoosTitle: {
-    color: "white",
     marginBottom: 4,
   },
-  myTattoosSubtitle: {
-    color: "#666",
-  },
+  myTattoosSubtitle: {},
   chevronIcon: {
     width: 16,
     height: 16,

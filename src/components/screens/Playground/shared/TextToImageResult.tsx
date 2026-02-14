@@ -6,6 +6,7 @@ import {
   ImageGenerationMutation,
   PlaygroundContext,
 } from "@/src/context/PlaygroundContext";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useSubscription } from "@/src/hooks/useSubscription";
 import { spaceScale } from "@/src/theme/theme";
 import * as Haptics from "expo-haptics";
@@ -33,6 +34,7 @@ export function TextToImageResult({
   // Use RevenueCat as source of truth for subscription status
   const { hasActiveSubscription } = useSubscription();
   const isFreeTier = !hasActiveSubscription;
+  const { isDark } = useTheme();
 
   function simulateTattoMachineVibrations() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
@@ -144,7 +146,7 @@ export function TextToImageResult({
             <Text
               type="xs"
               weight="medium"
-              style={{ color: Color.zinc[400], textAlign: "center" }}
+              style={{ color: isDark ? Color.zinc[400] : Color.zinc[500], textAlign: "center" }}
             >
               1 image selected - add one more to combine
             </Text>
@@ -169,6 +171,7 @@ function LoadingChangingText({
 }: {
   lastGenerationUris: string[];
 }) {
+  const { isDark } = useTheme();
   const hasImages = lastGenerationUris.length > 0;
   const firstMessage = hasImages
     ? "Updating your tattoo..."
@@ -249,12 +252,12 @@ function LoadingChangingText({
                 width: 80,
                 height: 80,
                 borderRadius: 40,
-                backgroundColor: Color.zinc[800],
+                backgroundColor: isDark ? Color.zinc[800] : Color.zinc[100],
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Text style={{ color: Color.zinc[400], fontSize: 20 }}>
+              <Text style={{ color: isDark ? Color.zinc[400] : Color.zinc[500], fontSize: 20 }}>
                 +{lastGenerationUris.length - 3}
               </Text>
             </View>

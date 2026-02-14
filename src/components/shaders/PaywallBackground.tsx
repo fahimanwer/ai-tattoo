@@ -1,3 +1,4 @@
+import { useTheme } from "@/src/context/ThemeContext";
 import {
   Canvas,
   LinearGradient,
@@ -15,14 +16,16 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import { LAVA_LAMP_SOURCE } from "./shaders-root";
+import { LAVA_LAMP_DARK_SOURCE, LAVA_LAMP_LIGHT_SOURCE } from "./shaders-root";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const BACKGROUND_HEIGHT = SCREEN_HEIGHT * 0.6; // 50% of screen
 
 export function PaywallBackground() {
+  const { isDark } = useTheme();
   const [size, setSize] = useState({ width: 1, height: 1 });
   const time = useSharedValue(0);
+  const shaderSource = isDark ? LAVA_LAMP_DARK_SOURCE : LAVA_LAMP_LIGHT_SOURCE;
 
   useEffect(() => {
     time.value = withRepeat(
@@ -53,20 +56,29 @@ export function PaywallBackground() {
       <Canvas style={StyleSheet.absoluteFill}>
         {/* Lava lamp shader */}
         <Rect x={0} y={0} width={size.width} height={size.height}>
-          <Shader source={LAVA_LAMP_SOURCE} uniforms={uniforms} />
+          <Shader source={shaderSource} uniforms={uniforms} />
         </Rect>
 
-        {/* Gradient overlay: transparent at top -> black at bottom */}
+        {/* Gradient overlay: transparent at top -> solid at bottom */}
         <Rect x={0} y={0} width={size.width} height={size.height}>
           <LinearGradient
             start={vec(0, 0)}
             end={vec(0, size.height)}
-            colors={[
-              "transparent",
-              "rgba(0,0,0,0.2)",
-              "rgba(0,0,0,0.6)",
-              "rgba(0,0,0,0.9)",
-            ]}
+            colors={
+              isDark
+                ? [
+                    "transparent",
+                    "rgba(0,0,0,0.2)",
+                    "rgba(0,0,0,0.6)",
+                    "rgba(0,0,0,0.9)",
+                  ]
+                : [
+                    "transparent",
+                    "rgba(255,255,255,0.2)",
+                    "rgba(255,255,255,0.6)",
+                    "rgba(255,255,255,0.9)",
+                  ]
+            }
             positions={[0, 0.4, 0.75, 1]}
           />
         </Rect>

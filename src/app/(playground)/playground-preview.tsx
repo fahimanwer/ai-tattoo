@@ -1,5 +1,6 @@
 import { InteractiveImage } from "@/src/components/ui/InteractiveImage";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { useTheme } from "@/src/context/ThemeContext";
 import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { use } from "react";
@@ -9,6 +10,7 @@ export default function PlaygroundPreview() {
   const params = useLocalSearchParams<{ imageUri: string }>();
   const { handleShare, handleSave } = use(PlaygroundContext);
   const router = useRouter();
+  const { isDark } = useTheme();
 
   const imageUri = params.imageUri;
 
@@ -67,7 +69,7 @@ export default function PlaygroundPreview() {
               type: "button",
               label: "Save",
               variant: "prominent",
-              tintColor: "yellow",
+              tintColor: "#3563E9",
               onPress: onSave,
               labelStyle: {
                 fontWeight: "bold",
@@ -76,7 +78,7 @@ export default function PlaygroundPreview() {
           ],
         }}
       />
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: isDark ? '#000' : '#F5F5F7' }]}>
         <InteractiveImage uri={imageUri} />
       </View>
     </>
@@ -86,6 +88,5 @@ export default function PlaygroundPreview() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
   },
 });

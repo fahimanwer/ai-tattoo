@@ -8,6 +8,7 @@ import CoreHaptics from "@/modules/native-core-haptics";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useSubscription } from "@/src/hooks/useSubscription";
 import {
   Host,
@@ -60,6 +61,7 @@ export function PlaygroundScreen() {
   } = use(PlaygroundContext);
 
   const { width } = useWindowDimensions();
+  const { isDark } = useTheme();
 
   // Play playful entrance haptic on first load
   useEffect(() => {
@@ -216,7 +218,7 @@ export function PlaygroundScreen() {
                   type: "button" as const,
                   label: "Upgrade",
                   variant: "prominent" as const,
-                  tintColor: "yellow",
+                  tintColor: "#3563E9",
                   labelStyle: {
                     fontWeight: "bold" as const,
                   },
@@ -252,7 +254,7 @@ export function PlaygroundScreen() {
                 type: "button",
                 label: "Save",
                 variant: "prominent",
-                tintColor: "yellow",
+                tintColor: "#3563E9",
                 labelStyle: {
                   fontWeight: "bold",
                 },
@@ -304,7 +306,7 @@ export function PlaygroundScreen() {
                 borderTopLeftRadius: 16,
                 borderTopRightRadius: 16,
                 borderWidth: 1,
-                borderColor: Color.zinc[900],
+                borderColor: isDark ? Color.zinc[900] : Color.zinc[200],
               }}
             >
               <Text
@@ -340,7 +342,7 @@ export function PlaygroundScreen() {
                         ? "glassProminent"
                         : "borderedProminent"
                     ),
-                    tint("yellow"),
+                    tint("#3563E9"),
                     disabled(isPending),
                   ]}
                   onPress={() =>
@@ -401,7 +403,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   textInput: {
-    color: "white",
     flexGrow: 1,
     paddingHorizontal: 8,
     borderRadius: 20,

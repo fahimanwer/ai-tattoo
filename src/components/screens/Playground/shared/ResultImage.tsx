@@ -49,7 +49,7 @@ export function ResultImage({
             width: 24,
             height: 24,
             borderRadius: 12,
-            backgroundColor: "black",
+            backgroundColor: "rgba(0,0,0,0.7)",
             alignItems: "center",
             justifyContent: "center",
             zIndex: 10,

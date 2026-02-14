@@ -1,6 +1,7 @@
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/src/components/ui/Button";
 import { Text } from "@/src/components/ui/Text";
+import { useTheme } from "@/src/context/ThemeContext";
 import { View } from "react-native";
 
 interface ProfileHeaderProps {
@@ -11,6 +12,7 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
+  const { isDark } = useTheme();
   const displayName = user?.name?.includes("@")
     ? user.name.slice(0, user.name.indexOf("@"))
     : user?.name || "Unknown User";
@@ -18,7 +20,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
   return (
     <View
       style={{
-        backgroundColor: "#FFFFFF10",
+        backgroundColor: isDark ? "#FFFFFF10" : "#00000008",
         padding: 20,
         borderRadius: 12,
         marginBottom: 16,

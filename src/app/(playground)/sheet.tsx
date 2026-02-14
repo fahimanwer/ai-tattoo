@@ -2,6 +2,8 @@ import { cacheBase64Image } from "@/lib/image-cache";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { useTheme } from "@/src/context/ThemeContext";
+import { useThemeColor } from "heroui-native";
 import {
   Host,
   HStack,
@@ -53,6 +55,9 @@ export default function Sheet() {
   } = use(PlaygroundContext);
 
   const { width } = useWindowDimensions();
+  const { isDark } = useTheme();
+  const fg = useThemeColor("foreground");
+  const muted = useThemeColor("muted");
 
   // Check if user has a tattoo/image already selected
   const hasActiveImage = activeGenerationUris.length > 0;
@@ -198,7 +203,7 @@ export default function Sheet() {
     if (permission?.status === MediaLibrary.PermissionStatus.UNDETERMINED) {
       return (
         <View style={styles.permissionContainer}>
-          <Text type="sm" style={styles.permissionText}>
+          <Text type="sm" style={[styles.permissionText, { color: muted }]}>
             We need access to your photos to add images
           </Text>
           <Host matchContents useViewportSizeMeasurement>
@@ -206,7 +211,7 @@ export default function Sheet() {
               modifiers={[
                 controlSize("mini"),
                 buttonStyle("glassProminent"),
-                tint("yellow"),
+                tint("#3563E9"),
               ]}
               onPress={requestPermission}
             >
@@ -237,7 +242,7 @@ export default function Sheet() {
               modifiers={[
                 controlSize("mini"),
                 buttonStyle("glassProminent"),
-                tint("yellow"),
+                tint("#3563E9"),
               ]}
               onPress={() => Linking.openURL("app-settings:")}
             >
@@ -256,7 +261,7 @@ export default function Sheet() {
               </HStack>
             </SwiftUIButton>
           </Host>
-          <Text type="xs" style={styles.permissionText}>
+          <Text type="xs" style={[styles.permissionText, { color: muted }]}>
             We need access to your photos to add images
           </Text>
         </View>
@@ -287,8 +292,8 @@ export default function Sheet() {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Camera button */}
-        <PressableScale onPress={handleCameraPress} style={styles.cameraButton}>
-          <SymbolView name="camera.fill" size={32} tintColor={"white"} />
+        <PressableScale onPress={handleCameraPress} style={[styles.cameraButton, { backgroundColor: isDark ? Color.zinc[800] : Color.zinc[100] }]}>
+          <SymbolView name="camera.fill" size={32} tintColor={fg} />
         </PressableScale>
 
         {/* Recent photos */}
@@ -353,7 +358,7 @@ export default function Sheet() {
               items.push({
                 type: "button",
                 variant: "prominent",
-                tintColor: "yellow",
+                tintColor: "#3563E9",
                 label: `Add ${selectionCount} photo${
                   selectionCount > 1 ? "s" : ""
                 }`,
@@ -380,7 +385,7 @@ export default function Sheet() {
               Recent Photos
             </Text>
             <Activity mode={maxSelection === 1 ? "visible" : "hidden"}>
-              <Text type="xs" style={styles.sectionSubtitle}>
+              <Text type="xs" style={[styles.sectionSubtitle, { color: muted }]}>
                 Select 1 more to combine
               </Text>
             </Activity>
@@ -551,18 +556,22 @@ interface OptionRowProps {
 }
 
 function OptionRow({ icon, title, description, onPress }: OptionRowProps) {
+  const { isDark } = useTheme();
+  const fg = useThemeColor("foreground");
+  const muted = useThemeColor("muted");
+
   return (
     <PressableScale onPress={onPress} style={styles.optionRow} hitSlop={16}>
-      <View style={styles.optionIconContainer}>
-        <SymbolView name={icon as any} size={24} tintColor={"white"} />
+      <View style={[styles.optionIconContainer, { backgroundColor: isDark ? Color.zinc[800] : Color.zinc[100] }]}>
+        <SymbolView name={icon as any} size={24} tintColor={fg} />
       </View>
       <View style={styles.optionContent}>
         <Text weight="medium">{title}</Text>
-        <Text type="xs" style={styles.optionDescription}>
+        <Text type="xs" style={[styles.optionDescription, { color: muted }]}>
           {description}
         </Text>
       </View>
-      <SymbolView name="chevron.right" size={14} tintColor={Color.zinc[600]} />
+      <SymbolView name="chevron.right" size={14} tintColor={muted} />
     </PressableScale>
   );
 }
@@ -578,7 +587,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionSubtitle: {
-    color: Color.zinc[400],
     paddingHorizontal: 16,
   },
   scrollContent: {
@@ -589,7 +597,6 @@ const styles = StyleSheet.create({
     width: IMAGE_SIZE,
     height: IMAGE_SIZE,
     borderRadius: 12,
-    backgroundColor: Color.zinc[800],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -604,7 +611,7 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
   },
   imageSelected: {
-    borderColor: "yellow",
+    borderColor: "#3563E9",
   },
   selectionBadge: {
     position: "absolute",
@@ -613,7 +620,7 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "yellow",
+    backgroundColor: "#3563E9",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -634,7 +641,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   permissionText: {
-    color: Color.zinc[400],
     textAlign: "center",
   },
   optionsSection: {
@@ -652,7 +658,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: Color.zinc[800],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -660,9 +665,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
-  optionDescription: {
-    color: Color.zinc[400],
-  },
+  optionDescription: {},
   bottomAction: {
     marginTop: "auto",
     paddingHorizontal: 16,
@@ -670,7 +673,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   hintText: {
-    color: Color.zinc[400],
     textAlign: "center",
     paddingHorizontal: 32,
   },

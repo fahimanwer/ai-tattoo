@@ -9,7 +9,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
-import { TAB_BAR, TAB_COLORS, TAB_SPRING } from "./tab-bar-constants";
+import { TAB_BAR, TAB_SPRING, type TabColors } from "./tab-bar-constants";
 import { TabBarIcon } from "./tab-bar-icons";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -20,6 +20,7 @@ interface TabBarItemProps {
   isFocused: boolean;
   onPress: () => void;
   onLongPress: () => void;
+  colors: TabColors;
 }
 
 export function TabBarItem({
@@ -28,6 +29,7 @@ export function TabBarItem({
   isFocused,
   onPress,
   onLongPress,
+  colors,
 }: TabBarItemProps) {
   const progress = useSharedValue(isFocused ? 1 : 0);
 
@@ -40,7 +42,7 @@ export function TabBarItem({
     const backgroundColor = interpolateColor(
       progress.value,
       [0, 1],
-      [TAB_COLORS.inactiveCircle, TAB_COLORS.activePill]
+      [colors.inactiveCircle, colors.activePill]
     );
 
     // Circle → pill height stays the same, width is handled by flex parent
@@ -115,14 +117,14 @@ export function TabBarItem({
         <Animated.View style={inactiveIconStyle}>
           <TabBarIcon
             routeName={routeName}
-            color={TAB_COLORS.inactiveIcon}
+            color={colors.inactiveIcon}
             size={TAB_BAR.ICON_SIZE}
           />
         </Animated.View>
         <Animated.View style={activeIconStyle}>
           <TabBarIcon
             routeName={routeName}
-            color={TAB_COLORS.activeIcon}
+            color={colors.activeIcon}
             size={TAB_BAR.ICON_SIZE}
           />
         </Animated.View>
@@ -130,7 +132,7 @@ export function TabBarItem({
 
       {/* Label - animated width prevents overflow */}
       <Animated.Text
-        style={[styles.label, labelStyle]}
+        style={[styles.label, { color: colors.activeLabel }, labelStyle]}
         numberOfLines={1}
         allowFontScaling={false}
       >
@@ -160,7 +162,6 @@ const styles = StyleSheet.create({
     fontSize: TAB_BAR.LABEL_FONT_SIZE,
     fontWeight: TAB_BAR.LABEL_FONT_WEIGHT,
     lineHeight: TAB_BAR.LABEL_LINE_HEIGHT,
-    color: TAB_COLORS.activeLabel,
     overflow: "hidden",
   },
 });

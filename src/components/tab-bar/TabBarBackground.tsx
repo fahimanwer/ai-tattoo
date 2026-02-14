@@ -1,5 +1,7 @@
 import Svg, { Path } from "react-native-svg";
-import { TAB_BAR, TAB_COLORS } from "./tab-bar-constants";
+import { TAB_BAR, useTabColors } from "./tab-bar-constants";
+import { useTheme } from "@/src/context/ThemeContext";
+import { Color } from "@/src/constants/TWPalette";
 
 interface TabBarBackgroundProps {
   width: number;
@@ -58,6 +60,8 @@ function getBarPath(width: number): string {
 
 export function TabBarBackground({ width }: TabBarBackgroundProps) {
   if (width <= 0) return null;
+  const tabColors = useTabColors();
+  const { isLight } = useTheme();
 
   return (
     <Svg
@@ -65,7 +69,12 @@ export function TabBarBackground({ width }: TabBarBackgroundProps) {
       height={TAB_BAR.HEIGHT}
       style={{ position: "absolute", top: 0, left: 0 }}
     >
-      <Path d={getBarPath(width)} fill={TAB_COLORS.barBackground} />
+      <Path
+        d={getBarPath(width)}
+        fill={tabColors.barBackground}
+        stroke={isLight ? Color.zinc[200] : "transparent"}
+        strokeWidth={isLight ? 0.5 : 0}
+      />
     </Svg>
   );
 }

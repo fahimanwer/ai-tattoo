@@ -2,6 +2,7 @@ import { failureHaptic, successHaptic } from "@/lib/haptics-patterns.ios";
 import { cacheBase64Image } from "@/lib/image-cache";
 import CoreHaptics from "@/modules/native-core-haptics";
 import { Color } from "@/src/constants/TWPalette";
+import { useTheme } from "@/src/context/ThemeContext";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import { useIsFocused } from "@react-navigation/native";
 import {
@@ -10,10 +11,11 @@ import {
   PermissionStatus,
   useCameraPermissions,
 } from "expo-camera";
-import { GlassView } from "expo-glass-effect";
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { SFSymbol, SymbolView } from "expo-symbols";
+import { useThemeColor } from "heroui-native";
 import { PressableWithoutFeedback } from "pressto";
 import { use, useEffect, useRef, useState } from "react";
 import { Linking, StyleSheet, View } from "react-native";
@@ -37,6 +39,9 @@ export function CameraViewScreen() {
   const isFocused = useIsFocused();
   const [shouldRenderCamera, setShouldRenderCamera] = useState(isFocused);
   const unmountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { isDark } = useTheme();
+  const foreground = useThemeColor("foreground");
+  const muted = useThemeColor("muted");
   const {
     pickImageFromGallery,
     setSessionGenerations,
@@ -76,18 +81,18 @@ export function CameraViewScreen() {
   if (permission?.status === PermissionStatus.UNDETERMINED) {
     return (
       <View style={styles.emptyContainer}>
-        <SymbolView name="camera.fill" size={60} tintColor={"white"} />
+        <SymbolView name="camera.fill" size={60} tintColor={foreground} />
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
           Let&apos;s Get Started
         </Text>
-        <Text style={styles.emptyDescription}>
+        <Text style={[styles.emptyDescription, { color: muted }]}>
           We need access to your camera to take photos.
         </Text>
         <Button
           onPress={requestPermission}
           title="Continue"
           variant="link"
-          color="yellow"
+          color="blue"
         />
       </View>
     );
@@ -108,12 +113,12 @@ export function CameraViewScreen() {
         <SymbolView
           name="exclamationmark.triangle.fill"
           size={60}
-          tintColor={"white"}
+          tintColor={foreground}
         />
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
           Camera Access Needed
         </Text>
-        <Text style={styles.emptyDescription}>
+        <Text style={[styles.emptyDescription, { color: muted }]}>
           This feature requires access to your camera. You can manage camera
           access in your device settings.
         </Text>
@@ -121,7 +126,7 @@ export function CameraViewScreen() {
           onPress={() => Linking.openURL("app-settings:")}
           title="Open Settings"
           variant="link"
-          color="yellow"
+          color="blue"
         />
       </View>
     );
@@ -185,7 +190,7 @@ export function CameraViewScreen() {
           <CameraControlButton
             onPress={() => setShowGrid((prev) => !prev)}
             icon="grid"
-            color={showGrid ? Color.yellow[500] : "white"}
+            color={showGrid ? "#3563E9" : "white"}
           />
         </View>
       )}
@@ -284,14 +289,16 @@ export function CameraViewScreen() {
 }
 
 const GridOverlay = () => {
+  const { isDark } = useTheme();
+  const gridColor = isDark ? "rgba(255, 255, 255, 0.4)" : "rgba(0, 0, 0, 0.3)";
   return (
     <View style={styles.gridOverlay}>
       {/* Vertical lines */}
-      <View style={[styles.gridLine, styles.gridLineVertical, { left: "33.33%" }]} />
-      <View style={[styles.gridLine, styles.gridLineVertical, { left: "66.66%" }]} />
+      <View style={[styles.gridLine, styles.gridLineVertical, { left: "33.33%", backgroundColor: gridColor }]} />
+      <View style={[styles.gridLine, styles.gridLineVertical, { left: "66.66%", backgroundColor: gridColor }]} />
       {/* Horizontal lines */}
-      <View style={[styles.gridLine, styles.gridLineHorizontal, { top: "33.33%" }]} />
-      <View style={[styles.gridLine, styles.gridLineHorizontal, { top: "66.66%" }]} />
+      <View style={[styles.gridLine, styles.gridLineHorizontal, { top: "33.33%", backgroundColor: gridColor }]} />
+      <View style={[styles.gridLine, styles.gridLineHorizontal, { top: "66.66%", backgroundColor: gridColor }]} />
     </View>
   );
 };
@@ -309,21 +316,42 @@ const CameraControlButton = ({
   glassSize?: number;
   symbolSize?: number;
 }) => {
+  const { isDark } = useTheme();
+  const containerStyle = {
+    height: glassSize,
+    width: glassSize,
+    borderRadius: glassSize / 2,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+  };
+
+  const content = (
+    <PressableWithoutFeedback onPress={onPress}>
+      <SymbolView name={icon} size={symbolSize} tintColor={color} />
+    </PressableWithoutFeedback>
+  );
+
+  if (isLiquidGlassAvailable()) {
+    return (
+      <GlassView style={containerStyle} isInteractive={true}>
+        {content}
+      </GlassView>
+    );
+  }
+
   return (
-    <GlassView
-      style={{
-        height: glassSize,
-        width: glassSize,
-        borderRadius: glassSize / 2,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-      isInteractive={true}
+    <View
+      style={[
+        containerStyle,
+        {
+          backgroundColor: isDark
+            ? "rgba(255,255,255,0.15)"
+            : "rgba(0,0,0,0.08)",
+        },
+      ]}
     >
-      <PressableWithoutFeedback onPress={onPress}>
-        <SymbolView name={icon} size={symbolSize} tintColor={color} />
-      </PressableWithoutFeedback>
-    </GlassView>
+      {content}
+    </View>
   );
 };
 
@@ -343,7 +371,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   emptyDescription: {
-    color: "#666",
     textAlign: "center",
     marginTop: 8,
   },
@@ -358,7 +385,6 @@ const styles = StyleSheet.create({
   },
   gridLine: {
     position: "absolute",
-    backgroundColor: "rgba(255, 255, 255, 0.4)",
   },
   gridLineVertical: {
     width: 1,

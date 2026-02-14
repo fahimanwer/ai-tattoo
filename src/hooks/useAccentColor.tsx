@@ -1,5 +1,5 @@
 import { Colors } from "@/src/constants/Colors";
-import { useColorScheme } from "@/src/hooks/useColorScheme";
+import { useTheme } from "@/src/context/ThemeContext";
 import { getColorValue, UIColor } from "@/src/types/ui";
 import React, { createContext, useContext, useMemo, useState } from "react";
 
@@ -20,18 +20,18 @@ export function AccentColorProvider({
   children: React.ReactNode;
   initialHex?: string | null;
 }) {
-  const colorScheme = useColorScheme();
+  const { isDark } = useTheme();
   const [selectedHex, setSelectedHex] = useState<string | null>(initialHex);
 
   const accentHex = useMemo(() => {
-    const scheme = (colorScheme ?? "light") as "light" | "dark";
+    const scheme = isDark ? "dark" : "light";
     return selectedHex ?? Colors[scheme].tint;
-  }, [selectedHex, colorScheme]);
+  }, [selectedHex, isDark]);
 
   const getBackgroundColor = useMemo(() => {
     return () => {
       if (!selectedHex) {
-        const scheme = (colorScheme ?? "light") as "light" | "dark";
+        const scheme = isDark ? "dark" : "light";
         return Colors[scheme].background;
       }
 
@@ -60,8 +60,8 @@ export function AccentColorProvider({
         "rose",
       ];
 
-      const scheme = (colorScheme ?? "light") as "light" | "dark";
-      const targetShade = scheme === "dark" ? 950 : 50;
+      const scheme = isDark ? "dark" : "light";
+      const targetShade = isDark ? 950 : 50;
 
       for (const family of colorFamilies) {
         if (
@@ -73,7 +73,7 @@ export function AccentColorProvider({
 
       return Colors[scheme].background;
     };
-  }, [selectedHex, colorScheme]);
+  }, [selectedHex, isDark]);
 
   const value = useMemo(
     () => ({ accentHex, setAccentHex: setSelectedHex, getBackgroundColor }),

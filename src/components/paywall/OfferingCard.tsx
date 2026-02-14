@@ -1,4 +1,5 @@
 import { Color } from "@/src/constants/TWPalette";
+import { useTheme } from "@/src/context/ThemeContext";
 import { PressableScale } from "pressto";
 import { Activity, useEffect, useState } from "react";
 import { View } from "react-native";
@@ -37,6 +38,7 @@ export function OfferingCard({
   term,
   discountBadge,
 }: OfferingCardProps) {
+  const { isDark } = useTheme();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const progress = useSharedValue(isSelected ? 1 : 0);
 
@@ -61,17 +63,16 @@ export function OfferingCard({
 
   const product = pkg.product;
 
+  const borderColors = isDark
+    ? [Color.grayscale[100], "white"]
+    : [Color.zinc[200], Color.zinc[900]];
+  const bgColors = isDark
+    ? ["black", Color.grayscale[100]]
+    : ["white", Color.zinc[100]];
+
   const animatedCardStyle = useAnimatedStyle(() => ({
-    borderColor: interpolateColor(
-      progress.value,
-      [0, 1],
-      [Color.grayscale[100], "white"]
-    ),
-    backgroundColor: interpolateColor(
-      progress.value,
-      [0, 1],
-      ["black", Color.grayscale[100]]
-    ),
+    borderColor: interpolateColor(progress.value, [0, 1], borderColors),
+    backgroundColor: interpolateColor(progress.value, [0, 1], bgColors),
   }));
 
   // Animated tint for icon - we'll use opacity crossfade approach
@@ -106,10 +107,14 @@ export function OfferingCard({
         {/* Icon with crossfade animation */}
         <View style={{ width: 26, height: 26 }}>
           <Animated.View style={unselectedIconOpacity}>
-            <Icon symbol="circle.fill" size="lg" color={Color.grayscale[700]} />
+            <Icon
+              symbol="circle.fill"
+              size="lg"
+              color={isDark ? Color.grayscale[700] : Color.grayscale[300]}
+            />
           </Animated.View>
           <Animated.View style={selectedIconOpacity}>
-            <Icon symbol="checkmark.circle.fill" size="lg" color="yellow" />
+            <Icon symbol="checkmark.circle.fill" size="lg" color="#3563E9" />
           </Animated.View>
         </View>
         <View
@@ -144,12 +149,16 @@ export function OfferingCard({
             position: "absolute",
             top: -8,
             right: 16,
-            backgroundColor: Color.grayscale[950],
+            backgroundColor: isDark ? Color.grayscale[950] : "#3563E9",
             paddingHorizontal: 8,
             borderRadius: 50,
           }}
         >
-          <Text weight="semibold" type="xs" style={{ color: "black" }}>
+          <Text
+            weight="semibold"
+            type="xs"
+            style={{ color: isDark ? "black" : "white" }}
+          >
             {discountBadge}
           </Text>
         </View>
@@ -161,12 +170,12 @@ export function OfferingCard({
             position: "absolute",
             top: -8,
             right: 16,
-            backgroundColor: "yellow",
+            backgroundColor: "#3563E9",
             paddingHorizontal: 8,
             borderRadius: 30,
           }}
         >
-          <Text weight="semibold" type="xs" style={{ color: "black" }}>
+          <Text weight="semibold" type="xs" style={{ color: "white" }}>
             CURRENT
           </Text>
         </View>

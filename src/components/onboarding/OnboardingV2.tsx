@@ -7,6 +7,7 @@ import * as NativeCoreHaptics from "@/modules/native-core-haptics";
 import LinearGradientImageBlur from "@/src/components/LinearGradientImageBlur";
 import { Text } from "@/src/components/ui/Text";
 import { AppSettingsContext } from "@/src/context/AppSettings";
+import { useTheme } from "@/src/context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -43,6 +44,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function OnboardingV2() {
   const router = useRouter();
+  const { isDark } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const hasPlayedEntranceHaptic = useRef(false);
@@ -316,18 +318,28 @@ export default function OnboardingV2() {
                   style={{
                     width: "100%",
                     height: "100%",
-                    backgroundColor: "#000",
+                    backgroundColor: isDark ? "#000" : "#F5F5F7",
                     position: "relative",
                   }}
                 >
                   <LinearGradient
-                    colors={[
-                      "transparent",
-                      "transparent",
-                      "transparent",
-                      "#000000",
-                      "#000000",
-                    ]}
+                    colors={
+                      isDark
+                        ? [
+                            "transparent",
+                            "transparent",
+                            "transparent",
+                            "#000000",
+                            "#000000",
+                          ]
+                        : [
+                            "transparent",
+                            "transparent",
+                            "transparent",
+                            "#FFFFFF",
+                            "#FFFFFF",
+                          ]
+                    }
                     style={{
                       position: "absolute",
                       top: 0,
@@ -354,8 +366,18 @@ export default function OnboardingV2() {
                   showBlur={false}
                   showGradient={true}
                   gradientColors={{
-                    light: ["transparent", "transparent", "#000000", "#000000"],
-                    dark: ["transparent", "transparent", "#000000", "#000000"],
+                    light: [
+                      "transparent",
+                      "transparent",
+                      "#FFFFFF",
+                      "#FFFFFF",
+                    ],
+                    dark: [
+                      "transparent",
+                      "transparent",
+                      "#000000",
+                      "#000000",
+                    ],
                   }}
                   imageHeight={index === 0 ? "75%" : "100%"}
                 />
@@ -365,8 +387,18 @@ export default function OnboardingV2() {
                   showBlur={false}
                   showGradient={true}
                   gradientColors={{
-                    light: ["transparent", "transparent", "#000000", "#000000"],
-                    dark: ["transparent", "transparent", "#000000", "#000000"],
+                    light: [
+                      "transparent",
+                      "transparent",
+                      "#FFFFFF",
+                      "#FFFFFF",
+                    ],
+                    dark: [
+                      "transparent",
+                      "transparent",
+                      "#000000",
+                      "#000000",
+                    ],
                   }}
                   contentFit="cover"
                   contentPosition={index === 0 ? { left: -166 } : { left: 0 }}

@@ -1,4 +1,5 @@
 import { Color } from "@/src/constants/TWPalette";
+import { useTheme } from "@/src/context/ThemeContext";
 import { SymbolView } from "expo-symbols";
 import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
@@ -204,6 +205,7 @@ export function CongratulationsStepBody({
   step,
   answers = {},
 }: CongratulationsStepBodyProps) {
+  const { isDark } = useTheme();
   const features = useMemo(() => generateFeatures(answers), [answers]);
   const greeting = useMemo(() => getPersonalizedGreeting(answers), [answers]);
   const urgencyMessage = useMemo(() => getUrgencyMessage(answers), [answers]);
@@ -226,17 +228,39 @@ export function CongratulationsStepBody({
           <Animated.View
             key={feature.icon}
             entering={FadeInDown.delay(300 + index * 150).duration(500)}
-            style={styles.featureCard}
+            style={[
+              styles.featureCard,
+              {
+                backgroundColor: isDark
+                  ? "rgba(255, 255, 255, 0.08)"
+                  : "rgba(0, 0, 0, 0.04)",
+              },
+            ]}
           >
-            <View style={styles.iconContainer}>
+            <View
+              style={[
+                styles.iconContainer,
+                {
+                  backgroundColor: isDark
+                    ? "rgba(255, 255, 255, 0.08)"
+                    : "rgba(0, 0, 0, 0.04)",
+                },
+              ]}
+            >
               <SymbolView
                 name={feature.icon as any}
                 size={24}
-                tintColor={"white"}
+                tintColor={isDark ? "white" : Color.zinc[900]}
               />
             </View>
             <View style={styles.featureContent}>
-              <Text type="base" weight="semibold" style={styles.featureTitle}>
+              <Text
+                type="base"
+                weight="semibold"
+                style={{
+                  color: isDark ? "white" : Color.zinc[900],
+                }}
+              >
                 {feature.title}
               </Text>
               <Text type="sm" style={styles.featureDescription}>
@@ -252,7 +276,14 @@ export function CongratulationsStepBody({
         entering={FadeInDown.delay(800).duration(500)}
         style={styles.urgencyContainer}
       >
-        <Text type="base" weight="medium" style={styles.urgencyText}>
+        <Text
+          type="base"
+          weight="medium"
+          style={{
+            color: isDark ? "white" : Color.zinc[900],
+            textAlign: "center",
+          }}
+        >
           {urgencyMessage}
         </Text>
       </Animated.View>
@@ -281,7 +312,6 @@ const styles = StyleSheet.create({
   featureCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
     borderRadius: 16,
     padding: 16,
     gap: 16,
@@ -290,16 +320,13 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
     alignItems: "center",
     justifyContent: "center",
   },
   featureContent: {
     flex: 1,
   },
-  featureTitle: {
-    color: "white",
-  },
+  // featureTitle color is now inline (theme-aware)
   featureDescription: {
     color: Color.grayscale[500],
     marginTop: 2,
@@ -308,8 +335,5 @@ const styles = StyleSheet.create({
     marginTop: 24,
     alignItems: "center",
   },
-  urgencyText: {
-    color: "white",
-    textAlign: "center",
-  },
+  // urgencyText styles are now inline (theme-aware)
 });

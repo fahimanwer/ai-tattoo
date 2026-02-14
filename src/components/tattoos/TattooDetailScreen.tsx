@@ -1,7 +1,9 @@
 import { ALBUM_NAME } from "@/lib/save-to-library";
+import { useTheme } from "@/src/context/ThemeContext";
 import Share from "@/patches/rn-share-re-export";
 import * as MediaLibrary from "expo-media-library";
 import { router, Stack } from "expo-router";
+import { useThemeColor } from "heroui-native";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -27,6 +29,8 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
   const [asset, setAsset] = useState<MediaLibrary.Asset | null>(null);
   const [loading, setLoading] = useState(true);
   const [showTabBarView, setShowTabBarView] = useState(false);
+  const { isDark } = useTheme();
+  const foreground = useThemeColor("foreground");
 
   const loadAsset = useCallback(async () => {
     try {
@@ -125,7 +129,12 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: isDark ? "#000000" : "#F5F5F7" },
+        ]}
+      >
         <View style={styles.header}>
           <HeaderButton
             imageProps={{ systemName: "xmark" }}
@@ -135,7 +144,7 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
           />
         </View>
         <View style={styles.errorContainer}>
-          <ActivityIndicator size="large" color="white" />
+          <ActivityIndicator size="large" color={foreground} />
         </View>
       </View>
     );
@@ -143,16 +152,21 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
 
   if (!asset) {
     return (
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: isDark ? "#000000" : "#F5F5F7" },
+        ]}
+      >
         <View style={styles.errorContainer}>
-          <Text type="lg" weight="bold" style={styles.errorText}>
+          <Text type="lg" weight="bold" style={{ color: foreground }}>
             Tattoo not found
           </Text>
           <Button
             title="Back to home"
             onPress={() => router.back()}
             variant="link"
-            color="white"
+            color="blue"
           />
         </View>
       </View>
@@ -200,7 +214,12 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
         <Stack.Toolbar.Button onPress={handleDeletePress} icon={"trash"} />
       </Stack.Toolbar>
 
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: isDark ? "#000000" : "#F5F5F7" },
+        ]}
+      >
         <View style={styles.imageContainer}>
           <InteractiveImage uri={asset.uri} />
         </View>
@@ -212,7 +231,6 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
   },
   header: {
     flexDirection: "row",
@@ -267,7 +285,6 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   infoSubtitle: {
-    color: "rgba(255,255,255,0.9)",
     textAlign: "center",
   },
   errorContainer: {
@@ -275,10 +292,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 40,
-    backgroundColor: "#000000",
-  },
-  errorText: {
-    color: "white",
-    textAlign: "center",
   },
 });

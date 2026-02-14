@@ -1,4 +1,5 @@
 import { Color } from "@/src/constants/TWPalette";
+import { type ThemeMode, useTheme } from "@/src/context/ThemeContext";
 import {
   Button,
   ContentUnavailableView,
@@ -7,6 +8,7 @@ import {
   Host,
   Label,
   LabeledContent,
+  Picker,
   Section,
   Text,
   Toggle,
@@ -17,7 +19,9 @@ import {
   font,
   foregroundStyle,
   onTapGesture,
+  pickerStyle,
   refreshable,
+  tag,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
 import * as Application from "expo-application";
@@ -33,7 +37,7 @@ function FormButton({
   title,
   systemImage,
   onPress,
-  color = "white",
+  color,
 }: {
   title: string;
   systemImage: string;
@@ -46,7 +50,7 @@ function FormButton({
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         onPress();
       }}
-      modifiers={[foregroundStyle({ type: "color", color })]}
+      modifiers={color ? [foregroundStyle({ type: "color", color })] : undefined}
     >
       <Label title={title} systemImage={systemImage} />
     </Button>
@@ -87,6 +91,7 @@ export function Profile() {
 
   const [isSecretExpanded, setIsSecretExpanded] = useState(false);
   const [isArtistExpanded, setIsArtistExpanded] = useState(false);
+  const { mode: themeMode, setMode: setThemeMode } = useTheme();
 
   return (
     <Host style={{ flex: 1 }}>
@@ -104,8 +109,8 @@ export function Profile() {
                 label="Sign in"
                 modifiers={[
                   buttonStyle("borderedProminent"),
-                  tint("white"),
-                  foregroundStyle("black"),
+                  tint("#3563E9"),
+                  foregroundStyle("white"),
                   font({ weight: "bold" }),
                 ]}
                 onPress={() =>
@@ -218,7 +223,7 @@ export function Profile() {
             isExpanded={isSecretExpanded}
             onIsExpandedChange={setIsSecretExpanded}
             label="Enjoying the app?"
-            modifiers={[tint("white")]}
+            modifiers={[tint("#3563E9")]}
           >
             <VStack spacing={16} alignment="leading">
               <Text
@@ -259,7 +264,7 @@ export function Profile() {
             isExpanded={isArtistExpanded}
             onIsExpandedChange={setIsArtistExpanded}
             label="Are you an artist?"
-            modifiers={[tint("white")]}
+            modifiers={[tint("#3563E9")]}
           >
             <VStack spacing={16} alignment="leading">
               <Text
@@ -305,6 +310,16 @@ export function Profile() {
             </Text>
           }
         >
+          <Picker
+            label="Appearance"
+            selection={themeMode}
+            onSelectionChange={(v) => setThemeMode(v as ThemeMode)}
+            modifiers={[pickerStyle("segmented")]}
+          >
+            <Text modifiers={[tag("light")]}>Light</Text>
+            <Text modifiers={[tag("dark")]}>Dark</Text>
+            <Text modifiers={[tag("system")]}>System</Text>
+          </Picker>
           <LabeledContent label="Show Onboarding">
             <Toggle
               isOn={!settings.isOnboarded}

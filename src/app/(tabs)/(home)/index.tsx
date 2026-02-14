@@ -7,16 +7,13 @@ import { useEffect, useRef } from "react";
 
 export default function HomeScreen() {
   const router = useRouter();
-  // Use useUsageLimit for generation limits only
   const { isLimitReached, isLoading: isUsageLoading } = useUsageLimit();
-  // Use useSubscription for subscription status (RevenueCat as source of truth)
   const { hasActiveSubscription, isLoading: isSubLoading } = useSubscription();
   const { data: session } = authClient.useSession();
   const isAuthenticated = session?.user !== undefined;
   const isLoading = isUsageLoading || isSubLoading;
   const hasShownPaywall = useRef(false);
 
-  // Auto-show paywall for free users on app open
   useEffect(() => {
     if (
       !isLoading &&
@@ -29,37 +26,17 @@ export default function HomeScreen() {
     }
   }, [isLoading, isAuthenticated, hasActiveSubscription, router]);
 
-  // Determine button label and action based on user state
   const getButtonConfig = () => {
     if (isLoading) {
-      return {
-        label: "Loading...",
-        action: () => {},
-      };
+      return { label: "Loading...", action: () => {} };
     }
-
-    // Not authenticated → Go to playground (or could go to auth, but keeping simple)
     if (!isAuthenticated) {
-      return {
-        label: "New Tattoo",
-        action: () => router.push("/(playground)"),
-      };
+      return { label: "New Tattoo", action: () => router.push("/(playground)") };
     }
-
-    // Limit reached or no subscription → Show "Update plan" and go to paywall
-    // Uses hasActiveSubscription from RevenueCat (source of truth)
     if (isLimitReached || !hasActiveSubscription) {
-      return {
-        label: "Upgrade plan",
-        action: () => router.push("/(paywall)"),
-      };
+      return { label: "Upgrade plan", action: () => router.push("/(paywall)") };
     }
-
-    // Logged in with subscription → Go to playground
-    return {
-      label: "New Tattoo",
-      action: () => router.push("/(playground)"),
-    };
+    return { label: "New Tattoo", action: () => router.push("/(playground)") };
   };
 
   const { label, action } = getButtonConfig();
@@ -68,7 +45,7 @@ export default function HomeScreen() {
     <>
       <Stack.Toolbar placement="right">
         <Stack.Toolbar.Button
-          tintColor="yellow"
+          tintColor="#3563E9"
           variant="prominent"
           style={{ fontWeight: "bold" }}
           onPress={action}

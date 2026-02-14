@@ -1,6 +1,8 @@
 import { authClient } from "@/lib/auth-client";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
+import { useTheme } from "@/src/context/ThemeContext";
+import { useThemeColor } from "heroui-native";
 import { router, Stack } from "expo-router";
 import { useState } from "react";
 import { Linking, ScrollView, StyleSheet, TextInput, View } from "react-native";
@@ -12,6 +14,9 @@ export default function FeatureRequest() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = authClient.useSession();
   const user = session?.user;
+  const { isDark } = useTheme();
+  const fg = useThemeColor("foreground");
+  const muted = useThemeColor("muted");
 
   function handleDismiss() {
     router.back();
@@ -100,7 +105,7 @@ export default function FeatureRequest() {
               type: "button",
               label: "Send",
               variant: canSubmit ? "prominent" : "plain",
-              tintColor: canSubmit ? "yellow" : undefined,
+              tintColor: canSubmit ? "#3563E9" : undefined,
               disabled: !canSubmit,
               onPress: handleSubmit,
             },
@@ -115,9 +120,16 @@ export default function FeatureRequest() {
       >
         <View style={styles.inputContainer}>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              {
+                backgroundColor: isDark ? Color.zinc[900] : Color.zinc[50],
+                color: fg,
+                borderColor: isDark ? Color.zinc[800] : Color.zinc[200],
+              },
+            ]}
             placeholder="Ideas to improve your experience..."
-            placeholderTextColor={Color.zinc[500]}
+            placeholderTextColor={muted}
             value={message}
             onChangeText={setMessage}
             multiline
@@ -126,11 +138,11 @@ export default function FeatureRequest() {
             autoFocus
             editable={!isSubmitting}
           />
-          <Text type="xs" style={styles.contactText}>
+          <Text type="xs" style={[styles.contactText, { color: muted }]}>
             Need help?{" "}
             <Text
               type="xs"
-              style={styles.contactLink}
+              style={[styles.contactLink, { color: muted }]}
               onPress={handleContactSupport}
             >
               Contact us
@@ -154,21 +166,16 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   input: {
-    backgroundColor: Color.zinc[900],
     borderRadius: 16,
     padding: 16,
-    color: "white",
     fontSize: 16,
     minHeight: 160,
     borderWidth: 1,
-    borderColor: Color.zinc[800],
   },
   contactText: {
-    color: Color.zinc[400],
     paddingHorizontal: 4,
   },
   contactLink: {
-    color: Color.zinc[400],
     textDecorationLine: "underline",
   },
 });

@@ -1,3 +1,4 @@
+import { useTheme } from "@/src/context/ThemeContext";
 import Share from "@/patches/rn-share-re-export";
 import { GeneratedTattoo } from "@/src/types/tattoo";
 import {
@@ -6,6 +7,7 @@ import {
   isLiquidGlassAvailable,
 } from "expo-glass-effect";
 import { Image } from "expo-image";
+import { useThemeColor } from "heroui-native";
 import { Dimensions, Modal, Pressable, StyleSheet, View } from "react-native";
 import { Icon } from "../ui/Icon";
 import { Text } from "../ui/Text";
@@ -19,6 +21,9 @@ interface TattooModalProps {
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
+  const { isDark } = useTheme();
+  const foreground = useThemeColor("foreground");
+
   if (!tattoo) return null;
 
   const handleFavoritePress = () => {
@@ -56,17 +61,41 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
+      <View
+        style={[
+          styles.overlay,
+          {
+            backgroundColor: isDark
+              ? "rgba(0,0,0,0.9)"
+              : "rgba(0,0,0,0.5)",
+          },
+        ]}
+      >
         <Pressable style={styles.backdrop} onPress={onClose} />
 
-        <View style={styles.container}>
+        <View
+          style={[
+            styles.container,
+            {
+              backgroundColor: isDark ? "#1C1C1E" : "#FFFFFF",
+            },
+          ]}
+        >
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerInfo}>
-              <Text type="lg" weight="bold" style={styles.title}>
+              <Text type="lg" weight="bold" style={{ color: foreground, marginBottom: 4 }}>
                 {tattoo.style}
               </Text>
-              <Text type="sm" style={styles.subtitle}>
+              <Text
+                type="sm"
+                style={{
+                  color: isDark
+                    ? "rgba(255,255,255,0.7)"
+                    : "rgba(0,0,0,0.6)",
+                  marginBottom: 4,
+                }}
+              >
                 {tattoo.bodyPart} • {formatDate(tattoo.generationDate)}
               </Text>
               {tattoo.isOwnData && (
@@ -76,8 +105,18 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
               )}
             </View>
 
-            <Pressable onPress={onClose} style={styles.closeButton}>
-              <Icon symbol="xmark" style={styles.closeIcon} color="white" />
+            <Pressable
+              onPress={onClose}
+              style={[
+                styles.closeButton,
+                {
+                  backgroundColor: isDark
+                    ? "rgba(255,255,255,0.1)"
+                    : "rgba(0,0,0,0.06)",
+                },
+              ]}
+            >
+              <Icon symbol="xmark" style={styles.closeIcon} color={foreground} />
             </Pressable>
           </View>
 
@@ -100,7 +139,7 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
                     <Icon
                       symbol={tattoo.isFavorite ? "heart.fill" : "heart"}
                       style={styles.actionIcon}
-                      color={tattoo.isFavorite ? "#FF3B30" : "white"}
+                      color={tattoo.isFavorite ? "#FF3B30" : foreground}
                     />
                   </Pressable>
                 </GlassView>
@@ -110,7 +149,7 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
                     <Icon
                       symbol="square.and.arrow.up"
                       style={styles.actionIcon}
-                      color="white"
+                      color={foreground}
                     />
                   </Pressable>
                 </GlassView>
@@ -119,23 +158,37 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
               <View style={styles.fallbackActions}>
                 <Pressable
                   onPress={handleFavoritePress}
-                  style={[styles.actionButton, styles.fallbackButton]}
+                  style={[
+                    styles.actionButton,
+                    {
+                      backgroundColor: isDark
+                        ? "rgba(255,255,255,0.1)"
+                        : "rgba(0,0,0,0.06)",
+                    },
+                  ]}
                 >
                   <Icon
                     symbol={tattoo.isFavorite ? "heart.fill" : "heart"}
                     style={styles.actionIcon}
-                    color={tattoo.isFavorite ? "#FF3B30" : "white"}
+                    color={tattoo.isFavorite ? "#FF3B30" : foreground}
                   />
                 </Pressable>
 
                 <Pressable
                   onPress={handleSharePress}
-                  style={[styles.actionButton, styles.fallbackButton]}
+                  style={[
+                    styles.actionButton,
+                    {
+                      backgroundColor: isDark
+                        ? "rgba(255,255,255,0.1)"
+                        : "rgba(0,0,0,0.06)",
+                    },
+                  ]}
                 >
                   <Icon
                     symbol="square.and.arrow.up"
                     style={styles.actionIcon}
-                    color="white"
+                    color={foreground}
                   />
                 </Pressable>
               </View>
@@ -150,7 +203,6 @@ export function TattooModal({ tattoo, visible, onClose }: TattooModalProps) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.9)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -164,7 +216,6 @@ const styles = StyleSheet.create({
   container: {
     width: screenWidth * 0.9,
     maxHeight: screenHeight * 0.8,
-    backgroundColor: "#1C1C1E",
     borderRadius: 16,
     overflow: "hidden",
   },
@@ -180,11 +231,9 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   title: {
-    color: "white",
     marginBottom: 4,
   },
   subtitle: {
-    color: "rgba(255,255,255,0.7)",
     marginBottom: 4,
   },
   ownDataText: {
@@ -195,7 +244,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.1)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -231,8 +279,5 @@ const styles = StyleSheet.create({
   fallbackActions: {
     flexDirection: "row",
     gap: 16,
-  },
-  fallbackButton: {
-    backgroundColor: "rgba(255,255,255,0.1)",
   },
 });
