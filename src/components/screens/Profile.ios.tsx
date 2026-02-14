@@ -91,7 +91,7 @@ export function Profile() {
 
   const [isSecretExpanded, setIsSecretExpanded] = useState(false);
   const [isArtistExpanded, setIsArtistExpanded] = useState(false);
-  const { mode: themeMode, setMode: setThemeMode } = useTheme();
+  const { mode: themeMode, setMode: setThemeMode, isDark } = useTheme();
 
   return (
     <Host style={{ flex: 1 }}>
@@ -153,7 +153,7 @@ export function Profile() {
               <LabeledContent label="Member Since">
                 <Text
                   modifiers={[
-                    foregroundStyle({ type: "color", color: Color.zinc[400] }),
+                    foregroundStyle({ type: "color", color: isDark ? Color.zinc[400] : Color.zinc[500] }),
                   ]}
                 >
                   {memberSince ?? ""}
@@ -211,7 +211,7 @@ export function Profile() {
             isSecretExpanded ? (
               <Text
                 modifiers={[
-                  foregroundStyle({ type: "color", color: Color.zinc[400] }),
+                  foregroundStyle({ type: "color", color: isDark ? Color.zinc[400] : Color.zinc[500] }),
                 ]}
               >
                 Your feedback helps us improve the app for everyone.
@@ -228,14 +228,14 @@ export function Profile() {
             <VStack spacing={16} alignment="leading">
               <Text
                 modifiers={[
-                  foregroundStyle({ type: "color", color: Color.zinc[300] }),
+                  foregroundStyle({ type: "color", color: isDark ? Color.zinc[300] : Color.zinc[600] }),
                 ]}
               >
                 {"We'd love to hear from you!"}
               </Text>
               <Text
                 modifiers={[
-                  foregroundStyle({ type: "color", color: Color.zinc[400] }),
+                  foregroundStyle({ type: "color", color: isDark ? Color.zinc[400] : Color.zinc[500] }),
                 ]}
               >
                 {
@@ -269,7 +269,7 @@ export function Profile() {
             <VStack spacing={16} alignment="leading">
               <Text
                 modifiers={[
-                  foregroundStyle({ type: "color", color: Color.zinc[300] }),
+                  foregroundStyle({ type: "color", color: isDark ? Color.zinc[300] : Color.zinc[600] }),
                 ]}
               >
                 {

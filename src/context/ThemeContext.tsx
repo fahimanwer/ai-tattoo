@@ -12,7 +12,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useColorScheme } from "react-native";
+import { Appearance, Platform, useColorScheme } from "react-native";
 import { Uniwind } from "uniwind";
 
 export type ThemeMode = "light" | "dark" | "system";
@@ -73,12 +73,14 @@ export function AppThemeProvider({ children }: { children: React.ReactNode }) {
 
   const isLight = !isDark;
 
-  // Sync Uniwind theme when mode or system scheme changes
+  // Sync Uniwind theme and native appearance when mode changes
   useEffect(() => {
     if (mode === "system") {
       Uniwind.setTheme("system");
+      if (Platform.OS === "ios") Appearance.setColorScheme(null);
     } else {
       Uniwind.setTheme(mode);
+      if (Platform.OS === "ios") Appearance.setColorScheme(mode);
     }
   }, [mode, systemScheme]);
 

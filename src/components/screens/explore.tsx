@@ -128,7 +128,7 @@ export function ExploreScreen() {
           }-${index}`
         }
         ListHeaderComponent={ListHeader}
-        contentContainerStyle={{ gap: 8, paddingHorizontal: 8 }}
+        contentContainerStyle={{ gap: 8, paddingHorizontal: 16 }}
         renderItem={({ item: image }) => (
           <PressableScale
             onPress={() => handleImagePress(image)}
