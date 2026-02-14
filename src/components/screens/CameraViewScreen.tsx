@@ -14,15 +14,28 @@ import {
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { SFSymbol, SymbolView } from "expo-symbols";
 import { useThemeColor } from "heroui-native";
 import { PressableWithoutFeedback } from "pressto";
 import { use, useEffect, useRef, useState } from "react";
-import { Linking, StyleSheet, View } from "react-native";
+import { Linking, Platform, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
+
+// SF Symbol → Ionicons mapping for Android
+const ICON_MAP: Record<string, React.ComponentProps<typeof Ionicons>["name"]> = {
+  grid: "grid-outline",
+  circle: "radio-button-off",
+  "photo.on.rectangle": "images-outline",
+  "arrow.trianglehead.2.clockwise.rotate.90.camera": "camera-reverse-outline",
+  checkmark: "checkmark",
+  trash: "trash-outline",
+  "camera.fill": "camera",
+  "exclamationmark.triangle.fill": "warning",
+};
 
 const AnimatedCameraView = Animated.createAnimatedComponent(CameraView);
 const AnimatedImage = Animated.createAnimatedComponent(Image);
@@ -81,7 +94,11 @@ export function CameraViewScreen() {
   if (permission?.status === PermissionStatus.UNDETERMINED) {
     return (
       <View style={styles.emptyContainer}>
-        <SymbolView name="camera.fill" size={60} tintColor={foreground} />
+        {Platform.OS === "ios" ? (
+          <SymbolView name="camera.fill" size={60} tintColor={foreground} />
+        ) : (
+          <Ionicons name="camera" size={60} color={foreground} />
+        )}
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
           Let&apos;s Get Started
         </Text>
@@ -110,11 +127,15 @@ export function CameraViewScreen() {
           },
         ]}
       >
-        <SymbolView
-          name="exclamationmark.triangle.fill"
-          size={60}
-          tintColor={foreground}
-        />
+        {Platform.OS === "ios" ? (
+          <SymbolView
+            name="exclamationmark.triangle.fill"
+            size={60}
+            tintColor={foreground}
+          />
+        ) : (
+          <Ionicons name="warning" size={60} color={foreground} />
+        )}
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
           Camera Access Needed
         </Text>
@@ -327,7 +348,15 @@ const CameraControlButton = ({
 
   const content = (
     <PressableWithoutFeedback onPress={onPress}>
-      <SymbolView name={icon} size={symbolSize} tintColor={color} />
+      {Platform.OS === "ios" ? (
+        <SymbolView name={icon} size={symbolSize} tintColor={color} />
+      ) : (
+        <Ionicons
+          name={ICON_MAP[icon] ?? "ellipse-outline"}
+          size={symbolSize}
+          color={color}
+        />
+      )}
     </PressableWithoutFeedback>
   );
 
