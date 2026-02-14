@@ -14,6 +14,7 @@ import {
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import { getIoniconName } from "@/src/constants/icon-map";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SFSymbol, SymbolView } from "expo-symbols";
 import { useThemeColor } from "heroui-native";
@@ -24,18 +25,6 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "../ui/Button";
 import { Text } from "../ui/Text";
-
-// SF Symbol → Ionicons mapping for Android
-const ICON_MAP: Record<string, React.ComponentProps<typeof Ionicons>["name"]> = {
-  grid: "grid-outline",
-  circle: "radio-button-off",
-  "photo.on.rectangle": "images-outline",
-  "arrow.trianglehead.2.clockwise.rotate.90.camera": "camera-reverse-outline",
-  checkmark: "checkmark",
-  trash: "trash-outline",
-  "camera.fill": "camera",
-  "exclamationmark.triangle.fill": "warning",
-};
 
 const AnimatedCameraView = Animated.createAnimatedComponent(CameraView);
 const AnimatedImage = Animated.createAnimatedComponent(Image);
@@ -352,7 +341,7 @@ const CameraControlButton = ({
         <SymbolView name={icon} size={symbolSize} tintColor={color} />
       ) : (
         <Ionicons
-          name={ICON_MAP[icon] ?? "ellipse-outline"}
+          name={getIoniconName(icon)}
           size={symbolSize}
           color={color}
         />

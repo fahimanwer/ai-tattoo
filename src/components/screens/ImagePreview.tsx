@@ -5,8 +5,17 @@ import { useTheme } from "@/src/context/ThemeContext";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
 import { useThemeColor } from "heroui-native";
 import { Link, router, Stack, useLocalSearchParams } from "expo-router";
+import { PressableScale } from "pressto";
 import { use, useState } from "react";
-import { Alert, Dimensions, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -25,6 +34,7 @@ export default function ImagePreview() {
   const [isLoading, setIsLoading] = useState(false);
   const { isDark } = useTheme();
   const foreground = useThemeColor("foreground");
+  const { top } = useSafeAreaInsets();
 
   const handleUseTattoo = async () => {
     setIsLoading(true);
@@ -91,24 +101,30 @@ export default function ImagePreview() {
         options={{
           title: "",
           headerStyle: {
-            backgroundColor: "transparent",
+            backgroundColor: Platform.OS === "ios" ? "transparent" : isDark ? "#000" : "#F5F5F7",
           },
-          headerTransparent: true,
+          headerTransparent: Platform.OS === "ios",
+          headerShadowVisible: false,
           headerLargeTitle: false,
           headerBackButtonDisplayMode: "minimal",
-          unstable_headerRightItems: () => [
-            {
-              labelStyle: {
-                fontWeight: "bold",
-              },
-              type: "button",
-              label: isLoading ? "Loading..." : "Use Tattoo",
-              onPress: handleUseTattoo,
-              variant: "prominent",
-              tintColor: "#3563E9",
-              disabled: isLoading,
-            },
-          ],
+          headerTintColor: foreground,
+          ...(Platform.OS === "ios"
+            ? {
+                unstable_headerRightItems: () => [
+                  {
+                    labelStyle: { fontWeight: "bold" },
+                    type: "button",
+                    label: isLoading ? "Loading..." : "Use Tattoo",
+                    onPress: handleUseTattoo,
+                    variant: "prominent",
+                    tintColor: "#3563E9",
+                    disabled: isLoading,
+                  },
+                ],
+              }
+            : {
+                headerRight: () => null,
+              }),
         }}
       />
       <View
@@ -123,6 +139,26 @@ export default function ImagePreview() {
             <InteractiveImage uri={params.imageUrl} />
           </View>
         </Link.AppleZoomTarget>
+
+        {/* Android floating Use Tattoo button */}
+        {Platform.OS !== "ios" && (
+          <PressableScale
+            onPress={isLoading ? undefined : handleUseTattoo}
+            style={[
+              styles.useTattooButton,
+              { top: top + 8 },
+              isLoading && { opacity: 0.6 },
+            ]}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text weight="bold" type="sm" style={styles.useTattooLabel}>
+                Use Tattoo
+              </Text>
+            )}
+          </PressableScale>
+        )}
       </View>
     </>
   );
@@ -151,5 +187,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  useTattooButton: {
+    position: "absolute",
+    right: 16,
+    backgroundColor: "#3563E9",
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 20,
+    zIndex: 10,
+    elevation: 4,
+  },
+  useTattooLabel: {
+    color: "#fff",
   },
 });

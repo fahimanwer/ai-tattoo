@@ -18,6 +18,8 @@ import {
   frame,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
+import { getIoniconName } from "@/src/constants/icon-map";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import { router, Stack } from "expo-router";
@@ -28,6 +30,7 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
@@ -294,7 +297,11 @@ export default function Sheet() {
       >
         {/* Camera button */}
         <PressableScale onPress={handleCameraPress} style={[styles.cameraButton, { backgroundColor: isDark ? Color.zinc[800] : Color.zinc[100] }]}>
-          <SymbolView name="camera.fill" size={32} tintColor={iconColor} />
+          {Platform.OS === "ios" ? (
+            <SymbolView name="camera.fill" size={32} tintColor={iconColor} />
+          ) : (
+            <Ionicons name={getIoniconName("camera.fill")} size={32} color={iconColor} />
+          )}
         </PressableScale>
 
         {/* Recent photos */}
@@ -565,7 +572,11 @@ function OptionRow({ icon, title, description, onPress }: OptionRowProps) {
   return (
     <PressableScale onPress={onPress} style={styles.optionRow} hitSlop={16}>
       <View style={[styles.optionIconContainer, { backgroundColor: isDark ? Color.zinc[800] : Color.zinc[100] }]}>
-        <SymbolView name={icon as any} size={24} tintColor={iconColor} />
+        {Platform.OS === "ios" ? (
+          <SymbolView name={icon as any} size={24} tintColor={iconColor} />
+        ) : (
+          <Ionicons name={getIoniconName(icon)} size={24} color={iconColor} />
+        )}
       </View>
       <View style={styles.optionContent}>
         <Text weight="medium" style={{ color: fg }}>{title}</Text>
@@ -573,7 +584,11 @@ function OptionRow({ icon, title, description, onPress }: OptionRowProps) {
           {description}
         </Text>
       </View>
-      <SymbolView name="chevron.right" size={14} tintColor={muted} />
+      {Platform.OS === "ios" ? (
+        <SymbolView name="chevron.right" size={14} tintColor={muted} />
+      ) : (
+        <Ionicons name="chevron-forward" size={14} color={muted} />
+      )}
     </PressableScale>
   );
 }

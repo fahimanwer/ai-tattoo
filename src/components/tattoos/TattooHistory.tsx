@@ -4,6 +4,8 @@ import { listAlbumAssets, saveBase64ToAlbum } from "@/lib/save-to-library";
 import { useTheme } from "@/src/context/ThemeContext";
 import { LegendList } from "@legendapp/list";
 import { useQuery, useAction } from "convex/react";
+import { getIoniconName } from "@/src/constants/icon-map";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import { router } from "expo-router";
@@ -11,7 +13,7 @@ import { SymbolView } from "expo-symbols";
 import { useThemeColor } from "heroui-native";
 import { PressableScale } from "pressto";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Linking, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Alert, Linking, Platform, StyleSheet, View } from "react-native";
 import { toast } from "sonner-native";
 import { Button } from "../ui/Button";
 import { ScreenHeader } from "../ui/ScreenHeader";
@@ -125,11 +127,11 @@ export function TattooHistory() {
     if (permission?.status === MediaLibrary.PermissionStatus.UNDETERMINED) {
       return (
         <View style={styles.emptyContainer}>
-          <SymbolView
-            name="photo.fill.on.rectangle.fill"
-            size={60}
-            tintColor={foreground}
-          />
+          {Platform.OS === "ios" ? (
+            <SymbolView name="photo.fill.on.rectangle.fill" size={60} tintColor={foreground} />
+          ) : (
+            <Ionicons name={getIoniconName("photo.fill.on.rectangle.fill")} size={60} color={foreground} />
+          )}
           <Text type="lg" weight="semibold" style={styles.emptyTitle}>
             Let&apos;s Get Started
           </Text>
@@ -150,11 +152,11 @@ export function TattooHistory() {
     if (permission?.status === MediaLibrary.PermissionStatus.DENIED) {
       return (
         <View style={styles.emptyContainer}>
-          <SymbolView
-            name="exclamationmark.triangle.fill"
-            size={60}
-            tintColor={foreground}
-          />
+          {Platform.OS === "ios" ? (
+            <SymbolView name="exclamationmark.triangle.fill" size={60} tintColor={foreground} />
+          ) : (
+            <Ionicons name={getIoniconName("exclamationmark.triangle.fill")} size={60} color={foreground} />
+          )}
           <Text type="lg" weight="semibold" style={styles.emptyTitle}>
             Photo Access Needed
           </Text>
@@ -174,7 +176,11 @@ export function TattooHistory() {
 
     return (
       <View style={styles.emptyContainer}>
-        <SymbolView name="photo.fill.on.rectangle.fill" size={60} />
+        {Platform.OS === "ios" ? (
+          <SymbolView name="photo.fill.on.rectangle.fill" size={60} />
+        ) : (
+          <Ionicons name={getIoniconName("photo.fill.on.rectangle.fill")} size={60} />
+        )}
         <Text type="lg" weight="semibold" style={styles.emptyTitle}>
           No tattoos saved yet
         </Text>
@@ -183,7 +189,11 @@ export function TattooHistory() {
         </Text>
         {showRestoreBanner && (
           <View style={styles.restoreBanner}>
-            <SymbolView name="icloud.and.arrow.down" size={24} tintColor={foreground} />
+            {Platform.OS === "ios" ? (
+              <SymbolView name="icloud.and.arrow.down" size={24} tintColor={foreground} />
+            ) : (
+              <Ionicons name={getIoniconName("icloud.and.arrow.down")} size={24} color={foreground} />
+            )}
             <Text type="sm" style={styles.restoreText}>
               {cloudCount} tattoo{cloudCount !== 1 ? "s" : ""} found in cloud
             </Text>
@@ -214,7 +224,11 @@ export function TattooHistory() {
 
     return (
       <View style={styles.restoreBanner}>
-        <SymbolView name="icloud.and.arrow.down" size={20} tintColor={foreground} />
+        {Platform.OS === "ios" ? (
+          <SymbolView name="icloud.and.arrow.down" size={20} tintColor={foreground} />
+        ) : (
+          <Ionicons name={getIoniconName("icloud.and.arrow.down")} size={20} color={foreground} />
+        )}
         <Text type="sm" style={styles.restoreText}>
           {cloudCount} in cloud
         </Text>

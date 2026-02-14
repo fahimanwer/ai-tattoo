@@ -1,7 +1,9 @@
+import { getIoniconName } from "@/src/constants/icon-map";
 import { UISize } from "@/src/types/ui";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { SFSymbol, SymbolView } from "expo-symbols";
 import React from "react";
-import { StyleSheet, ViewStyle } from "react-native";
+import { Platform, StyleSheet, ViewStyle } from "react-native";
 
 interface IconProps {
   symbol: SFSymbol;
@@ -29,13 +31,24 @@ export const Icon: React.FC<IconProps> = ({
 }) => {
   const iconSize = typeof size === "string" ? sizeMap[size] : size;
 
+  if (Platform.OS === "ios") {
+    return (
+      <SymbolView
+        name={symbol}
+        style={[styles.symbol, { width: iconSize, height: iconSize }, style]}
+        tintColor={color}
+        type={type}
+        resizeMode="scaleAspectFit"
+      />
+    );
+  }
+
   return (
-    <SymbolView
-      name={symbol}
-      style={[styles.symbol, { width: iconSize, height: iconSize }, style]}
-      tintColor={color}
-      type={type}
-      resizeMode="scaleAspectFit"
+    <Ionicons
+      name={getIoniconName(symbol)}
+      size={iconSize}
+      color={color}
+      style={style as any}
     />
   );
 };

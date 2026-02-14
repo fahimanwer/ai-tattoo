@@ -8,13 +8,15 @@ import {
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { PlaygroundContext } from "@/src/context/PlaygroundContext";
+import { getIoniconName } from "@/src/constants/icon-map";
 import { useTheme } from "@/src/context/ThemeContext";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useThemeColor } from "heroui-native";
 import { Color as NativeColor, router, Stack } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
 import { use, useCallback, useState } from "react";
-import { Alert, FlatList, StyleSheet, View } from "react-native";
+import { Alert, FlatList, Platform, StyleSheet, View } from "react-native";
 
 export default function PromptHistory() {
   const { setPrompt, focusInput } = use(PlaygroundContext);
@@ -81,11 +83,11 @@ export default function PromptHistory() {
             {formatRelativeTime(item.timestamp)}
           </Text>
         </View>
-        <SymbolView
-          name="chevron.right"
-          size={14}
-          tintColor={muted}
-        />
+        {Platform.OS === "ios" ? (
+          <SymbolView name="chevron.right" size={14} tintColor={muted} />
+        ) : (
+          <Ionicons name="chevron-forward" size={14} color={muted} />
+        )}
       </PressableScale>
     ),
     [isDark, fg, muted]
@@ -118,11 +120,11 @@ export default function PromptHistory() {
         />
       ) : (
         <View style={styles.emptyState}>
-          <SymbolView
-            name="clock.arrow.circlepath"
-            size={48}
-            tintColor={muted}
-          />
+          {Platform.OS === "ios" ? (
+            <SymbolView name="clock.arrow.circlepath" size={48} tintColor={muted} />
+          ) : (
+            <Ionicons name={getIoniconName("clock.arrow.circlepath")} size={48} color={muted} />
+          )}
           <Text type="lg" weight="medium" style={[styles.emptyTitle, { color: muted }]}>
             No prompts yet
           </Text>

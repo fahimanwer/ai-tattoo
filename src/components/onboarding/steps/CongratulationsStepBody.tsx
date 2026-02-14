@@ -1,8 +1,10 @@
+import { getIoniconName } from "@/src/constants/icon-map";
 import { Color } from "@/src/constants/TWPalette";
 import { useTheme } from "@/src/context/ThemeContext";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { SymbolView } from "expo-symbols";
 import { useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { Text } from "../../ui/Text";
 import type {
@@ -247,11 +249,19 @@ export function CongratulationsStepBody({
                 },
               ]}
             >
-              <SymbolView
-                name={feature.icon as any}
-                size={24}
-                tintColor={isDark ? "white" : Color.zinc[900]}
-              />
+              {Platform.OS === "ios" ? (
+                <SymbolView
+                  name={feature.icon as any}
+                  size={24}
+                  tintColor={isDark ? "white" : Color.zinc[900]}
+                />
+              ) : (
+                <Ionicons
+                  name={getIoniconName(feature.icon)}
+                  size={24}
+                  color={isDark ? "white" : Color.zinc[900]}
+                />
+              )}
             </View>
             <View style={styles.featureContent}>
               <Text
