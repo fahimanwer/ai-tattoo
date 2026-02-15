@@ -263,7 +263,6 @@ export const jaFeatures = {
     week: '週',
     month: '月',
     weekly: '週間',
-    monthly: '月額',
     perWeek: '/週',
 
     // Content
@@ -308,6 +307,22 @@ export const jaFeatures = {
     restoreSuccess: '購入が復元されました',
     restoreError: '復元に失敗',
     noPurchaseFound: '以前の購入が見つかりません',
+
+    // Pricing overhaul
+    annual: '年間',
+    year: '年',
+    perYear: '/年',
+    freeTrialBadge: '{{days}}日間無料トライアル',
+    startTrialButton: '{{days}}日間無料トライアルを開始',
+    specialOffer: '特別オファー',
+    limitedTimeOffer: '期間限定オファー',
+    discountSubtitle: '新規ユーザー限定 — 今日フルアクセスを解除',
+    savePercent: '{{percent}}%お得',
+    annualPerWeek: '{{price}}/週',
+    todayOnly: '本日限定',
+    offerExpires: 'オファー終了まで',
+    perWeekBilled: '週あたり、{{period}}で請求',
+    originalPrice: '通常 {{price}}',
   },
 
   playground: {

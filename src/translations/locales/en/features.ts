@@ -263,7 +263,6 @@ export const enFeatures = {
     week: 'Week',
     month: 'Month',
     weekly: 'Weekly',
-    monthly: 'Monthly',
     perWeek: '/Week',
 
     // Content
@@ -308,6 +307,22 @@ export const enFeatures = {
     restoreSuccess: 'Purchase Restored',
     restoreError: 'Restore Failed',
     noPurchaseFound: 'No previous purchase found',
+
+    // Pricing overhaul
+    annual: 'Annual',
+    year: 'Year',
+    perYear: '/Year',
+    freeTrialBadge: '{{days}}-DAY FREE TRIAL',
+    startTrialButton: 'Start {{days}}-day free trial',
+    specialOffer: 'Special Offer',
+    limitedTimeOffer: 'Limited Time Offer',
+    discountSubtitle: 'New users only — unlock full access today',
+    savePercent: 'Save {{percent}}%',
+    annualPerWeek: '{{price}}/week',
+    todayOnly: 'Today Only',
+    offerExpires: 'Offer expires in',
+    perWeekBilled: 'per week, billed {{period}}',
+    originalPrice: 'Was {{price}}',
   },
 
   playground: {

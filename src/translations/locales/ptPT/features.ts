@@ -266,7 +266,6 @@ export const ptPTFeatures = {
     week: 'Semana',
     month: 'Mes',
     weekly: 'Semanal',
-    monthly: 'Mensal',
     perWeek: '/Semana',
 
     // Content
@@ -311,6 +310,22 @@ export const ptPTFeatures = {
     restoreSuccess: 'Compra restaurada',
     restoreError: 'Restauro falhado',
     noPurchaseFound: 'Nenhuma compra anterior encontrada',
+
+    // Pricing overhaul
+    annual: 'Anual',
+    year: 'Ano',
+    perYear: '/Ano',
+    freeTrialBadge: 'TESTE GRATUITO DE {{days}} DIAS',
+    startTrialButton: 'Iniciar teste gratuito de {{days}} dias',
+    specialOffer: 'Oferta Especial',
+    limitedTimeOffer: 'Oferta por Tempo Limitado',
+    discountSubtitle: 'Apenas novos utilizadores — desbloqueie acesso completo hoje',
+    savePercent: 'Poupe {{percent}}%',
+    annualPerWeek: '{{price}}/semana',
+    todayOnly: 'Só Hoje',
+    offerExpires: 'A oferta expira em',
+    perWeekBilled: 'por semana, faturado {{period}}',
+    originalPrice: 'Era {{price}}',
   },
 
   playground: {

@@ -11,12 +11,12 @@
  */
 export const FREE_TIER_LIMIT = 1;
 
-export type PlanTier = "free" | "starter" | "plus" | "pro" | "premium";
+export type PlanTier = "free" | "pro";
 
 export interface PlanConfig {
   tier: PlanTier;
   displayName: string;
-  monthlyLimit: number;
+  periodLimit: number;
   color: string;
   features: string[];
 }
@@ -25,59 +25,24 @@ export const PLAN_LIMITS: Record<PlanTier, PlanConfig> = {
   free: {
     tier: "free",
     displayName: "Free",
-    monthlyLimit: FREE_TIER_LIMIT,
+    periodLimit: FREE_TIER_LIMIT,
     color: "#6b7280", // gray
     features: [
       `${FREE_TIER_LIMIT} one-time generations`,
       "Basic tattoo styles",
     ],
   },
-  starter: {
-    tier: "starter",
-    displayName: "Starter",
-    monthlyLimit: 75,
-    color: "#f59e0b", // orange
-    features: [
-      "75 generations per month",
-      "All tattoo styles",
-      "High quality output",
-    ],
-  },
-  plus: {
-    tier: "plus",
-    displayName: "Plus",
-    monthlyLimit: 200,
-    color: "#10b981", // green
-    features: [
-      "200 generations per month",
-      "All tattoo styles",
-      "Premium quality output",
-      "Priority support",
-    ],
-  },
   pro: {
     tier: "pro",
     displayName: "Pro",
-    monthlyLimit: 600,
+    periodLimit: 150, // fallback for pro tier
     color: "#3b82f6", // blue
     features: [
-      "600 generations per month",
+      "Up to 150 generations per month",
       "All tattoo styles",
       "Ultra quality output",
       "Priority support",
       "Early access to new features",
-    ],
-  },
-  // New premium tier (v2 pricing model)
-  premium: {
-    tier: "premium",
-    displayName: "Premium",
-    monthlyLimit: 80, // Default for monthly; weekly uses PRODUCT_LIMITS
-    color: "yellow", // purple
-    features: [
-      "Unlimited tattoo designs",
-      "All tattoo styles",
-      "Premium quality output",
     ],
   },
 };
@@ -85,19 +50,38 @@ export const PLAN_LIMITS: Record<PlanTier, PlanConfig> = {
 /**
  * Product ID to generation limit mapping
  * Used by webhooks to set the correct limit based on the specific product purchased
- * This is separate from tier limits because weekly vs monthly have different caps
+ * Weekly products: 35 per week
+ * Annual products: 150 per month (period overridden to 30 days)
  */
 export const PRODUCT_LIMITS: Record<string, number> = {
-  // Legacy products (keep for existing subscribers - can be removed after migration)
-  main_ai_tattoo_starter: 75,
-  main_ai_tattoo_plus: 200,
-  main_ai_tattoo_pro: 600,
-  // New premium products (v2 pricing)
-  tattoodesignai_weekly: 35,
-  tattoodesignai_monthly: 80,
-  // Test store products
-  weekly: 35,
-  monthly: 80,
+  // Pro v3 products (iOS)
+  tattoodesignai_pro_weekly: 35,
+  tattoodesignai_pro_annual: 150,
+  tattoodesignai_offer_weekly: 35,
+  tattoodesignai_offer_annual: 150,
+  // Pro v3 test store
+  pro_weekly: 35,
+  pro_annual: 150,
+  offer_weekly: 35,
+  offer_annual: 150,
+  // Pro v3 Android
+  "tattoodesignai_pro_weekly:pro-weekly": 35,
+  "tattoodesignai_pro_annual:pro-annual": 150,
+  "tattoodesignai_offer_weekly:offer-weekly": 35,
+  "tattoodesignai_offer_annual:offer-annual": 150,
+};
+
+/**
+ * Period override for products that need shorter periods than the subscription cycle.
+ * e.g., annual subs get monthly generation resets instead of yearly.
+ */
+export const PRODUCT_PERIOD_MS: Record<string, number> = {
+  tattoodesignai_pro_annual: 30 * 24 * 60 * 60 * 1000,
+  tattoodesignai_offer_annual: 30 * 24 * 60 * 60 * 1000,
+  pro_annual: 30 * 24 * 60 * 60 * 1000,
+  offer_annual: 30 * 24 * 60 * 60 * 1000,
+  "tattoodesignai_pro_annual:pro-annual": 30 * 24 * 60 * 60 * 1000,
+  "tattoodesignai_offer_annual:offer-annual": 30 * 24 * 60 * 60 * 1000,
 };
 
 /**
@@ -116,10 +100,10 @@ export function getPlanConfig(tier: PlanTier): PlanConfig {
 }
 
 /**
- * Get monthly limit for a specific tier
+ * Get period limit for a specific tier
  */
-export function getMonthlyLimit(tier: PlanTier): number {
-  return PLAN_LIMITS[tier].monthlyLimit;
+export function getPeriodLimit(tier: PlanTier): number {
+  return PLAN_LIMITS[tier].periodLimit;
 }
 
 /**
@@ -135,11 +119,6 @@ export function isValidTier(tier: string): tier is PlanTier {
  */
 export function entitlementToTier(entitlement: string): PlanTier {
   const normalized = entitlement.toLowerCase();
-  // New premium tier (v2 pricing)
-  if (normalized === "premium") return "premium";
-  // Legacy tiers (keep for existing subscribers)
-  if (normalized === "starter") return "starter";
-  if (normalized === "plus") return "plus";
   if (normalized === "pro") return "pro";
   return "free";
 }

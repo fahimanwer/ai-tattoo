@@ -263,7 +263,6 @@ export const heFeatures = {
     week: 'שבוע',
     month: 'חודש',
     weekly: 'שבועי',
-    monthly: 'חודשי',
     perWeek: '/שבוע',
 
     // Content
@@ -308,6 +307,22 @@ export const heFeatures = {
     restoreSuccess: 'רכישה שוחזרה',
     restoreError: 'השחזור נכשל',
     noPurchaseFound: 'לא נמצאה רכישה קודמת',
+
+    // Pricing overhaul
+    annual: 'שנתי',
+    year: 'שנה',
+    perYear: '/שנה',
+    freeTrialBadge: 'תקופת ניסיון חינם ל-{{days}} ימים',
+    startTrialButton: 'התחל {{days}} ימי ניסיון חינם',
+    specialOffer: 'הצעה מיוחדת',
+    limitedTimeOffer: 'הצעה לזמן מוגבל',
+    discountSubtitle: 'למשתמשים חדשים בלבד — פתח גישה מלאה היום',
+    savePercent: 'חסוך {{percent}}%',
+    annualPerWeek: '{{price}}/שבוע',
+    todayOnly: 'היום בלבד',
+    offerExpires: 'ההצעה פגה בעוד',
+    perWeekBilled: 'לשבוע, חיוב {{period}}',
+    originalPrice: 'היה {{price}}',
   },
 
   playground: {

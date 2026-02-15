@@ -263,7 +263,6 @@ export const fiFeatures = {
     week: 'Viikko',
     month: 'Kuukausi',
     weekly: 'Viikoittain',
-    monthly: 'Kuukausittain',
     perWeek: '/Viikko',
 
     // Content
@@ -308,6 +307,22 @@ export const fiFeatures = {
     restoreSuccess: 'Ostos palautettu',
     restoreError: 'Palautus epaonnistui',
     noPurchaseFound: 'Aikaisempaa ostoa ei loytynyt',
+
+    // Pricing overhaul
+    annual: 'Vuosittainen',
+    year: 'Vuosi',
+    perYear: '/Vuosi',
+    freeTrialBadge: '{{days}} PÄIVÄN ILMAINEN KOKEILU',
+    startTrialButton: 'Aloita {{days}} päivän ilmainen kokeilu',
+    specialOffer: 'Erikoistarjous',
+    limitedTimeOffer: 'Rajoitettu tarjous',
+    discountSubtitle: 'Vain uusille käyttäjille — avaa täysi käyttöoikeus tänään',
+    savePercent: 'Säästä {{percent}}%',
+    annualPerWeek: '{{price}}/viikko',
+    todayOnly: 'Vain tänään',
+    offerExpires: 'Tarjous päättyy',
+    perWeekBilled: 'viikossa, laskutetaan {{period}}',
+    originalPrice: 'Oli {{price}}',
   },
 
   playground: {

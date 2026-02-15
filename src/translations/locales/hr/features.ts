@@ -263,7 +263,6 @@ export const hrFeatures = {
     week: 'Tjedan',
     month: 'Mjesec',
     weekly: 'Tjedno',
-    monthly: 'Mjesečno',
     perWeek: '/Tjedan',
 
     // Content
@@ -308,6 +307,22 @@ export const hrFeatures = {
     restoreSuccess: 'Kupnja vraćena',
     restoreError: 'Vraćanje nije uspjelo',
     noPurchaseFound: 'Prethodna kupnja nije pronađena',
+
+    // Pricing overhaul
+    annual: 'Godišnje',
+    year: 'Godina',
+    perYear: '/Godina',
+    freeTrialBadge: '{{days}}-DNEVNA BESPLATNA PROBA',
+    startTrialButton: 'Započni {{days}} dana besplatno',
+    specialOffer: 'Posebna ponuda',
+    limitedTimeOffer: 'Vremenski ograničena ponuda',
+    discountSubtitle: 'Samo za nove korisnike — otključaj puni pristup danas',
+    savePercent: 'Uštedi {{percent}}%',
+    annualPerWeek: '{{price}}/tjedan',
+    todayOnly: 'Samo danas',
+    offerExpires: 'Ponuda istječe za',
+    perWeekBilled: 'tjedno, naplaćuje se {{period}}',
+    originalPrice: 'Bilo je {{price}}',
   },
 
   playground: {

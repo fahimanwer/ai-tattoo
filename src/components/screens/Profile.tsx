@@ -222,7 +222,7 @@ export function Profile() {
           <View style={{ paddingVertical: 8 }}>
             <Button
               variant="secondary"
-              onPress={() => router.push("/(paywall)")}
+              onPress={() => router.push("/(paywall)?variant=discount")}
               style={{ width: "100%" }}
             >
               <Button.Label>
@@ -254,7 +254,7 @@ export function Profile() {
             <View style={{ paddingVertical: 8 }}>
               <Button
                 variant="primary"
-                onPress={() => router.push("/(paywall)")}
+                onPress={() => router.push("/(paywall)?variant=discount")}
                 style={{ width: "100%" }}
               >
                 <Button.Label>{t('profile.comeBackAndCreate')}</Button.Label>

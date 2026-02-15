@@ -263,7 +263,6 @@ export const idFeatures = {
     week: 'Minggu',
     month: 'Bulan',
     weekly: 'Mingguan',
-    monthly: 'Bulanan',
     perWeek: '/Minggu',
 
     // Content
@@ -308,6 +307,22 @@ export const idFeatures = {
     restoreSuccess: 'Pembelian Dipulihkan',
     restoreError: 'Pemulihan Gagal',
     noPurchaseFound: 'Tidak ditemukan pembelian sebelumnya',
+
+    // Pricing overhaul
+    annual: 'Tahunan',
+    year: 'Tahun',
+    perYear: '/Tahun',
+    freeTrialBadge: 'UJI COBA GRATIS {{days}} HARI',
+    startTrialButton: 'Mulai uji coba gratis {{days}} hari',
+    specialOffer: 'Penawaran Spesial',
+    limitedTimeOffer: 'Penawaran Terbatas',
+    discountSubtitle: 'Hanya pengguna baru — buka akses penuh hari ini',
+    savePercent: 'Hemat {{percent}}%',
+    annualPerWeek: '{{price}}/minggu',
+    todayOnly: 'Hari Ini Saja',
+    offerExpires: 'Penawaran berakhir dalam',
+    perWeekBilled: 'per minggu, ditagih {{period}}',
+    originalPrice: 'Sebelumnya {{price}}',
   },
 
   playground: {

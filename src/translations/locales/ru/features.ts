@@ -263,7 +263,6 @@ export const ruFeatures = {
     week: 'Неделя',
     month: 'Месяц',
     weekly: 'Еженедельно',
-    monthly: 'Ежемесячно',
     perWeek: '/Неделю',
 
     // Content
@@ -308,6 +307,22 @@ export const ruFeatures = {
     restoreSuccess: 'Покупка восстановлена',
     restoreError: 'Ошибка восстановления',
     noPurchaseFound: 'Предыдущая покупка не найдена',
+
+    // Pricing overhaul
+    annual: 'Годовой',
+    year: 'Год',
+    perYear: '/Год',
+    freeTrialBadge: 'БЕСПЛАТНО {{days}} ДНЕЙ',
+    startTrialButton: 'Начать бесплатный пробный период на {{days}} дней',
+    specialOffer: 'Специальное предложение',
+    limitedTimeOffer: 'Ограниченное предложение',
+    discountSubtitle: 'Только для новых пользователей — откройте полный доступ сегодня',
+    savePercent: 'Скидка {{percent}}%',
+    annualPerWeek: '{{price}}/неделя',
+    todayOnly: 'Только сегодня',
+    offerExpires: 'Предложение истекает через',
+    perWeekBilled: 'в неделю, оплата {{period}}',
+    originalPrice: 'Было {{price}}',
   },
 
   playground: {

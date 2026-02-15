@@ -263,7 +263,6 @@ export const viFeatures = {
     week: 'Tuần',
     month: 'Tháng',
     weekly: 'Hàng tuần',
-    monthly: 'Hàng tháng',
     perWeek: '/Tuần',
 
     // Content
@@ -308,6 +307,22 @@ export const viFeatures = {
     restoreSuccess: 'Khôi phục giao dịch thành công',
     restoreError: 'Khôi phục thất bại',
     noPurchaseFound: 'Không tìm thấy giao dịch trước đó',
+
+    // Pricing overhaul
+    annual: 'Hàng năm',
+    year: 'Năm',
+    perYear: '/Năm',
+    freeTrialBadge: 'DÙNG THỬ MIỄN PHÍ {{days}} NGÀY',
+    startTrialButton: 'Bắt đầu dùng thử miễn phí {{days}} ngày',
+    specialOffer: 'Ưu Đãi Đặc Biệt',
+    limitedTimeOffer: 'Ưu Đãi Có Hạn',
+    discountSubtitle: 'Chỉ dành cho người dùng mới — mở khóa toàn bộ quyền truy cập hôm nay',
+    savePercent: 'Tiết kiệm {{percent}}%',
+    annualPerWeek: '{{price}}/tuần',
+    todayOnly: 'Chỉ Hôm Nay',
+    offerExpires: 'Ưu đãi hết hạn sau',
+    perWeekBilled: 'mỗi tuần, thanh toán {{period}}',
+    originalPrice: 'Giá gốc {{price}}',
   },
 
   playground: {

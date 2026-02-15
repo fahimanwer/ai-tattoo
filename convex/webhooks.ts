@@ -3,22 +3,28 @@ import type { MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import {
   getLimitForProduct,
-  getMonthlyLimit,
+  getPeriodLimit,
   entitlementToTier,
+  PRODUCT_PERIOD_MS,
 } from "./planLimits";
 
 // Product ID to entitlement mapping
 const PRODUCT_ENTITLEMENT_MAP: Record<string, string> = {
-  // Legacy products
-  main_ai_tattoo_starter: "Starter",
-  main_ai_tattoo_plus: "Plus",
-  main_ai_tattoo_pro: "Pro",
-  // New premium products (v2 pricing)
-  tattoodesignai_weekly: "Premium",
-  tattoodesignai_monthly: "Premium",
-  // Test store products
-  weekly: "Premium",
-  monthly: "Premium",
+  // Pro v3 products (iOS)
+  tattoodesignai_pro_weekly: "pro",
+  tattoodesignai_pro_annual: "pro",
+  tattoodesignai_offer_weekly: "pro",
+  tattoodesignai_offer_annual: "pro",
+  // Pro v3 test store
+  pro_weekly: "pro",
+  pro_annual: "pro",
+  offer_weekly: "pro",
+  offer_annual: "pro",
+  // Pro v3 Android
+  "tattoodesignai_pro_weekly:pro-weekly": "pro",
+  "tattoodesignai_pro_annual:pro-annual": "pro",
+  "tattoodesignai_offer_weekly:offer-weekly": "pro",
+  "tattoodesignai_offer_annual:offer-annual": "pro",
 };
 
 // Default period: 30 days in ms
@@ -34,7 +40,7 @@ function getLimitForEvent(productId: string, entitlementId: string): number {
     return productLimit;
   }
   const tier = entitlementToTier(entitlementId);
-  return getMonthlyLimit(tier);
+  return getPeriodLimit(tier);
 }
 
 /**
@@ -141,13 +147,21 @@ async function handleInitialPurchase(
 
   for (const entitlementId of entitlementIds) {
     const periodStart = event.purchased_at_ms || now;
-    const periodEnd = event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
+    let periodEnd = event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
+
+    // Apply period override for annual products (monthly generation resets)
+    const periodOverride = PRODUCT_PERIOD_MS[event.product_id];
+    if (periodOverride) {
+      periodEnd = Math.min(periodEnd, periodStart + periodOverride);
+    }
+
     const limit = getLimitForEvent(event.product_id, entitlementId);
 
     console.log(`[RC WEBHOOK] Creating new usage record:`, {
       entitlement: entitlementId,
       productId: event.product_id,
       limit,
+      periodOverride: periodOverride ? "30 days" : "none",
     });
 
     await upsertUsageRecord(ctx, {
@@ -177,7 +191,13 @@ async function handleRenewal(
 
   const now = Date.now();
   const periodStart = event.purchased_at_ms || now;
-  const periodEnd = event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
+  let periodEnd = event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
+
+  // Apply period override for annual products (monthly generation resets)
+  const periodOverride = PRODUCT_PERIOD_MS[event.product_id];
+  if (periodOverride) {
+    periodEnd = Math.min(periodEnd, periodStart + periodOverride);
+  }
 
   if (periodEnd < now) {
     console.warn("[RC WEBHOOK] SKIPPING: Renewal period already expired");
@@ -250,7 +270,14 @@ async function handleProductChange(
   }
 
   const periodStart = event.purchased_at_ms;
-  const periodEnd = event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
+  let periodEnd = event.expiration_at_ms || now + DEFAULT_PERIOD_MS;
+
+  // Apply period override for annual products
+  const periodOverride = PRODUCT_PERIOD_MS[newProductId];
+  if (periodOverride) {
+    periodEnd = Math.min(periodEnd, periodStart + periodOverride);
+  }
+
   const limit = getLimitForEvent(newProductId, newEntitlement);
 
   await upsertUsageRecord(ctx, {

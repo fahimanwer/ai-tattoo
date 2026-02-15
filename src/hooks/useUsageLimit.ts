@@ -143,8 +143,8 @@ export const useUsageLimit = (): UsageLimitResult => {
   if (isLimitReached) {
     limitMessage =
       subscriptionTier === "free"
-        ? "Monthly limit reached. Upgrade to get more generations."
-        : "Monthly limit reached. Your plan resets next period.";
+        ? "Limit reached. Upgrade to get more generations."
+        : "Limit reached. Your plan resets next period.";
   } else if (remaining <= 5 && subscriptionTier !== "free") {
     limitMessage = `Only ${remaining} generations remaining!`;
   } else {

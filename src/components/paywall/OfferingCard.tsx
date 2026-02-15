@@ -25,6 +25,9 @@ type OfferingCardProps = {
   disabled?: boolean;
   term: string;
   discountBadge?: string;
+  trialBadge?: string;
+  subtitle?: string;
+  strikethroughPrice?: string;
 };
 
 const ANIMATION_DURATION = 200;
@@ -38,6 +41,9 @@ export function OfferingCard({
   isSelected = false,
   term,
   discountBadge,
+  trialBadge,
+  subtitle,
+  strikethroughPrice,
 }: OfferingCardProps) {
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -77,7 +83,7 @@ export function OfferingCard({
     backgroundColor: interpolateColor(progress.value, [0, 1], bgColors),
   }));
 
-  // Animated tint for icon - we'll use opacity crossfade approach
+  // Animated tint for icon - crossfade approach
   const selectedIconOpacity = useAnimatedStyle(() => ({
     opacity: progress.value,
     position: "absolute" as const,
@@ -119,16 +125,20 @@ export function OfferingCard({
             <Icon symbol="checkmark.circle.fill" size="lg" color="#3563E9" />
           </Animated.View>
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 8,
-          }}
-        >
-          <View style={{ flexDirection: "column", gap: 4 }}>
-            <Text weight="bold">{title}</Text>
+        <View style={{ flexDirection: "column", gap: 2 }}>
+          <Text weight="bold">{title}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            {strikethroughPrice && (
+              <Text
+                type="sm"
+                style={{
+                  color: Color.grayscale[400],
+                  textDecorationLine: "line-through",
+                }}
+              >
+                {strikethroughPrice}
+              </Text>
+            )}
             <Text
               weight="medium"
               type="base"
@@ -137,6 +147,11 @@ export function OfferingCard({
               {product.priceString.replace(/\s/g, "")}/{term}
             </Text>
           </View>
+          {subtitle && (
+            <Text type="xs" style={{ color: Color.grayscale[500] }}>
+              {subtitle}
+            </Text>
+          )}
         </View>
       </View>
 
@@ -145,7 +160,31 @@ export function OfferingCard({
         {product.pricePerWeekString?.replace(/\s/g, "")}{t('paywall.perWeek')}
       </Text>
 
-      <Activity mode={discountBadge ? "visible" : "hidden"}>
+      {/* Trial badge */}
+      <Activity mode={trialBadge ? "visible" : "hidden"}>
+        <View
+          style={{
+            position: "absolute",
+            top: -8,
+            right: 16,
+            backgroundColor: "#f59e0b",
+            paddingHorizontal: 8,
+            paddingVertical: 2,
+            borderRadius: 50,
+          }}
+        >
+          <Text
+            weight="bold"
+            type="xs"
+            style={{ color: "white", letterSpacing: 0.5 }}
+          >
+            {trialBadge}
+          </Text>
+        </View>
+      </Activity>
+
+      {/* Discount/Savings badge */}
+      <Activity mode={!trialBadge && discountBadge ? "visible" : "hidden"}>
         <View
           style={{
             position: "absolute",
@@ -166,6 +205,7 @@ export function OfferingCard({
         </View>
       </Activity>
 
+      {/* Current plan badge */}
       <Activity mode={isCurrentPlan ? "visible" : "hidden"}>
         <View
           style={{

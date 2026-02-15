@@ -81,7 +81,7 @@ export function PlaygroundError({
 
   const handleUpgrade = () => {
     onDismiss?.();
-    router.push("/(paywall)");
+    router.push("/(paywall)?variant=discount");
   };
 
   const handleContactSupport = () => {

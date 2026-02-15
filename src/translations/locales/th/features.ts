@@ -263,7 +263,6 @@ export const thFeatures = {
     week: 'สัปดาห์',
     month: 'เดือน',
     weekly: 'รายสัปดาห์',
-    monthly: 'รายเดือน',
     perWeek: '/สัปดาห์',
 
     // Content
@@ -308,6 +307,22 @@ export const thFeatures = {
     restoreSuccess: 'กู้คืนการซื้อสำเร็จ',
     restoreError: 'กู้คืนไม่สำเร็จ',
     noPurchaseFound: 'ไม่พบการซื้อก่อนหน้า',
+
+    // Pricing overhaul
+    annual: 'รายปี',
+    year: 'ปี',
+    perYear: '/ปี',
+    freeTrialBadge: 'ทดลองใช้ฟรี {{days}} วัน',
+    startTrialButton: 'เริ่มทดลองใช้ฟรี {{days}} วัน',
+    specialOffer: 'ข้อเสนอพิเศษ',
+    limitedTimeOffer: 'ข้อเสนอจำกัดเวลา',
+    discountSubtitle: 'สำหรับผู้ใช้ใหม่เท่านั้น — ปลดล็อกการเข้าถึงเต็มรูปแบบวันนี้',
+    savePercent: 'ประหยัด {{percent}}%',
+    annualPerWeek: '{{price}}/สัปดาห์',
+    todayOnly: 'วันนี้เท่านั้น',
+    offerExpires: 'ข้อเสนอหมดอายุใน',
+    perWeekBilled: 'ต่อสัปดาห์ เรียกเก็บเงิน {{period}}',
+    originalPrice: 'เดิม {{price}}',
   },
 
   playground: {

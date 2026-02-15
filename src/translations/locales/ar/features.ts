@@ -263,7 +263,6 @@ export const arFeatures = {
     week: 'أسبوع',
     month: 'شهر',
     weekly: 'أسبوعياً',
-    monthly: 'شهرياً',
     perWeek: '/أسبوع',
 
     // Content
@@ -308,6 +307,22 @@ export const arFeatures = {
     restoreSuccess: 'تمت استعادة الشراء',
     restoreError: 'فشلت الاستعادة',
     noPurchaseFound: 'لم يتم العثور على شراء سابق',
+
+    // Pricing overhaul
+    annual: 'سنوي',
+    year: 'سنة',
+    perYear: '/سنة',
+    freeTrialBadge: 'تجربة مجانية لمدة {{days}} يوم',
+    startTrialButton: 'ابدأ تجربة مجانية لمدة {{days}} يوم',
+    specialOffer: 'عرض خاص',
+    limitedTimeOffer: 'عرض لفترة محدودة',
+    discountSubtitle: 'للمستخدمين الجدد فقط — افتح الوصول الكامل اليوم',
+    savePercent: 'وفّر {{percent}}%',
+    annualPerWeek: '{{price}}/أسبوع',
+    todayOnly: 'اليوم فقط',
+    offerExpires: 'ينتهي العرض في',
+    perWeekBilled: 'في الأسبوع، يُفوتر {{period}}',
+    originalPrice: 'كان {{price}}',
   },
 
   playground: {

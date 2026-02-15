@@ -126,7 +126,7 @@ export function InputControls({
     // If free user has reached their limit, redirect to paywall
     if (isLimitReached && isFreeTier) {
       textFieldRef.current?.blur();
-      router.push("/(paywall)");
+      router.push("/(paywall)?variant=discount");
       return;
     }
 
@@ -138,7 +138,7 @@ export function InputControls({
     // If free user has reached their limit, redirect to paywall
     if (isLimitReached && isFreeTier) {
       textFieldRef.current?.blur();
-      router.push("/(paywall)");
+      router.push("/(paywall)?variant=discount");
       return;
     }
 

@@ -263,7 +263,6 @@ export const plFeatures = {
     week: 'Tydzien',
     month: 'Miesiac',
     weekly: 'Tygodniowo',
-    monthly: 'Miesiecznie',
     perWeek: '/Tydzien',
 
     // Content
@@ -308,6 +307,22 @@ export const plFeatures = {
     restoreSuccess: 'Zakup przywrocony',
     restoreError: 'Przywracanie nie powiodlo sie',
     noPurchaseFound: 'Nie znaleziono wczesniejszego zakupu',
+
+    // Pricing overhaul
+    annual: 'Roczny',
+    year: 'Rok',
+    perYear: '/Rok',
+    freeTrialBadge: '{{days}}-DNIOWY BEZPŁATNY OKRES PRÓBNY',
+    startTrialButton: 'Rozpocznij {{days}} dni bezpłatnego okresu próbnego',
+    specialOffer: 'Oferta Specjalna',
+    limitedTimeOffer: 'Oferta Ograniczona Czasowo',
+    discountSubtitle: 'Tylko dla nowych użytkowników — odblokuj pełny dostęp już dziś',
+    savePercent: 'Oszczędź {{percent}}%',
+    annualPerWeek: '{{price}}/tydzień',
+    todayOnly: 'Tylko Dzisiaj',
+    offerExpires: 'Oferta wygasa za',
+    perWeekBilled: 'tygodniowo, rozliczane {{period}}',
+    originalPrice: 'Było {{price}}',
   },
 
   playground: {

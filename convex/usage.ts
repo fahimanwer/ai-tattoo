@@ -4,7 +4,7 @@ import type { QueryCtx, MutationCtx } from "./_generated/server";
 import {
   FREE_TIER_LIMIT,
   entitlementToTier,
-  getMonthlyLimit,
+  getPeriodLimit,
   getPlanConfig,
   type PlanTier,
 } from "./planLimits";
@@ -94,14 +94,8 @@ async function findFreeRecord(
 
 function entitlementDisplayName(entitlement: string): string {
   switch (entitlement.toLowerCase()) {
-    case "premium":
-      return "Premium";
     case "pro":
       return "Pro";
-    case "plus":
-      return "Plus";
-    case "starter":
-      return "Starter";
     default:
       return entitlement;
   }
@@ -198,7 +192,7 @@ export const getUserUsage = query({
 
     const used = activePeriodRecord?.count || 0;
     const limit =
-      activePeriodRecord?.limit || getMonthlyLimit(subscriptionTier);
+      activePeriodRecord?.limit || getPeriodLimit(subscriptionTier);
     const remaining = Math.max(0, limit - used);
     const isLimitReached = used >= limit;
 

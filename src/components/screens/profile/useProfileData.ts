@@ -144,12 +144,6 @@ export function useProfileData() {
   const planBadge = useMemo(() => {
     if (hasActiveSubscription && lastSubscription) {
       const name = lastSubscription.productName || "Pro";
-      if (name.toLowerCase().includes("tattoodesignai_"))
-        return { name: "Premium", color: "#3563E9" };
-      if (name.toLowerCase().includes("plus"))
-        return { name: "Plus", color: Color.green[500] };
-      if (name.toLowerCase().includes("starter"))
-        return { name: "Starter", color: "#3563E9" };
       return { name, color: Color.green[500] };
     }
     return { name: "Free", color: Color.zinc[400] };

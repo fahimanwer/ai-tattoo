@@ -7,10 +7,9 @@ import { useUserData } from "@/src/hooks/useUserData";
 import { Image } from "expo-image";
 import { Link, Stack, useRouter } from "expo-router";
 import { PressableScale } from "pressto";
-import { use, useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Platform, StyleSheet, View } from "react-native";
 import Purchases, {
-  PACKAGE_TYPE,
   PurchasesOffering,
   PurchasesPackage,
 } from "react-native-purchases";
@@ -24,13 +23,11 @@ import { OfferingCard } from "../paywall/OfferingCard";
 import { Icon } from "../ui/Icon";
 import { Text } from "../ui/Text";
 
-type BillingPeriod = "weekly" | "monthly";
+type BillingPeriod = "weekly" | "annual";
 
 const CLOSE_BUTTON_DELAY_MS = 2500;
+const COUNTDOWN_DURATION_S = 24 * 60 * 60; // 24 hours in seconds
 
-/**
- * Helper to safely extract an array value from answers
- */
 function getArrayValue(
   answers: OnboardingAnswers | undefined,
   key: string
@@ -43,9 +40,6 @@ function getArrayValue(
   return undefined;
 }
 
-/**
- * Generate personalized paywall headline based on user's onboarding answers
- */
 function getPersonalizedHeadlineKey(
   answers: OnboardingAnswers | undefined
 ): string {
@@ -60,11 +54,22 @@ function getPersonalizedHeadlineKey(
   return "paywall.headlineDesign";
 }
 
-export function Paywall() {
+function formatCountdown(totalSeconds: number): string {
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+}
+
+interface PaywallProps {
+  variant?: "main" | "discount";
+}
+
+export function Paywall({ variant = "main" }: PaywallProps) {
   const [defaultOffering, setDefaultOffering] =
     useState<PurchasesOffering | null>(null);
   const [selectedPeriod, setSelectedPeriod] =
-    useState<BillingPeriod>("monthly");
+    useState<BillingPeriod>("annual");
   const { customerInfo } = useSubscription();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const router = useRouter();
@@ -77,142 +82,112 @@ export function Paywall() {
     use(AppSettingsContext);
   const isFirstPaywallView = !settings.hasSeenPaywall;
   const [showCloseButton, setShowCloseButton] = useState(!isFirstPaywallView);
-
-  // Detect if we're in the onboarding flow (user hasn't completed onboarding yet)
   const isOnboardingFlow = !settings.isOnboarded;
 
   const { t } = useTranslation();
 
-  // Personalized headline based on onboarding answers
+  // Countdown timer for discount variant
+  const [countdown, setCountdown] = useState(COUNTDOWN_DURATION_S);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (variant === "discount") {
+      countdownRef.current = setInterval(() => {
+        setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+      return () => {
+        if (countdownRef.current) clearInterval(countdownRef.current);
+      };
+    }
+  }, [variant]);
+
   const headlineKey = useMemo(
     () => getPersonalizedHeadlineKey(settings.onboardingAnswers),
     [settings.onboardingAnswers]
   );
   const headline = t(headlineKey);
 
-  // Check if user is authenticated
   const { data: session } = authClient.useSession();
   const isAuthenticated = !!session?.user;
 
+  // Packages from offering
   const weeklyPackage = defaultOffering?.weekly;
-  const monthlyPackage = defaultOffering?.monthly;
+  const annualPackage = defaultOffering?.annual;
   const selectedPackage =
-    selectedPeriod === "weekly" ? weeklyPackage : monthlyPackage;
+    selectedPeriod === "weekly" ? weeklyPackage : annualPackage;
+
+  // Trial detection
+  const hasFreeTrial = annualPackage?.product?.introPrice?.price === 0;
+  const trialDays =
+    annualPackage?.product?.introPrice?.periodNumberOfUnits ?? 0;
+
+  // Savings calculation
+  const weeklyPrice = weeklyPackage?.product?.price ?? 0;
+  const annualPrice = annualPackage?.product?.price ?? 0;
+  const weeklyEquivalent = annualPrice > 0 ? annualPrice / 52 : 0;
+  const savingsPercent =
+    weeklyPrice > 0
+      ? Math.round((1 - weeklyEquivalent / weeklyPrice) * 100)
+      : 0;
+
+  // CTA text
+  const ctaTrialText =
+    selectedPeriod === "annual" && hasFreeTrial && trialDays > 0
+      ? t("paywall.startTrialButton", { days: trialDays })
+      : undefined;
+
+  // Annual subtitle (per-week breakdown)
+  const annualPerWeekStr =
+    weeklyEquivalent > 0
+      ? t("paywall.annualPerWeek", {
+          price: `$${weeklyEquivalent.toFixed(2)}`,
+        })
+      : undefined;
 
   const fetchProducts = async () => {
     const offerings = await Purchases.getOfferings();
+    const offeringKey = variant === "discount" ? "pro_offer" : "pro_default";
+    setDefaultOffering(offerings?.all?.[offeringKey] ?? null);
+  };
 
-    // We introduced a new offering called v2_default. This is the default offering that will be used if no offering is specified.
-    const offering = offerings?.all?.v2_default;
-    setDefaultOffering(offering ?? null);
+  // Shared post-purchase/restore flow
+  const handleSuccessFlow = async (titleKey: string, msgKey: string) => {
+    if (isOnboardingFlow) {
+      if (isAuthenticated && session?.user?.id) {
+        await syncAfterAuth(session.user.id);
+        Alert.alert(t(titleKey), t(msgKey), [{
+          text: t("common.continue"), isPreferred: true,
+          onPress: () => { router.dismiss(); setIsOnboarded(true); },
+        }]);
+      } else {
+        Alert.alert(t("paywall.almostThereTitle"), t("paywall.createAccountMessage"), [{
+          text: t("common.continue"), isPreferred: true,
+          onPress: () => { router.dismiss(); router.replace("/(onboarding)/auth"); },
+        }]);
+      }
+    } else {
+      if (session?.user?.id) await syncAfterAuth(session.user.id);
+      else await refresh();
+      Alert.alert(t(titleKey), t(msgKey), [{
+        text: t("common.ok"),
+        onPress: () => { router.dismissTo("/(playground)"); toast.success(t("paywall.subscriptionActivated")); },
+      }]);
+    }
   };
 
   const handlePurchase = async (pkg: PurchasesPackage) => {
-    const periodLabel =
-      pkg.packageType === PACKAGE_TYPE.WEEKLY ? "weekly" : "monthly";
-
-    customEvent("plan_selected", {
-      plan: periodLabel,
-      price: pkg.product.priceString,
-    });
-
+    customEvent("plan_selected", { plan: selectedPeriod, price: pkg.product.priceString, variant });
     try {
       setIsPurchasing(true);
-      const { customerInfo: updatedCustomerInfo } =
-        await Purchases.purchasePackage(pkg);
+      await Purchases.purchasePackage(pkg);
       setIsPurchasing(false);
-
-      console.log("Purchase successful!");
-      console.log("Updated customer info:", updatedCustomerInfo);
-
-      customEvent("purchase_completed", {
-        plan: periodLabel,
-        success: true,
-        isOnboardingFlow,
-      });
-
-      // Different flow for onboarding vs authenticated users
-      if (isOnboardingFlow) {
-        if (isAuthenticated && session?.user?.id) {
-          // Link RevenueCat with Better Auth user ID + restore + refresh usage
-          await syncAfterAuth(session.user.id);
-          // Already authenticated: complete onboarding directly
-          Alert.alert(
-            t('paywall.successTitle'),
-            t('paywall.subscriptionActiveMessage'),
-            [
-              {
-                text: t('common.continue'),
-                onPress: () => {
-                  router.dismiss();
-                  setIsOnboarded(true);
-                },
-                isPreferred: true,
-              },
-            ]
-          );
-        } else {
-          // Not authenticated: require sign-in to link purchase
-          // The auth screen will call syncAfterAuth after sign-in
-          Alert.alert(
-            t('paywall.almostThereTitle'),
-            t('paywall.createAccountMessage'),
-            [
-              {
-                text: t('common.continue'),
-                onPress: () => {
-                  // Dismiss paywall, then replace onboarding with auth screen
-                  // Using replace unmounts the onboarding Container (stops videos/haptics)
-                  router.dismiss();
-                  router.replace("/(onboarding)/auth");
-                },
-                isPreferred: true,
-              },
-            ]
-          );
-        }
-      } else {
-        // Authenticated user: link RevenueCat + refresh usage
-        if (session?.user?.id) {
-          await syncAfterAuth(session.user.id);
-        } else {
-          await refresh();
-        }
-        // Normal flow
-        Alert.alert(
-          t('paywall.successTitle'),
-          t('paywall.subscriptionActiveMessage'),
-          [
-            {
-              text: t('common.ok'),
-              onPress: async () => {
-                router.dismissTo("/(playground)");
-                toast.success(t('paywall.subscriptionActivated'));
-              },
-            },
-          ]
-        );
-      }
+      customEvent("purchase_completed", { plan: selectedPeriod, success: true, variant });
+      await handleSuccessFlow("paywall.successTitle", "paywall.subscriptionActiveMessage");
     } catch (error: any) {
       setIsPurchasing(false);
-      console.error("Purchase error:", error);
-
-      if (error.userCancelled) {
-        console.log("User cancelled the purchase");
-        return;
-      }
-
-      customEvent("purchase_completed", {
-        plan: periodLabel,
-        success: false,
-        error: error.message || "Unknown error",
-      });
-
-      Alert.alert(
-        t('paywall.purchaseFailedTitle'),
-        error.message || t('paywall.purchaseFailedMessage'),
-        [{ text: t('common.ok') }]
-      );
+      if (error.userCancelled) return;
+      customEvent("purchase_completed", { plan: selectedPeriod, success: false, error: error.message });
+      Alert.alert(t("paywall.purchaseFailedTitle"), error.message || t("paywall.purchaseFailedMessage"), [{ text: t("common.ok") }]);
     } finally {
       fetchProducts();
       setIsPurchasing(false);
@@ -220,10 +195,8 @@ export function Paywall() {
   };
 
   useEffect(() => {
-    customEvent("paywall_viewed", { source: "manual" });
+    customEvent("paywall_viewed", { source: "manual", variant });
     fetchProducts();
-
-    // Delayed close button for first-time viewers
     if (isFirstPaywallView) {
       const timer = setTimeout(() => {
         setShowCloseButton(true);
@@ -237,87 +210,17 @@ export function Paywall() {
     if (isPurchasing) return;
     try {
       const restore = await Purchases.restorePurchases();
-      const hasActivePurchases =
-        Object.keys(restore.entitlements.active).length > 0;
-
-      customEvent("restore_attempted", {
-        success: true,
-        hasActivePurchases,
-      });
-
-      if (hasActivePurchases) {
-        if (isOnboardingFlow) {
-          if (isAuthenticated && session?.user?.id) {
-            // Link RevenueCat with Better Auth user ID + refresh usage
-            await syncAfterAuth(session.user.id);
-            // Already authenticated: complete onboarding directly
-            Alert.alert(
-              t('paywall.purchaseRestoredTitle'),
-              t('paywall.subscriptionNowActive'),
-              [
-                {
-                  text: t('common.continue'),
-                  onPress: () => {
-                    router.dismiss();
-                    setTimeout(() => {
-                      setIsOnboarded(true);
-                    }, 400);
-                  },
-                  isPreferred: true,
-                },
-              ]
-            );
-          } else {
-            // Not authenticated: require sign-in to link restored purchase
-            // The auth screen will call syncAfterAuth after sign-in
-            Alert.alert(
-              t('paywall.purchaseFoundTitle'),
-              t('paywall.createAccountMessage'),
-              [
-                {
-                  text: t('common.continue'),
-                  onPress: () => {
-                    // Dismiss paywall, then replace onboarding with auth screen
-                    // Using replace unmounts the onboarding Container (stops videos/haptics)
-                    router.dismiss();
-                    router.replace("/(onboarding)/auth");
-                  },
-                  isPreferred: true,
-                },
-              ]
-            );
-          }
-        } else {
-          // Authenticated user: link RevenueCat + refresh usage
-          if (session?.user?.id) {
-            await syncAfterAuth(session.user.id);
-          } else {
-            await refresh();
-          }
-          fetchProducts();
-          // Normal flow
-          Alert.alert(t('paywall.successTitle'), t('paywall.purchasesRestoredMessage'), [
-            { text: t('common.ok'), onPress: () => router.dismissAll() },
-          ]);
-        }
+      const hasActive = Object.keys(restore.entitlements.active).length > 0;
+      customEvent("restore_attempted", { success: true, hasActivePurchases: hasActive });
+      if (hasActive) {
+        await handleSuccessFlow("paywall.purchaseRestoredTitle", "paywall.subscriptionNowActive");
+        fetchProducts();
       } else {
-        Alert.alert(
-          t('paywall.noPurchasesFoundTitle'),
-          t('paywall.noPurchasesFoundMessage'),
-          [{ text: t('common.ok') }]
-        );
+        Alert.alert(t("paywall.noPurchasesFoundTitle"), t("paywall.noPurchasesFoundMessage"), [{ text: t("common.ok") }]);
       }
     } catch (e) {
-      console.error("Error restoring purchases:", e);
-      customEvent("restore_attempted", {
-        success: false,
-        hasActivePurchases: false,
-      });
-      Alert.alert(
-        t('paywall.errorRestoringTitle'),
-        t('paywall.errorRestoringMessage'),
-        [{ text: t('common.ok') }]
-      );
+      customEvent("restore_attempted", { success: false, hasActivePurchases: false });
+      Alert.alert(t("paywall.errorRestoringTitle"), t("paywall.errorRestoringMessage"), [{ text: t("common.ok") }]);
     }
   };
 
@@ -331,13 +234,11 @@ export function Paywall() {
               <PressableScale
                 onPress={() => {
                   if (isPurchasing) return;
-
                   if (isOnboardingFlow) {
                     setIsOnboarded(true);
                     router.replace("/(tabs)/(home)");
                     return;
                   }
-
                   if (router.canGoBack()) {
                     router.back();
                     return;
@@ -395,23 +296,20 @@ export function Paywall() {
       </View>
 
       {/* Content */}
-      <View
-        style={{
-          paddingTop: top * 2,
-          flex: 1,
-          zIndex: 1,
-          padding: 16,
-          gap: 16,
-        }}
-      >
-        {/* Plan Selection */}
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "flex-end",
-            gap: 16,
-          }}
-        >
+      <View style={{ paddingTop: top * 2, flex: 1, zIndex: 1, padding: 16, gap: 16 }}>
+        <View style={{ flex: 1, justifyContent: "flex-end", gap: 16 }}>
+          {/* Discount banner */}
+          {variant === "discount" && (
+            <View style={styles.discountBanner}>
+              <Text weight="bold" type="sm" style={{ color: "#f59e0b" }}>
+                {t("paywall.specialOffer")}
+              </Text>
+              <Text type="xs" style={{ color: Color.grayscale[400] }}>
+                {t("paywall.offerExpires")} {formatCountdown(countdown)}
+              </Text>
+            </View>
+          )}
+
           <Text
             type="4xl"
             weight="bold"
@@ -430,26 +328,40 @@ export function Paywall() {
               color: isDark ? Color.grayscale[700] : Color.grayscale[500],
             }}
           >
-            {t('paywall.subtitle')}
+            {variant === "discount"
+              ? t("paywall.discountSubtitle")
+              : t("paywall.subtitle")}
           </Text>
 
-          {defaultOffering && weeklyPackage && monthlyPackage ? (
+          {defaultOffering && weeklyPackage && annualPackage ? (
             <>
               <View style={{ flexDirection: "column", gap: 12 }}>
                 <OfferingCard
-                  title={t('paywall.monthly')}
-                  term={t('paywall.month')}
-                  package={monthlyPackage}
-                  onPress={() => setSelectedPeriod("monthly")}
-                  isSelected={selectedPeriod === "monthly"}
+                  title={t("paywall.annual")}
+                  term={t("paywall.year")}
+                  package={annualPackage}
+                  onPress={() => setSelectedPeriod("annual")}
+                  isSelected={selectedPeriod === "annual"}
                   isCurrentPlan={customerInfo?.activeSubscriptions?.includes(
-                    monthlyPackage.product.identifier
+                    annualPackage.product.identifier
                   )}
-                  discountBadge={t('paywall.saveBadge', { percent: '50' })}
+                  trialBadge={
+                    hasFreeTrial && trialDays > 0
+                      ? t("paywall.freeTrialBadge", { days: trialDays })
+                      : undefined
+                  }
+                  discountBadge={
+                    savingsPercent > 0
+                      ? t("paywall.savePercent", {
+                          percent: savingsPercent.toString(),
+                        })
+                      : undefined
+                  }
+                  subtitle={annualPerWeekStr}
                 />
                 <OfferingCard
-                  title={t('paywall.weekly')}
-                  term={t('paywall.week')}
+                  title={t("paywall.weekly")}
+                  term={t("paywall.week")}
                   package={weeklyPackage}
                   onPress={() => setSelectedPeriod("weekly")}
                   isSelected={selectedPeriod === "weekly"}
@@ -459,13 +371,11 @@ export function Paywall() {
                 />
               </View>
 
-              {/* CTA Button */}
               <CTAButton
-                title={t('paywall.continueButton')}
+                title={t("paywall.continueButton")}
+                trialText={ctaTrialText}
                 onPress={() => {
-                  if (selectedPackage) {
-                    handlePurchase(selectedPackage);
-                  }
+                  if (selectedPackage) handlePurchase(selectedPackage);
                 }}
                 loading={isPurchasing}
               />
@@ -473,30 +383,20 @@ export function Paywall() {
           ) : (
             <View style={styles.loadingContainer}>
               <Text type="base" style={styles.loadingText}>
-                {t('paywall.loadingPlans')}
+                {t("paywall.loadingPlans")}
               </Text>
             </View>
           )}
         </View>
 
         {/* Footer */}
-        <View
-          style={{
-            flex: 0.13,
-            flexDirection: "column",
-            justifyContent: "flex-end",
-            gap: 4,
-          }}
-        >
+        <View style={{ flex: 0.13, justifyContent: "flex-end", gap: 4 }}>
           <PressableScale onPress={handleRestoreSubscription}>
             <Text
-              style={{
-                color: Color.grayscale[400],
-                textAlign: "center",
-              }}
+              style={{ color: Color.grayscale[400], textAlign: "center" }}
               weight="medium"
             >
-              {t('paywall.restoreSubscription')}
+              {t("paywall.restoreSubscription")}
             </Text>
           </PressableScale>
 
@@ -510,26 +410,16 @@ export function Paywall() {
             }}
           >
             <Link href="/terms-of-service" asChild>
-              <Text
-                type="xs"
-                style={{
-                  color: Color.grayscale[400],
-                }}
-              >
-                {t('profile.termsOfService')}
+              <Text type="xs" style={{ color: Color.grayscale[400] }}>
+                {t("profile.termsOfService")}
               </Text>
             </Link>
             <Text type="xs" style={{ color: Color.grayscale[400] }}>
               •
             </Text>
             <Link href="/privacy-policy" asChild>
-              <Text
-                type="xs"
-                style={{
-                  color: Color.grayscale[400],
-                }}
-              >
-                {t('profile.privacyPolicy')}
+              <Text type="xs" style={{ color: Color.grayscale[400] }}>
+                {t("profile.privacyPolicy")}
               </Text>
             </Link>
           </View>
@@ -537,13 +427,14 @@ export function Paywall() {
             type="xs"
             style={{ textAlign: "center", color: Color.grayscale[400] }}
           >
-            {t('paywall.fairUseNote')}
+            {t("paywall.fairUseNote")}
           </Text>
         </View>
       </View>
     </>
   );
 }
+
 const styles = StyleSheet.create({
   closeButton: {
     width: 32,
@@ -552,46 +443,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  container: {
-    flex: 1,
-    padding: 16,
-    zIndex: 2,
-  },
   heroTitle: {
     letterSpacing: -1,
     textAlign: "center",
   },
-  heroSubtitle: {
-    color: Color.zinc[50] + "90",
-    textAlign: "center",
-    lineHeight: 26,
-  },
-  saveBadge: {
-    position: "absolute",
-    top: -1,
-    right: -1,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderBottomLeftRadius: 8,
-    backgroundColor: Color.blue[500],
-  },
-  saveBadgeText: {
-    color: "#FFFFFF",
-    letterSpacing: 0.5,
-  },
-  featureRow: {
-    flexDirection: "row",
+  discountBanner: {
     alignItems: "center",
-    gap: 12,
-  },
-  featureIcon: {
-    color: Color.blue[500],
-    fontSize: 14,
-  },
-  featureText: {
-    color: Color.zinc[200],
-    fontSize: 15,
-    letterSpacing: -0.3,
+    gap: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#f59e0b",
+    alignSelf: "center",
   },
   loadingContainer: {
     paddingVertical: 40,
@@ -599,24 +463,5 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     color: Color.grayscale[500],
-  },
-  footer: {
-    gap: 8,
-  },
-  legalLinks: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-  },
-  fairUseText: {
-    color: Color.grayscale[600],
-  },
-  legalLinkText: {
-    color: Color.grayscale[500],
-    textDecorationLine: "underline",
-  },
-  legalSeparator: {
-    color: Color.grayscale[700],
   },
 });

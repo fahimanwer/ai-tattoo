@@ -263,7 +263,6 @@ export const csFeatures = {
     week: 'Tyden',
     month: 'Mesic',
     weekly: 'Tydne',
-    monthly: 'Mesicne',
     perWeek: '/tyden',
 
     // Content
@@ -308,6 +307,22 @@ export const csFeatures = {
     restoreSuccess: 'Nakup obnoven',
     restoreError: 'Obnova selhala',
     noPurchaseFound: 'Zadny predchozi nakup nenalezen',
+
+    // Pricing overhaul
+    annual: 'Roční',
+    year: 'Rok',
+    perYear: '/Rok',
+    freeTrialBadge: '{{days}}-DENNÍ ZKUŠEBNÍ VERZE ZDARMA',
+    startTrialButton: 'Začít {{days}} dní zdarma',
+    specialOffer: 'Speciální nabídka',
+    limitedTimeOffer: 'Časově omezená nabídka',
+    discountSubtitle: 'Pouze pro nové uživatele — odemkněte plný přístup ještě dnes',
+    savePercent: 'Ušetřete {{percent}}%',
+    annualPerWeek: '{{price}}/týden',
+    todayOnly: 'Pouze dnes',
+    offerExpires: 'Nabídka vyprší za',
+    perWeekBilled: 'za týden, účtováno {{period}}',
+    originalPrice: 'Bylo {{price}}',
   },
 
   playground: {

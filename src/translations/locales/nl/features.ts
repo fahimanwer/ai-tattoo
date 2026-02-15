@@ -263,7 +263,6 @@ export const nlFeatures = {
     week: 'Week',
     month: 'Maand',
     weekly: 'Wekelijks',
-    monthly: 'Maandelijks',
     perWeek: '/Week',
 
     // Content
@@ -308,6 +307,22 @@ export const nlFeatures = {
     restoreSuccess: 'Aankoop Hersteld',
     restoreError: 'Herstellen Mislukt',
     noPurchaseFound: 'Geen eerdere aankoop gevonden',
+
+    // Pricing overhaul
+    annual: 'Jaarlijks',
+    year: 'Jaar',
+    perYear: '/Jaar',
+    freeTrialBadge: '{{days}} DAGEN GRATIS PROEFPERIODE',
+    startTrialButton: 'Start {{days}} dagen gratis proefperiode',
+    specialOffer: 'Speciale Aanbieding',
+    limitedTimeOffer: 'Tijdelijke Aanbieding',
+    discountSubtitle: 'Alleen voor nieuwe gebruikers — ontgrendel vandaag volledige toegang',
+    savePercent: 'Bespaar {{percent}}%',
+    annualPerWeek: '{{price}}/week',
+    todayOnly: 'Alleen Vandaag',
+    offerExpires: 'Aanbieding verloopt over',
+    perWeekBilled: 'per week, gefactureerd {{period}}',
+    originalPrice: 'Was {{price}}',
   },
 
   playground: {

@@ -22,7 +22,9 @@
         ]
       },
       "entitlements": {
-        "com.apple.security.application-groups": ["group.fahimanwer.tattooai"]
+        "com.apple.security.application-groups": [
+          "group.fahimanwer.tattooai"
+        ]
       }
     },
     "android": {
@@ -110,15 +112,41 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "ab9df978-7734-423b-a42f-e0028dc1b749"
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "bundleIdentifier": "com.fahimanwer.tattooai.widget",
+                  "targetName": "widget",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.fahimanwer.tattooai"
+                    ]
+                  }
+                },
+                {
+                  "bundleIdentifier": "com.fahimanwer.tattooai.widget",
+                  "targetName": "widget",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.fahimanwer.tattooai"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "33ca9ba3-9517-4c38-8319-21c3bdb032c5"
       }
     },
-    "owner": "cwb-org",
+    "owner": "fahimanwer",
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/ab9df978-7734-423b-a42f-e0028dc1b749"
+      "url": "https://u.expo.dev/33ca9ba3-9517-4c38-8319-21c3bdb032c5"
     }
   }
 }

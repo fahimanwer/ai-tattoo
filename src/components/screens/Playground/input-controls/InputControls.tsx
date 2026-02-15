@@ -94,7 +94,7 @@ export function InputControls({
   function handleSubmit() {
     if (isLimitReached && isFreeTier) {
       textInputRef.current?.blur();
-      router.push("/(paywall)");
+      router.push("/(paywall)?variant=discount");
       return;
     }
     onSubmit?.();
@@ -104,7 +104,7 @@ export function InputControls({
   async function handleTryOnSelect(styleName: string, imageUri: string) {
     if (isLimitReached && isFreeTier) {
       textInputRef.current?.blur();
-      router.push("/(paywall)");
+      router.push("/(paywall)?variant=discount");
       return;
     }
     try {

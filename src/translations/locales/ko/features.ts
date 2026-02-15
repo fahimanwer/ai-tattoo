@@ -263,7 +263,6 @@ export const koFeatures = {
     week: '주',
     month: '월',
     weekly: '주간',
-    monthly: '월간',
     perWeek: '/주',
 
     // Content
@@ -308,6 +307,22 @@ export const koFeatures = {
     restoreSuccess: '구매 복원됨',
     restoreError: '복원 실패',
     noPurchaseFound: '이전 구매를 찾을 수 없음',
+
+    // Pricing overhaul
+    annual: '연간',
+    year: '년',
+    perYear: '/년',
+    freeTrialBadge: '{{days}}일 무료 체험',
+    startTrialButton: '{{days}}일 무료 체험 시작',
+    specialOffer: '특별 혜택',
+    limitedTimeOffer: '한정 기간 혜택',
+    discountSubtitle: '신규 사용자 전용 — 오늘 전체 액세스 잠금 해제',
+    savePercent: '{{percent}}% 절약',
+    annualPerWeek: '{{price}}/주',
+    todayOnly: '오늘만',
+    offerExpires: '혜택 만료까지',
+    perWeekBilled: '주당, {{period}} 청구',
+    originalPrice: '기존 {{price}}',
   },
 
   playground: {

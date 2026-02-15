@@ -263,7 +263,6 @@ export const svFeatures = {
     week: 'Vecka',
     month: 'Manad',
     weekly: 'Veckovis',
-    monthly: 'Manadsvis',
     perWeek: '/Vecka',
 
     // Content
@@ -308,6 +307,22 @@ export const svFeatures = {
     restoreSuccess: 'Kop aterstllt',
     restoreError: 'Aterstallning misslyckades',
     noPurchaseFound: 'Inget tidigare kop hittades',
+
+    // Pricing overhaul
+    annual: 'Årlig',
+    year: 'År',
+    perYear: '/År',
+    freeTrialBadge: '{{days}}-DAGARS GRATIS PROVPERIOD',
+    startTrialButton: 'Starta {{days}} dagars gratis provperiod',
+    specialOffer: 'Specialerbjudande',
+    limitedTimeOffer: 'Tidsbegränsat erbjudande',
+    discountSubtitle: 'Endast nya användare — lås upp full åtkomst idag',
+    savePercent: 'Spara {{percent}}%',
+    annualPerWeek: '{{price}}/vecka',
+    todayOnly: 'Endast idag',
+    offerExpires: 'Erbjudandet upphör om',
+    perWeekBilled: 'per vecka, faktureras {{period}}',
+    originalPrice: 'Var {{price}}',
   },
 
   playground: {

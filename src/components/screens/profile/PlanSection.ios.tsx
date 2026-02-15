@@ -106,7 +106,7 @@ export function PlanSection({
       <FormButton
         title={hasActiveSubscription ? t('profile.managePlan') : t('profile.upgradePlan')}
         systemImage={hasActiveSubscription ? "creditcard.fill" : "star.fill"}
-        onPress={() => router.push("/(paywall)")}
+        onPress={() => router.push("/(paywall)?variant=discount")}
         color={hasActiveSubscription ? "white" : "#3563E9"}
       />
       <DisclosureGroup
@@ -347,7 +347,7 @@ export function WeMissYouSection({
       <FormButton
         title={t('profile.comeBackAndCreate')}
         systemImage="sparkles"
-        onPress={() => router.push("/(paywall)")}
+        onPress={() => router.push("/(paywall)?variant=discount")}
         color="#3563E9"
       />
       <FormButton

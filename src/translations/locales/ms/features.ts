@@ -263,7 +263,6 @@ export const msFeatures = {
     week: 'Minggu',
     month: 'Bulan',
     weekly: 'Mingguan',
-    monthly: 'Bulanan',
     perWeek: '/Minggu',
 
     // Content
@@ -308,6 +307,22 @@ export const msFeatures = {
     restoreSuccess: 'Pembelian Dipulihkan',
     restoreError: 'Pemulihan Gagal',
     noPurchaseFound: 'Tiada pembelian terdahulu dijumpai',
+
+    // Pricing overhaul
+    annual: 'Tahunan',
+    year: 'Tahun',
+    perYear: '/Tahun',
+    freeTrialBadge: 'PERCUBAAN PERCUMA {{days}} HARI',
+    startTrialButton: 'Mula percubaan percuma {{days}} hari',
+    specialOffer: 'Tawaran Istimewa',
+    limitedTimeOffer: 'Tawaran Masa Terhad',
+    discountSubtitle: 'Pengguna baharu sahaja — buka akses penuh hari ini',
+    savePercent: 'Jimat {{percent}}%',
+    annualPerWeek: '{{price}}/minggu',
+    todayOnly: 'Hari Ini Sahaja',
+    offerExpires: 'Tawaran tamat dalam',
+    perWeekBilled: 'seminggu, dibilkan {{period}}',
+    originalPrice: 'Sebelumnya {{price}}',
   },
 
   playground: {

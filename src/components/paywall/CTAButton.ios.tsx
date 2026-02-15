@@ -10,10 +10,12 @@ import {
 } from "@expo/ui/swift-ui/modifiers";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
+import { useTranslation } from "react-i18next";
 import { Dimensions } from "react-native";
 
 interface CTAButtonProps {
   title: string;
+  trialText?: string;
   onPress: () => void;
   loading?: boolean;
   disabled?: boolean;
@@ -21,11 +23,13 @@ interface CTAButtonProps {
 
 export function CTAButton({
   title,
+  trialText,
   onPress,
   loading = false,
   disabled: isDisabled = false,
 }: CTAButtonProps) {
   const { width } = Dimensions.get("window");
+  const { t } = useTranslation();
   const buttonDisabled = loading || isDisabled;
 
   return (
@@ -51,7 +55,7 @@ export function CTAButton({
         }}
       >
         <Label
-          title={loading ? "Processing..." : title}
+          title={loading ? t('common.processing') : (trialText ?? title)}
           modifiers={[
             frame({ width: width - 64 }),
             foregroundStyle("white"),

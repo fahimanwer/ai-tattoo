@@ -263,7 +263,6 @@ export const trFeatures = {
     week: 'Hafta',
     month: 'Ay',
     weekly: 'Haftalık',
-    monthly: 'Aylık',
     perWeek: '/Hafta',
 
     // Content
@@ -308,6 +307,22 @@ export const trFeatures = {
     restoreSuccess: 'Satın Alma Geri Yüklendi',
     restoreError: 'Geri Yükleme Başarısız',
     noPurchaseFound: 'Önceki satın alma bulunamadı',
+
+    // Pricing overhaul
+    annual: 'Yıllık',
+    year: 'Yıl',
+    perYear: '/Yıl',
+    freeTrialBadge: '{{days}} GÜN ÜCRETSİZ DENEME',
+    startTrialButton: '{{days}} gün ücretsiz denemeyi başlat',
+    specialOffer: 'Özel Teklif',
+    limitedTimeOffer: 'Sınırlı Süreli Teklif',
+    discountSubtitle: 'Yalnızca yeni kullanıcılar — tam erişimi bugün aç',
+    savePercent: '%{{percent}} Tasarruf',
+    annualPerWeek: '{{price}}/hafta',
+    todayOnly: 'Sadece Bugün',
+    offerExpires: 'Teklifin bitmesine',
+    perWeekBilled: 'haftalık, {{period}} faturalandırılır',
+    originalPrice: 'Önceki fiyat {{price}}',
   },
 
   playground: {

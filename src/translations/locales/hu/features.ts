@@ -265,7 +265,6 @@ export const huFeatures = {
     week: 'Het',
     month: 'Honap',
     weekly: 'Heti',
-    monthly: 'Havi',
     perWeek: '/Het',
 
     // Content
@@ -310,6 +309,22 @@ export const huFeatures = {
     restoreSuccess: 'Vasarlas visszaallitva',
     restoreError: 'Visszaallitas sikertelen',
     noPurchaseFound: 'Nem talalhato korabbi vasarlas',
+
+    // Pricing overhaul
+    annual: 'Éves',
+    year: 'Év',
+    perYear: '/Év',
+    freeTrialBadge: '{{days}} NAPOS INGYENES PRÓBA',
+    startTrialButton: '{{days}} napos ingyenes próba indítása',
+    specialOffer: 'Különleges ajánlat',
+    limitedTimeOffer: 'Korlátozott idejű ajánlat',
+    discountSubtitle: 'Csak új felhasználóknak — nyisd meg a teljes hozzáférést ma',
+    savePercent: 'Spórolj {{percent}}%-ot',
+    annualPerWeek: '{{price}}/hét',
+    todayOnly: 'Csak ma',
+    offerExpires: 'Az ajánlat lejár',
+    perWeekBilled: 'hetente, számlázva {{period}}',
+    originalPrice: 'Volt {{price}}',
   },
 
   playground: {

@@ -263,7 +263,6 @@ export const hiFeatures = {
     week: 'सप्ताह',
     month: 'महीना',
     weekly: 'साप्ताहिक',
-    monthly: 'मासिक',
     perWeek: '/सप्ताह',
 
     // Content
@@ -308,6 +307,22 @@ export const hiFeatures = {
     restoreSuccess: 'खरीदारी पुनर्स्थापित',
     restoreError: 'पुनर्स्थापना विफल',
     noPurchaseFound: 'कोई पिछली खरीदारी नहीं मिली',
+
+    // Pricing overhaul
+    annual: 'वार्षिक',
+    year: 'वर्ष',
+    perYear: '/वर्ष',
+    freeTrialBadge: '{{days}}-दिन मुफ्त ट्रायल',
+    startTrialButton: '{{days}} दिन की मुफ्त ट्रायल शुरू करें',
+    specialOffer: 'विशेष ऑफर',
+    limitedTimeOffer: 'सीमित समय का ऑफर',
+    discountSubtitle: 'केवल नए उपयोगकर्ता — आज ही पूरी पहुंच अनलॉक करें',
+    savePercent: '{{percent}}% बचाएं',
+    annualPerWeek: '{{price}}/सप्ताह',
+    todayOnly: 'केवल आज',
+    offerExpires: 'ऑफर समाप्ति में',
+    perWeekBilled: 'प्रति सप्ताह, {{period}} बिल किया जाता है',
+    originalPrice: 'पहले {{price}} था',
   },
 
   playground: {

@@ -263,7 +263,6 @@ export const roFeatures = {
     week: 'Saptamana',
     month: 'Luna',
     weekly: 'Saptamanal',
-    monthly: 'Lunar',
     perWeek: '/saptamana',
 
     // Content
@@ -308,6 +307,22 @@ export const roFeatures = {
     restoreSuccess: 'Achizitie restaurata',
     restoreError: 'Restaurare esuata',
     noPurchaseFound: 'Nicio achizitie anterioara gasita',
+
+    // Pricing overhaul
+    annual: 'Anual',
+    year: 'An',
+    perYear: '/An',
+    freeTrialBadge: 'PERIOADĂ DE PROBĂ GRATUITĂ DE {{days}} ZILE',
+    startTrialButton: 'Începe perioada de probă gratuită de {{days}} zile',
+    specialOffer: 'Ofertă Specială',
+    limitedTimeOffer: 'Ofertă pe Timp Limitat',
+    discountSubtitle: 'Doar utilizatori noi — deblochează accesul complet astăzi',
+    savePercent: 'Economisește {{percent}}%',
+    annualPerWeek: '{{price}}/săptămână',
+    todayOnly: 'Doar Astăzi',
+    offerExpires: 'Oferta expiră în',
+    perWeekBilled: 'pe săptămână, facturat {{period}}',
+    originalPrice: 'Era {{price}}',
   },
 
   playground: {

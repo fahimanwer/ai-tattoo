@@ -263,7 +263,6 @@ export const daFeatures = {
     week: 'Uge',
     month: 'Maned',
     weekly: 'Ugentligt',
-    monthly: 'Manedligt',
     perWeek: '/Uge',
 
     // Content
@@ -308,6 +307,22 @@ export const daFeatures = {
     restoreSuccess: 'Kob gendannet',
     restoreError: 'Gendannelse mislykkedes',
     noPurchaseFound: 'Intet tidligere kob fundet',
+
+    // Pricing overhaul
+    annual: 'Årlig',
+    year: 'År',
+    perYear: '/År',
+    freeTrialBadge: '{{days}}-DAGES GRATIS PRØVEPERIODE',
+    startTrialButton: 'Start {{days}} dages gratis prøveperiode',
+    specialOffer: 'Specialtilbud',
+    limitedTimeOffer: 'Tidsbegrænset tilbud',
+    discountSubtitle: 'Kun for nye brugere — lås op for fuld adgang i dag',
+    savePercent: 'Spar {{percent}}%',
+    annualPerWeek: '{{price}}/uge',
+    todayOnly: 'Kun i dag',
+    offerExpires: 'Tilbuddet udløber om',
+    perWeekBilled: 'pr. uge, faktureret {{period}}',
+    originalPrice: 'Var {{price}}',
   },
 
   playground: {

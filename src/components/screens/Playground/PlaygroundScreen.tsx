@@ -156,7 +156,7 @@ export function PlaygroundScreen() {
           size="sm"
           onPress={() => {
             blurInput();
-            router.push("/(paywall)");
+            router.push("/(paywall)?variant=discount");
           }}
           style={styles.pillButton}
         >

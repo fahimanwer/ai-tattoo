@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import {
   FREE_TIER_LIMIT,
   getLimitForProduct,
-  getMonthlyLimit,
+  getPeriodLimit,
   type PlanTier,
 } from "./planLimits";
 
@@ -169,16 +169,66 @@ export const syncSubscription = mutation({
       };
     }
 
+    // Check for expired (but subscription still active) records — auto-renew period
+    // This handles annual subs with monthly generation resets: when the 30-day period
+    // expires but the annual subscription is still active, create a new monthly period.
+    const expiredRecord = await ctx.db
+      .query("usage")
+      .withIndex("by_revenuecatUserId", (q) =>
+        q.eq("revenuecatUserId", revenuecatUserId)
+      )
+      .filter((q) =>
+        q.and(
+          q.neq(q.field("entitlement"), "free"),
+          q.lt(q.field("periodEnd"), now)
+        )
+      )
+      .order("desc")
+      .first();
+
+    if (expiredRecord && subscriptionInfo?.expiresDate) {
+      const subExpiry = new Date(subscriptionInfo.expiresDate).getTime();
+      if (subExpiry > now) {
+        // Subscription still active — create new monthly period
+        const newPeriodStart = now;
+        const newPeriodEnd = Math.min(
+          subExpiry,
+          now + 30 * 24 * 60 * 60 * 1000
+        );
+        const productLimit = subscriptionInfo?.productIdentifier
+          ? getLimitForProduct(subscriptionInfo.productIdentifier)
+          : null;
+        const autoLimit = productLimit ?? getPeriodLimit("pro");
+
+        await ctx.db.insert("usage", {
+          userId,
+          revenuecatUserId,
+          entitlement: expiredRecord.entitlement,
+          count: 0,
+          limit: autoLimit,
+          periodStart: newPeriodStart,
+          periodEnd: newPeriodEnd,
+        });
+
+        return {
+          success: true,
+          message: "Auto-renewed monthly period for active subscription",
+          synced: true,
+          record: {
+            entitlement: expiredRecord.entitlement,
+            count: 0,
+            limit: autoLimit,
+            periodStart: new Date(newPeriodStart).toISOString(),
+            periodEnd: new Date(newPeriodEnd).toISOString(),
+          },
+        };
+      }
+    }
+
     // Determine the entitlement tier from the active entitlements
     let entitlement: PlanTier = "free";
-    if (activeEntitlements.includes("Pro")) {
+    if (activeEntitlements.includes("pro") || activeEntitlements.includes("Pro")) {
       entitlement = "pro";
-    } else if (activeEntitlements.includes("premium")) {
-      entitlement = "premium";
-    } else if (activeEntitlements.includes("Plus")) {
-      entitlement = "plus";
-    } else if (activeEntitlements.includes("Starter")) {
-      entitlement = "starter";
     }
 
     if (entitlement === "free") {
@@ -205,7 +255,7 @@ export const syncSubscription = mutation({
     const productLimit = subscriptionInfo?.productIdentifier
       ? getLimitForProduct(subscriptionInfo.productIdentifier)
       : null;
-    const limit = productLimit ?? getMonthlyLimit(entitlement);
+    const limit = productLimit ?? getPeriodLimit(entitlement);
 
     // Upsert: check if a record already exists with same userId + entitlement
     const existingRecord = await ctx.db

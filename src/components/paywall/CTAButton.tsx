@@ -3,6 +3,7 @@ import { Button } from "../ui/Button";
 
 interface CTAButtonProps {
   title: string;
+  trialText?: string;
   onPress: () => void;
   loading?: boolean;
   disabled?: boolean;
@@ -10,15 +11,17 @@ interface CTAButtonProps {
 
 export function CTAButton({
   title,
+  trialText,
   onPress,
   loading = false,
   disabled = false,
 }: CTAButtonProps) {
   const { t } = useTranslation();
+  const displayTitle = loading ? t('common.processing') : (trialText ?? title);
 
   return (
     <Button
-      title={loading ? t('common.processing') : title}
+      title={displayTitle}
       onPress={onPress}
       loading={loading}
       disabled={disabled}

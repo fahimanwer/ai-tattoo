@@ -263,7 +263,6 @@ export const noFeatures = {
     week: 'Uke',
     month: 'Maned',
     weekly: 'Ukentlig',
-    monthly: 'Manedlig',
     perWeek: '/Uke',
 
     // Content
@@ -308,6 +307,22 @@ export const noFeatures = {
     restoreSuccess: 'Kjop gjenopprettet',
     restoreError: 'Gjenoppretting mislyktes',
     noPurchaseFound: 'Ingen tidligere kjop funnet',
+
+    // Pricing overhaul
+    annual: 'Årlig',
+    year: 'År',
+    perYear: '/År',
+    freeTrialBadge: '{{days}}-DAGERS GRATIS PRØVEPERIODE',
+    startTrialButton: 'Start {{days}} dagers gratis prøveperiode',
+    specialOffer: 'Spesialtilbud',
+    limitedTimeOffer: 'Tidsbegrenset tilbud',
+    discountSubtitle: 'Kun for nye brukere — lås opp full tilgang i dag',
+    savePercent: 'Spar {{percent}}%',
+    annualPerWeek: '{{price}}/uke',
+    todayOnly: 'Kun i dag',
+    offerExpires: 'Tilbudet utløper om',
+    perWeekBilled: 'per uke, fakturert {{period}}',
+    originalPrice: 'Var {{price}}',
   },
 
   playground: {

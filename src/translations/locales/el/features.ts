@@ -263,7 +263,6 @@ export const elFeatures = {
     week: 'Εβδομάδα',
     month: 'Μήνας',
     weekly: 'Εβδομαδιαίο',
-    monthly: 'Μηνιαίο',
     perWeek: '/Εβδομάδα',
 
     // Content
@@ -308,6 +307,22 @@ export const elFeatures = {
     restoreSuccess: 'Η αγορά επαναφέρθηκε',
     restoreError: 'Η επαναφορά απέτυχε',
     noPurchaseFound: 'Δεν βρέθηκε προηγούμενη αγορά',
+
+    // Pricing overhaul
+    annual: 'Ετήσιο',
+    year: 'Έτος',
+    perYear: '/Έτος',
+    freeTrialBadge: '{{days}}-ΗΜΕΡΗ ΔΩΡΕΑΝ ΔΟΚΙΜΗ',
+    startTrialButton: 'Ξεκινήστε {{days}} ημέρες δωρεάν δοκιμή',
+    specialOffer: 'Ειδική Προσφορά',
+    limitedTimeOffer: 'Περιορισμένη Προσφορά',
+    discountSubtitle: 'Μόνο για νέους χρήστες — ξεκλειδώστε πλήρη πρόσβαση σήμερα',
+    savePercent: 'Εξοικονομήστε {{percent}}%',
+    annualPerWeek: '{{price}}/εβδομάδα',
+    todayOnly: 'Μόνο Σήμερα',
+    offerExpires: 'Η προσφορά λήγει σε',
+    perWeekBilled: 'ανά εβδομάδα, χρέωση {{period}}',
+    originalPrice: 'Ήταν {{price}}',
   },
 
   playground: {

@@ -263,7 +263,6 @@ export const ukFeatures = {
     week: 'Тиждень',
     month: 'Місяць',
     weekly: 'Щотижня',
-    monthly: 'Щомісяця',
     perWeek: '/Тиждень',
 
     // Content
@@ -308,6 +307,22 @@ export const ukFeatures = {
     restoreSuccess: 'Покупку відновлено',
     restoreError: 'Помилка відновлення',
     noPurchaseFound: 'Попередніх покупок не знайдено',
+
+    // Pricing overhaul
+    annual: 'Річний',
+    year: 'Рік',
+    perYear: '/Рік',
+    freeTrialBadge: '{{days}}-ДЕННА БЕЗКОШТОВНА ПРОБНА ВЕРСІЯ',
+    startTrialButton: 'Почати безкоштовну пробну версію на {{days}} днів',
+    specialOffer: 'Спеціальна пропозиція',
+    limitedTimeOffer: 'Обмежена пропозиція',
+    discountSubtitle: 'Тільки для нових користувачів — відкрийте повний доступ сьогодні',
+    savePercent: 'Заощаджуйте {{percent}}%',
+    annualPerWeek: '{{price}}/тиждень',
+    todayOnly: 'Тільки сьогодні',
+    offerExpires: 'Пропозиція закінчується через',
+    perWeekBilled: 'на тиждень, оплата {{period}}',
+    originalPrice: 'Було {{price}}',
   },
 
   playground: {

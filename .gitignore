@@ -52,3 +52,5 @@ android/
 
 # Windows
 windows/
+.keys/
+credentials.json

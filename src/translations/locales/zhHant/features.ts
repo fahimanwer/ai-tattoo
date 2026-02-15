@@ -263,7 +263,6 @@ export const zhHantFeatures = {
     week: '週',
     month: '月',
     weekly: '每週',
-    monthly: '每月',
     perWeek: '/週',
 
     // Content
@@ -308,6 +307,22 @@ export const zhHantFeatures = {
     restoreSuccess: '購買已恢復',
     restoreError: '恢復失敗',
     noPurchaseFound: '未找到先前購買紀錄',
+
+    // Pricing overhaul
+    annual: '年度',
+    year: '年',
+    perYear: '/年',
+    freeTrialBadge: '{{days}}天免費試用',
+    startTrialButton: '開始{{days}}天免費試用',
+    specialOffer: '特別優惠',
+    limitedTimeOffer: '限時優惠',
+    discountSubtitle: '僅限新用戶 — 今天解鎖全部功能',
+    savePercent: '節省{{percent}}%',
+    annualPerWeek: '{{price}}/週',
+    todayOnly: '僅限今日',
+    offerExpires: '優惠到期倒數',
+    perWeekBilled: '每週，按{{period}}計費',
+    originalPrice: '原價 {{price}}',
   },
 
   playground: {

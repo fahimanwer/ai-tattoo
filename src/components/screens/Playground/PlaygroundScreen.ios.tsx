@@ -226,7 +226,7 @@ export function PlaygroundScreen() {
                   },
                   onPress: () => {
                     blurInput();
-                    router.push("/(paywall)");
+                    router.push("/(paywall)?variant=discount");
                   },
                 },
               ];

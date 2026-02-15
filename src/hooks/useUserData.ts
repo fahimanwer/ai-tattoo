@@ -36,8 +36,6 @@ export interface UserData {
   subscription: {
     tier: SubscriptionTier;
     isProUser: boolean;
-    isStarterUser: boolean;
-    isPlusUser: boolean;
     activeEntitlements: string[];
     customerInfo: any;
     isLoading: boolean;
@@ -85,8 +83,6 @@ export function useUserData(): UserData {
   const {
     subscriptionTier,
     isProUser,
-    isStarterUser,
-    isPlusUser,
     activeEntitlements,
     customerInfo,
     isLoading: isSubscriptionLoading,
@@ -233,8 +229,6 @@ export function useUserData(): UserData {
     subscription: {
       tier: subscriptionTier,
       isProUser,
-      isStarterUser,
-      isPlusUser,
       activeEntitlements,
       customerInfo,
       isLoading: isSubscriptionLoading,
