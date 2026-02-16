@@ -21,7 +21,7 @@
       "env": {
         "EXPO_PUBLIC_CONVEX_URL": "https://backend-aitattoo.ashuthefire.com",
         "EXPO_PUBLIC_CONVEX_SITE_URL": "https://backend-aitattoo.ashuthefire.com",
-        "EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY": "test_nwDvozmvnpnJcFDTOaIhZzfUmrd",
+        "EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY": "appl_digseOmHNLPUPmHCtVIGYkStaab",
         "EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY": "goog_yOjMuyTuwOJgjPLbilfMVZjYnoI",
         "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "323805421829-q20ia0eje8tvlvusenkk6k20vopt3g0i.apps.googleusercontent.com"
       }
