@@ -11,7 +11,8 @@
     "lint": "expo lint",
     "deploy:web:prod": "npx expo export -p web --no-ssg --clear && eas deploy --prod",
     "deploy:web:preview": "npx expo export -p web --no-ssg --clear && eas deploy --alias preview",
-    "deploy:testflight": "npx eas-cli@latest workflow:run .eas/workflows/testflight.yaml"
+    "deploy:testflight": "npx eas-cli@latest workflow:run .eas/workflows/testflight.yaml",
+    "build:ios:local": "eas build --local --platform ios --profile production"
   },
   "dependencies": {
     "@bacons/apple-targets": "^3.0.5",

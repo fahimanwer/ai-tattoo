@@ -17,7 +17,12 @@
       "autoIncrement": true,
       "resourceClass": "large",
       "channel": "production",
-      "credentialsSource": "local",
+      "ios": {
+        "credentialsSource": "remote"
+      },
+      "android": {
+        "credentialsSource": "local"
+      },
       "env": {
         "EXPO_PUBLIC_CONVEX_URL": "https://backend-aitattoo.ashuthefire.com",
         "EXPO_PUBLIC_CONVEX_SITE_URL": "https://backend-aitattoo.ashuthefire.com",
@@ -30,7 +35,7 @@
   "submit": {
     "production": {
       "ios": {
-        "ascAppId": "6751748193"
+        "ascAppId": "6759157248"
       },
       "android": {
         "serviceAccountKeyPath": "./google-play-service-account.json",
