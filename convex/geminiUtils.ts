@@ -10,7 +10,7 @@
 // Constants (from server-utils/constants.ts)
 // ============================================================================
 
-export const NANOBANANA = "gemini-2.5-flash-image";
+export const NANOBANANA = "gemini-3.1-flash-image-preview";
 export const NANOBANANA_PRO = "gemini-3-pro-image-preview";
 
 export const GEMINI_IMAGE_BASE_URL_NANOBANANA = `https://generativelanguage.googleapis.com/v1beta/models/${NANOBANANA}:generateContent`;
@@ -254,16 +254,58 @@ export function handleGeminiResponse(
 // Fetch with Retry
 // ============================================================================
 
-const DEFAULT_MAX_RETRIES = 1;
+const DEFAULT_MAX_RETRIES = 2;
+const UNAVAILABLE_RETRY_DELAY_MS = 3000;
 
 /**
- * Fetches from Gemini API with automatic retry for retryable errors.
- * Uses exponential backoff: 1s, 2s, 4s delays between retries.
+ * Swap the model segment in a Gemini URL.
+ * e.g. .../models/gemini-3-pro-image-preview:generateContent
+ *   → .../models/gemini-2.5-flash-image:generateContent
+ */
+function swapModelInUrl(url: string, newModel: string): string {
+  return url.replace(/models\/[^:]+/, `models/${newModel}`);
+}
+
+/**
+ * Fetches from Gemini API with automatic retry + model fallback.
+ *
+ * Retry strategy:
+ *   1. Retry on same model up to `maxRetries` times with exponential backoff.
+ *   2. If the PRIMARY model returns UNAVAILABLE / RESOURCE_EXHAUSTED after all
+ *      retries, automatically fall back to the FLASH model and retry once.
  */
 export async function fetchGeminiWithRetry(
   url: string,
   options: RequestInit,
   maxRetries: number = DEFAULT_MAX_RETRIES
+): Promise<GeminiImageResult> {
+  const result = await _fetchWithRetries(url, options, maxRetries);
+
+  // If the primary model is unavailable, fall back to flash model
+  if (!result.success) {
+    const { status } = (result as { success: false; error: GeminiError }).error;
+    if (status === "UNAVAILABLE" || status === "RESOURCE_EXHAUSTED") {
+      const fallbackUrl = swapModelInUrl(url, NANOBANANA);
+      if (fallbackUrl !== url) {
+        console.log("geminiUtils: Primary model unavailable, falling back", {
+          from: NANOBANANA_PRO,
+          to: NANOBANANA,
+        });
+        return _fetchWithRetries(fallbackUrl, options, 1);
+      }
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Internal: fetch with retries on a single URL.
+ */
+async function _fetchWithRetries(
+  url: string,
+  options: RequestInit,
+  maxRetries: number
 ): Promise<GeminiImageResult> {
   let lastError: GeminiError | null = null;
 
@@ -303,23 +345,28 @@ export async function fetchGeminiWithRetry(
         return result;
       }
 
-      if (!result.error.isRetryable) {
+      const err = (result as { success: false; error: GeminiError }).error;
+
+      if (!err.isRetryable) {
         console.log("geminiUtils: Non-retryable error, failing fast", {
-          status: result.error.status,
-          reason: result.error.reason,
+          status: err.status,
+          reason: err.reason,
         });
         return result;
       }
 
-      lastError = result.error;
+      lastError = err;
 
       if (attempt < maxRetries) {
+        // Use a longer delay for 503/429 to let the model recover
         const delayMs =
-          result.error.retryAfterMs || Math.pow(2, attempt) * 1000;
+          err.status === "UNAVAILABLE" || err.status === "RESOURCE_EXHAUSTED"
+            ? UNAVAILABLE_RETRY_DELAY_MS * (attempt + 1)
+            : err.retryAfterMs || Math.pow(2, attempt) * 1000;
         console.log(`geminiUtils: Retrying after ${delayMs}ms`, {
           attempt: attempt + 1,
           maxRetries,
-          status: result.error.status,
+          status: err.status,
         });
         await new Promise((resolve) => setTimeout(resolve, delayMs));
       }

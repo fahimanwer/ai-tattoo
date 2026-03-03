@@ -106,7 +106,10 @@ export async function cacheImageFromUrl(
 export async function getCachedImageAsBase64(fileUri: string): Promise<string> {
   const file = new File(fileUri);
   const base64 = await file.base64();
-  return `data:image/png;base64,${base64}`;
+  // Infer MIME type from file extension (ImagePicker saves as jpg, generations as png)
+  const ext = fileUri.split(".").pop()?.toLowerCase();
+  const mime = ext === "jpg" || ext === "jpeg" ? "image/jpeg" : "image/png";
+  return `data:${mime};base64,${base64}`;
 }
 
 /**
