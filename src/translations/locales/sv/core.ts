@@ -26,6 +26,7 @@ export const svCore = {
     share: 'Dela',
     send: 'Skicka',
     search: 'Sok',
+    all: 'All',
     seeAll: 'Visa alla',
     tryAgain: 'Forsok igen',
     ok: 'OK',

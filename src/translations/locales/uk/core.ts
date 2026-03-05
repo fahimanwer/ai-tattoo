@@ -26,6 +26,7 @@ export const ukCore = {
     share: 'Поділитися',
     send: 'Надіслати',
     search: 'Пошук',
+    all: 'All',
     seeAll: 'Переглянути все',
     tryAgain: 'Спробувати ще раз',
     ok: 'OK',

@@ -10,6 +10,7 @@
 
 import type * as appleWebhook from "../appleWebhook.js";
 import type * as auth from "../auth.js";
+import type * as extractedTattoos from "../extractedTattoos.js";
 import type * as featureRequest from "../featureRequest.js";
 import type * as geminiUtils from "../geminiUtils.js";
 import type * as generation from "../generation.js";
@@ -31,6 +32,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   appleWebhook: typeof appleWebhook;
   auth: typeof auth;
+  extractedTattoos: typeof extractedTattoos;
   featureRequest: typeof featureRequest;
   geminiUtils: typeof geminiUtils;
   generation: typeof generation;

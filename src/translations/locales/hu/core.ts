@@ -26,6 +26,7 @@ export const huCore = {
     share: 'Megosztas',
     send: 'Kuldes',
     search: 'Kereses',
+    all: 'All',
     seeAll: 'Osszes megtekintese',
     tryAgain: 'Probald ujra',
     ok: 'OK',

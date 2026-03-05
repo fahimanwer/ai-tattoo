@@ -26,6 +26,7 @@ export const idCore = {
     share: 'Bagikan',
     send: 'Kirim',
     search: 'Cari',
+    all: 'All',
     seeAll: 'Lihat Semua',
     tryAgain: 'Coba Lagi',
     ok: 'OK',

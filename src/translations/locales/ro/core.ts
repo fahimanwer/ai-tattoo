@@ -26,6 +26,7 @@ export const roCore = {
     share: 'Distribuie',
     send: 'Trimite',
     search: 'Cauta',
+    all: 'All',
     seeAll: 'Vezi tot',
     tryAgain: 'Incearca din nou',
     ok: 'OK',

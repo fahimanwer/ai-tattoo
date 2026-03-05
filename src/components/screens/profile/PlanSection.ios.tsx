@@ -50,7 +50,7 @@ function FormButton({
       }}
       modifiers={[foregroundStyle({ type: "color", color })]}
     >
-      <Label title={title} systemImage={systemImage} />
+      <Label title={title} systemImage={systemImage as any} />
     </Button>
   );
 }
@@ -92,7 +92,7 @@ export function PlanSection({
     >
       <LabeledContent label={t('profile.plan')}>
         <HStack spacing={6}>
-          <Label systemImage={planBadge.icon ?? "star"} />
+          <Label systemImage={(planBadge.icon ?? "star") as any} />
           <Text
             modifiers={[
               foregroundStyle({ type: "color", color: planBadge.color }),

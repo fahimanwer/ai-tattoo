@@ -3,7 +3,6 @@ import { Color } from "@/src/constants/TWPalette";
 import { useTheme } from "@/src/context/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SymbolView } from "expo-symbols";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -212,9 +211,9 @@ export function CongratulationsStepBody({
 }: CongratulationsStepBodyProps) {
   const { t } = useTranslation();
   const { isDark } = useTheme();
-  const features = useMemo(() => generateFeatures(answers, t), [answers, t]);
-  const greeting = useMemo(() => getPersonalizedGreeting(answers, t), [answers, t]);
-  const urgencyMessage = useMemo(() => getUrgencyMessage(answers, t), [answers, t]);
+  const features = generateFeatures(answers, t);
+  const greeting = getPersonalizedGreeting(answers, t);
+  const urgencyMessage = getUrgencyMessage(answers, t);
 
   return (
     <View style={styles.container}>

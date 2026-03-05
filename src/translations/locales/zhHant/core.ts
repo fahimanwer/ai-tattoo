@@ -26,6 +26,7 @@ export const zhHantCore = {
     share: '分享',
     send: '傳送',
     search: '搜尋',
+    all: 'All',
     seeAll: '查看全部',
     tryAgain: '再試一次',
     ok: '好的',

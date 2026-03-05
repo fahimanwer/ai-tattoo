@@ -11,19 +11,37 @@ export default defineSchema({
     limit: v.number(),
     revenuecatUserId: v.string(),
   })
-    .index("by_userId", ["userId"])
     .index("by_revenuecatUserId", ["revenuecatUserId"])
-    .index("by_userId_entitlement", ["userId", "entitlement"])
-    .index("by_revenuecatUserId_entitlement", [
+    .index("by_userId_and_entitlement", ["userId", "entitlement"])
+    .index("by_revenuecatUserId_and_entitlement", [
       "revenuecatUserId",
       "entitlement",
     ])
-    .index("by_userId_periodStart", ["userId", "periodStart"])
-    .index("by_userId_periodEnd", ["userId", "periodEnd"])
-    .index("by_revenuecatUserId_periodEnd", [
-      "revenuecatUserId",
+    .index("by_userId_and_entitlement_and_periodEnd", [
+      "userId",
+      "entitlement",
       "periodEnd",
+    ])
+    .index("by_revenuecatUserId_and_entitlement_and_periodEnd", [
+      "revenuecatUserId",
+      "entitlement",
+      "periodEnd",
+    ])
+    .index("by_userId_and_entitlement_and_periodStart", [
+      "userId",
+      "entitlement",
+      "periodStart",
+    ])
+    .index("by_revenuecatUserId_and_entitlement_and_periodStart", [
+      "revenuecatUserId",
+      "entitlement",
+      "periodStart",
     ]),
+
+  extractedTattoos: defineTable({
+    storageId: v.id("_storage"),
+    createdAt: v.number(),
+  }).index("by_createdAt", ["createdAt"]),
 
   generations: defineTable({
     userId: v.string(),
@@ -36,5 +54,5 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_userId", ["userId"])
-    .index("by_userId_createdAt", ["userId", "createdAt"]),
+    .index("by_userId_and_createdAt", ["userId", "createdAt"]),
 });

@@ -1,5 +1,5 @@
-import { PlaygroundScreen } from "@/src/components/screens/Playground/PlaygroundScreen";
+import { FlowPicker } from "@/src/components/screens/Playground/flows/FlowPicker";
 
-export default function Playground() {
-  return <PlaygroundScreen />;
+export default function PlaygroundIndex() {
+  return <FlowPicker />;
 }

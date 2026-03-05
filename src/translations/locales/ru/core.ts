@@ -26,6 +26,7 @@ export const ruCore = {
     share: 'Поделиться',
     send: 'Отправить',
     search: 'Поиск',
+    all: 'All',
     seeAll: 'Показать все',
     tryAgain: 'Попробовать снова',
     ok: 'ОК',

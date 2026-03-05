@@ -1,11 +1,24 @@
 import { isLiquidGlassAvailable } from "expo-glass-effect";
+import * as Haptics from "expo-haptics";
 import { Tabs } from "expo-router";
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { useTranslation } from "react-i18next";
+import { Platform } from "react-native";
 import { CustomTabBar } from "@/src/components/tab-bar/CustomTabBar";
+
+function useTabHaptics() {
+  return {
+    tabPress: () => {
+      if (Platform.OS === "ios") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    },
+  };
+}
 
 export default function TabLayout() {
   const { t } = useTranslation();
+  const screenListeners = useTabHaptics();
 
   if (isLiquidGlassAvailable()) {
     return (
@@ -13,6 +26,7 @@ export default function TabLayout() {
         disableTransparentOnScrollEdge={true}
         tintColor={"#3563E9"}
         minimizeBehavior="onScrollDown"
+        screenListeners={screenListeners}
       >
         <NativeTabs.Trigger name="(home)">
           <NativeTabs.Trigger.Label>{t('tabs.home')}</NativeTabs.Trigger.Label>
@@ -44,6 +58,7 @@ export default function TabLayout() {
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
+      screenListeners={screenListeners}
     >
       <Tabs.Screen name="(home)" options={{ title: t('tabs.home') }} />
       <Tabs.Screen name="explore" options={{ title: t('tabs.explore') }} />

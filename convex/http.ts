@@ -2,6 +2,8 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { authComponent, createAuth } from "./auth";
+import { processAppleWebhookHelper } from "./appleWebhook";
+import { submitFeatureRequestHelper } from "./featureRequest";
 
 const http = httpRouter();
 
@@ -59,10 +61,11 @@ http.route({
 });
 
 // Apple App Store Connect webhook
+// Called directly as a helper function (no ctx.runAction needed — same V8 runtime)
 http.route({
   path: "/webhook/apple",
   method: "POST",
-  handler: httpAction(async (ctx, request) => {
+  handler: httpAction(async (_ctx, request) => {
     try {
       const rawBody = await request.text();
       const signature =
@@ -70,10 +73,7 @@ http.route({
         request.headers.get("X-Apple-Signature") ||
         undefined;
 
-      await ctx.runAction(internal.appleWebhook.processAppleWebhook, {
-        rawBody,
-        signature,
-      });
+      await processAppleWebhookHelper({ rawBody, signature });
 
       return new Response("OK", { status: 200 });
     } catch (error) {
@@ -84,10 +84,11 @@ http.route({
 });
 
 // Feature request
+// Called directly as a helper function (no ctx.runAction needed — same V8 runtime)
 http.route({
   path: "/feature-request",
   method: "POST",
-  handler: httpAction(async (ctx, request) => {
+  handler: httpAction(async (_ctx, request) => {
     try {
       const body = await request.json();
       const { message, userId, userEmail } = body;
@@ -96,7 +97,7 @@ http.route({
         return new Response("Message is required", { status: 400 });
       }
 
-      await ctx.runAction(internal.featureRequest.submitFeatureRequest, {
+      await submitFeatureRequestHelper({
         message: message.trim(),
         userId,
         userEmail,

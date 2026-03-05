@@ -1,6 +1,6 @@
 import { useTheme } from "@/src/context/ThemeContext";
 import { Canvas, Path, Skia } from "@shopify/react-native-skia";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import {
   useDerivedValue,
   useSharedValue,
@@ -28,11 +28,11 @@ export function CircleProgress({
     animatedProgress.value = withTiming(progress, { duration: 400 });
   }, [progress, animatedProgress]);
 
-  const backgroundPath = useMemo(() => {
+  const backgroundPath = (() => {
     const path = Skia.Path.Make();
     path.addCircle(center, center, radius);
     return path;
-  }, [center, radius]);
+  })();
 
   const progressPath = useDerivedValue(() => {
     const path = Skia.Path.Make();

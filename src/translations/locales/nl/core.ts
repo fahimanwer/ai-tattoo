@@ -26,6 +26,7 @@ export const nlCore = {
     share: 'Delen',
     send: 'Verzenden',
     search: 'Zoeken',
+    all: 'All',
     seeAll: 'Alles bekijken',
     tryAgain: 'Opnieuw proberen',
     ok: 'OK',

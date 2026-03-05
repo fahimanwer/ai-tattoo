@@ -1,3 +1,4 @@
+import { extractConvexError } from "@/lib/convex-error";
 import { BLURHASH } from "@/lib/image-cache";
 import { OnboardingButton } from "@/src/components/onboarding/OnboardingButton";
 import { Text } from "@/src/components/ui/Text";
@@ -58,15 +59,13 @@ export function TextToImageResult({
   }, [mutation.isPending]);
 
   if (mutation.isError) {
-    const errorType = getPlaygroundErrorType(
-      mutation.error?.message,
-      isFreeTier
-    );
+    const { code, message } = extractConvexError(mutation.error);
+    const errorType = getPlaygroundErrorType(code, isFreeTier);
 
     return (
       <PlaygroundError
         errorType={errorType}
-        errorMessage={mutation.error?.message}
+        errorMessage={message}
         onDismiss={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
           blurInput();

@@ -11,7 +11,7 @@ import { useTheme } from "@/src/context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Activity, use, useCallback, useEffect, useRef, useState } from "react";
+import { Activity, use, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   AppState,
@@ -88,7 +88,7 @@ export default function OnboardingV2() {
     }
   }, [settings.onboardingAnswersVersion, updateSettingsSync]);
 
-  const trackStepViewed = useCallback((index: number) => {
+  const trackStepViewed = (index: number) => {
     if (!stepsViewed.current.has(index)) {
       stepsViewed.current.add(index);
       customEvent("onboarding_step_viewed", {
@@ -97,7 +97,7 @@ export default function OnboardingV2() {
         stepTitle: ONBOARDING_STEPS[index].title,
       });
     }
-  }, []);
+  };
 
   // Track drop-offs when app goes to background
   useEffect(() => {

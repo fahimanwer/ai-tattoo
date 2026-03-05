@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, { createContext, ReactNode, use, useState } from "react";
 import { customEvent } from "vexo-analytics";
 
 type FilterMode = "body part" | "styles" | "moods";
@@ -71,7 +71,7 @@ export function ExploreFilterProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ExploreFilterContext.Provider
+    <ExploreFilterContext
       value={{
         filterMode,
         setFilterMode: handleFilterModeChange,
@@ -85,12 +85,12 @@ export function ExploreFilterProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-    </ExploreFilterContext.Provider>
+    </ExploreFilterContext>
   );
 }
 
 export function useExploreFilter() {
-  const context = useContext(ExploreFilterContext);
+  const context = use(ExploreFilterContext);
   if (context === undefined) {
     throw new Error(
       "useExploreFilter must be used within an ExploreFilterProvider"

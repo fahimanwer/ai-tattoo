@@ -9,7 +9,7 @@ import {
 } from "@/src/utils/bodyPartsUtils";
 import { LegendList } from "@legendapp/list";
 import { router } from "expo-router";
-import React, { useMemo } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 
 /**
@@ -40,8 +40,7 @@ function shuffleImagesWithoutConsecutiveStyles(
 }
 
 export function BodyPartsInspiration() {
-  // Memoize body parts data to prevent recalculation on every render
-  const bodyPartsData = useMemo(() => {
+  const bodyPartsData = (() => {
     const allBodyParts = getAllBodyParts();
     return allBodyParts
       .map((bodyPart) => {
@@ -52,7 +51,7 @@ export function BodyPartsInspiration() {
         };
       })
       .filter((data) => data.images.length > 0);
-  }, []);
+  })();
 
   // Convert GalleryImage to FeaturedTattoo format for VerticalCard
   const convertToVerticalCardFormat = (image: GalleryImage): FeaturedTattoo => {

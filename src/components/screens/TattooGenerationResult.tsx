@@ -1,4 +1,5 @@
 import { assetToBase64, urlToBase64 } from "@/lib/base64-utils";
+import { extractConvexError } from "@/lib/convex-error";
 import { BLURHASH } from "@/lib/image-cache";
 import { api } from "@/lib/nano";
 import { saveBase64ToAlbum } from "@/lib/save-to-library";
@@ -10,11 +11,16 @@ import { useSubscription } from "@/src/hooks/useSubscription";
 import { useAction } from "convex/react";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import Purchases from "react-native-purchases";
+import { useThemeColor } from "heroui-native";
 import { AnimatedText } from "./Playground/shared/AnimatedText";
+import {
+  getPlaygroundErrorType,
+  PlaygroundError,
+} from "./Playground/shared/PlaygroundError";
 
 // Constants
 const MIX_TWO_PHOTOS_PROMPT = `Apply the tattoo design from the second image onto the body part from the first image. Create a hyper-realistic integration where the tattoo design follows the exact curvature and natural folds of the skin from the first image, adapting seamlessly to the anatomy. IMPORTANT: Preserve the exact natural skin tone, color, and texture from the original body part photo - do not alter or change the skin color in any way. The tattoo ink must look authentically healed into the skin: slightly diffused in pores, with natural wear, subtle fading in areas of tension, and matte tones rather than excessive shine. Shading and lines should curve and flow with the muscles and skin surface, never floating above it. Show fine details of skin texture such as pores, wrinkles, and light imperfections, blending with the tattoo ink while maintaining the original skin coloring. Lighting should remain soft and realistic, avoiding glossy or artificial effects, so the tattoo looks fully integrated and aged naturally. The final result should be the body part from the first image with the tattoo design applied, keeping all original skin characteristics intact. No background, only the tattooed body part in ultra-high resolution.`;
@@ -36,7 +42,9 @@ export function TattooGenerationResult() {
 
   const { t } = useTranslation();
   const router = useRouter();
-  const { refreshSubscriptionStatus } = useSubscription();
+  const { refreshSubscriptionStatus, hasActiveSubscription } = useSubscription();
+  const foreground = useThemeColor("foreground") as string;
+  const muted = useThemeColor("muted") as string;
   const [hasBeenSaved, setHasBeenSaved] = useState(false);
 
   // Convex action for generating tattoo
@@ -47,7 +55,8 @@ export function TattooGenerationResult() {
     status: "idle" | "pending" | "success" | "error";
     data: { imageData: string } | null;
     error: Error | null;
-  }>({ status: "idle", data: null, error: null });
+    errorCode: string | undefined;
+  }>({ status: "idle", data: null, error: null, errorCode: undefined });
 
   const mutation = {
     isPending: generationState.status === "pending",
@@ -56,7 +65,7 @@ export function TattooGenerationResult() {
     data: generationState.data,
     error: generationState.error,
     mutate: async () => {
-      setGenerationState({ status: "pending", data: null, error: null });
+      setGenerationState({ status: "pending", data: null, error: null, errorCode: undefined });
       try {
         let bodyImage: string;
         let tattooImage: string;
@@ -124,7 +133,7 @@ export function TattooGenerationResult() {
           revenuecatUserId,
         });
 
-        setGenerationState({ status: "success", data: result, error: null });
+        setGenerationState({ status: "success", data: result, error: null, errorCode: undefined });
 
         // Usage data auto-updates via Convex reactive queries
         try {
@@ -133,9 +142,16 @@ export function TattooGenerationResult() {
           console.warn("Failed to refresh subscription status:", error);
         }
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        console.error("AI generation failed:", err);
-        setGenerationState({ status: "error", data: null, error: err });
+        const raw =
+          error instanceof Error ? error : new Error(String(error));
+        const { code, message } = extractConvexError(raw);
+        console.error("AI generation failed:", message);
+        setGenerationState({
+          status: "error",
+          data: null,
+          error: new Error(message),
+          errorCode: code,
+        });
       }
     },
   };
@@ -149,7 +165,7 @@ export function TattooGenerationResult() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSaveToLibrary = useCallback(async () => {
+  const handleSaveToLibrary = async () => {
     if (mutation.data?.imageData) {
       try {
         const imageUri = `data:image/png;base64,${mutation.data.imageData}`;
@@ -180,9 +196,9 @@ export function TattooGenerationResult() {
         console.error("Error saving to library:", error);
       }
     }
-  }, [mutation.data, resetTattooCreation, setCurrentStep, router]);
+  };
 
-  const handleGenerateAnother = useCallback(async () => {
+  const handleGenerateAnother = async () => {
     // If the tattoo hasn't been saved, show confirmation alert with save option
     if (!hasBeenSaved) {
       Alert.alert(
@@ -232,15 +248,9 @@ export function TattooGenerationResult() {
       setCurrentStep(1);
       router.replace("/(tabs)/(home)");
     }
-  }, [
-    hasBeenSaved,
-    mutation.data,
-    resetTattooCreation,
-    setCurrentStep,
-    router,
-  ]);
+  };
 
-  const handleCancelGeneration = useCallback(() => {
+  const handleCancelGeneration = () => {
     Alert.alert(
       t('generation.cancelGenerationTitle'),
       t('generation.cancelGenerationMessage'),
@@ -259,7 +269,7 @@ export function TattooGenerationResult() {
         },
       ]
     );
-  }, [resetTattooCreation, setCurrentStep, router]);
+  };
 
   // Show loading state
   if (mutation.isPending) {
@@ -290,6 +300,28 @@ export function TattooGenerationResult() {
 
   // Show error state
   if (mutation.isError) {
+    const isFreeTier = !hasActiveSubscription;
+    const errorType = getPlaygroundErrorType(
+      generationState.errorCode,
+      isFreeTier
+    );
+
+    // Limit reached — show upgrade prompt with discounted paywall
+    if (errorType !== "generic") {
+      return (
+        <PlaygroundError
+          errorType={errorType}
+          errorMessage={mutation.error?.message}
+          onDismiss={() => {
+            resetTattooCreation();
+            setCurrentStep(1);
+            router.replace("/(tabs)/(home)");
+          }}
+        />
+      );
+    }
+
+    // Generic error — show existing error UI
     return (
       <View style={styles.errorContainer}>
         <Text type="subtitle" weight="bold" style={styles.errorTitle}>
@@ -328,10 +360,14 @@ export function TattooGenerationResult() {
         contentContainerStyle={styles.resultContainer}
       >
         <View style={styles.resultHeader}>
-          <Text type="title" weight="bold" style={styles.resultTitle}>
+          <Text
+            type="title"
+            weight="bold"
+            style={[styles.resultTitle, { color: foreground }]}
+          >
             {t('generation.tattooReady')}
           </Text>
-          <Text type="default" style={styles.resultSubtitle}>
+          <Text type="default" style={[styles.resultSubtitle, { color: muted }]}>
             {t('generation.tattooReadyDescription')}
           </Text>
         </View>
@@ -417,11 +453,9 @@ const styles = StyleSheet.create({
   },
   resultTitle: {
     textAlign: "center",
-    color: Color.grayscale[950],
   },
   resultSubtitle: {
     textAlign: "center",
-    color: Color.grayscale[950] + "80",
   },
   imageContainer: {
     marginBottom: 30,

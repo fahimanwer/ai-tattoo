@@ -1,5 +1,5 @@
 import Storage from "expo-sqlite/kv-store";
-import React, { createContext, useCallback, useState } from "react";
+import React, { createContext, useState } from "react";
 
 /**
  * App Settings Type Definition
@@ -74,37 +74,31 @@ export function AppSettingsProvider({
   const [settings, setSettings] = useState<AppSettings>(loadSettingsSync);
 
   // Update settings (async)
-  const updateSettings = useCallback(
-    async (updates: Partial<AppSettings>) => {
-      try {
-        const newSettings = { ...settings, ...updates };
-        setSettings(newSettings);
-        await Storage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
-      } catch (error) {
-        console.error("Failed to update settings:", error);
-        throw error;
-      }
-    },
-    [settings]
-  );
+  const updateSettings = async (updates: Partial<AppSettings>) => {
+    try {
+      const newSettings = { ...settings, ...updates };
+      setSettings(newSettings);
+      await Storage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
+    } catch (error) {
+      console.error("Failed to update settings:", error);
+      throw error;
+    }
+  };
 
   // Update settings (sync) - no await needed!
-  const updateSettingsSync = useCallback(
-    (updates: Partial<AppSettings>) => {
-      try {
-        const newSettings = { ...settings, ...updates };
-        setSettings(newSettings);
-        Storage.setItemSync(STORAGE_KEY, JSON.stringify(newSettings));
-      } catch (error) {
-        console.error("Failed to update settings:", error);
-        throw error;
-      }
-    },
-    [settings]
-  );
+  const updateSettingsSync = (updates: Partial<AppSettings>) => {
+    try {
+      const newSettings = { ...settings, ...updates };
+      setSettings(newSettings);
+      Storage.setItemSync(STORAGE_KEY, JSON.stringify(newSettings));
+    } catch (error) {
+      console.error("Failed to update settings:", error);
+      throw error;
+    }
+  };
 
   // Reset to defaults
-  const resetSettings = useCallback(async () => {
+  const resetSettings = async () => {
     try {
       setSettings(DEFAULT_SETTINGS);
       await Storage.removeItem(STORAGE_KEY);
@@ -112,31 +106,22 @@ export function AppSettingsProvider({
       console.error("Failed to reset settings:", error);
       throw error;
     }
-  }, []);
+  };
 
   // Convenience methods for individual settings
-  const setIsOnboarded = useCallback(
-    async (value: boolean) => {
-      await updateSettings({ isOnboarded: value });
-    },
-    [updateSettings]
-  );
+  const setIsOnboarded = async (value: boolean) => {
+    await updateSettings({ isOnboarded: value });
+  };
 
-  const setIsOnboardedSync = useCallback(
-    (value: boolean) => {
-      updateSettingsSync({ isOnboarded: value });
-    },
-    [updateSettingsSync]
-  );
+  const setIsOnboardedSync = (value: boolean) => {
+    updateSettingsSync({ isOnboarded: value });
+  };
 
-  const setIsOnboardedWithDelay = useCallback(
-    (value: boolean, delay?: number) => {
-      setTimeout(() => {
-        setIsOnboardedSync(value);
-      }, delay ?? 2000);
-    },
-    [setIsOnboardedSync]
-  );
+  const setIsOnboardedWithDelay = (value: boolean, delay?: number) => {
+    setTimeout(() => {
+      setIsOnboardedSync(value);
+    }, delay ?? 2000);
+  };
 
   const value: AppSettingsContextType = {
     settings,
@@ -149,8 +134,8 @@ export function AppSettingsProvider({
   };
 
   return (
-    <AppSettingsContext.Provider value={value}>
+    <AppSettingsContext value={value}>
       {children}
-    </AppSettingsContext.Provider>
+    </AppSettingsContext>
   );
 }

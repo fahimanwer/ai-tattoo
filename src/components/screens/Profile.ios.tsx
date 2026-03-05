@@ -54,7 +54,7 @@ function FormButton({
       }}
       modifiers={color ? [foregroundStyle({ type: "color", color })] : undefined}
     >
-      <Label title={title} systemImage={systemImage} />
+      <Label title={title} systemImage={systemImage as any} />
     </Button>
   );
 }
@@ -185,8 +185,8 @@ export function Profile() {
             hasActiveSubscription={hasActiveSubscription}
             lastSubscription={lastSubscription}
             remaining={remaining}
-            periodStart={periodStart}
-            periodEnd={periodEnd}
+            periodStart={periodStart ?? undefined}
+            periodEnd={periodEnd ?? undefined}
             getStatusDisplay={getStatusDisplay}
             isRefreshing={isRefreshing}
             handleRefresh={handleRefresh}

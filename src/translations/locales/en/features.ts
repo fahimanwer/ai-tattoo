@@ -593,4 +593,115 @@ export const enFeatures = {
     emptyDescription:
       'Your prompts will appear here after you generate a tattoo',
   },
+
+  flows: {
+    // Flow Picker
+    pickerTitle: 'Creative Studio',
+    pickerSubtitle: 'Choose a tool to get started',
+
+    // Generate flow
+    generate: {
+      title: 'Generate Design',
+      description: 'Create a tattoo from your imagination',
+    },
+
+    // Try On flow
+    tryOn: {
+      title: 'Try On',
+      description: 'Preview a tattoo on your body',
+      pickTattoo: 'Pick Tattoo',
+      pickBody: 'Pick Body Photo',
+      takePhoto: 'Take Photo',
+      chooseFromLibrary: 'Choose from Library',
+      browseDesigns: 'Browse Designs',
+      adjustPosition: 'Adjust position, size & rotation',
+      savePreview: 'Save Preview',
+      refineWithAi: 'Refine with AI',
+      refineDescription: 'AI will blend the tattoo realistically (1 credit)',
+      opacity: 'Opacity',
+      warpMode: 'Warp',
+      moveMode: 'Move',
+      warpHint: 'Drag corners to match body contour',
+      community: 'Community',
+    },
+
+    // AI Portrait flow
+    aiPortrait: {
+      title: 'AI Portrait',
+      description: 'Turn a selfie into tattoo art',
+      pickPhoto: 'Pick Portrait',
+      chooseStyle: 'Choose Style',
+    },
+
+    // Pet Portrait flow
+    petPortrait: {
+      title: 'Pet Portrait',
+      description: 'Turn your pet into tattoo art',
+      pickPhoto: 'Pick Pet Photo',
+    },
+
+    // Combine flow
+    combine: {
+      title: 'Combine',
+      description: 'Merge multiple designs into one',
+      addImages: 'Add Images',
+      addMore: 'Add More',
+      maxImages: 'Up to {{max}} images',
+      describeResult: 'Describe the combined result (optional)',
+    },
+
+    // Select & Edit flow
+    selectAndEdit: {
+      title: 'Select & Edit',
+      description: 'Paint an area and edit with AI',
+      pickImage: 'Pick Image',
+      pickImageHint: 'Choose an image to edit',
+      paintSelection: 'Paint the area to edit',
+      describeEdit: 'What should go in the selected area?',
+      promptPlaceholder: 'e.g. Add a dragon tattoo here...',
+      brushSize: 'Brush Size',
+      undo: 'Undo',
+      clear: 'Clear',
+      nextStep: 'Continue',
+      generate: 'Generate Edit',
+      generating: 'Generating...',
+      resultTitle: 'Edit Complete',
+      tryAgain: 'Try Again',
+      newEdit: 'New Edit',
+      noMaskError: 'Please paint the area you want to edit',
+      noPromptError: 'Please describe what to put in the selected area',
+      generationFailed: 'Failed to generate edit. Please try again.',
+      stepPick: 'Pick',
+      stepPaint: 'Paint',
+      stepPrompt: 'Prompt',
+      stepResult: 'Result',
+    },
+
+    // Upscale flow
+    upscale: {
+      title: 'Upscale',
+      description: 'Enhance image quality and detail',
+      pickImage: 'Pick Image to Upscale',
+      upscaleButton: 'Upscale Image',
+    },
+
+    // Erase flow
+    erase: {
+      title: 'Erase Tattoo',
+      description: 'Remove a tattoo from a photo',
+      pickImage: 'Pick Photo',
+      paintArea: 'Paint the tattoo to erase',
+      eraseButton: 'Erase Tattoo',
+    },
+
+    // Portrait styles (shared)
+    styles: {
+      tattoo: 'Tattoo',
+      sketch: 'Sketch',
+      watercolor: 'Watercolor',
+      lineArt: 'Line Art',
+      blackwork: 'Blackwork',
+      dotwork: 'Dotwork',
+    },
+  },
 };

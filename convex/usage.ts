@@ -3,6 +3,8 @@ import { v } from "convex/values";
 import type { QueryCtx, MutationCtx } from "./_generated/server";
 import {
   FREE_TIER_LIMIT,
+  PRO_ENTITLEMENT,
+  FREE_ENTITLEMENT,
   entitlementToTier,
   getPeriodLimit,
   getPlanConfig,
@@ -24,33 +26,37 @@ async function findActivePaidRecord(
   if (revenuecatUserId) {
     paidUsage = await ctx.db
       .query("usage")
-      .withIndex("by_revenuecatUserId_periodEnd", (q) =>
-        q.eq("revenuecatUserId", revenuecatUserId).gte("periodEnd", now)
-      )
-      .filter((q) =>
-        q.and(
-          q.lte(q.field("periodStart"), now + 5 * 60 * 1000),
-          q.neq(q.field("entitlement"), "free")
-        )
+      .withIndex("by_revenuecatUserId_and_entitlement_and_periodEnd", (q) =>
+        q
+          .eq("revenuecatUserId", revenuecatUserId)
+          .eq("entitlement", PRO_ENTITLEMENT)
+          .gte("periodEnd", now)
       )
       .order("desc")
       .first();
+
+    // Post-query check: periodStart must be <= now + 5min grace
+    if (paidUsage && paidUsage.periodStart > now + 5 * 60 * 1000) {
+      paidUsage = null;
+    }
   }
 
   if (!paidUsage) {
     paidUsage = await ctx.db
       .query("usage")
-      .withIndex("by_userId_periodEnd", (q) =>
-        q.eq("userId", userId).gte("periodEnd", now)
-      )
-      .filter((q) =>
-        q.and(
-          q.lte(q.field("periodStart"), now + 5 * 60 * 1000),
-          q.neq(q.field("entitlement"), "free")
-        )
+      .withIndex("by_userId_and_entitlement_and_periodEnd", (q) =>
+        q
+          .eq("userId", userId)
+          .eq("entitlement", PRO_ENTITLEMENT)
+          .gte("periodEnd", now)
       )
       .order("desc")
       .first();
+
+    // Post-query check: periodStart must be <= now + 5min grace
+    if (paidUsage && paidUsage.periodStart > now + 5 * 60 * 1000) {
+      paidUsage = null;
+    }
   }
 
   return paidUsage;
@@ -70,8 +76,8 @@ async function findFreeRecord(
   if (revenuecatUserId) {
     freeUsage = await ctx.db
       .query("usage")
-      .withIndex("by_revenuecatUserId_entitlement", (q) =>
-        q.eq("revenuecatUserId", revenuecatUserId).eq("entitlement", "free")
+      .withIndex("by_revenuecatUserId_and_entitlement", (q) =>
+        q.eq("revenuecatUserId", revenuecatUserId).eq("entitlement", FREE_ENTITLEMENT)
       )
       .first();
   }
@@ -79,26 +85,13 @@ async function findFreeRecord(
   if (!freeUsage) {
     freeUsage = await ctx.db
       .query("usage")
-      .withIndex("by_userId_entitlement", (q) =>
-        q.eq("userId", userId).eq("entitlement", "free")
+      .withIndex("by_userId_and_entitlement", (q) =>
+        q.eq("userId", userId).eq("entitlement", FREE_ENTITLEMENT)
       )
       .first();
   }
 
   return freeUsage;
-}
-
-// ============================================================================
-// Helper: determine entitlement string from paid record
-// ============================================================================
-
-function entitlementDisplayName(entitlement: string): string {
-  switch (entitlement.toLowerCase()) {
-    case "pro":
-      return "Pro";
-    default:
-      return entitlement;
-  }
 }
 
 // ============================================================================
@@ -118,16 +111,12 @@ async function getCurrentUserEntitlementHelper(
     revenuecatUserId,
     now
   );
-  if (paidUsage) {
-    return entitlementDisplayName(paidUsage.entitlement);
-  }
+  if (paidUsage) return PRO_ENTITLEMENT;
 
   const freeUsage = await findFreeRecord(ctx, userId, revenuecatUserId);
-  if (freeUsage) {
-    return "free";
-  }
+  if (freeUsage) return FREE_ENTITLEMENT;
 
-  return "free";
+  return FREE_ENTITLEMENT;
 }
 
 // ============================================================================
@@ -183,7 +172,7 @@ export const getUserUsage = query({
     const activePeriodRecord = paidRecord || freeRecord || null;
 
     // Determine subscription tier
-    let subscriptionTier: PlanTier = "free";
+    let subscriptionTier: PlanTier = FREE_ENTITLEMENT;
     if (activePeriodRecord) {
       subscriptionTier = entitlementToTier(activePeriodRecord.entitlement);
     }
@@ -282,7 +271,7 @@ export const checkUsage = internalQuery({
       userId,
       revenuecatUserId
     );
-    const isFreeTier = entitlement === "free";
+    const isFreeTier = entitlement === FREE_ENTITLEMENT;
 
     // Find usage record based on entitlement type
     let usage = null;
@@ -404,7 +393,7 @@ export const ensureUsageRecord = internalMutation({
 
     await ctx.db.insert("usage", {
       userId,
-      entitlement: "free",
+      entitlement: FREE_ENTITLEMENT,
       count: 0,
       limit: FREE_TIER_LIMIT,
       periodStart,
@@ -414,5 +403,107 @@ export const ensureUsageRecord = internalMutation({
 
     console.log("usage: auto-provisioned free-tier record", { userId });
     return null;
+  },
+});
+
+// ============================================================================
+// Internal: resetUsageForTesting (dev only — reset credits for a user)
+// ============================================================================
+
+/**
+ * Reset a user's usage count to 0 for testing purposes.
+ * Run from the Convex dashboard: usage:resetUsageForTesting
+ */
+export const resetUsageForTesting = internalMutation({
+  args: {
+    userId: v.string(),
+    revenuecatUserId: v.optional(v.string()),
+  },
+  returns: v.string(),
+  handler: async (ctx, args) => {
+    const { userId, revenuecatUserId } = args;
+    const now = Date.now();
+
+    // Reset paid record if exists
+    const paidRecord = await findActivePaidRecord(
+      ctx,
+      userId,
+      revenuecatUserId,
+      now
+    );
+    if (paidRecord) {
+      await ctx.db.patch(paidRecord._id, { count: 0 });
+      return `Reset paid usage for ${userId} (was ${paidRecord.count})`;
+    }
+
+    // Reset free record if exists
+    const freeRecord = await findFreeRecord(ctx, userId, revenuecatUserId);
+    if (freeRecord) {
+      await ctx.db.patch(freeRecord._id, { count: 0 });
+      return `Reset free usage for ${userId} (was ${freeRecord.count})`;
+    }
+
+    return `No usage record found for ${userId}`;
+  },
+});
+
+/**
+ * List all usage records for debugging/testing.
+ * Run from CLI: bunx convex run --no-push usage:listAllUsage
+ */
+export const listAllUsage = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    const records = await ctx.db.query("usage").collect();
+    return records.map((r) => ({
+      _id: r._id,
+      userId: r.userId,
+      entitlement: r.entitlement,
+      count: r.count,
+      limit: r.limit,
+      revenuecatUserId: r.revenuecatUserId,
+    }));
+  },
+});
+
+/**
+ * Reset ALL usage records to 0 for testing.
+ */
+export const resetAllUsageForTesting = internalMutation({
+  args: {},
+  returns: v.string(),
+  handler: async (ctx) => {
+    const records = await ctx.db.query("usage").collect();
+    let resetCount = 0;
+    for (const record of records) {
+      if (record.count > 0) {
+        await ctx.db.patch(record._id, { count: 0 });
+        resetCount++;
+      }
+    }
+    return `Reset ${resetCount} of ${records.length} usage records to 0`;
+  },
+});
+
+/**
+ * Normalizes any non-canonical entitlement value to PRO_ENTITLEMENT or FREE_ENTITLEMENT.
+ */
+export const fixLegacyEntitlements = internalMutation({
+  args: {},
+  returns: v.string(),
+  handler: async (ctx) => {
+    const records = await ctx.db.query("usage").collect();
+    let fixedCount = 0;
+    const fixed: string[] = [];
+    for (const record of records) {
+      if (record.entitlement !== PRO_ENTITLEMENT && record.entitlement !== FREE_ENTITLEMENT) {
+        await ctx.db.patch(record._id, { entitlement: PRO_ENTITLEMENT });
+        fixed.push(record.entitlement);
+        fixedCount++;
+      }
+    }
+    return fixedCount > 0
+      ? `Fixed ${fixedCount} records (was: ${Array.from(new Set(fixed)).join(", ")})`
+      : "No non-canonical entitlements found";
   },
 });

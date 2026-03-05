@@ -3,6 +3,7 @@ import type { ActionCtx } from "./_generated/server";
 import { v, ConvexError } from "convex/values";
 import { internal } from "./_generated/api";
 import {
+  GEMINI_IMAGE_BASE_URL_NANOBANANA,
   GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
   getGeminiApiKey,
   enhancePromptForTextToImage,
@@ -217,6 +218,17 @@ export const textAndImageToImage = action({
         revenuecatUserId,
       } = args;
 
+      // Log payload sizes to detect argument limit issues
+      const totalBase64Size = images_base64.reduce(
+        (sum, img) => sum + img.length,
+        0
+      );
+      console.log("generation: textAndImageToImage payload info", {
+        imageCount: images_base64.length,
+        totalBase64Chars: totalBase64Size,
+        promptLength: prompt.length,
+      });
+
       // Authenticate
       const identity = await ctx.auth.getUserIdentity();
       if (!identity) {
@@ -274,7 +286,13 @@ export const textAndImageToImage = action({
 
       const GEMINI_API_KEY = getGeminiApiKey();
 
+      if (!GEMINI_API_KEY) {
+        console.error("generation: GEMINI_API_KEY is not set!");
+        throw new ConvexError("Service configuration error. Please try again later.");
+      }
+
       // Call Gemini API
+      console.log("generation: calling Gemini API...");
       const result = await fetchGeminiWithRetry(
         GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
         {
@@ -298,8 +316,11 @@ export const textAndImageToImage = action({
       );
 
       if (!result.success) {
-        console.log("generation: textAndImageToImage failed", {
-          error: result.error,
+        console.error("generation: textAndImageToImage Gemini failed", {
+          status: result.error.status,
+          httpStatus: result.error.httpStatus,
+          message: result.error.message,
+          reason: result.error.reason,
         });
         const errorObj = createGeminiErrorObject(result.error);
         throw new ConvexError(errorObj.error);
@@ -324,11 +345,104 @@ export const textAndImageToImage = action({
       );
 
       return { imageData: result.imageData };
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ConvexError) throw error;
       const message =
         error instanceof Error ? error.message : String(error);
-      console.error("generation: textAndImageToImage unhandled error", {
+      const stack = error instanceof Error ? error.stack : undefined;
+      console.error("generation: textAndImageToImage UNHANDLED error", {
+        message,
+        stack,
+        errorType: error?.constructor?.name,
+      });
+      throw new ConvexError(
+        message || "Something went wrong. Please try again."
+      );
+    }
+  },
+});
+
+// ============================================================================
+// Tattoo Extraction (free, no credits)
+// ============================================================================
+
+const EXTRACT_TATTOO_PROMPT =
+  "Extract only the tattoo design from this image. Remove all skin, background, and non-tattoo elements. Output the tattoo design on a pure transparent background with clean edges.";
+
+/** Model endpoints for tattoo extraction — add new APIs here. */
+const EXTRACT_MODEL_URLS: Record<string, string> = {
+  flash: GEMINI_IMAGE_BASE_URL_NANOBANANA,
+  pro: GEMINI_IMAGE_BASE_URL_NANOBANANA_PRO,
+};
+
+/**
+ * Extract a tattoo from an image using Gemini.
+ * Free action — no credits charged, no generation stored.
+ * Accepts an optional `model` param to select the extraction backend.
+ */
+export const extractTattoo = action({
+  args: {
+    image_base64: v.string(),
+    model: v.optional(v.string()), // "flash" | "pro" — default "flash"
+  },
+  returns: v.object({ imageData: v.string() }),
+  handler: async (ctx, args) => {
+    try {
+      const { image_base64, model = "flash" } = args;
+
+      // Authenticate (required) but skip usage checks — this is free
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        throw new ConvexError("Not authenticated");
+      }
+
+      console.log("generation: extractTattoo authenticated", {
+        userId: identity.subject,
+        model,
+      });
+
+      // Resolve model URL
+      const baseUrl =
+        EXTRACT_MODEL_URLS[model] ?? GEMINI_IMAGE_BASE_URL_NANOBANANA;
+      const imageParts = toGeminiImageParts([image_base64]);
+      const GEMINI_API_KEY = getGeminiApiKey();
+
+      const result = await fetchGeminiWithRetry(baseUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_API_KEY,
+        },
+        body: JSON.stringify({
+          contents: [
+            { parts: [{ text: EXTRACT_TATTOO_PROMPT }, ...imageParts] },
+          ],
+          generationConfig: {
+            imageConfig: {
+              aspectRatio: "1:1",
+              imageSize: "1K",
+            },
+          },
+        }),
+      });
+
+      if (!result.success) {
+        console.log("generation: extractTattoo failed", {
+          error: result.error,
+        });
+        const errorObj = createGeminiErrorObject(result.error);
+        throw new ConvexError(errorObj.error);
+      }
+
+      console.log(
+        `generation: extractTattoo success (${model}), size: ${result.imageData.length} chars`
+      );
+
+      return { imageData: result.imageData };
+    } catch (error) {
+      if (error instanceof ConvexError) throw error;
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("generation: extractTattoo unhandled error", {
         message,
         error,
       });

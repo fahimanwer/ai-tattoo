@@ -5,7 +5,7 @@ import SignInWithGoogleButton from "@/src/components/ui/SignInWithGoogleButton";
 import { Text } from "@/src/components/ui/Text";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View, ViewStyle } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
@@ -39,10 +39,8 @@ export function AuthContent({
   const displayDescription = description ?? t('auth.signInDescription');
 
   // Easter egg: pick a random tattoo for curious users who expand the sheet
-  const randomTattoo = useMemo(() => {
-    const allImages = featuredTattoos.flatMap((t) => t.gallery);
-    return allImages[Math.floor(Math.random() * allImages.length)];
-  }, []);
+  const allImages = featuredTattoos.flatMap((t) => t.gallery);
+  const randomTattoo = allImages[Math.floor(Math.random() * allImages.length)];
 
   return (
     <View

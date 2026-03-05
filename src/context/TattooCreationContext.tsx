@@ -3,7 +3,6 @@ import type { Asset } from "expo-media-library";
 import {
   createContext,
   use,
-  useCallback,
   useState,
   type ReactNode,
 } from "react";
@@ -189,49 +188,49 @@ export function TattooCreationProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<TattooCreationState>(initialState);
 
   // Photo management actions
-  const setSelectedPhoto = useCallback((photo: Asset | undefined) => {
+  const setSelectedPhoto = (photo: Asset | undefined) => {
     setState((prev) => ({
       ...prev,
       selectedPhoto: photo,
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
   // Image management actions
-  const addImage = useCallback((imageId: string) => {
+  const addImage = (imageId: string) => {
     setState((prev) => ({
       ...prev,
       imageIds: [...new Set([...prev.imageIds, imageId])], // Prevent duplicates
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
-  const removeImage = useCallback((imageId: string) => {
+  const removeImage = (imageId: string) => {
     setState((prev) => ({
       ...prev,
       imageIds: prev.imageIds.filter((id) => id !== imageId),
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
-  const setImages = useCallback((imageIds: string[]) => {
+  const setImages = (imageIds: string[]) => {
     setState((prev) => ({
       ...prev,
       imageIds: [...new Set(imageIds)], // Remove any duplicates
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
-  const clearImages = useCallback(() => {
+  const clearImages = () => {
     setState((prev) => ({
       ...prev,
       imageIds: [],
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
   // Options management actions
-  const updateOptions = useCallback((options: Partial<TattooOptions>) => {
+  const updateOptions = (options: Partial<TattooOptions>) => {
     setState((prev) => ({
       ...prev,
       options: {
@@ -240,139 +239,130 @@ export function TattooCreationProvider({ children }: { children: ReactNode }) {
       },
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
-  const setOption = useCallback(
-    <K extends keyof TattooOptions>(key: K, value: TattooOptions[K]) => {
-      setState((prev) => ({
-        ...prev,
-        options: {
-          ...prev.options,
-          [key]: value,
-        },
-        updatedAt: new Date(),
-      }));
-    },
-    []
-  );
+  const setOption = <K extends keyof TattooOptions>(key: K, value: TattooOptions[K]) => {
+    setState((prev) => ({
+      ...prev,
+      options: {
+        ...prev.options,
+        [key]: value,
+      },
+      updatedAt: new Date(),
+    }));
+  };
 
-  const clearOptions = useCallback(() => {
+  const clearOptions = () => {
     setState((prev) => ({
       ...prev,
       options: initialState.options,
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
   // Body part management actions
-  const setSelectedBodyPartCategory = useCallback((category: string) => {
+  const setSelectedBodyPartCategory = (category: string) => {
     setState((prev) => ({
       ...prev,
       selectedBodyPartCategory: category,
       selectedBodyPartVariant: undefined, // Reset variant when changing category
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
-  const setSelectedBodyPartVariant = useCallback((variant: string) => {
+  const setSelectedBodyPartVariant = (variant: string) => {
     setState((prev) => ({
       ...prev,
       selectedBodyPartVariant: variant,
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
-  const setCustomUserImage = useCallback(
-    (image: { uri: string; base64: string } | undefined) => {
-      setState((prev) => ({
-        ...prev,
-        customUserImage: image,
-        updatedAt: new Date(),
-      }));
-    },
-    []
-  );
+  const setCustomUserImage = (image: { uri: string; base64: string } | undefined) => {
+    setState((prev) => ({
+      ...prev,
+      customUserImage: image,
+      updatedAt: new Date(),
+    }));
+  };
 
-  const setIsUsingCustomImage = useCallback((isUsing: boolean) => {
+  const setIsUsingCustomImage = (isUsing: boolean) => {
     setState((prev) => ({
       ...prev,
       isUsingCustomImage: isUsing,
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
   // Tattoo image management actions
-  const setSelectedTattooImage = useCallback((image: any) => {
+  const setSelectedTattooImage = (image: any) => {
     setState((prev) => ({
       ...prev,
       selectedTattooImage: image,
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
-  const setExistingTattooImage = useCallback(
-    (image: { uri: string; base64: string } | undefined) => {
-      setState((prev) => ({
-        ...prev,
-        existingTattooImage: image,
-        updatedAt: new Date(),
-      }));
-    },
-    []
-  );
+  const setExistingTattooImage = (image: { uri: string; base64: string } | undefined) => {
+    setState((prev) => ({
+      ...prev,
+      existingTattooImage: image,
+      updatedAt: new Date(),
+    }));
+  };
 
-  const setIsUsingExistingTattoo = useCallback((isUsing: boolean) => {
+  const setIsUsingExistingTattoo = (isUsing: boolean) => {
     setState((prev) => ({
       ...prev,
       isUsingExistingTattoo: isUsing,
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
   // Custom instructions
-  const setCustomInstructions = useCallback((instructions: string) => {
+  const setCustomInstructions = (instructions: string) => {
     setState((prev) => ({
       ...prev,
       customInstructions: instructions,
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
   // Step management actions
-  const setCurrentStep = useCallback((step: number) => {
+  const setCurrentStep = (step: number) => {
     setState((prev) => ({
       ...prev,
       currentStep: Math.max(1, Math.min(step, prev.totalSteps || 4)),
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
-  const nextStep = useCallback(() => {
+  const nextStep = () => {
     setState((prev) => ({
       ...prev,
       currentStep: Math.min((prev.currentStep || 1) + 1, prev.totalSteps || 4),
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
-  const previousStep = useCallback(() => {
+  const previousStep = () => {
     setState((prev) => ({
       ...prev,
       currentStep: Math.max((prev.currentStep || 1) - 1, 1),
       updatedAt: new Date(),
     }));
-  }, []);
+  };
 
   // Overall management actions
-  const reset = useCallback(() => {
+  const reset = () => {
     setState({
       ...initialState,
       startedAt: new Date(),
       updatedAt: new Date(),
     });
-  }, []);
+  };
 
-  const isComplete = useCallback(() => {
+  const isComplete = () => {
     // Check if minimum requirements are met
     // Need a tattoo selected, color option, and a photo
     return (
@@ -380,19 +370,15 @@ export function TattooCreationProvider({ children }: { children: ReactNode }) {
       state.options.colorOption !== undefined &&
       state.selectedPhoto !== undefined
     );
-  }, [
-    state.options.selectedTattoo,
-    state.options.colorOption,
-    state.selectedPhoto,
-  ]);
+  };
 
-  const getFormData = useCallback(() => {
+  const getFormData = () => {
     return {
       selectedPhoto: state.selectedPhoto,
       imageIds: state.imageIds,
       options: state.options,
     };
-  }, [state.selectedPhoto, state.imageIds, state.options]);
+  };
 
   // Combine state and actions
   const contextValue: TattooCreationContextValue = {
@@ -422,9 +408,9 @@ export function TattooCreationProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <TattooCreationContext.Provider value={contextValue}>
+    <TattooCreationContext value={contextValue}>
       {children}
-    </TattooCreationContext.Provider>
+    </TattooCreationContext>
   );
 }
 

@@ -73,19 +73,17 @@ export function PlaygroundSuggestions({
   const { t } = useTranslation();
 
   // Hide suggestions if the active mutation is pending or visible is false
-  const shouldShowSuggestions = React.useMemo(() => {
-    return !activeMutation.isPending && visible;
-  }, [activeMutation.isPending, visible]);
+  const shouldShowSuggestions = !activeMutation.isPending && visible;
 
-  // Generate suggestions once and memoize, split into two rows
-  const { row1, row2 } = React.useMemo(() => {
+  // Generate suggestions, split into two rows
+  const { row1, row2 } = (() => {
     const all = generateSuggestions(t);
     const mid = Math.ceil(all.length / 2);
     return {
       row1: all.slice(0, mid),
       row2: all.slice(mid),
     };
-  }, []);
+  })();
 
   // Animate height to 0 when hidden - this removes it from layout
   // and prevents touch interception
@@ -117,21 +115,15 @@ export function PlaygroundSuggestions({
     isScrollingRef.current = null;
   };
 
-  const renderItem = React.useCallback(
-    ({ item }: { item: Suggestion }) => (
-      <SuggestionChip
-        suggestion={item}
-        onSelectText={onSelectText}
-        onSelectTryOn={onSelectTryOn}
-      />
-    ),
-    [onSelectText, onSelectTryOn]
+  const renderItem = ({ item }: { item: Suggestion }) => (
+    <SuggestionChip
+      suggestion={item}
+      onSelectText={onSelectText}
+      onSelectTryOn={onSelectTryOn}
+    />
   );
 
-  const keyExtractor = React.useCallback(
-    (item: Suggestion, index: number) => `${item.label}-${index}`,
-    []
-  );
+  const keyExtractor = (item: Suggestion, index: number) => `${item.label}-${index}`;
 
   return (
     <Animated.View style={[styles.container, style, animatedStyle]}>

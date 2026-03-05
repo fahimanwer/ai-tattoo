@@ -9,7 +9,7 @@ import {
   UISize,
   getColorValue,
 } from "@/src/types/ui";
-import React, { forwardRef, useMemo } from "react";
+import React from "react";
 import { StyleSheet, TextInput, type TextInputProps } from "react-native";
 
 type InputVariant = "outline" | "soft" | "subtle" | "underline";
@@ -170,66 +170,54 @@ const generateVariantConfigFromBase = (
 };
 
 export type ThemedInputProps = TextInputProps & {
+  ref?: React.Ref<TextInput>;
   size?: UISize;
   variant?: InputVariant;
   color?: UIColor;
   radius?: UIRadius;
 };
 
-export const Input = forwardRef<TextInput, ThemedInputProps>(
-  (
-    {
-      style,
-      placeholderTextColor,
-      size = "md",
-      variant = "outline",
-      color,
-      radius = "default",
-      ...rest
-    },
-    ref
-  ) => {
-    const { isDark } = useTheme();
-    const colorScheme = isDark ? "dark" : "light";
-    const { accentHex } = useAccentColor();
+export function Input({
+  ref,
+  style,
+  placeholderTextColor,
+  size = "md",
+  variant = "outline",
+  color,
+  radius = "default",
+  ...rest
+}: ThemedInputProps) {
+  const { isDark } = useTheme();
+  const colorScheme = isDark ? "dark" : "light";
+  const { accentHex } = useAccentColor();
 
-    const variantConfig = useMemo(() => {
-      const scheme = colorScheme as "light" | "dark";
+  const scheme = colorScheme as "light" | "dark";
+  const variantConfig = color
+    ? generateVariantConfig(color, scheme)[variant]
+    : generateVariantConfigFromBase(accentHex || Colors[scheme].tint, scheme)[variant];
 
-      if (color) {
-        const variants = generateVariantConfig(color, scheme);
-        return variants[variant];
-      }
-      const baseHex = accentHex || Colors[scheme].tint;
-      const variants = generateVariantConfigFromBase(baseHex, scheme);
-      return variants[variant];
-    }, [color, colorScheme, variant, accentHex]);
+  const baseStyles = {
+    backgroundColor: variantConfig.backgroundColor,
+    color: variantConfig.textColor,
+    borderColor: variantConfig.borderColor,
+    fontSize: FONT_SIZE_STYLES[size].fontSize,
+  };
 
-    const inputStyles = useMemo(() => {
-      const baseStyles = {
-        backgroundColor: variantConfig.backgroundColor,
-        color: variantConfig.textColor,
-        borderColor: variantConfig.borderColor,
-        fontSize: FONT_SIZE_STYLES[size].fontSize,
-      };
-
-      if (variant === "underline") {
-        return [
-          styles.input,
-          SIZE_STYLES[size],
-          {
-            ...baseStyles,
-            borderBottomWidth: variantConfig.borderWidth,
-            borderTopWidth: 0,
-            borderLeftWidth: 0,
-            borderRightWidth: 0,
-            borderRadius: 0,
-          },
-          style,
-        ];
-      }
-
-      return [
+  const inputStyles = variant === "underline"
+    ? [
+        styles.input,
+        SIZE_STYLES[size],
+        {
+          ...baseStyles,
+          borderBottomWidth: variantConfig.borderWidth,
+          borderTopWidth: 0,
+          borderLeftWidth: 0,
+          borderRightWidth: 0,
+          borderRadius: 0,
+        },
+        style,
+      ]
+    : [
         styles.input,
         SIZE_STYLES[size],
         {
@@ -239,22 +227,18 @@ export const Input = forwardRef<TextInput, ThemedInputProps>(
         },
         style,
       ];
-    }, [size, variantConfig, radius, variant, style]);
 
-    return (
-      <TextInput
-        ref={ref}
-        style={inputStyles}
-        placeholderTextColor={
-          placeholderTextColor || variantConfig.placeholderColor
-        }
-        {...rest}
-      />
-    );
-  }
-);
-
-Input.displayName = "Input";
+  return (
+    <TextInput
+      ref={ref}
+      style={inputStyles}
+      placeholderTextColor={
+        placeholderTextColor || variantConfig.placeholderColor
+      }
+      {...rest}
+    />
+  );
+}
 
 const styles = StyleSheet.create({
   input: { paddingHorizontal: 16, width: "100%" },

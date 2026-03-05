@@ -6,25 +6,26 @@ import {
   getPeriodLimit,
   entitlementToTier,
   PRODUCT_PERIOD_MS,
+  PRO_ENTITLEMENT,
+  FREE_ENTITLEMENT,
 } from "./planLimits";
 
-// Product ID to entitlement mapping
 const PRODUCT_ENTITLEMENT_MAP: Record<string, string> = {
-  // Pro v3 products (iOS)
-  tattoodesignai_pro_weekly: "pro",
-  tattoodesignai_pro_annual: "pro",
-  tattoodesignai_offer_weekly: "pro",
-  tattoodesignai_offer_annual: "pro",
-  // Pro v3 test store
-  pro_weekly: "pro",
-  pro_annual: "pro",
-  offer_weekly: "pro",
-  offer_annual: "pro",
-  // Pro v3 Android
-  "tattoodesignai_pro_weekly:pro-weekly": "pro",
-  "tattoodesignai_pro_annual:pro-annual": "pro",
-  "tattoodesignai_offer_weekly:offer-weekly": "pro",
-  "tattoodesignai_offer_annual:offer-annual": "pro",
+  // iOS
+  tattoodesignai_pro_weekly: PRO_ENTITLEMENT,
+  tattoodesignai_pro_annual: PRO_ENTITLEMENT,
+  tattoodesignai_offer_weekly: PRO_ENTITLEMENT,
+  tattoodesignai_offer_annual: PRO_ENTITLEMENT,
+  // Test store
+  pro_weekly: PRO_ENTITLEMENT,
+  pro_annual: PRO_ENTITLEMENT,
+  offer_weekly: PRO_ENTITLEMENT,
+  offer_annual: PRO_ENTITLEMENT,
+  // Android
+  "tattoodesignai_pro_weekly:pro-weekly": PRO_ENTITLEMENT,
+  "tattoodesignai_pro_annual:pro-annual": PRO_ENTITLEMENT,
+  "tattoodesignai_offer_weekly:offer-weekly": PRO_ENTITLEMENT,
+  "tattoodesignai_offer_annual:offer-annual": PRO_ENTITLEMENT,
 };
 
 // Default period: 30 days in ms
@@ -44,6 +45,15 @@ function getLimitForEvent(productId: string, entitlementId: string): number {
 }
 
 /**
+ * Safety net against casing or naming mismatches from RevenueCat.
+ */
+function normalizeEntitlement(raw: string): string {
+  const trimmed = raw.trim().toLowerCase();
+  if (trimmed === FREE_ENTITLEMENT) return FREE_ENTITLEMENT;
+  return PRO_ENTITLEMENT;
+}
+
+/**
  * Expire all non-free usage records for a given revenuecatUserId.
  */
 async function expireNonFreeRecords(
@@ -54,14 +64,13 @@ async function expireNonFreeRecords(
 ) {
   const records = await ctx.db
     .query("usage")
-    .withIndex("by_revenuecatUserId", (q) =>
-      q.eq("revenuecatUserId", revenuecatUserId)
+    .withIndex("by_revenuecatUserId_and_entitlement", (q) =>
+      q.eq("revenuecatUserId", revenuecatUserId).eq("entitlement", PRO_ENTITLEMENT)
     )
     .collect();
 
   let count = 0;
   for (const record of records) {
-    if (record.entitlement === "free") continue;
     if (onlyActive && record.periodEnd < expireAt) continue;
     await ctx.db.patch(record._id, { periodEnd: expireAt });
     count++;
@@ -86,10 +95,12 @@ async function upsertUsageRecord(
 ) {
   const existing = await ctx.db
     .query("usage")
-    .withIndex("by_userId_entitlement", (q) =>
-      q.eq("userId", data.userId).eq("entitlement", data.entitlement)
+    .withIndex("by_userId_and_entitlement_and_periodStart", (q) =>
+      q
+        .eq("userId", data.userId)
+        .eq("entitlement", data.entitlement)
+        .eq("periodStart", data.periodStart)
     )
-    .filter((q) => q.eq(q.field("periodStart"), data.periodStart))
     .first();
 
   if (existing) {
@@ -155,10 +166,12 @@ async function handleInitialPurchase(
       periodEnd = Math.min(periodEnd, periodStart + periodOverride);
     }
 
-    const limit = getLimitForEvent(event.product_id, entitlementId);
+    const entitlement = normalizeEntitlement(entitlementId);
+    const limit = getLimitForEvent(event.product_id, entitlement);
 
     console.log(`[RC WEBHOOK] Creating new usage record:`, {
-      entitlement: entitlementId,
+      rawEntitlement: entitlementId,
+      entitlement,
       productId: event.product_id,
       limit,
       periodOverride: periodOverride ? "30 days" : "none",
@@ -166,7 +179,7 @@ async function handleInitialPurchase(
 
     await upsertUsageRecord(ctx, {
       userId,
-      entitlement: entitlementId,
+      entitlement,
       periodStart,
       periodEnd,
       count: 0,
@@ -204,17 +217,14 @@ async function handleRenewal(
     return;
   }
 
-  // Out-of-order webhook protection
+  // Out-of-order webhook protection: check for newer period
   const newerRecord = await ctx.db
     .query("usage")
-    .withIndex("by_revenuecatUserId", (q) =>
-      q.eq("revenuecatUserId", revenuecatUserId)
-    )
-    .filter((q) =>
-      q.and(
-        q.neq(q.field("entitlement"), "free"),
-        q.gt(q.field("periodStart"), periodStart)
-      )
+    .withIndex("by_revenuecatUserId_and_entitlement_and_periodStart", (q) =>
+      q
+        .eq("revenuecatUserId", revenuecatUserId)
+        .eq("entitlement", PRO_ENTITLEMENT)
+        .gt("periodStart", periodStart)
     )
     .first();
 
@@ -229,10 +239,11 @@ async function handleRenewal(
   }
 
   for (const entitlementId of entitlementIds) {
-    const limit = getLimitForEvent(event.product_id, entitlementId);
+    const entitlement = normalizeEntitlement(entitlementId);
+    const limit = getLimitForEvent(event.product_id, entitlement);
     await upsertUsageRecord(ctx, {
       userId,
-      entitlement: entitlementId,
+      entitlement,
       periodStart,
       periodEnd,
       count: 0,
@@ -381,9 +392,22 @@ export const processRevenueCatEvent = internalMutation({
       case "UNCANCELLATION":
         console.log(`[RC WEBHOOK] UNCANCELLATION: for user ${args.appUserId}`);
         break;
-      case "BILLING_ISSUE":
+      case "BILLING_ISSUE": {
         console.log(`[RC WEBHOOK] BILLING_ISSUE: for user ${args.appUserId}`);
+        // If grace period is set, shorten pro records to expire at grace period end
+        if (args.gracePeriodExpirationAtMs) {
+          const count = await expireNonFreeRecords(
+            ctx,
+            args.originalAppUserId,
+            args.gracePeriodExpirationAtMs,
+            true
+          );
+          console.log(
+            `[RC WEBHOOK] Shortened ${count} records to grace period end: ${new Date(args.gracePeriodExpirationAtMs).toISOString()}`
+          );
+        }
         break;
+      }
       case "PRODUCT_CHANGE":
         await handleProductChange(ctx, baseEvent);
         break;
@@ -394,15 +418,23 @@ export const processRevenueCatEvent = internalMutation({
           expiration_at_ms: args.expirationAtMs,
         });
         break;
-      case "SUBSCRIPTION_PAUSED":
+      case "SUBSCRIPTION_PAUSED": {
         console.log(`[RC WEBHOOK] SUBSCRIPTION_PAUSED: for user ${args.appUserId}`);
+        const pauseNow = Date.now();
+        const pauseCount = await expireNonFreeRecords(ctx, args.originalAppUserId, pauseNow, true);
+        console.log(`[RC WEBHOOK] Expired ${pauseCount} records due to pause`);
         break;
+      }
       case "SUBSCRIPTION_RESUMED":
         console.log(`[RC WEBHOOK] SUBSCRIPTION_RESUMED: for user ${args.appUserId}`);
         break;
-      case "REFUND":
+      case "REFUND": {
         console.log(`[RC WEBHOOK] REFUND: for user ${args.appUserId}`);
+        const refundNow = Date.now();
+        const refundCount = await expireNonFreeRecords(ctx, args.originalAppUserId, refundNow, false);
+        console.log(`[RC WEBHOOK] Expired ${refundCount} records due to refund`);
         break;
+      }
       case "TRANSFER":
         await handleTransfer(ctx, {
           transferred_from: args.transferredFrom || [],

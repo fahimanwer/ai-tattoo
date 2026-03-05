@@ -26,6 +26,7 @@ export const ptPTCore = {
     share: 'Partilhar',
     send: 'Enviar',
     search: 'Pesquisar',
+    all: 'All',
     seeAll: 'Ver tudo',
     tryAgain: 'Tentar novamente',
     ok: 'OK',

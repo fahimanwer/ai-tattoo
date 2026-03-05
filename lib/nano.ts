@@ -59,5 +59,5 @@ export interface SyncSubscriptionResponse {
 // Components will use:
 //   const generate = useAction(api.generation.textToImage);
 //   const usage = useQuery(api.usage.getUserUsage, { revenuecatUserId });
-//   const sync = useMutation(api.subscription.syncSubscription);
+//   const sync = useAction(api.subscription.syncSubscription);
 export { api } from "../convex/_generated/api";

@@ -1,10 +1,11 @@
 import { featuredTattoos } from "@/lib/featured-tattoos";
+import { CDN_BASE_URL } from "@/src/constants/cdn";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { LegendList } from "@legendapp/list";
 import { Image } from "expo-image";
 import { PressableScale } from "pressto";
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import { StyleSheet, View } from "react-native";
 
 export interface StyleFilterItem {
@@ -20,7 +21,7 @@ interface StyleFilterProps {
 }
 
 const FILTER_ICONS_BASE_URL =
-  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/";
+  `${CDN_BASE_URL}/ai-tattoo/demos/`;
 
 interface FilterItemProps {
   item: StyleFilterItem;
@@ -60,7 +61,7 @@ export function StyleFilter({
   selectedStyle,
   onSelectStyle,
 }: StyleFilterProps) {
-  const filterItems = useMemo<StyleFilterItem[]>(() => {
+  const filterItems: StyleFilterItem[] = (() => {
     const items: StyleFilterItem[] = [
       {
         id: 0,
@@ -80,7 +81,7 @@ export function StyleFilter({
     });
 
     return items;
-  }, []);
+  })();
 
   const handleFilterPress = (item: StyleFilterItem) => {
     if (item.id === 0) {

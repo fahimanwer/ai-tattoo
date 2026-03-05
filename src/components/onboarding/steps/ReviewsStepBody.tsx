@@ -1,5 +1,5 @@
 import * as Haptics from "expo-haptics";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dimensions, FlatList, LayoutChangeEvent, View } from "react-native";
 import {
@@ -47,7 +47,7 @@ export function ReviewsStepBody({
   onReadyRef.current = onReady;
 
   // Build translated reviews
-  const reviews: Review[] = useMemo(() => [
+  const reviews: Review[] = [
     {
       stars: 5,
       title: t('onboarding.reviews.review1Title'),
@@ -69,10 +69,10 @@ export function ReviewsStepBody({
       createdAt: REVIEW_DATES[2],
       author: t('onboarding.reviews.review3Author'),
     },
-  ], [t]);
+  ];
 
   // Generate personalized loading messages
-  const loadingTexts = useMemo(() => generateLoadingTexts(answers), [answers]);
+  const loadingTexts = generateLoadingTexts(answers);
 
   const timeout = step.timeout ?? DEFAULT_TIMEOUT;
 

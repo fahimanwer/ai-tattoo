@@ -26,6 +26,7 @@ export const noCore = {
     share: 'Del',
     send: 'Send',
     search: 'Sok',
+    all: 'All',
     seeAll: 'Se alle',
     tryAgain: 'Prov igjen',
     ok: 'OK',

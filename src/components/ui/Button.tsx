@@ -12,7 +12,7 @@ import {
 import * as Haptics from "expo-haptics";
 import { SFSymbol } from "expo-symbols";
 import { PressableScale } from "pressto";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Alert, Animated, StyleSheet, ViewStyle } from "react-native";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
@@ -337,7 +337,7 @@ export function Button({
 
   const { accentHex } = useAccentColor();
 
-  const variantConfig = useMemo(() => {
+  const variantConfig = (() => {
     const scheme = (colorScheme ?? "light") as "light" | "dark";
     if (color) {
       const variants = generateVariantConfig(color, scheme);
@@ -346,11 +346,11 @@ export function Button({
     const baseHex = accentHex || Colors[scheme].tint;
     const variants = generateVariantConfigFromBase(baseHex, scheme);
     return variants[variant];
-  }, [color, colorScheme, variant, accentHex]);
+  })();
 
   const isDisabled = disabled || loading;
 
-  const buttonStyles = useMemo(() => {
+  const buttonStyles = (() => {
     const baseStyles: ViewStyle = {
       ...styles.button,
       ...SIZE_STYLES[size],
@@ -361,15 +361,13 @@ export function Button({
     };
 
     return [baseStyles, style];
-  }, [size, variantConfig, style, radius]);
+  })();
 
-  const textStyles = useMemo(() => {
-    return [
-      styles.buttonText,
-      TEXT_SIZE_STYLES[size],
-      { color: variantConfig.textColor },
-    ];
-  }, [size, variantConfig]);
+  const textStyles = [
+    styles.buttonText,
+    TEXT_SIZE_STYLES[size],
+    { color: variantConfig.textColor },
+  ];
 
   const iconColor = variantConfig.textColor;
   const displayIcon = loading ? "arrow.2.circlepath" : symbol;

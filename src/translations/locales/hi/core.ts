@@ -26,6 +26,7 @@ export const hiCore = {
     share: 'साझा करें',
     send: 'भेजें',
     search: 'खोजें',
+    all: 'All',
     seeAll: 'सभी देखें',
     tryAgain: 'फिर से प्रयास करें',
     ok: 'ठीक है',

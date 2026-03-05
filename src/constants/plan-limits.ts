@@ -11,6 +11,9 @@
  */
 export const FREE_TIER_LIMIT = 1;
 
+export const PRO_ENTITLEMENT = "pro" as const;
+export const FREE_ENTITLEMENT = "free" as const;
+
 export type PlanTier = "free" | "pro";
 
 export interface PlanConfig {
@@ -119,6 +122,6 @@ export function isValidTier(tier: string): tier is PlanTier {
  */
 export function entitlementToTier(entitlement: string): PlanTier {
   const normalized = entitlement.toLowerCase();
-  if (normalized === "pro") return "pro";
-  return "free";
+  if (normalized === PRO_ENTITLEMENT) return PRO_ENTITLEMENT;
+  return FREE_ENTITLEMENT;
 }

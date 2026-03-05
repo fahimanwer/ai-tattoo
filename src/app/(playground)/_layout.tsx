@@ -1,9 +1,11 @@
 import { useTheme } from "@/src/context/ThemeContext";
 import { isGlassEffectAPIAvailable } from "expo-glass-effect";
 import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Platform } from "react-native";
 
 export default function PlaygroundLayout() {
+  const { t } = useTranslation();
   const isIOS = Platform.OS === "ios";
   const isGlass = isGlassEffectAPIAvailable();
   const { isDark } = useTheme();
@@ -26,6 +28,14 @@ export default function PlaygroundLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ presentation: "card" }} />
+      <Stack.Screen name="generate" options={{ presentation: "card" }} />
+      <Stack.Screen name="try-on" options={{ presentation: "card" }} />
+      <Stack.Screen name="ai-portrait" options={{ presentation: "card" }} />
+      <Stack.Screen name="pet-portrait" options={{ presentation: "card" }} />
+      <Stack.Screen name="combine" options={{ presentation: "card" }} />
+      <Stack.Screen name="select-and-edit" options={{ presentation: "card" }} />
+      <Stack.Screen name="upscale" options={{ presentation: "card" }} />
+      <Stack.Screen name="erase" options={{ presentation: "card" }} />
       <Stack.Screen
         name="camera-view"
         options={{
@@ -36,7 +46,7 @@ export default function PlaygroundLayout() {
       <Stack.Screen
         name="sheet"
         options={{
-          headerTitle: "Tattoo Design AI",
+          headerTitle: t("playground.title"),
           presentation: "formSheet",
           headerTransparent: isGlass ? true : false,
           contentStyle: { backgroundColor: sheetBg },

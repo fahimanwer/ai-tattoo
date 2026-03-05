@@ -49,7 +49,6 @@ export const TAB_BAR = {
 
 // --- Colors ---
 import { useTheme } from "@/src/context/ThemeContext";
-import { useMemo } from "react";
 
 const DARK_COLORS = {
   barBackground: Color.zinc[900], // #18181b
@@ -92,7 +91,7 @@ export const TAB_COLORS: TabColors = DARK_COLORS;
 
 export function useTabColors(): TabColors {
   const { isDark } = useTheme();
-  return useMemo(() => (isDark ? DARK_COLORS : LIGHT_COLORS), [isDark]);
+  return isDark ? DARK_COLORS : LIGHT_COLORS;
 }
 
 // --- Animation ---

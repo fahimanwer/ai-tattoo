@@ -4,7 +4,6 @@
  * Provides static functions for StyleSheet and a reactive hook for components.
  */
 import { useTranslation } from 'react-i18next';
-import { useMemo } from 'react';
 import { I18nManager } from 'react-native';
 
 import { i18n } from './index';
@@ -71,26 +70,20 @@ interface UseRTLReturn {
 export function useRTL(): UseRTLReturn {
   const { i18n: i18nInstance } = useTranslation();
 
-  const isRTL = useMemo(() => {
-    const currentLanguage = i18nInstance.language || 'en';
-    return isRTLLanguage(currentLanguage);
-  }, [i18nInstance.language]);
+  const currentLanguage = i18nInstance.language || 'en';
+  const isRTL = isRTLLanguage(currentLanguage);
 
-  const rtlFlexDirectionFn = useMemo(() => {
-    return (
-      direction: 'row' | 'column'
-    ): 'row' | 'row-reverse' | 'column' => {
-      if (direction === 'column') return 'column';
-      return isRTL ? 'row-reverse' : 'row';
-    };
-  }, [isRTL]);
+  const rtlFlexDirectionFn = (
+    direction: 'row' | 'column'
+  ): 'row' | 'row-reverse' | 'column' => {
+    if (direction === 'column') return 'column';
+    return isRTL ? 'row-reverse' : 'row';
+  };
 
-  const rtlTextAlignFn = useMemo(() => {
-    return (align: 'left' | 'right'): 'left' | 'right' => {
-      if (!isRTL) return align;
-      return align === 'left' ? 'right' : 'left';
-    };
-  }, [isRTL]);
+  const rtlTextAlignFn = (align: 'left' | 'right'): 'left' | 'right' => {
+    if (!isRTL) return align;
+    return align === 'left' ? 'right' : 'left';
+  };
 
   return {
     isRTL,

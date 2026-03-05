@@ -15,7 +15,6 @@ import { LegendList } from "@legendapp/list";
 import { Image } from "expo-image";
 import { router, Stack } from "expo-router";
 import { PressableScale } from "pressto";
-import { useCallback, useMemo } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -35,7 +34,7 @@ export function ExploreScreen() {
   } = useExploreFilter();
   const { t } = useTranslation();
 
-  const allImages = useMemo(() => {
+  const allImages = (() => {
     if (filterMode === "styles") {
       const images = getAllGalleryImages();
       if (selectedStyle === null) return images;
@@ -56,9 +55,9 @@ export function ExploreScreen() {
     return bodyPartsToShow
       .flatMap((bodyPart) => getBodyPartImagesFromAllStyles(bodyPart))
       .filter(Boolean) as GalleryImage[];
-  }, [selectedBodyPart, selectedStyle, selectedMood, filterMode]);
+  })();
 
-  const handleImagePress = useCallback((image: GalleryImage) => {
+  const handleImagePress = (image: GalleryImage) => {
     customEvent("explore_image_viewed", {
       bodyPart: image.bodyPart,
       styleId: image.styleId,
@@ -72,54 +71,42 @@ export function ExploreScreen() {
         title: getBodyPartDisplayName(image.bodyPart),
       },
     });
-  }, []);
+  };
 
-  const headerTitle = useMemo(() => {
+  const headerTitle = (() => {
     if (filterMode === "styles") return t('explore.byStyles');
     if (filterMode === "moods") return t('explore.byMoods');
     return t('explore.byBodyPart');
-  }, [filterMode, t]);
+  })();
 
-  const ListHeader = useMemo(
-    () => (
-      <View>
-        <ScreenHeader title={headerTitle} />
-        <View style={styles.listHeader}>
-        {filterMode === "body part" ? (
-          <Animated.View key="body-part" entering={FadeIn} exiting={FadeOut}>
-            <BodyPartFilter
-              selectedBodyPart={selectedBodyPart}
-              onSelectBodyPart={setSelectedBodyPart}
-            />
-          </Animated.View>
-        ) : filterMode === "styles" ? (
-          <Animated.View key="style" entering={FadeIn} exiting={FadeOut}>
-            <StyleFilter
-              selectedStyle={selectedStyle}
-              onSelectStyle={setSelectedStyle}
-            />
-          </Animated.View>
-        ) : (
-          <Animated.View key="mood" entering={FadeIn} exiting={FadeOut}>
-            <MoodFilter
-              selectedMood={selectedMood}
-              onSelectMood={setSelectedMood}
-            />
-          </Animated.View>
-        )}
-        </View>
+  const ListHeader = (
+    <View>
+      <ScreenHeader title={headerTitle} />
+      <View style={styles.listHeader}>
+      {filterMode === "body part" ? (
+        <Animated.View key="body-part" entering={FadeIn} exiting={FadeOut}>
+          <BodyPartFilter
+            selectedBodyPart={selectedBodyPart}
+            onSelectBodyPart={setSelectedBodyPart}
+          />
+        </Animated.View>
+      ) : filterMode === "styles" ? (
+        <Animated.View key="style" entering={FadeIn} exiting={FadeOut}>
+          <StyleFilter
+            selectedStyle={selectedStyle}
+            onSelectStyle={setSelectedStyle}
+          />
+        </Animated.View>
+      ) : (
+        <Animated.View key="mood" entering={FadeIn} exiting={FadeOut}>
+          <MoodFilter
+            selectedMood={selectedMood}
+            onSelectMood={setSelectedMood}
+          />
+        </Animated.View>
+      )}
       </View>
-    ),
-    [
-      headerTitle,
-      filterMode,
-      selectedBodyPart,
-      setSelectedBodyPart,
-      selectedStyle,
-      setSelectedStyle,
-      selectedMood,
-      setSelectedMood,
-    ]
+    </View>
   );
 
   return (

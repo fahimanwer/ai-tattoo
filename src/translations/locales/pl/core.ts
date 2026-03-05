@@ -26,6 +26,7 @@ export const plCore = {
     share: 'Udostepnij',
     send: 'Wyslij',
     search: 'Szukaj',
+    all: 'All',
     seeAll: 'Zobacz wszystko',
     tryAgain: 'Sprobuj ponownie',
     ok: 'OK',

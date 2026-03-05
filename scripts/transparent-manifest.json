@@ -1,0 +1,782 @@
+[
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/dotwork/sketch-design-dotwork-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/dotwork/sketch-design-dotwork-0.png",
+    "style": "Dotwork",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/dotwork/sketch-design-dotwork-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/dotwork/sketch-design-dotwork-1.png",
+    "style": "Dotwork",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/dotwork/sketch-design-dotwork-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/dotwork/sketch-design-dotwork-2.png",
+    "style": "Dotwork",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/dotwork/sketch-design-dotwork-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/dotwork/sketch-design-dotwork-3.png",
+    "style": "Dotwork",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/dotwork/sketch-design-dotwork-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/dotwork/sketch-design-dotwork-4.png",
+    "style": "Dotwork",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/dotwork/sketch-design-dotwork-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/dotwork/sketch-design-dotwork-5.png",
+    "style": "Dotwork",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/patchwork/sketch-design-patchwork-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/patchwork/sketch-design-patchwork-0.png",
+    "style": "Patchwork",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/patchwork/sketch-design-patchwork-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/patchwork/sketch-design-patchwork-1.png",
+    "style": "Patchwork",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/patchwork/sketch-design-patchwork-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/patchwork/sketch-design-patchwork-2.png",
+    "style": "Patchwork",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/patchwork/sketch-design-patchwork-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/patchwork/sketch-design-patchwork-3.png",
+    "style": "Patchwork",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/patchwork/sketch-design-patchwork-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/patchwork/sketch-design-patchwork-4.png",
+    "style": "Patchwork",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/patchwork/sketch-design-patchwork-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/patchwork/sketch-design-patchwork-5.png",
+    "style": "Patchwork",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/patchwork/sketch-design-patchwork-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/patchwork/sketch-design-patchwork-6.png",
+    "style": "Patchwork",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/patchwork/sketch-design-patchwork-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/patchwork/sketch-design-patchwork-7.png",
+    "style": "Patchwork",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/patchwork/sketch-design-patchwork-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/patchwork/sketch-design-patchwork-8.png",
+    "style": "Patchwork",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/couples/sketch-design-couples-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/couples/sketch-design-couples-0.png",
+    "style": "Couples",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/couples/sketch-design-couples-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/couples/sketch-design-couples-1.png",
+    "style": "Couples",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/couples/sketch-design-couples-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/couples/sketch-design-couples-2.png",
+    "style": "Couples",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/couples/sketch-design-couples-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/couples/sketch-design-couples-3.png",
+    "style": "Couples",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/couples/sketch-design-couples-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/couples/sketch-design-couples-4.png",
+    "style": "Couples",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/couples/sketch-design-couples-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/couples/sketch-design-couples-5.png",
+    "style": "Couples",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/couples/sketch-design-couples-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/couples/sketch-design-couples-6.png",
+    "style": "Couples",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/couples/sketch-design-couples-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/couples/sketch-design-couples-7.png",
+    "style": "Couples",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/couples/sketch-design-couples-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/couples/sketch-design-couples-8.png",
+    "style": "Couples",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/couples/sketch-design-couples-9.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/couples/sketch-design-couples-9.png",
+    "style": "Couples",
+    "index": 9
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/mini/sketch-design-mini-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/mini/sketch-design-mini-0.png",
+    "style": "Mini",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/mini/sketch-design-mini-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/mini/sketch-design-mini-1.png",
+    "style": "Mini",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/mini/sketch-design-mini-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/mini/sketch-design-mini-2.png",
+    "style": "Mini",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/mini/sketch-design-mini-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/mini/sketch-design-mini-3.png",
+    "style": "Mini",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/mini/sketch-design-mini-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/mini/sketch-design-mini-4.png",
+    "style": "Mini",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/mini/sketch-design-mini-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/mini/sketch-design-mini-5.png",
+    "style": "Mini",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/mini/sketch-design-mini-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/mini/sketch-design-mini-6.png",
+    "style": "Mini",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/mini/sketch-design-mini-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/mini/sketch-design-mini-7.png",
+    "style": "Mini",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/mini/sketch-design-mini-9.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/mini/sketch-design-mini-8.png",
+    "style": "Mini",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/aesthetic/sketch-design-aesthetic-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/aesthetic/sketch-design-aesthetic-0.png",
+    "style": "Aesthetic",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/aesthetic/sketch-design-aesthetic-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/aesthetic/sketch-design-aesthetic-1.png",
+    "style": "Aesthetic",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/aesthetic/sketch-design-aesthetic-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/aesthetic/sketch-design-aesthetic-2.png",
+    "style": "Aesthetic",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/aesthetic/sketch-design-aesthetic-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/aesthetic/sketch-design-aesthetic-3.png",
+    "style": "Aesthetic",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/aesthetic/sketch-design-aesthetic-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/aesthetic/sketch-design-aesthetic-4.png",
+    "style": "Aesthetic",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/aesthetic/sketch-design-aesthetic-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/aesthetic/sketch-design-aesthetic-5.png",
+    "style": "Aesthetic",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/aesthetic/sketch-design-aesthetic-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/aesthetic/sketch-design-aesthetic-6.png",
+    "style": "Aesthetic",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/aesthetic/sketch-design-aesthetic-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/aesthetic/sketch-design-aesthetic-7.png",
+    "style": "Aesthetic",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/aesthetic/sketch-design-aesthetic-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/aesthetic/sketch-design-aesthetic-8.png",
+    "style": "Aesthetic",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/aesthetic/sketch-design-aesthetic-9.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/aesthetic/sketch-design-aesthetic-9.png",
+    "style": "Aesthetic",
+    "index": 9
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-0.png",
+    "style": "Japanese",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-1.png",
+    "style": "Japanese",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-2.png",
+    "style": "Japanese",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-3.png",
+    "style": "Japanese",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-4.png",
+    "style": "Japanese",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-5.png",
+    "style": "Japanese",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-6.png",
+    "style": "Japanese",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-7.png",
+    "style": "Japanese",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-8.png",
+    "style": "Japanese",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-9.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-9.png",
+    "style": "Japanese",
+    "index": 9
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/japanese/sketch-design-japanese-10.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/japanese/sketch-design-japanese-10.png",
+    "style": "Japanese",
+    "index": 10
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/realistic/sketch-design-realistic-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/realistic/sketch-design-realistic-0.png",
+    "style": "Realistic",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/realistic/sketch-design-realistic-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/realistic/sketch-design-realistic-1.png",
+    "style": "Realistic",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/realistic/sketch-design-realistic-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/realistic/sketch-design-realistic-2.png",
+    "style": "Realistic",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/realistic/sketch-design-realistic-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/realistic/sketch-design-realistic-3.png",
+    "style": "Realistic",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/realistic/sketch-design-realistic-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/realistic/sketch-design-realistic-4.png",
+    "style": "Realistic",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/realistic/sketch-design-realistic-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/realistic/sketch-design-realistic-5.png",
+    "style": "Realistic",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/realistic/sketch-design-realistic-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/realistic/sketch-design-realistic-6.png",
+    "style": "Realistic",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/realistic/sketch-design-realistic-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/realistic/sketch-design-realistic-7.png",
+    "style": "Realistic",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/realistic/sketch-design-realistic-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/realistic/sketch-design-realistic-8.png",
+    "style": "Realistic",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/realistic/sketch-design-realistic-9.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/realistic/sketch-design-realistic-9.png",
+    "style": "Realistic",
+    "index": 9
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/blackwork/sketch-design-blackwork-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/blackwork/sketch-design-blackwork-0.png",
+    "style": "Blackwork",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/blackwork/sketch-design-blackwork-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/blackwork/sketch-design-blackwork-1.png",
+    "style": "Blackwork",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/blackwork/sketch-design-blackwork-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/blackwork/sketch-design-blackwork-2.png",
+    "style": "Blackwork",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/blackwork/sketch-design-blackwork-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/blackwork/sketch-design-blackwork-3.png",
+    "style": "Blackwork",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/blackwork/sketch-design-blackwork-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/blackwork/sketch-design-blackwork-4.png",
+    "style": "Blackwork",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/blackwork/sketch-design-blackwork-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/blackwork/sketch-design-blackwork-5.png",
+    "style": "Blackwork",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/blackwork/sketch-design-blackwork-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/blackwork/sketch-design-blackwork-6.png",
+    "style": "Blackwork",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/blackwork/sketch-design-blackwork-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/blackwork/sketch-design-blackwork-7.png",
+    "style": "Blackwork",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/blackwork/sketch-design-blackwork-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/blackwork/sketch-design-blackwork-8.png",
+    "style": "Blackwork",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/old-school/sketch-design-old-school-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/old-school/sketch-design-old-school-0.png",
+    "style": "Old School",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/old-school/sketch-design-old-school-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/old-school/sketch-design-old-school-1.png",
+    "style": "Old School",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/old-school/sketch-design-old-school-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/old-school/sketch-design-old-school-2.png",
+    "style": "Old School",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/old-school/sketch-design-old-school-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/old-school/sketch-design-old-school-3.png",
+    "style": "Old School",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/old-school/sketch-design-old-school-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/old-school/sketch-design-old-school-4.png",
+    "style": "Old School",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/old-school/sketch-design-old-school-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/old-school/sketch-design-old-school-5.png",
+    "style": "Old School",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/old-school/sketch-design-old-school-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/old-school/sketch-design-old-school-6.png",
+    "style": "Old School",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/old-school/sketch-design-old-school-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/old-school/sketch-design-old-school-7.png",
+    "style": "Old School",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/old-school/sketch-design-old-school-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/old-school/sketch-design-old-school-8.png",
+    "style": "Old School",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/neo-traditional/sketch-design-neo-traditional-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/neo-traditional/sketch-design-neo-traditional-0.png",
+    "style": "Neo Traditional",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/neo-traditional/sketch-design-neo-traditional-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/neo-traditional/sketch-design-neo-traditional-1.png",
+    "style": "Neo Traditional",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/neo-traditional/sketch-design-neo-traditional-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/neo-traditional/sketch-design-neo-traditional-2.png",
+    "style": "Neo Traditional",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/neo-traditional/sketch-design-neo-traditional-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/neo-traditional/sketch-design-neo-traditional-3.png",
+    "style": "Neo Traditional",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/neo-traditional/sketch-design-neo-traditional-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/neo-traditional/sketch-design-neo-traditional-4.png",
+    "style": "Neo Traditional",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/neo-traditional/sketch-design-neo-traditional-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/neo-traditional/sketch-design-neo-traditional-5.png",
+    "style": "Neo Traditional",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/neo-traditional/sketch-design-neo-traditional-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/neo-traditional/sketch-design-neo-traditional-6.png",
+    "style": "Neo Traditional",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/neo-traditional/sketch-design-neo-traditional-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/neo-traditional/sketch-design-neo-traditional-7.png",
+    "style": "Neo Traditional",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/neo-traditional/sketch-design-neo-traditional-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/neo-traditional/sketch-design-neo-traditional-8.png",
+    "style": "Neo Traditional",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/watercolor/sketch-design-watercolor-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/watercolor/sketch-design-watercolor-0.png",
+    "style": "Watercolor",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/watercolor/sketch-design-watercolor-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/watercolor/sketch-design-watercolor-1.png",
+    "style": "Watercolor",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/watercolor/sketch-design-watercolor-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/watercolor/sketch-design-watercolor-2.png",
+    "style": "Watercolor",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/watercolor/sketch-design-watercolor-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/watercolor/sketch-design-watercolor-3.png",
+    "style": "Watercolor",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/watercolor/sketch-design-watercolor-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/watercolor/sketch-design-watercolor-4.png",
+    "style": "Watercolor",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/watercolor/sketch-design-watercolor-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/watercolor/sketch-design-watercolor-5.png",
+    "style": "Watercolor",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/watercolor/sketch-design-watercolor-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/watercolor/sketch-design-watercolor-6.png",
+    "style": "Watercolor",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/watercolor/sketch-design-watercolor-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/watercolor/sketch-design-watercolor-7.png",
+    "style": "Watercolor",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/watercolor/sketch-design-watercolor-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/watercolor/sketch-design-watercolor-8.png",
+    "style": "Watercolor",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/watercolor/sketch-design-watercolor-9.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/watercolor/sketch-design-watercolor-9.png",
+    "style": "Watercolor",
+    "index": 9
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/hindu-goddess/sketch-design-hindu-goddess-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/hindu-goddess/sketch-design-hindu-goddess-0.png",
+    "style": "Hindu Goddess",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/hindu-goddess/sketch-design-hindu-goddess-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/hindu-goddess/sketch-design-hindu-goddess-1.png",
+    "style": "Hindu Goddess",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/hindu-goddess/sketch-design-hindu-goddess-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/hindu-goddess/sketch-design-hindu-goddess-2.png",
+    "style": "Hindu Goddess",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/hindu-goddess/sketch-design-hindu-goddess-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/hindu-goddess/sketch-design-hindu-goddess-3.png",
+    "style": "Hindu Goddess",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/hindu-goddess/sketch-design-hindu-goddess-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/hindu-goddess/sketch-design-hindu-goddess-4.png",
+    "style": "Hindu Goddess",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/hindu-goddess/sketch-design-hindu-goddess-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/hindu-goddess/sketch-design-hindu-goddess-5.png",
+    "style": "Hindu Goddess",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/hindu-goddess/sketch-design-hindu-goddess-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/hindu-goddess/sketch-design-hindu-goddess-6.png",
+    "style": "Hindu Goddess",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/hindu-goddess/sketch-design-hindu-goddess-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/hindu-goddess/sketch-design-hindu-goddess-7.png",
+    "style": "Hindu Goddess",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/chicano/sketch-design-chicano-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/chicano/sketch-design-chicano-0.png",
+    "style": "Chicano",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/chicano/sketch-design-chicano-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/chicano/sketch-design-chicano-1.png",
+    "style": "Chicano",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/chicano/sketch-design-chicano-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/chicano/sketch-design-chicano-2.png",
+    "style": "Chicano",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/chicano/sketch-design-chicano-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/chicano/sketch-design-chicano-3.png",
+    "style": "Chicano",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/chicano/sketch-design-chicano-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/chicano/sketch-design-chicano-4.png",
+    "style": "Chicano",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/chicano/sketch-design-chicano-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/chicano/sketch-design-chicano-5.png",
+    "style": "Chicano",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/chicano/sketch-design-chicano-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/chicano/sketch-design-chicano-6.png",
+    "style": "Chicano",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/chicano/sketch-design-chicano-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/chicano/sketch-design-chicano-7.png",
+    "style": "Chicano",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/chicano/sketch-design-chicano-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/chicano/sketch-design-chicano-8.png",
+    "style": "Chicano",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/chicano/sketch-design-chicano-9.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/chicano/sketch-design-chicano-9.png",
+    "style": "Chicano",
+    "index": 9
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/anime/sketch-design-anime-0.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/anime/sketch-design-anime-0.png",
+    "style": "Anime",
+    "index": 0
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/anime/sketch-design-anime-1.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/anime/sketch-design-anime-1.png",
+    "style": "Anime",
+    "index": 1
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/anime/sketch-design-anime-2.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/anime/sketch-design-anime-2.png",
+    "style": "Anime",
+    "index": 2
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/anime/sketch-design-anime-3.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/anime/sketch-design-anime-3.png",
+    "style": "Anime",
+    "index": 3
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/anime/sketch-design-anime-4.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/anime/sketch-design-anime-4.png",
+    "style": "Anime",
+    "index": 4
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/anime/sketch-design-anime-5.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/anime/sketch-design-anime-5.png",
+    "style": "Anime",
+    "index": 5
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/anime/sketch-design-anime-6.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/anime/sketch-design-anime-6.png",
+    "style": "Anime",
+    "index": 6
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/anime/sketch-design-anime-7.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/anime/sketch-design-anime-7.png",
+    "style": "Anime",
+    "index": 7
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/anime/sketch-design-anime-8.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/anime/sketch-design-anime-8.png",
+    "style": "Anime",
+    "index": 8
+  },
+  {
+    "originalUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs/anime/sketch-design-anime-9.avif",
+    "transparentUri": "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/designs-transparent/anime/sketch-design-anime-9.png",
+    "style": "Anime",
+    "index": 9
+  }
+]

@@ -26,6 +26,7 @@ export const itCore = {
     share: 'Condividi',
     send: 'Invia',
     search: 'Cerca',
+    all: 'All',
     seeAll: 'Vedi tutto',
     tryAgain: 'Riprova',
     ok: 'OK',

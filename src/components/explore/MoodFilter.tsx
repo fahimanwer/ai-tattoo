@@ -1,10 +1,11 @@
 import { moods } from "@/lib/moods";
+import { CDN_BASE_URL } from "@/src/constants/cdn";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import { LegendList } from "@legendapp/list";
 import { Image } from "expo-image";
 import { PressableScale } from "pressto";
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import { StyleSheet, View } from "react-native";
 
 export interface MoodFilterItem {
@@ -15,7 +16,7 @@ export interface MoodFilterItem {
 }
 
 const FILTER_ICONS_BASE_URL =
-  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/";
+  `${CDN_BASE_URL}/ai-tattoo/demos/`;
 
 interface MoodFilterProps {
   selectedMood: number | null;
@@ -57,7 +58,7 @@ const FilterItem = memo(({ item, isSelected, onPress }: FilterItemProps) => {
 FilterItem.displayName = "FilterItem";
 
 export function MoodFilter({ selectedMood, onSelectMood }: MoodFilterProps) {
-  const filterItems = useMemo<MoodFilterItem[]>(() => {
+  const filterItems: MoodFilterItem[] = (() => {
     const items: MoodFilterItem[] = [
       {
         id: 0,
@@ -77,7 +78,7 @@ export function MoodFilter({ selectedMood, onSelectMood }: MoodFilterProps) {
     });
 
     return items;
-  }, []);
+  })();
 
   const handleFilterPress = (item: MoodFilterItem) => {
     if (item.id === 0) {

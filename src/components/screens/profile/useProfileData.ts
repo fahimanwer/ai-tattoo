@@ -7,7 +7,7 @@ import { useSubscription } from "@/src/hooks/useSubscription";
 import { useUsageLimit } from "@/src/hooks/useUsageLimit";
 import { useUserData } from "@/src/hooks/useUserData";
 import { useRouter } from "expo-router";
-import { use, useMemo, useState } from "react";
+import { use, useState } from "react";
 import { Alert, Linking, Share } from "react-native";
 import { useTranslation } from "react-i18next";
 
@@ -26,21 +26,15 @@ export function useProfileData() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
 
-  const lastSubscription = useMemo(
-    () => getLastSubscription(customerInfo),
-    [customerInfo]
-  );
+  const lastSubscription = getLastSubscription(customerInfo);
 
-  const hasActiveSubscription = useMemo(
-    () => lastSubscription?.isActive === true,
-    [lastSubscription]
-  );
+  const hasActiveSubscription = lastSubscription?.isActive === true;
 
-  const hasActiveUsagePeriod = useMemo(() => {
+  const hasActiveUsagePeriod = (() => {
     if (!periodStart || !periodEnd) return false;
     const now = new Date();
     return now >= new Date(periodStart) && now <= new Date(periodEnd);
-  }, [periodStart, periodEnd]);
+  })();
 
   const getStatusDisplay = () => {
     if (!lastSubscription) return { text: t('profile.noSubscription'), color: "#9ca3af" };
@@ -133,26 +127,26 @@ export function useProfileData() {
     );
   };
 
-  const memberSince = useMemo(() => {
+  const memberSince = (() => {
     if (!user?.createdAt) return null;
     return new Date(user.createdAt).toLocaleDateString(undefined, {
       month: "long",
       year: "numeric",
     });
-  }, [user?.createdAt]);
+  })();
 
-  const planBadge = useMemo(() => {
+  const planBadge = (() => {
     if (hasActiveSubscription && lastSubscription) {
       const name = lastSubscription.productName || "Pro";
       return { name, color: Color.green[500] };
     }
     return { name: "Free", color: Color.zinc[400] };
-  }, [hasActiveSubscription, lastSubscription]);
+  })();
 
-  const modelDisplayName = useMemo(() => {
+  const modelDisplayName = (() => {
     const model = hasActiveSubscription ? NANOBANANA_PRO : NANOBANANA;
     return model === NANOBANANA_PRO ? "Nano Banana Pro" : "Nano Banana";
-  }, [hasActiveSubscription]);
+  })();
 
   const isAuthenticated = !!user;
   const displayName = user?.name?.includes("@")

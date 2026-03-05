@@ -11,9 +11,11 @@ import { StyleProp, ViewStyle } from "react-native";
 
 const SIZE = theme.fontSize20;
 
+type ButtonStyleVariant = "automatic" | "bordered" | "borderedProminent" | "borderless" | "glass" | "glassProminent" | "plain";
+
 export interface HeaderButtonProps {
   imageProps?: ImageProps;
-  buttonProps?: ButtonProps;
+  buttonProps?: ButtonProps & { variant?: ButtonStyleVariant };
   style?: StyleProp<ViewStyle>;
 }
 
@@ -22,13 +24,14 @@ export function HeaderButton({
   buttonProps,
   style,
 }: HeaderButtonProps) {
+  const { variant, ...restButtonProps } = buttonProps ?? {};
   return (
     <Host matchContents style={[{ height: SIZE, width: SIZE }, style]}>
       <Button
-        {...buttonProps}
+        {...restButtonProps}
         modifiers={[
           controlSize("small"),
-          buttonStyle(buttonProps?.variant || "borderedProminent"),
+          buttonStyle(variant || "borderedProminent"),
         ]}
       >
         <Image

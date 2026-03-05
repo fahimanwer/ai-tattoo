@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "scheme": "aitattoo",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.fahimanwer.tattooai",
@@ -19,6 +18,12 @@
           "instagram",
           "twitter",
           "tiktoksharesdk"
+        ],
+        "SKAdNetworkItems": [
+          { "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork" },
+          { "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork" },
+          { "SKAdNetworkIdentifier": "238da6jt44.skadnetwork" },
+          { "SKAdNetworkIdentifier": "22mmun2rn5.skadnetwork" }
         ]
       },
       "entitlements": {
@@ -28,7 +33,6 @@
       }
     },
     "android": {
-      "edgeToEdgeEnabled": true,
       "package": "com.fahimanwer.tattooai",
       "permissions": [
         "android.permission.RECORD_AUDIO",
@@ -77,17 +81,9 @@
             "fb",
             "instagram",
             "twitter",
-            "tiktoksharesdk",
-            "fb",
-            "instagram",
-            "twitter",
             "tiktoksharesdk"
           ],
           "android": [
-            "com.facebook.katana",
-            "com.instagram.android",
-            "com.twitter.android",
-            "com.zhiliaoapp.musically",
             "com.facebook.katana",
             "com.instagram.android",
             "com.twitter.android",
@@ -104,10 +100,29 @@
       "expo-image",
       "expo-video",
       "@bacons/apple-targets",
-      "expo-build-properties"
+      "expo-build-properties",
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "1536855520740550",
+          "clientToken": "1f8857bdeefd80c9f661a00c2214bccf",
+          "displayName": "Tattoo Design",
+          "scheme": "aitattoo",
+          "advertiserIDCollectionEnabled": true,
+          "autoLogAppEventsEnabled": true,
+          "isAutoInitEnabled": true
+        }
+      ],
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "Allow $(PRODUCT_NAME) to access your advertising identifier to deliver personalized ads to you."
+        }
+      ]
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "reactCompiler": true
     },
     "extra": {
       "router": {},
@@ -116,15 +131,6 @@
           "experimental": {
             "ios": {
               "appExtensions": [
-                {
-                  "bundleIdentifier": "com.fahimanwer.tattooai.widget",
-                  "targetName": "widget",
-                  "entitlements": {
-                    "com.apple.security.application-groups": [
-                      "group.fahimanwer.tattooai"
-                    ]
-                  }
-                },
                 {
                   "bundleIdentifier": "com.fahimanwer.tattooai.widget",
                   "targetName": "widget",

@@ -30,7 +30,7 @@ import {
   AppSettingsContext,
   AppSettingsProvider,
 } from "@/src/context/AppSettings";
-import { PlaygroundProvider } from "@/src/context/PlaygroundContext";
+import { PlaygroundProvider } from "@/src/context/playground";
 import { SubscriptionProvider } from "@/src/context/SubscriptionContext";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
@@ -60,19 +60,19 @@ const configureRevenueCat = () => {
   }
 
   try {
-    Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
+    Purchases.setLogLevel(__DEV__ ? Purchases.LOG_LEVEL.DEBUG : Purchases.LOG_LEVEL.ERROR);
     if (Platform.OS === "ios") {
-      if (!process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY) {
+      const appleKey = __DEV__
+        ? (process.env.EXPO_PUBLIC_REVENUECAT_APPLE_TEST_API_KEY || process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY)
+        : process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY;
+
+      if (!appleKey) {
         console.error("❌ RevenueCat Apple API key is not set");
         return false;
       }
 
-      Purchases.configure({
-        apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY,
-      });
-      console.log("✅ RevenueCat configured for iOS");
-      isRevenueCatConfigured = true;
-      return true;
+      Purchases.configure({ apiKey: appleKey });
+      console.log(`✅ RevenueCat configured for iOS (${__DEV__ ? "test" : "production"})`);
     } else if (Platform.OS === "android") {
       if (!process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY) {
         console.error("❌ RevenueCat Google API key is not set");
@@ -83,9 +83,26 @@ const configureRevenueCat = () => {
         apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY,
       });
       console.log("✅ RevenueCat configured for Android");
-      isRevenueCatConfigured = true;
-      return true;
+    } else {
+      return false;
     }
+
+    // Collect device identifiers for ad attribution (IDFA, IDFV, IP)
+    Purchases.collectDeviceIdentifiers();
+
+    // Set Facebook anonymous ID for RevenueCat <> Meta attribution matching
+    import("react-native-fbsdk-next")
+      .then(({ AppEventsLogger }) =>
+        AppEventsLogger.getAnonymousID().then((anonymousId) => {
+          Purchases.setFBAnonymousID(anonymousId);
+        })
+      )
+      .catch((err) => {
+        console.error("Error getting Facebook anonymous ID:", err);
+      });
+
+    isRevenueCatConfigured = true;
+    return true;
   } catch (error) {
     console.error("❌ Error configuring RevenueCat:", error);
   }
@@ -229,6 +246,40 @@ function ThemedApp() {
 }
 
 export default function RootLayout() {
+  // Request App Tracking Transparency (iOS only) and initialize ad SDKs
+  useEffect(() => {
+    const initTikTok = async () => {
+      try {
+        const TiktokBusiness = (await import("@/modules/tiktok-business")).default;
+        await TiktokBusiness.initialize({
+          appId: process.env.EXPO_PUBLIC_TIKTOK_APP_ID!,
+          tiktokAppId: process.env.EXPO_PUBLIC_TIKTOK_TT_APP_ID!,
+          debugMode: __DEV__,
+        });
+      } catch (err) {
+        console.warn("TikTok SDK init skipped:", err);
+      }
+    };
+
+    if (Platform.OS === "ios") {
+      (async () => {
+        try {
+          const { requestTrackingPermissionsAsync } = await import(
+            "expo-tracking-transparency"
+          );
+          const { Settings } = await import("react-native-fbsdk-next");
+          const { status } = await requestTrackingPermissionsAsync();
+          Settings.setAdvertiserTrackingEnabled(status === "granted");
+        } catch (err) {
+          console.warn("ATT/FBSDK init skipped:", err);
+        }
+        await initTikTok();
+      })();
+    } else if (Platform.OS === "android") {
+      initTikTok();
+    }
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <HeroUINativeProvider

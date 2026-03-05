@@ -26,6 +26,7 @@ export const zhCore = {
     share: '分享',
     send: '发送',
     search: '搜索',
+    all: 'All',
     seeAll: '查看全部',
     tryAgain: '再试一次',
     ok: '好的',

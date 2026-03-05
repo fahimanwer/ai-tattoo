@@ -26,6 +26,7 @@ export const thCore = {
     share: 'แชร์',
     send: 'ส่ง',
     search: 'ค้นหา',
+    all: 'All',
     seeAll: 'ดูทั้งหมด',
     tryAgain: 'ลองอีกครั้ง',
     ok: 'ตกลง',

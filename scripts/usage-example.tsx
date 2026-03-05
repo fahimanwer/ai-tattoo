@@ -131,13 +131,13 @@ const exampleUpdatedFeaturedTattoos = [
     title: "Japanese",
     // ... other fields
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/cover.png",
+      uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/cover.png",
       // Add the blurhash directly to the object
       blurhash: "LGF5]+Yk^6#M@-5c,1J5@[or[Q6.",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/hand-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/hand-male.png",
         blurhash: "L5F~8{xut7of~qIUfQj[4nIU%M%M",
       },
       // ... more gallery items

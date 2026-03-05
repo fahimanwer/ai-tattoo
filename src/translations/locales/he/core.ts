@@ -26,6 +26,7 @@ export const heCore = {
     share: 'שיתוף',
     send: 'שליחה',
     search: 'חיפוש',
+    all: 'All',
     seeAll: 'הצג הכל',
     tryAgain: 'נסה שוב',
     ok: 'אישור',

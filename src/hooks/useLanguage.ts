@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { changeLanguage, getCurrentLanguage } from '@/src/lib/i18n';
@@ -91,44 +91,33 @@ function useLanguage(): UseLanguageReturn {
   const isAutoDetect = storedLanguage === null;
   const selectedLanguage = isAutoDetect ? AUTO_LANGUAGE : storedLanguage;
 
-  const isRTL = useMemo(
-    () => isRTLLanguage(currentLanguage),
-    [currentLanguage]
-  );
+  const isRTL = isRTLLanguage(currentLanguage);
 
-  const currentLanguageName = useMemo(
-    () => getLanguageDisplayName(currentLanguage),
-    [currentLanguage]
-  );
+  const currentLanguageName = getLanguageDisplayName(currentLanguage);
 
-  const availableLanguages = useMemo<LanguageOption[]>(() => {
-    return SUPPORTED_LANGUAGES.map((code) => ({
-      code,
-      name: getLanguageDisplayName(code),
-      nativeName: getNativeLanguageName(code),
-      isRTL: isRTLLanguage(code),
-    }));
-  }, []);
+  const availableLanguages: LanguageOption[] = SUPPORTED_LANGUAGES.map((code) => ({
+    code,
+    name: getLanguageDisplayName(code),
+    nativeName: getNativeLanguageName(code),
+    isRTL: isRTLLanguage(code),
+  }));
 
-  const handleChangeLanguage = useCallback(
-    async (languageCode: string): Promise<void> => {
-      setIsChangingLanguage(true);
-      try {
-        if (languageCode === AUTO_LANGUAGE) {
-          // Clear stored preference → detector will use device locale
-          clearStoredLanguage();
-          const deviceLocale = getDeviceLocale();
-          await changeLanguage(deviceLocale);
-        } else {
-          if (languageCode === currentLanguage) return;
-          await changeLanguage(languageCode);
-        }
-      } finally {
-        setIsChangingLanguage(false);
+  const handleChangeLanguage = async (languageCode: string): Promise<void> => {
+    setIsChangingLanguage(true);
+    try {
+      if (languageCode === AUTO_LANGUAGE) {
+        // Clear stored preference → detector will use device locale
+        clearStoredLanguage();
+        const deviceLocale = getDeviceLocale();
+        await changeLanguage(deviceLocale);
+      } else {
+        if (languageCode === currentLanguage) return;
+        await changeLanguage(languageCode);
       }
-    },
-    [currentLanguage]
-  );
+    } finally {
+      setIsChangingLanguage(false);
+    }
+  };
 
   return {
     currentLanguage,

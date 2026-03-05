@@ -20,50 +20,50 @@ const featuredTattoos = [
     id: 1,
     title: "Japanese",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/cover.png",
+      uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/cover.png",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/hand-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/hand-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/abdomen-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/abdomen-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/toe-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/toe-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/arm-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/arm-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/thigh-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/thigh-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/back-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/back-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/neck-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/neck-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/hand-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/hand-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/neck-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/neck-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/back-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/back-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/thigh-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/thigh-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/arm-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/arm-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/toe-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/toe-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/japanese/abdomen-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/japanese/abdomen-male.png",
       },
     ],
   },
@@ -71,50 +71,50 @@ const featuredTattoos = [
     id: 2,
     title: "Realistic",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/cover.png",
+      uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/cover.png",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/hand-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/hand-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/abdomen-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/abdomen-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/toe-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/toe-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/arm-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/arm-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/thigh-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/thigh-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/back-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/back-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/neck-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/neck-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/hand-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/hand-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/neck-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/neck-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/back-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/back-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/thigh-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/thigh-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/arm-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/arm-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/toe-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/toe-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/realistic/abdomen-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/realistic/abdomen-male.png",
       },
     ],
   },
@@ -122,50 +122,50 @@ const featuredTattoos = [
     id: 3,
     title: "Blackwork",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/cover.png",
+      uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/cover.png",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/hand-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/hand-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/abdomen-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/abdomen-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/toe-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/toe-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/arm-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/arm-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/thigh-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/thigh-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/back-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/back-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/neck-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/neck-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/hand-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/hand-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/neck-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/neck-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/back-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/back-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/thigh-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/thigh-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/arm-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/arm-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/toe-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/toe-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/blackwork/abdomen-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/blackwork/abdomen-male.png",
       },
     ],
   },
@@ -173,26 +173,26 @@ const featuredTattoos = [
     id: 4,
     title: "Watercolor",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/cover.png",
+      uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/watercolor/cover.png",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/rib-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/watercolor/rib-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/shin-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/watercolor/shin-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/shoulder-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/watercolor/shoulder-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/shoulder-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/watercolor/shoulder-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/thigh-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/watercolor/thigh-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/watercolor/thigh-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/watercolor/thigh-male.png",
       },
     ],
   },
@@ -200,50 +200,50 @@ const featuredTattoos = [
     id: 5,
     title: "Old School",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/cover.png",
+      uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/cover.png",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/hand-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/hand-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/abdomen-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/abdomen-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/toe-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/toe-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/arm-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/arm-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/thigh-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/thigh-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/back-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/back-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/neck-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/neck-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/hand-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/hand-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/neck-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/neck-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/back-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/back-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/thigh-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/thigh-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/arm-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/arm-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/toe-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/toe-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/oldschool/abdomen-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/oldschool/abdomen-male.png",
       },
     ],
   },
@@ -251,50 +251,50 @@ const featuredTattoos = [
     id: 6,
     title: "Neo Traditional",
     image: {
-      uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/cover.png",
+      uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/cover.png",
     },
     gallery: [
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/hand-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/hand-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/abdomen-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/abdomen-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/toe-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/toe-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/arm-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/arm-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/thigh-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/thigh-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/back-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/back-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/neck-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/neck-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/hand-female.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/hand-female.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/neck-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/neck-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/back-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/back-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/thigh-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/thigh-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/arm-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/arm-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/toe-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/toe-male.png",
       },
       {
-        uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/neo-traditional/abdomen-male.png",
+        uri: "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/neo-traditional/abdomen-male.png",
       },
     ],
   },
@@ -302,28 +302,28 @@ const featuredTattoos = [
 
 const bodyParts = {
   arm: [
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-1.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-2.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-3.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/arm-male-4.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/arm-male-1.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/arm-male-2.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/arm-male-3.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/arm-male-4.png",
   ],
   back: [
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-1.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-male-2.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-1.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/back-female-2.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/back-male-1.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/back-male-2.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/back-female-1.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/back-female-2.png",
   ],
   hand: [
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-hand-1.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-hand-2.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-hand-1.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-hand-2.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/male-hand-1.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/male-hand-2.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/female-hand-1.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/female-hand-2.png",
   ],
   neck: [
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-1.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/male-neck-2.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/neck-female-1.png",
-    "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/body-parts/female-neck-2.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/male-neck-1.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/male-neck-2.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/neck-female-1.png",
+    "https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev/ai-tattoo/body-parts/female-neck-2.png",
   ],
 };
 

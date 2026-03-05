@@ -44,7 +44,7 @@ export const listStorageIdsByUser = internalQuery({
   handler: async (ctx, args) => {
     const generations = await ctx.db
       .query("generations")
-      .withIndex("by_userId_createdAt", (q) => q.eq("userId", args.userId))
+      .withIndex("by_userId_and_createdAt", (q) => q.eq("userId", args.userId))
       .order("desc")
       .collect();
 
@@ -80,7 +80,12 @@ export const getRestoreData = action({
       throw new ConvexError("Not authenticated");
     }
 
-    const generations = await ctx.runQuery(
+    const generations: {
+      storageId: string;
+      prompt: string;
+      generationType: "text_to_image" | "text_and_image_to_image";
+      createdAt: number;
+    }[] = await ctx.runQuery(
       internal.generations.listStorageIdsByUser,
       { userId: identity.subject }
     );

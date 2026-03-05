@@ -26,6 +26,7 @@ export const koCore = {
     share: '공유',
     send: '보내기',
     search: '검색',
+    all: 'All',
     seeAll: '전체 보기',
     tryAgain: '다시 시도',
     ok: '확인',

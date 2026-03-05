@@ -26,6 +26,7 @@ export const arCore = {
     share: 'مشاركة',
     send: 'إرسال',
     search: 'بحث',
+    all: 'All',
     seeAll: 'عرض الكل',
     tryAgain: 'حاول مجدداً',
     ok: 'حسناً',

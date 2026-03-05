@@ -26,6 +26,7 @@ export const frCore = {
     share: 'Partager',
     send: 'Envoyer',
     search: 'Rechercher',
+    all: 'All',
     seeAll: 'Voir tout',
     tryAgain: 'Réessayer',
     ok: 'OK',

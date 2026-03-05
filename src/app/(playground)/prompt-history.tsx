@@ -15,7 +15,7 @@ import { useThemeColor } from "heroui-native";
 import { Color as NativeColor, router, Stack } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
-import { use, useCallback, useState } from "react";
+import { use, useState } from "react";
 import { Alert, FlatList, Platform, StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
@@ -61,38 +61,35 @@ export default function PromptHistory() {
     setHistory((prev) => prev.filter((entry) => entry.id !== id));
   }
 
-  const renderItem = useCallback(
-    ({ item }: { item: PromptHistoryEntry }) => (
-      <PressableScale
-        style={[styles.row, { borderBottomColor: isDark ? Color.zinc[800] : Color.zinc[200] }]}
-        onPress={() => handleSelectPrompt(item.text)}
-        onLongPress={() => {
-          Alert.alert(t('promptHistory.deletePromptTitle'), t('promptHistory.deletePromptMessage'), [
-            { text: t('common.cancel'), style: "cancel" },
-            {
-              text: t('common.delete'),
-              style: "destructive",
-              onPress: () => handleDeletePrompt(item.id),
-            },
-          ]);
-        }}
-      >
-        <View style={styles.rowContent}>
-          <Text numberOfLines={2} style={[styles.promptText, { color: fg }]}>
-            {item.text}
-          </Text>
-          <Text type="xs" style={[styles.timestamp, { color: muted }]}>
-            {formatRelativeTime(item.timestamp)}
-          </Text>
-        </View>
-        {Platform.OS === "ios" ? (
-          <SymbolView name="chevron.right" size={14} tintColor={muted} />
-        ) : (
-          <Ionicons name="chevron-forward" size={14} color={muted} />
-        )}
-      </PressableScale>
-    ),
-    [isDark, fg, muted]
+  const renderItem = ({ item }: { item: PromptHistoryEntry }) => (
+    <PressableScale
+      style={[styles.row, { borderBottomColor: isDark ? Color.zinc[800] : Color.zinc[200] }]}
+      onPress={() => handleSelectPrompt(item.text)}
+      onLongPress={() => {
+        Alert.alert(t('promptHistory.deletePromptTitle'), t('promptHistory.deletePromptMessage'), [
+          { text: t('common.cancel'), style: "cancel" },
+          {
+            text: t('common.delete'),
+            style: "destructive",
+            onPress: () => handleDeletePrompt(item.id),
+          },
+        ]);
+      }}
+    >
+      <View style={styles.rowContent}>
+        <Text numberOfLines={2} style={[styles.promptText, { color: fg }]}>
+          {item.text}
+        </Text>
+        <Text type="xs" style={[styles.timestamp, { color: muted }]}>
+          {formatRelativeTime(item.timestamp)}
+        </Text>
+      </View>
+      {Platform.OS === "ios" ? (
+        <SymbolView name="chevron.right" size={14} tintColor={muted} />
+      ) : (
+        <Ionicons name="chevron-forward" size={14} color={muted} />
+      )}
+    </PressableScale>
   );
 
   const hasHistory = history.length > 0;

@@ -1,6 +1,6 @@
 import * as NativeCoreHaptics from "@/modules/native-core-haptics";
 import { Image } from "expo-image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -51,9 +51,8 @@ export function BeforeAfterSlider({ imagePairs }: BeforeAfterSliderProps) {
   const layerAOpacity = useSharedValue(1);
 
   // Random initial index
-  const initialIndex = useMemo(
-    () => Math.floor(Math.random() * imagePairs.length),
-    [imagePairs.length]
+  const [initialIndex] = useState(
+    () => Math.floor(Math.random() * imagePairs.length)
   );
 
   // State for the two layers

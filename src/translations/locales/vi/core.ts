@@ -26,6 +26,7 @@ export const viCore = {
     share: 'Chia sẻ',
     send: 'Gửi',
     search: 'Tìm kiếm',
+    all: 'All',
     seeAll: 'Xem tất cả',
     tryAgain: 'Thử lại',
     ok: 'OK',

@@ -43,8 +43,8 @@ secret.txt
 
 app-example/
 
-# Android
-android/
+# Android (root only — don't ignore modules/*/android/)
+/android/
 !ASO/android/
 
 # iOS

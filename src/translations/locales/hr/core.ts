@@ -26,6 +26,7 @@ export const hrCore = {
     share: 'Podijeli',
     send: 'Pošalji',
     search: 'Traži',
+    all: 'All',
     seeAll: 'Pogledaj sve',
     tryAgain: 'Pokušaj ponovo',
     ok: 'U redu',

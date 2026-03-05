@@ -9,7 +9,7 @@
 | Offer Weekly     | $6.99/week  | None         | `pro_offer`     |
 | Offer Annual     | $39.99/year | 7-day free   | `pro_offer`     |
 
-Generation limits: 35/period (weekly), 80/period (annual).
+Generation limits: 35/period (weekly), 150/30-day period (annual).
 
 ---
 
@@ -41,25 +41,11 @@ Generation limits: 35/period (weekly), 80/period (annual).
 
 ### Setup Steps
 
-- [ ] Create subscription group "Tattoo Design AI Pro"
-- [ ] Create `tattoodesignai_pro_weekly` subscription
-  - [ ] Set reference name
-  - [ ] Set price: $9.99/week
-  - [ ] Add localized display name and description
-- [ ] Create `tattoodesignai_pro_annual` subscription
-  - [ ] Set reference name
-  - [ ] Set price: $59.99/year
-  - [ ] Add localized display name and description
-  - [ ] Configure introductory offer: 7-day free trial
-- [ ] Create `tattoodesignai_offer_weekly` subscription
-  - [ ] Set reference name
-  - [ ] Set price: $6.99/week
-  - [ ] Add localized display name and description
-- [ ] Create `tattoodesignai_offer_annual` subscription
-  - [ ] Set reference name
-  - [ ] Set price: $39.99/year
-  - [ ] Add localized display name and description
-  - [ ] Configure introductory offer: 7-day free trial
+- [x] Create subscription group "Tattoo Design AI Pro" (group ID: 21935333)
+- [x] Create `tattoodesignai_pro_weekly` — $9.99/week (READY_TO_SUBMIT)
+- [x] Create `tattoodesignai_pro_annual` — $59.99/year, 7-day free trial (READY_TO_SUBMIT)
+- [x] Create `tattoodesignai_offer_weekly` — $6.99/week (READY_TO_SUBMIT)
+- [x] Create `tattoodesignai_offer_annual` — $39.99/year, 7-day free trial (READY_TO_SUBMIT)
 - [ ] Set subscription group ranking (annual above weekly for upgrade path)
 - [ ] Add App Store Connect shared secret to RevenueCat
 - [ ] Submit subscriptions for review (can submit with app binary or independently)
@@ -151,7 +137,7 @@ gplay sync import-listings --package com.fahimanwer.tattooai --dir ./fastlane/me
 - [ ] Webhook fires on purchase and creates correct usage record
 - [ ] Usage record contains `pro` entitlement
 - [ ] Weekly plans enforce 35 generations/period
-- [ ] Annual plans enforce 80 generations/period
+- [ ] Annual plans enforce 150 generations/30-day period
 - [ ] Generation counter resets at period renewal
 
 ### Profile & Account State
@@ -233,3 +219,44 @@ curl -I https://fahimanwer.com/tattooai                # expect 200 landing page
 - [ ] Confirm revenue appears in RevenueCat dashboard
 - [ ] Confirm revenue appears in App Store Connect / Play Console
 - [ ] Check for any StoreKit error logs in production
+
+---
+
+## 10. Ad Attribution & SDK Setup
+
+### Facebook SDK
+
+- [x] Replace `YOUR_FB_APP_ID` and `YOUR_FB_CLIENT_TOKEN` in `app.json` with real values from Meta Business Suite
+- [x] Verify `advertiserIDCollectionEnabled` and `autoLogAppEventsEnabled` are `true` in `app.json`
+- [x] `Purchases.collectDeviceIdentifiers()` fires after RevenueCat configure
+- [x] `Purchases.setFBAnonymousID()` fires after RevenueCat configure
+- [ ] Add **iPhone Store ID** (`6759157248`) to Meta Developer Dashboard → iOS settings (after app is published on App Store)
+- [ ] Add **Android Package Name** (`com.fahimanwer.tattooai`) to Meta Developer Dashboard → Add Platform → Android
+- [ ] Enable **Meta** integration in RevenueCat dashboard (Integrations → Meta)
+- [ ] Verify install events appear in Meta Events Manager
+
+### TikTok Business SDK
+
+- [ ] Set `EXPO_PUBLIC_TIKTOK_APP_ID` and `EXPO_PUBLIC_TIKTOK_TT_APP_ID` in `.env.local`
+- [ ] TikTok SDK initializes on both iOS and Android (check console logs)
+- [ ] Enable **TikTok** integration in RevenueCat dashboard (Integrations → TikTok)
+- [ ] Verify events appear in TikTok Events Manager
+
+### App Tracking Transparency (iOS)
+
+- [ ] ATT permission dialog shows on first iOS app launch
+- [ ] Granting ATT enables `Settings.setAdvertiserTrackingEnabled(true)`
+- [ ] Denying ATT sets `Settings.setAdvertiserTrackingEnabled(false)`
+- [ ] App works correctly regardless of ATT choice
+
+### SKAdNetwork (iOS)
+
+- [ ] Meta SKAdNetwork IDs in `app.json` → `infoPlist.SKAdNetworkItems` (`v9wttpbfk9`, `n38lu8286q`)
+- [ ] TikTok/Pangle SKAdNetwork IDs in `app.json` → `infoPlist.SKAdNetworkItems` (`238da6jt44`, `22mmun2rn5`)
+- [ ] Verify SKAdNetwork postbacks reach Meta and TikTok after test installs
+
+### RevenueCat Server-Side Integrations (Dashboard)
+
+- [ ] Enable Meta integration in RevenueCat → sends purchase events to Meta Conversions API
+- [ ] Enable TikTok integration in RevenueCat → sends purchase events to TikTok Events API
+- [ ] Verify purchase events appear in both Meta and TikTok dashboards after test purchase

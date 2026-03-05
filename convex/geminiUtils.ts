@@ -487,37 +487,37 @@ export function toGeminiImageParts(
 }
 
 // ============================================================================
-// Prompt Enhancement
+// Prompt Enhancement (layered Nano Banana Pro prompts, tattoo-scoped)
 // ============================================================================
 
-const SAFETY_INSTRUCTIONS =
-  "Always avoid intimate areas of men and women. Make it as realistic as possible, but without exaggerating. Never generate two or more images in a single output - always generate only one image.";
+import {
+  buildTextToImagePrompt,
+  buildImageEditPrompt,
+} from "../lib/prompts";
 
 /**
- * Enhances a prompt with safety and quality instructions for text-to-image
+ * Enhances a prompt with layered L0–L5 structure for text-to-image (tattoo generation).
+ * Always tattoo-scoped. Uses [LAYER N — TITLE] and FORBIDDEN/REQUIRED blocks.
  */
 export function enhancePromptForTextToImage(prompt: string): string {
-  return `${prompt}. IMPORTANT: ${SAFETY_INSTRUCTIONS}`;
+  return buildTextToImagePrompt(prompt);
 }
 
 /**
- * Enhances a prompt with context-aware instructions for image editing
+ * Enhances a prompt with layered structure for image editing (modify existing tattoo).
+ * When improvePrompt is false, returns the raw prompt. Otherwise uses L0–L5 and
+ * sets context from substitution vs preserve based on prompt text.
  */
 export function enhancePromptForImageEditing(
   prompt: string,
   improvePrompt: boolean = true
 ): string {
-  if (!improvePrompt) {
-    return prompt;
-  }
   const isSubstitutionRequest =
     /change\s+(?:for|to|with)\s+|replace\s+(?:with|for)\s+|substitute/i.test(
       prompt
     );
-
-  const contextInstructions = isSubstitutionRequest
-    ? `The user wants to replace/change a subject or element. Apply the requested change while maintaining the same style, placement, size, composition, and artistic approach of the original tattoo. Keep the overall structure and design flow identical, only change the specific subject/element requested.`
-    : `Maintain the exact context, design, style, placement, and visual elements of the original image. Preserve all existing tattoo details, shapes, lines, and composition. Only apply the requested modifications while keeping everything else identical.`;
-
-  return `${prompt}. IMPORTANT: ${contextInstructions} ${SAFETY_INSTRUCTIONS}`;
+  return buildImageEditPrompt(prompt, {
+    isSubstitutionRequest,
+    improvePrompt,
+  });
 }

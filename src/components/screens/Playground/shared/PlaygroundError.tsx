@@ -200,13 +200,13 @@ export function PlaygroundError({
 }
 
 /**
- * Helper function to determine error type from mutation error and subscription tier
+ * Determine error type from the extracted Convex error code and subscription tier.
  */
 export function getPlaygroundErrorType(
-  errorMessage: string | undefined,
+  errorCode: string | undefined,
   isFreeTier: boolean
 ): PlaygroundErrorType {
-  if (errorMessage === "LIMIT_REACHED") {
+  if (errorCode === "LIMIT_REACHED") {
     return isFreeTier ? "limit_reached_free" : "limit_reached_subscribed";
   }
   return "generic";

@@ -1,8 +1,7 @@
 import React, {
   createContext,
-  useContext,
+  use,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import Purchases, { CustomerInfo } from "react-native-purchases";
@@ -53,10 +52,7 @@ export function SubscriptionProvider({
   const [error, setError] = useState<string | null>(null);
 
   // Compute hasActiveSubscription from customerInfo using getLastSubscription
-  const hasActiveSubscription = useMemo(() => {
-    const lastSub = getLastSubscription(customerInfo);
-    return lastSub?.isActive === true;
-  }, [customerInfo]);
+  const hasActiveSubscription = getLastSubscription(customerInfo)?.isActive === true;
 
   // Helper function to update all state from customerInfo
   const updateStateFromCustomerInfo = (info: CustomerInfo) => {
@@ -220,14 +216,14 @@ export function SubscriptionProvider({
   };
 
   return (
-    <SubscriptionContext.Provider value={value}>
+    <SubscriptionContext value={value}>
       {children}
-    </SubscriptionContext.Provider>
+    </SubscriptionContext>
   );
 }
 
 export function useSubscription(): SubscriptionStatus {
-  const context = useContext(SubscriptionContext);
+  const context = use(SubscriptionContext);
   if (context === undefined) {
     throw new Error(
       "useSubscription must be used within a SubscriptionProvider"
@@ -342,16 +338,23 @@ export function getLastSubscription(
     status = "cancelled";
   }
 
-  // Map product identifier to friendly name (pro v3 products only)
+  // Map product identifier to friendly name (all stores)
   const productNameMap: Record<string, string> = {
+    // iOS App Store
     tattoodesignai_pro_weekly: "Pro Weekly",
     tattoodesignai_pro_annual: "Pro Annual",
     tattoodesignai_offer_weekly: "Pro Weekly",
     tattoodesignai_offer_annual: "Pro Annual",
+    // Test Store
     pro_weekly: "Pro Weekly",
     pro_annual: "Pro Annual",
     offer_weekly: "Pro Weekly",
     offer_annual: "Pro Annual",
+    // Android Play Store (subscription:basePlan compound IDs)
+    "tattoodesignai_pro_weekly:pro-weekly": "Pro Weekly",
+    "tattoodesignai_pro_annual:pro-annual": "Pro Annual",
+    "tattoodesignai_offer_weekly:offer-weekly": "Pro Weekly",
+    "tattoodesignai_offer_annual:offer-annual": "Pro Annual",
   };
 
   return {

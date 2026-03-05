@@ -26,6 +26,7 @@ export const fiCore = {
     share: 'Jaa',
     send: 'Laheta',
     search: 'Hae',
+    all: 'All',
     seeAll: 'Nayta kaikki',
     tryAgain: 'Yrita uudelleen',
     ok: 'OK',

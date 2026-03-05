@@ -26,6 +26,7 @@ export const esCore = {
     share: 'Compartir',
     send: 'Enviar',
     search: 'Buscar',
+    all: 'All',
     seeAll: 'Ver todo',
     tryAgain: 'Intentar de nuevo',
     ok: 'OK',

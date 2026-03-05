@@ -26,6 +26,7 @@ export const msCore = {
     share: 'Kongsi',
     send: 'Hantar',
     search: 'Cari',
+    all: 'All',
     seeAll: 'Lihat Semua',
     tryAgain: 'Cuba Lagi',
     ok: 'OK',

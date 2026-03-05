@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { LayoutChangeEvent, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -58,9 +58,9 @@ export function CustomTabBar({
   const leftRoutes = visibleRoutes.slice(0, 2);
   const rightRoutes = visibleRoutes.slice(2);
 
-  const onBarLayout = useCallback((e: LayoutChangeEvent) => {
+  const onBarLayout = (e: LayoutChangeEvent) => {
     setBarWidth(e.nativeEvent.layout.width);
-  }, []);
+  };
 
   // Hide bar when camera is active
   const wrapperStyle = useAnimatedStyle(() => ({

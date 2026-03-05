@@ -26,6 +26,7 @@ export const deCore = {
     share: 'Teilen',
     send: 'Senden',
     search: 'Suchen',
+    all: 'All',
     seeAll: 'Alle anzeigen',
     tryAgain: 'Erneut versuchen',
     ok: 'OK',

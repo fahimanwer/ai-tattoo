@@ -26,6 +26,7 @@ export const jaCore = {
     share: '共有',
     send: '送信',
     search: '検索',
+    all: 'All',
     seeAll: 'すべて見る',
     tryAgain: 'もう一度試す',
     ok: 'OK',

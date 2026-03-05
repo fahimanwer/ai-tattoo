@@ -1,3 +1,4 @@
+import { CDN_BASE_URL } from "@/src/constants/cdn";
 import { Text } from "@/src/components/ui/Text";
 import { useTheme } from "@/src/context/ThemeContext";
 
@@ -13,7 +14,7 @@ import { useEvent } from "expo";
 import { StatusBar } from "expo-status-bar";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { PressableScale } from "pressto";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   NativeScrollEvent,
@@ -27,9 +28,9 @@ import { customEvent } from "vexo-analytics";
 import { Button } from "../ui/Button";
 
 const ONBOARDING_VIDEO_URLS = [
-  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding2.mov",
-  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding22.mov",
-  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding2222.mov",
+  `${CDN_BASE_URL}/ai-tattoo/demos/Onboarding2.mov`,
+  `${CDN_BASE_URL}/ai-tattoo/demos/Onboarding22.mov`,
+  `${CDN_BASE_URL}/ai-tattoo/demos/Onboarding2222.mov`,
 ];
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -39,11 +40,11 @@ export default function Container() {
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
-  const slideTexts = useMemo(() => [
+  const slideTexts = [
     { title: t('onboarding.containerTitle1'), description: t('onboarding.containerDesc1') },
     { title: t('onboarding.containerTitle2'), description: t('onboarding.containerDesc2') },
     { title: t('onboarding.containerTitle3'), description: t('onboarding.containerDesc3') },
-  ], [t]);
+  ];
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPausedIndicator, setShowPausedIndicator] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -71,10 +72,7 @@ export default function Container() {
     player.playbackRate = 1.5;
   });
 
-  const players = useMemo(
-    () => [player1, player2, player3],
-    [player1, player2, player3]
-  );
+  const players = [player1, player2, player3];
 
   const { isPlaying: isPlaying1 } = useEvent(player1, "playingChange", {
     isPlaying: player1.playing,
@@ -86,10 +84,7 @@ export default function Container() {
     isPlaying: player3.playing,
   });
 
-  const isPlayingStates = useMemo(
-    () => [isPlaying1, isPlaying2, isPlaying3],
-    [isPlaying1, isPlaying2, isPlaying3]
-  );
+  const isPlayingStates = [isPlaying1, isPlaying2, isPlaying3];
 
   // Listen for video status changes to detect when video ends
   const { status: status1 } = useEvent(player1, "statusChange", {

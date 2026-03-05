@@ -24,7 +24,6 @@ const SessionHistoryItemComponent = ({
           frame({ width: imageCount === 1 ? 40 : 60, height: 40 }),
           padding({ vertical: 9 }),
         ]}
-        activationMethod="longPress"
       >
         <ContextMenu.Items>
           <Button

@@ -26,6 +26,7 @@ export const daCore = {
     share: 'Del',
     send: 'Send',
     search: 'Sog',
+    all: 'All',
     seeAll: 'Se alle',
     tryAgain: 'Prov igen',
     ok: 'OK',

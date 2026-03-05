@@ -6,10 +6,8 @@ import {
 import Storage from "expo-sqlite/kv-store";
 import React, {
   createContext,
-  useCallback,
-  useContext,
+  use,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { Appearance, Platform, useColorScheme } from "react-native";
@@ -64,12 +62,7 @@ export function AppThemeProvider({ children }: { children: React.ReactNode }) {
   const systemScheme = useColorScheme();
 
   // Resolve whether we're in dark mode
-  const isDark = useMemo(() => {
-    if (mode === "system") {
-      return systemScheme === "dark";
-    }
-    return mode === "dark";
-  }, [mode, systemScheme]);
+  const isDark = mode === "system" ? systemScheme === "dark" : mode === "dark";
 
   const isLight = !isDark;
 
@@ -77,38 +70,35 @@ export function AppThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (mode === "system") {
       Uniwind.setTheme("system");
-      if (Platform.OS === "ios") Appearance.setColorScheme(null);
+      if (Platform.OS === "ios") Appearance.setColorScheme("unspecified");
     } else {
       Uniwind.setTheme(mode);
       if (Platform.OS === "ios") Appearance.setColorScheme(mode);
     }
   }, [mode, systemScheme]);
 
-  const setMode = useCallback((newMode: ThemeMode) => {
+  const setMode = (newMode: ThemeMode) => {
     setModeState(newMode);
     try {
       Storage.setItemSync(STORAGE_KEY, newMode);
     } catch {
       // Ignore storage errors
     }
-  }, []);
+  };
 
   const navigationTheme = isDark
     ? darkNavigationTheme
     : lightNavigationTheme;
 
-  const value = useMemo(
-    () => ({ mode, isDark, isLight, setMode, navigationTheme }),
-    [mode, isDark, isLight, setMode, navigationTheme]
-  );
+  const value = { mode, isDark, isLight, setMode, navigationTheme };
 
   return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+    <ThemeContext value={value}>{children}</ThemeContext>
   );
 }
 
 export function useTheme(): ThemeContextType {
-  const ctx = useContext(ThemeContext);
+  const ctx = use(ThemeContext);
   if (!ctx) {
     throw new Error("useTheme must be used within AppThemeProvider");
   }

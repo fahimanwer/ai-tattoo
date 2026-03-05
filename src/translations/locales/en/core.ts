@@ -26,6 +26,7 @@ export const enCore = {
     share: 'Share',
     send: 'Send',
     search: 'Search',
+    all: 'All',
     seeAll: 'See All',
     tryAgain: 'Try Again',
     ok: 'OK',
@@ -38,6 +39,8 @@ export const enCore = {
     readMore: 'Read More',
     createTattoo: 'Create Tattoo',
     style: 'Style',
+    before: 'Before',
+    after: 'After',
 
     // States
     on: 'On',

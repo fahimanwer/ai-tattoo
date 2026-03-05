@@ -26,6 +26,7 @@ export const trCore = {
     share: 'Paylaş',
     send: 'Gönder',
     search: 'Ara',
+    all: 'All',
     seeAll: 'Tümünü Gör',
     tryAgain: 'Tekrar Dene',
     ok: 'Tamam',

@@ -25,7 +25,7 @@ import * as MediaLibrary from "expo-media-library";
 import { router, Stack } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { PressableScale } from "pressto";
-import { Activity, use, useCallback, useEffect, useState } from "react";
+import { Activity, use, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -78,7 +78,7 @@ export default function Sheet() {
   const [permission, requestPermission] = MediaLibrary.usePermissions();
 
   // Load recent photos from library
-  const loadRecentPhotos = useCallback(async () => {
+  async function loadRecentPhotos() {
     if (permission?.status !== MediaLibrary.PermissionStatus.GRANTED) {
       setLoading(false);
       return;
@@ -97,7 +97,7 @@ export default function Sheet() {
     } finally {
       setLoading(false);
     }
-  }, [permission?.status]);
+  }
 
   useEffect(() => {
     loadRecentPhotos();

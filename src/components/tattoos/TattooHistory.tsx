@@ -12,7 +12,7 @@ import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useThemeColor } from "heroui-native";
 import { PressableScale } from "pressto";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Linking, Platform, StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner-native";
@@ -37,7 +37,7 @@ export function TattooHistory() {
   );
   const getRestoreData = useAction(api.generations.getRestoreData);
 
-  const loadTattoos = useCallback(async () => {
+  async function loadTattoos() {
     try {
       setLoading(true);
       if (permission?.status === MediaLibrary.PermissionStatus.GRANTED) {
@@ -49,17 +49,17 @@ export function TattooHistory() {
     } finally {
       setLoading(false);
     }
-  }, [permission]);
+  }
 
   useEffect(() => {
     loadTattoos();
-  }, [loadTattoos]);
+  }, [permission?.status]);
 
   const handleTattooPress = (tattoo: MediaLibrary.Asset) => {
     router.push(`/(tabs)/tattoos/details?id=${tattoo.id}`);
   };
 
-  const handleRestore = useCallback(async () => {
+  async function handleRestore() {
     try {
       setIsRestoring(true);
       toast(t('tattoos.restoringFromCloud'), { duration: 2000 });
@@ -106,7 +106,7 @@ export function TattooHistory() {
     } finally {
       setIsRestoring(false);
     }
-  }, [getRestoreData, loadTattoos]);
+  }
 
   // Show restore banner when user is authenticated and has cloud generations
   const showRestoreBanner =

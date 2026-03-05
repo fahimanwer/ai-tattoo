@@ -1,6 +1,7 @@
 import { authClient } from "@/lib/auth-client";
 import { AuthContent } from "@/src/components/auth/AuthContent";
 import { Text } from "@/src/components/ui/Text";
+import { CDN_BASE_URL } from "@/src/constants/cdn";
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { Image } from "expo-image";
@@ -67,7 +68,7 @@ export default function OnboardingAuth() {
         />
         <Image
           source={{
-            uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/paywall-bg.avif",
+            uri: `${CDN_BASE_URL}/ai-tattoo/demos/paywall-bg.avif`,
           }}
           contentFit="cover"
           contentPosition="center"

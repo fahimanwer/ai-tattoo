@@ -26,6 +26,7 @@ export const csCore = {
     share: 'Sdilet',
     send: 'Odeslat',
     search: 'Hledat',
+    all: 'All',
     seeAll: 'Zobrazit vse',
     tryAgain: 'Zkusit znovu',
     ok: 'OK',

@@ -1,6 +1,6 @@
 import { Text as UIText } from "@/src/components/ui/Text";
 import { Button, ContextMenu, Host, Image } from "@expo/ui/swift-ui";
-import { fixedSize, frame, padding } from "@expo/ui/swift-ui/modifiers";
+import { buttonStyle, fixedSize, frame, padding } from "@expo/ui/swift-ui/modifiers";
 import * as Haptics from "expo-haptics";
 import { Platform, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -51,27 +51,25 @@ export function FilterContextMenu({
         <ContextMenu.Items>
           <Button
             systemImage="figure.arms.open"
+            label={t('explore.bodyPart')}
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               onFilterModeChange("body part");
               onBodyPartReset();
             }}
-          >
-            {t('explore.bodyPart')}
-          </Button>
+          />
           <Button
             systemImage="paintbrush.fill"
+            label={t('explore.styles')}
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               onFilterModeChange("styles");
               onBodyPartReset();
             }}
-          >
-            {t('explore.styles')}
-          </Button>
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
-          <Button variant="glass">
+          <Button modifiers={[buttonStyle("glass")]}>
             <Image
               systemName="ellipsis"
               size={26}

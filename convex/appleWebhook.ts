@@ -1,5 +1,10 @@
-import { internalAction } from "./_generated/server";
-import { v } from "convex/values";
+/**
+ * Apple App Store Connect webhook helper.
+ * Processes build/review pipeline events and sends Slack notifications.
+ *
+ * This is a plain helper module (not a Convex action) — called directly
+ * from the httpAction handler in http.ts.
+ */
 
 // Event types from App Store Connect
 type WebhookEventType =
@@ -206,74 +211,73 @@ function getStateTransition(attributes: AppleWebhookPayload["data"]["attributes"
   };
 }
 
-export const processAppleWebhook = internalAction({
-  args: {
-    rawBody: v.string(),
-    signature: v.optional(v.string()),
-  },
-  returns: v.null(),
-  handler: async (_ctx, args) => {
-    const secret = process.env.APPLE_WEBHOOK_SECRET;
-    if (!secret) {
-      throw new Error("APPLE_WEBHOOK_SECRET not configured");
+/**
+ * Process an Apple App Store Connect webhook.
+ * Called directly from the httpAction handler (not a Convex action).
+ */
+export async function processAppleWebhookHelper(args: {
+  rawBody: string;
+  signature?: string;
+}): Promise<void> {
+  const secret = process.env.APPLE_WEBHOOK_SECRET;
+  if (!secret) {
+    throw new Error("APPLE_WEBHOOK_SECRET not configured");
+  }
+
+  // Verify signature
+  const isValid = await verifyAppleSignature(args.rawBody, args.signature ?? null, secret);
+  if (!isValid) {
+    throw new Error("Invalid signature");
+  }
+
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.warn("[APPLE WEBHOOK] SLACK_WEBHOOK_URL not configured");
+    return;
+  }
+
+  const payload: AppleWebhookPayload = JSON.parse(args.rawBody);
+  const eventType = payload.data?.type;
+  const { oldState, newState } = getStateTransition(payload.data?.attributes || {});
+
+  console.log("[APPLE WEBHOOK] Processing event:", { type: eventType, id: payload.data?.id, oldState, newState });
+
+  let config: MessageConfig;
+
+  switch (eventType) {
+    case "webhookPingCreated":
+      config = { color: "#36a64f", emoji: "apple", title: "Webhook Connected", message: "App Store Connect webhook connected." };
+      break;
+    case "buildUploadStateUpdated": {
+      const state = (newState || "PROCESSING") as BuildUploadState;
+      config = BUILD_UPLOAD_STATE_CONFIG[state] || BUILD_UPLOAD_STATE_CONFIG.PROCESSING;
+      break;
     }
-
-    // Verify signature
-    const isValid = await verifyAppleSignature(args.rawBody, args.signature ?? null, secret);
-    if (!isValid) {
-      throw new Error("Invalid signature");
+    case "buildBundleProcessingStateUpdated": {
+      const state = (newState || "PROCESSING") as BuildBundleProcessingState;
+      config = BUILD_BUNDLE_STATE_CONFIG[state] || BUILD_BUNDLE_STATE_CONFIG.PROCESSING;
+      break;
     }
-
-    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
-    if (!webhookUrl) {
-      console.warn("[APPLE WEBHOOK] SLACK_WEBHOOK_URL not configured");
-      return null;
+    case "appStoreVersionStateUpdated":
+    case "appStoreVersionAppVersionStateUpdated": {
+      const state = (newState || "PREPARE_FOR_SUBMISSION") as AppStoreVersionState;
+      config = APP_VERSION_STATE_CONFIG[state] || {
+        color: "#808080",
+        emoji: "package",
+        title: newState || "Unknown",
+        message: `State changed to ${newState}.`,
+      };
+      break;
     }
-
-    const payload: AppleWebhookPayload = JSON.parse(args.rawBody);
-    const eventType = payload.data?.type;
-    const { oldState, newState } = getStateTransition(payload.data?.attributes || {});
-
-    console.log("[APPLE WEBHOOK] Processing event:", { type: eventType, id: payload.data?.id, oldState, newState });
-
-    let config: MessageConfig;
-
-    switch (eventType) {
-      case "webhookPingCreated":
-        config = { color: "#36a64f", emoji: "apple", title: "Webhook Connected", message: "App Store Connect webhook connected." };
-        break;
-      case "buildUploadStateUpdated": {
-        const state = (newState || "PROCESSING") as BuildUploadState;
-        config = BUILD_UPLOAD_STATE_CONFIG[state] || BUILD_UPLOAD_STATE_CONFIG.PROCESSING;
-        break;
-      }
-      case "buildBundleProcessingStateUpdated": {
-        const state = (newState || "PROCESSING") as BuildBundleProcessingState;
-        config = BUILD_BUNDLE_STATE_CONFIG[state] || BUILD_BUNDLE_STATE_CONFIG.PROCESSING;
-        break;
-      }
-      case "appStoreVersionStateUpdated":
-      case "appStoreVersionAppVersionStateUpdated": {
-        const state = (newState || "PREPARE_FOR_SUBMISSION") as AppStoreVersionState;
-        config = APP_VERSION_STATE_CONFIG[state] || {
-          color: "#808080",
-          emoji: "package",
-          title: newState || "Unknown",
-          message: `State changed to ${newState}.`,
-        };
-        break;
-      }
-      case "betaAppReviewSubmissionStateUpdated": {
-        const state = (newState || "WAITING_FOR_REVIEW") as BetaAppReviewSubmissionState;
-        config = BETA_REVIEW_STATE_CONFIG[state] || BETA_REVIEW_STATE_CONFIG.WAITING_FOR_REVIEW;
-        break;
-      }
-      default:
-        config = { color: "#808080", emoji: "mailbox_with_mail", title: "App Store Event", message: `Event: ${eventType}` };
+    case "betaAppReviewSubmissionStateUpdated": {
+      const state = (newState || "WAITING_FOR_REVIEW") as BetaAppReviewSubmissionState;
+      config = BETA_REVIEW_STATE_CONFIG[state] || BETA_REVIEW_STATE_CONFIG.WAITING_FOR_REVIEW;
+      break;
     }
+    default:
+      config = { color: "#808080", emoji: "mailbox_with_mail", title: "App Store Event", message: `Event: ${eventType}` };
+  }
 
-    await sendSlackNotification(webhookUrl, config, oldState, newState);
-    console.log("[APPLE WEBHOOK] Webhook processed successfully");
-    return null;
-  },
-});
+  await sendSlackNotification(webhookUrl, config, oldState, newState);
+  console.log("[APPLE WEBHOOK] Webhook processed successfully");
+}

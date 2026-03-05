@@ -1,3 +1,4 @@
+import { CDN_BASE_URL } from "@/src/constants/cdn";
 import { Text } from "@/src/components/ui/Text";
 import { Color } from "@/src/constants/TWPalette";
 import {
@@ -7,7 +8,7 @@ import {
 import { LegendList } from "@legendapp/list";
 import { Image } from "expo-image";
 import { PressableScale } from "pressto";
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import { StyleSheet, View } from "react-native";
 
 export interface BodyPartFilterItem {
@@ -38,7 +39,7 @@ const bodyPartToIconMap: Record<string, string> = {
 };
 
 const FILTER_ICONS_BASE_URL =
-  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/icons-filters-body-part/";
+  `${CDN_BASE_URL}/ai-tattoo/icons-filters-body-part/`;
 
 function getIconUri(bodyPart: string): string {
   const iconName = bodyPartToIconMap[bodyPart] || bodyPart;
@@ -77,9 +78,9 @@ export function BodyPartFilter({
   selectedBodyPart,
   onSelectBodyPart,
 }: BodyPartFilterProps) {
-  const allBodyParts = useMemo(() => getAllBodyParts(), []);
+  const allBodyParts = getAllBodyParts();
 
-  const filterItems = useMemo<BodyPartFilterItem[]>(() => {
+  const filterItems: BodyPartFilterItem[] = (() => {
     const items: BodyPartFilterItem[] = [
       {
         id: "all",
@@ -99,7 +100,7 @@ export function BodyPartFilter({
     });
 
     return items;
-  }, [allBodyParts]);
+  })();
 
   const handleFilterPress = (item: BodyPartFilterItem) => {
     if (item.id === "all") {

@@ -4,7 +4,7 @@ import Share from "@/patches/rn-share-re-export";
 import * as MediaLibrary from "expo-media-library";
 import { router, Stack } from "expo-router";
 import { useThemeColor } from "heroui-native";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -34,7 +34,7 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
   const foreground = useThemeColor("foreground");
   const { t } = useTranslation();
 
-  const loadAsset = useCallback(async () => {
+  async function loadAsset() {
     try {
       setLoading(true);
 
@@ -61,7 +61,7 @@ export function TattooDetailScreen({ tattooId }: TattooDetailScreenProps) {
     } finally {
       setLoading(false);
     }
-  }, [tattooId]);
+  }
 
   useEffect(() => {
     loadAsset();

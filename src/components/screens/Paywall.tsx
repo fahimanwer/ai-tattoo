@@ -1,4 +1,5 @@
 import { authClient } from "@/lib/auth-client";
+import { CDN_BASE_URL } from "@/src/constants/cdn";
 import { Color } from "@/src/constants/TWPalette";
 import { AppSettingsContext } from "@/src/context/AppSettings";
 import { useTheme } from "@/src/context/ThemeContext";
@@ -7,7 +8,7 @@ import { useUserData } from "@/src/hooks/useUserData";
 import { Image } from "expo-image";
 import { Link, Stack, useRouter } from "expo-router";
 import { PressableScale } from "pressto";
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { Alert, Platform, StyleSheet, View } from "react-native";
 import Purchases, {
   PurchasesOffering,
@@ -101,10 +102,7 @@ export function Paywall({ variant = "main" }: PaywallProps) {
     }
   }, [variant]);
 
-  const headlineKey = useMemo(
-    () => getPersonalizedHeadlineKey(settings.onboardingAnswers),
-    [settings.onboardingAnswers]
-  );
+  const headlineKey = getPersonalizedHeadlineKey(settings.onboardingAnswers);
   const headline = t(headlineKey);
 
   const { data: session } = authClient.useSession();
@@ -287,7 +285,7 @@ export function Paywall({ variant = "main" }: PaywallProps) {
         />
         <Image
           source={{
-            uri: "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/paywall-bg.avif",
+            uri: `${CDN_BASE_URL}/ai-tattoo/demos/paywall-bg.avif`,
           }}
           contentFit="cover"
           contentPosition="top center"

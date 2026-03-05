@@ -1,9 +1,10 @@
+import { CDN_BASE_URL } from "@/src/constants/cdn";
 import { OnboardingAnswers, OnboardingStep } from "./onboardingTypes";
 
 export const ONBOARDING_ANSWERS_VERSION = 1;
 
 export const DEFAULT_ONBOARDING_IMAGE =
-  "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/onboarding-v1.avif";
+  `${CDN_BASE_URL}/ai-tattoo/demos/onboarding-v1.avif`;
 
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
@@ -16,69 +17,69 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     imagePairs: [
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.female-ribs-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/1.female-ribs-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.female-ribs-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/2.female-ribs-after.avif`,
       },
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.male-arm-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/1.male-arm-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.male-arm-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/2.male-arm-after.avif`,
       },
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.male-chest-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/1.male-chest-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.male-chest-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/2.male-chest-after.avif`,
       },
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.male-shoulder-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/1.male-shoulder-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.male-shoulder-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/2.male-shoulder-after.avif`,
       },
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.calf-male-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/1.calf-male-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.calf-male-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/1.calf-male-after.avif`,
       },
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.calf-male-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/2.calf-male-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.calf-male-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/2.calf-male-after.avif`,
       },
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/3.calf-male-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/3.calf-male-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/3.calf-male-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/3.calf-male-after.avif`,
       },
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.arm-male-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/1.arm-male-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.arm-male-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/1.arm-male-after.avif`,
       },
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.arm-male-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/2.arm-male-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/2.arm-male-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/2.arm-male-after.avif`,
       },
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/3.arm-male-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/3.arm-male-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/3.arm-male-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/3.arm-male-after.avif`,
       },
       {
         before:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/4.arm-male-before.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/4.arm-male-before.avif`,
         after:
-          "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/4.arm-male-after.avif",
+          `${CDN_BASE_URL}/ai-tattoo/before-after/4.arm-male-after.avif`,
       },
     ],
   },
@@ -97,7 +98,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "onboarding.welcome",
     description: "onboarding.welcomeDescription",
     image:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.arm-male-after.avif",
+      `${CDN_BASE_URL}/ai-tattoo/before-after/1.arm-male-after.avif`,
   },
   {
     id: "user-description",
@@ -151,9 +152,9 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "onboarding.designTattoo",
     description: "onboarding.designTattooDescription",
     image:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/before-after/1.arm-male-after.avif",
+      `${CDN_BASE_URL}/ai-tattoo/before-after/1.arm-male-after.avif`,
     video:
-      "https://d3ynb031qx3d1.cloudfront.net/ai-tattoo/demos/Onboarding22.mov",
+      `${CDN_BASE_URL}/ai-tattoo/demos/Onboarding22.mov`,
   },
   {
     id: "location",

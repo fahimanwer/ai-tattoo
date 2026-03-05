@@ -81,6 +81,22 @@ const styles = StyleSheet.create({
 });
 ```
 
+## RULE 4: Static Assets (Cloudflare R2)
+
+All static images/videos are hosted on **Cloudflare R2**.
+
+- **CDN constant**: `src/constants/cdn.ts` → `CDN_BASE_URL`
+- **Public URL**: `https://pub-a8961674827a414595fcc4e9e08c2760.r2.dev`
+- **Bucket**: `tattodesign-a8`
+- **Path structure**: `/ai-tattoo/...` (e.g. `/ai-tattoo/demos/`, `/ai-tattoo/widget/`)
+- **R2 credentials**: stored in `.env.local` (R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY)
+- **Upload script**: `bun run scripts/migrate-cdn-to-r2.ts`
+
+When adding new images:
+1. Upload to R2 bucket under `ai-tattoo/` path
+2. Reference via `CDN_BASE_URL` from `src/constants/cdn.ts`
+3. NEVER hardcode the full CDN domain — always use the constant
+
 </absolute_constraints>
 
 # SYSTEM ROLE & BEHAVIORAL PROTOCOLS

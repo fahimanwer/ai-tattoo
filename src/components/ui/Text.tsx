@@ -1,5 +1,4 @@
 import {
-  useCallback,
   useLayoutEffect,
   useRef,
   useState,
@@ -100,20 +99,17 @@ export function Text({
   const pendingLines = useRef<TextLayoutLine[] | null>(null);
 
   // Handle text layout measurement - store lines in ref for useLayoutEffect
-  const handleTextLayout = useCallback(
-    (e: Parameters<NonNullable<RNTextProps["onTextLayout"]>>[0]) => {
-      // Always call user's handler if provided
-      userOnTextLayout?.(e);
+  const handleTextLayout = (e: Parameters<NonNullable<RNTextProps["onTextLayout"]>>[0]) => {
+    // Always call user's handler if provided
+    userOnTextLayout?.(e);
 
-      // Skip if not balancing or already processed
-      if (!textBalance || hasProcessed.current) return;
+    // Skip if not balancing or already processed
+    if (!textBalance || hasProcessed.current) return;
 
-      // Store lines and trigger re-render for useLayoutEffect to process
-      pendingLines.current = e.nativeEvent.lines;
-      setBalanceState((prev) => ({ ...prev })); // Force re-render
-    },
-    [textBalance, userOnTextLayout]
-  );
+    // Store lines and trigger re-render for useLayoutEffect to process
+    pendingLines.current = e.nativeEvent.lines;
+    setBalanceState((prev) => ({ ...prev })); // Force re-render
+  };
 
   // Process balance synchronously with Fabric's useLayoutEffect
   // This runs after render but before paint - no intermediate state visible
